@@ -1,0 +1,87 @@
+{
+
+    "9":{
+        "hd": {
+            "cmd": 9
+        },
+        "pld": {
+            "sniff": {
+                "params": {
+                    "pin": 22,
+                    "mode": 5,
+                    "inverted": 0,
+                    "minCount": 50, 
+                    "minDelta": 150,
+                    "maxDelta": 65535,
+                    "bufSize": 4096
+                }           
+            },
+            "decode": {
+                "blocks": [
+                    {
+                        "params": {
+                            "tolerance": 30, 
+                            "excess": 0, 
+                            "atleast": 1,
+                            "MSBfirst": 0,
+                            "step": 2,
+        
+                            "nbits":32,  
+                            "headermark": 9000,
+                            "headerspace": 4500,
+                            "onemark": 600,   
+                            "onespace": 1600, 
+                            "zeromark": 600,  
+                            "zerospace": 550, 
+                            "footermark": 600,
+                            "footerspace": 18000
+                        }
+                    }            
+                ]
+            } 
+        }
+    },
+
+
+    "8": {
+        "hd": {
+            "cmd": 8
+        },
+        "pld": {
+            "send": {
+                "params": {
+                    "pin": 23,             
+                    "inverted": 0,     
+                    "modulation": 1,    
+                    "repeat": 1,           
+                    "MSBfirst": 1,      
+                    "frequency": 38,       
+                    "dutycycle": 50 
+                },
+                "raw": "9000,4500,620,540,620,540,620,540,620,540,620,1600,620,540,620,540,620,540,620,540,620,540,620,540,620,540,620,1600,620,540,620,1600,620,540,620,540,620,540,620,540,620,1600,620,540,620,540,620,540,620,1600,620,1600,620,1600,620,1600,620,540,620,1600,620,1600,620,1600,620,540,600,18000,"
+            },
+            "encode": {
+                "blocks": [
+                    {
+                        "params": {
+                            "step": 2,
+                            "MSBfirst": 1,
+        
+                            "nbits":32,  
+                            "headermark": 9000,
+                            "headerspace": 4500,
+                            "onemark": 600,   
+                            "onespace": 1600, 
+                            "zeromark": 600,  
+                            "zerospace": 550, 
+                            "footermark": 600,
+                            "footerspace": 18000
+                        },
+                        "data": "0x 08 0a 11 ee"
+                    }            
+                ]
+            } 
+        }
+    }
+    
+}
