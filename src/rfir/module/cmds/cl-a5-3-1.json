@@ -1,13 +1,13 @@
 {
 
-    "9":{
+    "9": {
         "hd": {
             "cmd": 9
         },
         "pld": {
             "sniff": {
                 "params": {
-                    "pin": 23,
+                    "pin": 5,
                     "mode": 5,
                     "inverted": 0,
                     "minCount": 50, 
@@ -23,24 +23,25 @@
                             "tolerance": 30, 
                             "excess": 0, 
                             "atleast": 1,
-                            "MSBfirst": 0,
-                            "step": 2,
-        
-                            "nbits":32,  
-                            "headermark": 9000,
-                            "headerspace": 4500,
-                            "onemark": 600,   
-                            "onespace": 1600, 
-                            "zeromark": 600,  
-                            "zerospace": 550, 
-                            "footermark": 600,
-                            "footerspace": 18000
+
+                            "MSBfirst": 1,
+                            "step": 2,        
+                            "nbits":40,  
+                            "headermark": 4840,
+                            "headerspace": 1440,
+                            "onemark": 740,   
+                            "onespace": 340, 
+                            "zeromark": 400,  
+                            "zerospace": 680, 
+                            "footermark": 0,
+                            "footerspace": 0,
+                            "lastspace": 8740
                         }
                     }            
                 ]
             } 
         }
-    },
+    } ,
 
 
     "8": {
@@ -50,15 +51,14 @@
         "pld": {
             "send": {
                 "params": {
-                    "pin": 23,             
+                    "pin": 5,             
                     "inverted": 0,     
                     "modulation": 1,    
                     "repeat": 1,           
                     "MSBfirst": 1,      
                     "frequency": 38,       
                     "dutycycle": 50 
-                },
-                "raw": "9000,4500,620,540,620,540,620,540,620,540,620,1600,620,540,620,540,620,540,620,540,620,540,620,540,620,540,620,1600,620,540,620,1600,620,540,620,540,620,540,620,540,620,1600,620,540,620,540,620,540,620,1600,620,1600,620,1600,620,1600,620,540,620,1600,620,1600,620,1600,620,540,600,18000,"
+                }
             },
             "encode": {
                 "blocks": [
@@ -67,21 +67,31 @@
                             "step": 2,
                             "MSBfirst": 1,
         
-                            "nbits":32,  
-                            "headermark": 9000,
-                            "headerspace": 4500,
-                            "onemark": 600,   
-                            "onespace": 1600, 
-                            "zeromark": 600,  
-                            "zerospace": 550, 
-                            "footermark": 600,
-                            "footerspace": 18000
+                            "nbits":0,  
+                            "headermark": 4840,
+                            "headerspace": 1440,
+                            "onemark": 740,   
+                            "onespace": 340, 
+                            "zeromark": 400,  
+                            "zerospace": 680, 
+                            "footermark": 0,
+                            "footerspace": 0,
+                            "lastspace": 8740
                         },
-                        "data": "0x 08 0a 11 ee"
+                        "data": "0x 23 45 3b 91 33"
                     }            
                 ]
             } 
         }
+    },
+
+    "11": {
+        "hd": {
+            "cmd": 11
+        },
+        "pld": {
+            "mode": 2
+        }        
     }
     
 }

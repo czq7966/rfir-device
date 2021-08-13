@@ -27,7 +27,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "cJSON.h"
+#include "esp_cJSON.h"
 #ifdef __cplusplus
 }
 #endif

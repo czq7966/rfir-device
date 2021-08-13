@@ -6,10 +6,12 @@
 #define __RFIR_MODULE_TTL_ENCODER_H__
 
 #include "rfir/util/platform.h"
+#include "decoder.h"
 
 namespace rfir {
     namespace module {
         namespace ttl {
+            class RFIR;
             class Encoder {
             public:                
 
@@ -32,13 +34,21 @@ namespace rfir {
                     uint32_t footerspace = 0;
                     bool     MSBfirst = true;
                     int      step = 2;
+                    uint16_t lastspace = 0;
                     std::string   toString();
+                    bool          parseFromJson(neb::CJsonObject* jp);  
+                    bool          clone(Decoder::Params* p);
                 };  
 
                 struct EncodeParams
                 {
                     Params* params = 0;
                     int     count = 0;
+                    bool    response = 0;
+                    bool    parseFromJson(neb::CJsonObject* jblocks);  
+                    void    free();
+                    bool    clone(EncodeParams* p);
+                    bool    clone(Decoder::DecodeParams* p);
                 };
                  
 
@@ -46,28 +56,24 @@ namespace rfir {
                     uint16_t*   result = 0;
                     int         count = 0;
                     std::string toString();
+                    void        free();
                 };
 
-                typedef std::function<void(Encoder* encoder, EncodeResult* data, String msg)> OnEncoded;  
-            private:
-                String          name;
-                Params          params;
+                typedef std::function<void(Encoder* encoder, EncodeResult* data)> OnEncoded;  
+            private:                
                 EncodeParams    encodeParams;
                 EncodeResult    encodeResult;
                 neb::CJsonObject jEncode;
             public:
-                Encoder();
+                Encoder(RFIR* rfir = 0);
                 ~Encoder();
-                OnEncoded onEncoded = 0;
-            public:
-                void   setParams(Params params) {this->params = params;};
-                Params getParams(){return params;};
 
-                void    setEncodeParams(EncodeParams* params, String name = "");
+                std::string     name;
+                RFIR*           rfir = 0;
+                OnEncoded       onEncoded = 0;
+            public:
                 EncodeParams* getEncodeParams();
                 int     getEncodeParamsCount();
-                void    setJEncode(neb::CJsonObject* jencode);
-                neb::CJsonObject*    getJEncode(neb::CJsonObject* jencode);
                 
 
                 void    initEncodeResult();
@@ -82,13 +88,13 @@ namespace rfir {
                 int encode(neb::CJsonObject* blocks);
 
 
-                String  toString();
-                static bool parseParams(neb::CJsonObject* jp, rfir::module::ttl::Encoder::Params* p);   
+                std::string  toString();
+
                 static int  parseData(const char* data, int nbits, uint8_t* result, bool MSBFirst);
                 static int  parseData(const char* data, int nbits, uint64_t& result, bool MSBFirst);
                 static int  parseData(String data, uint8_t* result, bool MSBFirst);
                 static uint16_t* parseRaw(const char* data, int size, int& count);
-                static std::string packEncodedCmd(Encoder* encoder, EncodeResult* data, String name);
+                static std::string packEncodedCmd(Encoder* encoder, EncodeResult* data);
                 
             };
         }

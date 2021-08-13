@@ -13,3 +13,12 @@ uint64_t  rfir::util::Util::reverseBits(uint64_t input, uint16_t nbits) {
   // Merge any remaining unreversed bits back to the top of the reversed bits.
   return (input << nbits) | output;   
 }
+
+std::string rfir::util::Util::GetChipId(std::string prefix) {
+#ifdef ESP8266
+  uint32_t chipId = ESP.getChipId();
+#else		//ESP32
+  uint32_t chipId = (uint32_t)ESP.getEfuseMac();
+#endif
+  return prefix + std::string(String(chipId, HEX).c_str());
+}

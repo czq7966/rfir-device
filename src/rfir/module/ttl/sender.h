@@ -7,38 +7,37 @@
 
 #include "rfir/util/timer.h"
 #include "rfir/util/cjson/CJsonObject.hpp"
-#include "gpio.hpp"
+#include "encoder.h"
+#include "gpio.h"
 #include <list>
 #include <mutex>
 
 namespace rfir {
     namespace module {
         namespace ttl {
+            class RFIR;
             class Sender {     
             public:
+                typedef std::function<void(Sender* sender, const uint16_t* data, const uint16_t len)> OnSended;  
                 struct Params {
-                    uint8_t  pin = 23;
+                    uint8_t  pin = 0;
                     bool     inverted = false;
                     bool     modulation = true;
                     uint16_t repeat = 0;
-                    bool     MSBfirst = true;
                     uint16_t frequency = 38;                    
                     uint8_t  dutycycle = 50;
 
-                    uint16_t nbits = 0;
-                    uint16_t headermark = 9000;
-                    uint32_t headerspace = 4500;
-                    uint16_t onemark = 600;
-                    uint32_t onespace = 1600;
-                    uint16_t zeromark = 600;
-                    uint32_t zerospace = 550;
-                    uint16_t footermark = 600;
-                    uint32_t footerspace = 18000;
+                    std::string   toString();
+                    bool          parseFromJson(neb::CJsonObject* jp);
                 };   
 
                 struct SendParams
                 {
                     Params params;
+                    bool   response = 0;
+                    bool   parseFromJson(neb::CJsonObject* jp);
+                    bool   clone(SendParams* p);
+                    std::string   toString();
                 };
                 
             protected:       
@@ -49,17 +48,23 @@ namespace rfir {
                 int8_t periodOffset;
                 uint8_t _dutycycle;
 
-            public:              
-                Params params;
+            private:              
+                SendParams sendParams;
+            public:
+                std::string name;
                 Gpio gpio;
+                OnSended   onSended = 0;
             public:
  
-                Sender();
-                Sender(Params param);
+                Sender(RFIR* rfir = 0);
+                Sender(SendParams sendParams, RFIR* rfir = 0);
                 ~Sender();
 
-                void init(Params param);
+                void init(SendParams sendParams);
                 void uninit();
+                SendParams* getSendParams();
+
+
                 void enableIROut(uint32_t freq = 38, uint8_t duty = 50);
                 uint32_t calcUSecPeriod(uint32_t hz, bool use_offset = true);                       
                 virtual void _delayMicroseconds(uint32_t usec);
@@ -68,8 +73,9 @@ namespace rfir {
                 virtual void ledOff();
                 virtual void ledOn();                
                 int8_t calibrate(uint16_t hz = 38000U);
+
                 void sendRaw(const uint16_t buf[], const uint16_t len, const uint16_t hz = 38);
-                void sendRaw(const char* data);
+                void sendRaw(const char* data, const int size);
                 void sendData(uint16_t onemark, uint32_t onespace, uint16_t zeromark,
                                 uint32_t zerospace, uint64_t data, uint16_t nbits,
                                 bool MSBfirst = true);
@@ -102,8 +108,7 @@ namespace rfir {
                 void sendGeneric(const uint8_t *dataptr, const uint16_t nbytes);
                 void sendGeneric(const uint64_t data, const uint16_t nbits);                   
             public:
-                static bool parseParams(neb::CJsonObject* jp, rfir::module::ttl::Sender::Params* p);
-
+                static std::string packSniffedCmd(Sender* sender, const uint16_t* data, const uint16_t len);
             };
         }
     }

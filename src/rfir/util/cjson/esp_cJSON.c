@@ -30,7 +30,7 @@
 #include <float.h>
 #include <limits.h>
 #include <ctype.h>
-#include "cJSON.h"
+#include "esp_cJSON.h"
 
 #ifndef INT_MAX
 #define INT_MAX 2147483647
@@ -41,13 +41,13 @@
 /* remove global variable for thread safe. --by Bwar on 2020-11-15
 static const char *ep;
 
-const char *cJSON_GetErrorPtr()
+const char *esp_cJSON_GetErrorPtr()
 {
     return ep;
 }
 */
 
-static int cJSON_strcasecmp(const char *s1, const char *s2)
+static int esp_cJSON_strcasecmp(const char *s1, const char *s2)
 {
     if (!s1)
         return (s1 == s2) ? 0 : 1;
@@ -60,57 +60,57 @@ static int cJSON_strcasecmp(const char *s1, const char *s2)
                     - tolower(*(const unsigned char *)s2);
 }
 
-static void *(*cJSON_malloc)(size_t sz) = malloc;
-static void (*cJSON_free)(void *ptr) = free;
+static void *(*esp_cJSON_malloc)(size_t sz) = malloc;
+static void (*esp_cJSON_free)(void *ptr) = free;
 
-static char* cJSON_strdup(const char* str)
+static char* esp_cJSON_strdup(const char* str)
 {
     size_t len;
     char* copy;
 
     len = strlen(str) + 1;
-    if (!(copy = (char*) cJSON_malloc(len)))
+    if (!(copy = (char*) esp_cJSON_malloc(len)))
         return 0;
     memcpy(copy, str, len);
     return copy;
 }
 
-void cJSON_InitHooks(cJSON_Hooks* hooks)
+void esp_cJSON_InitHooks(esp_cJSON_Hooks* hooks)
 {
     if (!hooks)
     { /* Reset hooks */
-        cJSON_malloc = malloc;
-        cJSON_free = free;
+        esp_cJSON_malloc = malloc;
+        esp_cJSON_free = free;
         return;
     }
 
-    cJSON_malloc = (hooks->malloc_fn) ? hooks->malloc_fn : malloc;
-    cJSON_free = (hooks->free_fn) ? hooks->free_fn : free;
+    esp_cJSON_malloc = (hooks->malloc_fn) ? hooks->malloc_fn : malloc;
+    esp_cJSON_free = (hooks->free_fn) ? hooks->free_fn : free;
 }
 
 /* Internal constructor. */
-static cJSON *cJSON_New_Item()
+static cJSON *esp_cJSON_New_Item()
 {
-    cJSON* node = (cJSON*) cJSON_malloc(sizeof(cJSON));
+    cJSON* node = (cJSON*) esp_cJSON_malloc(sizeof(cJSON));
     if (node)
         memset(node, 0, sizeof(cJSON));
     return node;
 }
 
 /* Delete a cJSON structure. */
-void cJSON_Delete(cJSON *c)
+void esp_cJSON_Delete(cJSON *c)
 {
     cJSON *next;
     while (c)
     {
         next = c->next;
-        if (!(c->type & cJSON_IsReference) && c->child)
-            cJSON_Delete(c->child);
-        if (!(c->type & cJSON_IsReference) && c->valuestring)
-            cJSON_free(c->valuestring);
+        if (!(c->type & esp_cJSON_IsReference) && c->child)
+            esp_cJSON_Delete(c->child);
+        if (!(c->type & esp_cJSON_IsReference) && c->valuestring)
+            esp_cJSON_free(c->valuestring);
         if (c->string)
-            cJSON_free(c->string);
-        cJSON_free(c);
+            esp_cJSON_free(c->string);
+        esp_cJSON_free(c);
         c = next;
     }
 }
@@ -153,14 +153,14 @@ static const char *parse_number(cJSON *item, const char *num)
     {
         item->valuedouble = (double)(item->sign * n);
         item->valueint = item->sign * (int64)n;
-        item->type = cJSON_Int;
+        item->type = esp_cJSON_Int;
     }
     else
     {
         n = item->sign * n * pow(10.0, (scale + subscale * signsubscale)); /* number = +/- number.fraction * 10^+/- exponent */
         item->valuedouble = (double)n;
         item->valueint = (int64)n;
-        item->type = cJSON_Double;
+        item->type = esp_cJSON_Double;
     }
     return num;
 }
@@ -170,7 +170,7 @@ static char *print_double(cJSON *item)
 {
     char *str;
     double d = item->valuedouble;
-    str = (char*) cJSON_malloc(64); /* This is a nice tradeoff. */
+    str = (char*) esp_cJSON_malloc(64); /* This is a nice tradeoff. */
     if (str)
     {
         if (fabs(d) < 1.0e-6 || fabs(d) > 1.0e9)
@@ -184,7 +184,7 @@ static char *print_double(cJSON *item)
 static char *print_int(cJSON *item)
 {
     char *str;
-    str = (char*) cJSON_malloc(22); /* 2^64+1 can be represented in 21 chars. */
+    str = (char*) esp_cJSON_malloc(22); /* 2^64+1 can be represented in 21 chars. */
     if (str)
     {
         if (item->sign == -1)
@@ -233,7 +233,7 @@ static const char *parse_string(cJSON *item, const char *str, const char **ep)
         if (*ptr++ == '\\')
             ptr++; /* Skip escaped quotes. */
 
-    out = (char*) cJSON_malloc(len + 1); /* This is how long we need for the string, roughly. */
+    out = (char*) esp_cJSON_malloc(len + 1); /* This is how long we need for the string, roughly. */
     if (!out)
         return 0;
 
@@ -317,7 +317,7 @@ static const char *parse_string(cJSON *item, const char *str, const char **ep)
     if (*ptr == '\"')
         ptr++;
     item->valuestring = out;
-    item->type = cJSON_String;
+    item->type = esp_cJSON_String;
     return ptr;
 }
 
@@ -330,7 +330,7 @@ static char *print_string_ptr(const char *str)
     unsigned char token;
 
     if (!str)
-        return cJSON_strdup("");
+        return esp_cJSON_strdup("");
     ptr = str;
     while ((token = *ptr) && ++len)
     {
@@ -341,7 +341,7 @@ static char *print_string_ptr(const char *str)
         ptr++;
     }
 
-    out = (char*) cJSON_malloc(len + 3);
+    out = (char*) esp_cJSON_malloc(len + 3);
     if (!out)
         return 0;
 
@@ -412,27 +412,27 @@ static const char *skip(const char *in)
 }
 
 /* Parse an object - create a new root, and populate. */
-cJSON *cJSON_Parse(const char *value, const char **ep)
+cJSON *esp_cJSON_Parse(const char *value, const char **ep)
 {
-    cJSON *c = cJSON_New_Item();
+    cJSON *c = esp_cJSON_New_Item();
     *ep = 0;
     if (!c)
         return 0; /* memory fail */
 
     if (!parse_value(c, skip(value), ep))
     {
-        cJSON_Delete(c);
+        esp_cJSON_Delete(c);
         return 0;
     }
     return c;
 }
 
 /* Render a cJSON item/entity/structure to text. */
-char *cJSON_Print(cJSON *item)
+char *esp_cJSON_Print(cJSON *item)
 {
     return print_value(item, 0, 1);
 }
-char *cJSON_PrintUnformatted(cJSON *item)
+char *esp_cJSON_PrintUnformatted(cJSON *item)
 {
     return print_value(item, 0, 0);
 }
@@ -444,17 +444,17 @@ static const char *parse_value(cJSON *item, const char *value, const char **ep)
         return 0; /* Fail on null. */
     if (!strncmp(value, "null", 4))
     {
-        item->type = cJSON_NULL;
+        item->type = esp_cJSON_NULL;
         return value + 4;
     }
     if (!strncmp(value, "false", 5))
     {
-        item->type = cJSON_False;
+        item->type = esp_cJSON_False;
         return value + 5;
     }
     if (!strncmp(value, "true", 4))
     {
-        item->type = cJSON_True;
+        item->type = esp_cJSON_True;
         item->valueint = 1;
         return value + 4;
     }
@@ -487,28 +487,28 @@ static char *print_value(cJSON *item, int depth, int fmt)
         return 0;
     switch ((item->type) & 255)
     {
-    case cJSON_NULL:
-        out = cJSON_strdup("null");
+    case esp_cJSON_NULL:
+        out = esp_cJSON_strdup("null");
         break;
-    case cJSON_False:
-        out = cJSON_strdup("false");
+    case esp_cJSON_False:
+        out = esp_cJSON_strdup("false");
         break;
-    case cJSON_True:
-        out = cJSON_strdup("true");
+    case esp_cJSON_True:
+        out = esp_cJSON_strdup("true");
         break;
-    case cJSON_Int:
+    case esp_cJSON_Int:
         out = print_int(item);
         break;
-    case cJSON_Double:
+    case esp_cJSON_Double:
         out = print_double(item);
         break;
-    case cJSON_String:
+    case esp_cJSON_String:
         out = print_string(item);
         break;
-    case cJSON_Array:
+    case esp_cJSON_Array:
         out = print_array(item, depth, fmt);
         break;
-    case cJSON_Object:
+    case esp_cJSON_Object:
         out = print_object(item, depth, fmt);
         break;
     }
@@ -525,12 +525,12 @@ static const char *parse_array(cJSON *item, const char *value, const char **ep)
         return 0;
     } /* not an array! */
 
-    item->type = cJSON_Array;
+    item->type = esp_cJSON_Array;
     value = skip(value + 1);
     if (*value == ']')
         return value + 1; /* empty array. */
 
-    item->child = child = cJSON_New_Item();
+    item->child = child = esp_cJSON_New_Item();
     if (!item->child)
         return 0; /* memory fail */
     value = skip(parse_value(child, skip(value), ep)); /* skip any spacing, get the value. */
@@ -540,7 +540,7 @@ static const char *parse_array(cJSON *item, const char *value, const char **ep)
     while (*value == ',')
     {
         cJSON *new_item;
-        if (!(new_item = cJSON_New_Item()))
+        if (!(new_item = esp_cJSON_New_Item()))
             return 0; /* memory fail */
         child->next = new_item;
         new_item->prev = child;
@@ -569,7 +569,7 @@ static char *print_array(cJSON *item, int depth, int fmt)
     while (child)
         numentries++, child = child->next;
     /* Allocate an array to hold the values for each */
-    entries = (char**) cJSON_malloc(numentries * sizeof(char*));
+    entries = (char**) esp_cJSON_malloc(numentries * sizeof(char*));
     if (!entries)
         return 0;
     memset(entries, 0, numentries * sizeof(char*));
@@ -588,7 +588,7 @@ static char *print_array(cJSON *item, int depth, int fmt)
 
     /* If we didn't fail, try to malloc the output string */
     if (!fail)
-        out = (char*) cJSON_malloc(len);
+        out = (char*) esp_cJSON_malloc(len);
     /* If that fails, we fail. */
     if (!out)
         fail = 1;
@@ -598,8 +598,8 @@ static char *print_array(cJSON *item, int depth, int fmt)
     {
         for (i = 0; i < numentries; i++)
             if (entries[i])
-                cJSON_free(entries[i]);
-        cJSON_free(entries);
+                esp_cJSON_free(entries[i]);
+        esp_cJSON_free(entries);
         return 0;
     }
 
@@ -618,9 +618,9 @@ static char *print_array(cJSON *item, int depth, int fmt)
                 *ptr++ = ' ';
             *ptr = 0;
         }
-        cJSON_free(entries[i]);
+        esp_cJSON_free(entries[i]);
     }
-    cJSON_free(entries);
+    esp_cJSON_free(entries);
     *ptr++ = ']';
     *ptr++ = 0;
     return out;
@@ -636,12 +636,12 @@ static const char *parse_object(cJSON *item, const char *value, const char **ep)
         return 0;
     } /* not an object! */
 
-    item->type = cJSON_Object;
+    item->type = esp_cJSON_Object;
     value = skip(value + 1);
     if (*value == '}')
         return value + 1; /* empty array. */
 
-    item->child = child = cJSON_New_Item();
+    item->child = child = esp_cJSON_New_Item();
     if (!item->child)
         return 0;
     value = skip(parse_string(child, skip(value), ep));
@@ -661,7 +661,7 @@ static const char *parse_object(cJSON *item, const char *value, const char **ep)
     while (*value == ',')
     {
         cJSON *new_item;
-        if (!(new_item = cJSON_New_Item()))
+        if (!(new_item = esp_cJSON_New_Item()))
             return 0; /* memory fail */
         child->next = new_item;
         new_item->prev = child;
@@ -699,13 +699,13 @@ static char *print_object(cJSON *item, int depth, int fmt)
     while (child)
         numentries++, child = child->next;
     /* Allocate space for the names and the objects */
-    entries = (char**) cJSON_malloc(numentries * sizeof(char*));
+    entries = (char**) esp_cJSON_malloc(numentries * sizeof(char*));
     if (!entries)
         return 0;
-    names = (char**) cJSON_malloc(numentries * sizeof(char*));
+    names = (char**) esp_cJSON_malloc(numentries * sizeof(char*));
     if (!names)
     {
-        cJSON_free(entries);
+        esp_cJSON_free(entries);
         return 0;
     }
     memset(entries, 0, sizeof(char*) * numentries);
@@ -729,7 +729,7 @@ static char *print_object(cJSON *item, int depth, int fmt)
 
     /* Try to allocate the output string */
     if (!fail)
-        out = (char*) cJSON_malloc(len);
+        out = (char*) esp_cJSON_malloc(len);
     if (!out)
         fail = 1;
 
@@ -739,12 +739,12 @@ static char *print_object(cJSON *item, int depth, int fmt)
         for (i = 0; i < numentries; i++)
         {
             if (names[i])
-                cJSON_free(names[i]);
+                esp_cJSON_free(names[i]);
             if (entries[i])
-                cJSON_free(entries[i]);
+                esp_cJSON_free(entries[i]);
         }
-        cJSON_free(names);
-        cJSON_free(entries);
+        esp_cJSON_free(names);
+        esp_cJSON_free(entries);
         return 0;
     }
 
@@ -771,12 +771,12 @@ static char *print_object(cJSON *item, int depth, int fmt)
         if (fmt)
             *ptr++ = '\n';
         *ptr = 0;
-        cJSON_free(names[i]);
-        cJSON_free(entries[i]);
+        esp_cJSON_free(names[i]);
+        esp_cJSON_free(entries[i]);
     }
 
-    cJSON_free(names);
-    cJSON_free(entries);
+    esp_cJSON_free(names);
+    esp_cJSON_free(entries);
     if (fmt)
         for (i = 0; i < depth - 1; i++)
             *ptr++ = '\t';
@@ -786,7 +786,7 @@ static char *print_object(cJSON *item, int depth, int fmt)
 }
 
 /* Get Array size/item / object item. */
-int cJSON_GetArraySize(cJSON *array)
+int esp_cJSON_GetArraySize(cJSON *array)
 {
     cJSON *c = array->child;
     int i = 0;
@@ -794,17 +794,17 @@ int cJSON_GetArraySize(cJSON *array)
         i++, c = c->next;
     return i;
 }
-cJSON *cJSON_GetArrayItem(cJSON *array, int item)
+cJSON *esp_cJSON_GetArrayItem(cJSON *array, int item)
 {
     cJSON *c = array->child;
     while (c && item > 0)
         item--, c = c->next;
     return c;
 }
-cJSON *cJSON_GetObjectItem(cJSON *object, const char *string)
+cJSON *esp_cJSON_GetObjectItem(cJSON *object, const char *string)
 {
     cJSON *c = object->child;
-    while (c && cJSON_strcasecmp(c->string, string))
+    while (c && esp_cJSON_strcasecmp(c->string, string))
         c = c->next;
     return c;
 }
@@ -818,18 +818,18 @@ static void suffix_object(cJSON *prev, cJSON *item)
 /* Utility for handling references. */
 static cJSON *create_reference(cJSON *item)
 {
-    cJSON *ref = cJSON_New_Item();
+    cJSON *ref = esp_cJSON_New_Item();
     if (!ref)
         return 0;
     memcpy(ref, item, sizeof(cJSON));
     ref->string = 0;
-    ref->type |= cJSON_IsReference;
+    ref->type |= esp_cJSON_IsReference;
     ref->next = ref->prev = 0;
     return ref;
 }
 
 /* Add item to array/object. */
-void cJSON_AddItemToArray(cJSON *array, cJSON *item)
+void esp_cJSON_AddItemToArray(cJSON *array, cJSON *item)
 {
     cJSON *c = array->child;
     if (!item)
@@ -846,7 +846,7 @@ void cJSON_AddItemToArray(cJSON *array, cJSON *item)
     }
 }
 
-void cJSON_AddItemToArrayHead(cJSON *array, cJSON *item)
+void esp_cJSON_AddItemToArrayHead(cJSON *array, cJSON *item)
 {
     cJSON *c = array->child;
     if (!item)
@@ -864,26 +864,26 @@ void cJSON_AddItemToArrayHead(cJSON *array, cJSON *item)
     }
 }
 
-void cJSON_AddItemToObject(cJSON *object, const char *string, cJSON *item)
+void esp_cJSON_AddItemToObject(cJSON *object, const char *string, cJSON *item)
 {
     if (!item)
         return;
     if (item->string)
-        cJSON_free(item->string);
-    item->string = cJSON_strdup(string);
-    cJSON_AddItemToArray(object, item);
+        esp_cJSON_free(item->string);
+    item->string = esp_cJSON_strdup(string);
+    esp_cJSON_AddItemToArray(object, item);
 }
-void cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item)
+void esp_cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item)
 {
-    cJSON_AddItemToArray(array, create_reference(item));
+    esp_cJSON_AddItemToArray(array, create_reference(item));
 }
-void cJSON_AddItemReferenceToObject(cJSON *object, const char *string,
+void esp_cJSON_AddItemReferenceToObject(cJSON *object, const char *string,
                 cJSON *item)
 {
-    cJSON_AddItemToObject(object, string, create_reference(item));
+    esp_cJSON_AddItemToObject(object, string, create_reference(item));
 }
 
-cJSON *cJSON_DetachItemFromArray(cJSON *array, int which)
+cJSON *esp_cJSON_DetachItemFromArray(cJSON *array, int which)
 {
     cJSON *c = array->child;
     while (c && which > 0)
@@ -899,27 +899,27 @@ cJSON *cJSON_DetachItemFromArray(cJSON *array, int which)
     c->prev = c->next = 0;
     return c;
 }
-void cJSON_DeleteItemFromArray(cJSON *array, int which)
+void esp_cJSON_DeleteItemFromArray(cJSON *array, int which)
 {
-    cJSON_Delete(cJSON_DetachItemFromArray(array, which));
+    esp_cJSON_Delete(esp_cJSON_DetachItemFromArray(array, which));
 }
-cJSON *cJSON_DetachItemFromObject(cJSON *object, const char *string)
+cJSON *esp_cJSON_DetachItemFromObject(cJSON *object, const char *string)
 {
     int i = 0;
     cJSON *c = object->child;
-    while (c && cJSON_strcasecmp(c->string, string))
+    while (c && esp_cJSON_strcasecmp(c->string, string))
         i++, c = c->next;
     if (c)
-        return cJSON_DetachItemFromArray(object, i);
+        return esp_cJSON_DetachItemFromArray(object, i);
     return 0;
 }
-void cJSON_DeleteItemFromObject(cJSON *object, const char *string)
+void esp_cJSON_DeleteItemFromObject(cJSON *object, const char *string)
 {
-    cJSON_Delete(cJSON_DetachItemFromObject(object, string));
+    esp_cJSON_Delete(esp_cJSON_DetachItemFromObject(object, string));
 }
 
 /* Replace array/object items with new ones. */
-void cJSON_ReplaceItemInArray(cJSON *array, int which, cJSON *newitem)
+void esp_cJSON_ReplaceItemInArray(cJSON *array, int which, cJSON *newitem)
 {
     cJSON *c = array->child;
     while (c && which > 0)
@@ -935,108 +935,108 @@ void cJSON_ReplaceItemInArray(cJSON *array, int which, cJSON *newitem)
     else
         newitem->prev->next = newitem;
     c->next = c->prev = 0;
-    cJSON_Delete(c);
+    esp_cJSON_Delete(c);
 }
-void cJSON_ReplaceItemInObject(cJSON *object, const char *string,
+void esp_cJSON_ReplaceItemInObject(cJSON *object, const char *string,
                 cJSON *newitem)
 {
     int i = 0;
     cJSON *c = object->child;
-    while (c && cJSON_strcasecmp(c->string, string))
+    while (c && esp_cJSON_strcasecmp(c->string, string))
         i++, c = c->next;
     if (c)
     {
-        newitem->string = cJSON_strdup(string);
-        cJSON_ReplaceItemInArray(object, i, newitem);
+        newitem->string = esp_cJSON_strdup(string);
+        esp_cJSON_ReplaceItemInArray(object, i, newitem);
     }
 }
 
 /* Create basic types: */
-cJSON *cJSON_CreateNull()
+cJSON *esp_cJSON_CreateNull()
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
-        item->type = cJSON_NULL;
+        item->type = esp_cJSON_NULL;
     return item;
 }
-cJSON *cJSON_CreateTrue()
+cJSON *esp_cJSON_CreateTrue()
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
-        item->type = cJSON_True;
+        item->type = esp_cJSON_True;
     return item;
 }
-cJSON *cJSON_CreateFalse()
+cJSON *esp_cJSON_CreateFalse()
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
-        item->type = cJSON_False;
+        item->type = esp_cJSON_False;
     return item;
 }
-cJSON *cJSON_CreateBool(int b)
+cJSON *esp_cJSON_CreateBool(int b)
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
-        item->type = b ? cJSON_True : cJSON_False;
+        item->type = b ? esp_cJSON_True : esp_cJSON_False;
     return item;
 }
-cJSON *cJSON_CreateDouble(double num, int sign)
+cJSON *esp_cJSON_CreateDouble(double num, int sign)
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
     {
-        item->type = cJSON_Double;
+        item->type = esp_cJSON_Double;
         item->valuedouble = num;
         item->valueint = (int64)num;
         item->sign = sign;
     }
     return item;
 }
-cJSON *cJSON_CreateInt(uint64 num, int sign)
+cJSON *esp_cJSON_CreateInt(uint64 num, int sign)
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
     {
-        item->type = cJSON_Int;
+        item->type = esp_cJSON_Int;
         item->valuedouble = (double)num;
         item->valueint = (int64)num;
         item->sign = sign;
     }
     return item;
 }
-cJSON *cJSON_CreateString(const char *string)
+cJSON *esp_cJSON_CreateString(const char *string)
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
     {
-        item->type = cJSON_String;
-        item->valuestring = cJSON_strdup(string);
+        item->type = esp_cJSON_String;
+        item->valuestring = esp_cJSON_strdup(string);
     }
     return item;
 }
-cJSON *cJSON_CreateArray()
+cJSON *esp_cJSON_CreateArray()
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
-        item->type = cJSON_Array;
+        item->type = esp_cJSON_Array;
     return item;
 }
-cJSON *cJSON_CreateObject()
+cJSON *esp_cJSON_CreateObject()
 {
-    cJSON *item = cJSON_New_Item();
+    cJSON *item = esp_cJSON_New_Item();
     if (item)
-        item->type = cJSON_Object;
+        item->type = esp_cJSON_Object;
     return item;
 }
 
 /* Create Arrays: */
-cJSON *cJSON_CreateIntArray(int *numbers, int sign, int count)
+cJSON *esp_cJSON_CreateIntArray(int *numbers, int sign, int count)
 {
     int i;
-    cJSON *n = 0, *p = 0, *a = cJSON_CreateArray();
+    cJSON *n = 0, *p = 0, *a = esp_cJSON_CreateArray();
     for (i = 0; a && i < count; i++)
     {
-        n = cJSON_CreateDouble((long double)((unsigned int)numbers[i]), sign);
+        n = esp_cJSON_CreateDouble((long double)((unsigned int)numbers[i]), sign);
         if (!i)
             a->child = n;
         else
@@ -1045,13 +1045,13 @@ cJSON *cJSON_CreateIntArray(int *numbers, int sign, int count)
     }
     return a;
 }
-cJSON *cJSON_CreateFloatArray(float *numbers, int count)
+cJSON *esp_cJSON_CreateFloatArray(float *numbers, int count)
 {
     int i;
-    cJSON *n = 0, *p = 0, *a = cJSON_CreateArray();
+    cJSON *n = 0, *p = 0, *a = esp_cJSON_CreateArray();
     for (i = 0; a && i < count; i++)
     {
-        n = cJSON_CreateDouble((long double)numbers[i], -1);
+        n = esp_cJSON_CreateDouble((long double)numbers[i], -1);
         if (!i)
             a->child = n;
         else
@@ -1060,13 +1060,13 @@ cJSON *cJSON_CreateFloatArray(float *numbers, int count)
     }
     return a;
 }
-cJSON *cJSON_CreateDoubleArray(double *numbers, int count)
+cJSON *esp_cJSON_CreateDoubleArray(double *numbers, int count)
 {
     int i;
-    cJSON *n = 0, *p = 0, *a = cJSON_CreateArray();
+    cJSON *n = 0, *p = 0, *a = esp_cJSON_CreateArray();
     for (i = 0; a && i < count; i++)
     {
-        n = cJSON_CreateDouble((long double)numbers[i], -1);
+        n = esp_cJSON_CreateDouble((long double)numbers[i], -1);
         if (!i)
             a->child = n;
         else
@@ -1075,13 +1075,13 @@ cJSON *cJSON_CreateDoubleArray(double *numbers, int count)
     }
     return a;
 }
-cJSON *cJSON_CreateStringArray(const char **strings, int count)
+cJSON *esp_cJSON_CreateStringArray(const char **strings, int count)
 {
     int i;
-    cJSON *n = 0, *p = 0, *a = cJSON_CreateArray();
+    cJSON *n = 0, *p = 0, *a = esp_cJSON_CreateArray();
     for (i = 0; a && i < count; i++)
     {
-        n = cJSON_CreateString(strings[i]);
+        n = esp_cJSON_CreateString(strings[i]);
         if (!i)
             a->child = n;
         else

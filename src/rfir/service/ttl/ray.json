@@ -91,7 +91,7 @@
     "pld": {
         "sniff": {
             "params": {
-                "pin": 22,
+                "pin": 5,
                 "mode": 5,
                 "inverted": false,
                 "minCount": 50, 

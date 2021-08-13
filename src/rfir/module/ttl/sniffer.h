@@ -6,7 +6,7 @@
 #define __RFIR_MODULE_GPIO_TTL_SNIFFER_H__
 
 #include "rfir/util/platform.h"
-#include "gpio.hpp"
+#include "gpio.h"
 
 namespace rfir {
     namespace module {
@@ -22,6 +22,7 @@ namespace rfir {
                 uint16_t delta;
             };            
 
+            class RFIR;
             class Sniffer {
             public:
                 Delta* sniffedDelta = 0;
@@ -44,33 +45,44 @@ namespace rfir {
                 typedef std::function<void(Sniffer* sniffer, Delta* data, int count)> OnSniffed;  
 
                 struct Params {
-                    uint8_t     pin = 22;
+                    uint8_t     pin = 0;
                     uint8_t     mode = INPUT_PULLUP;
                     bool        inverted = false;
                     uint16_t    minCount = 50;
                     uint32_t    minDelta = 150;
                     uint32_t    maxDelta = 15000;
-                    uint32_t    bufSize = 4 * 1024;
-                    std::string   toString();
+                    uint32_t    bufSize = 1024;
+                    std::string toString();
+                    bool        parseFromJson(neb::CJsonObject* jp);  
                 };
 
                 struct SniffParams {
                     Params params;
+                    bool   response = 0;
+                    std::string toString();
+                    bool   parseFromJson(neb::CJsonObject* jp); 
+                    bool   clone(SniffParams* p);
                 };
 
-
+            private:
+                SniffParams sniffParams;
             public:
-                Params      params;
+                std::string name;
+                RFIR*       rfir = 0;                
                 Gpio        gpio;
                 OnSniffed   onSniffed = 0;
 
             public:
-                Sniffer();
-                Sniffer(Params params);
+                Sniffer(RFIR* rfir = 0);
+                Sniffer(RFIR* rfir, SniffParams params);
                 ~Sniffer();
 
-                void init(Params params);
-                void uninit();
+                void init(SniffParams params);
+                void uninit();                
+                void start();
+                void stop();
+                bool started();
+                SniffParams* getSniffParams();
 
                 
                 uint32_t pushTTL(bool ttl);
@@ -86,13 +98,14 @@ namespace rfir {
                 void     resumeSniff();
                 void     stopSniff();
                 void     resetSniff();
-                int      getBufSize() {return this->params.bufSize;};
-                Delta*   getSniffedDelta() {return this->sniffedDelta;};
-                int      getSniffedCount() {return (int)(this->sniffedCount);};
+                int      getBufSize();
+                Delta*   getSniffedDelta();
+                int      getSniffedCount();
                 String   toString();
+
             public:
-                static bool parseParams(neb::CJsonObject* jp, rfir::module::ttl::Sniffer::Params* p);
-                static std::string packSniffedCmd(Params* params, const char* data);
+                static void       onGpioChange(Gpio* gpio, int value);
+                static std::string packSniffedCmd(Sniffer* sniffer, const char* data);
             };
         }
     }

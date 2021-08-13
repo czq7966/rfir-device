@@ -11,6 +11,7 @@
 namespace rfir {
     namespace module {
         namespace ttl {
+            class RFIR;
             class Decoder {
             public:                
 
@@ -26,14 +27,16 @@ namespace rfir {
                     uint16_t nbits = 0;
                     std::string  toBitString();
                     std::string  toHexString();
+                    void         free();
                 };
 
                 struct DecodeResults {
                     DecodeResult* result = 0;
                     int           count = 0;
+                    void         free();
                 };                
 
-                typedef std::function<void(Decoder* decoder, DecodeResults* data, String msg)> OnDecoded;  
+                typedef std::function<void(Decoder* decoder, DecodeResults* data)> OnDecoded;  
 
                 struct Params {
                     bool     use_bits = false;
@@ -51,35 +54,38 @@ namespace rfir {
                     bool     atleast = true;                              
                     bool     MSBfirst = true;
                     uint8_t  step = 2;
-                    std::string   toString();
+                    uint16_t lastspace = 0;
+                    std::string     toString();
+                    bool            parseFromJson(neb::CJsonObject* jp);  
                 };   
 
                 struct DecodeParams {
                     Params* params = 0;
                     int     count = 0;
+                    bool    response = 1;
+                    bool    parseFromJson(neb::CJsonObject* jp);
+                    void    free();
+                    bool    clone(DecodeParams* p);
                 };
 
 
             private:
-                String          name;
-                Params          params;
                 DecodeParams    decodeParams;
                 DecodeResults   decodeResults;
                 neb::CJsonObject jDecode;
-            public:
-                Decoder();
-                ~Decoder();
-                OnDecoded onDecoded = 0;
-            public:
-                void   setParams(Params params) {this->params = params;};
-                Params getParams(){return params;};
 
-                void    setDecodeParams(DecodeParams* params, String name = "");
+                int     _decode(uint16_t* data, int size);
+            public:
+                Decoder(RFIR* rfir = 0);
+                ~Decoder();
+
+                std::string name;
+                RFIR*       rfir = 0;
+                OnDecoded   onDecoded = 0;
+                
+            public:
                 DecodeParams* getDecodeParams();
                 int     getDecodeParamsCount();
-
-                void    setJDecode(neb::CJsonObject* jdecode);
-                neb::CJsonObject*    getJDecode();
 
                 void    initDecodeResults();
                 void    uninitDecodeResults();
@@ -87,7 +93,8 @@ namespace rfir {
                 int     getDecodeResultsCount();
                 DecodeResults* getDecodeResults();
 
-                int     decode(uint16_t*, int size);
+                int     decode(uint16_t* data, int size, int maxTimes = INT_MAX);
+                int     decode();
                 String  toString();
             public:
                 bool     match(uint32_t measured, uint32_t desired, uint8_t tolerance, uint16_t delta = 0);
@@ -119,7 +126,8 @@ namespace rfir {
                                         const int16_t excess,
                                         const bool atleast = false,                                        
                                         const bool MSBfirst = true,
-                                        const uint8_t step = 2);       
+                                        const uint8_t step = 2,
+                                        const uint16_t lastspace = 0);       
                 match_result_t matchData(volatile uint16_t *data_ptr, const uint16_t nbits,
                                         const uint16_t onemark, const uint32_t onespace,
                                         const uint16_t zeromark, const uint32_t zerospace,
@@ -135,7 +143,7 @@ namespace rfir {
                                         const int16_t excess,
                                         const bool MSBfirst = true,
                                         const bool expectlastspace = true,
-                                        const uint8_t step = 2);                                          
+                                        const uint8_t step = 2);
                 uint16_t matchBytes(volatile uint16_t *data_ptr, uint8_t *result_ptr,
                                     const uint16_t remaining, const uint16_t nbytes,
                                     const uint16_t onemark, const uint32_t onespace,
@@ -144,8 +152,7 @@ namespace rfir {
                                     const int16_t excess,
                                     const bool MSBfirst = true,
                                     const bool expectlastspace = true,
-                                    const uint8_t step = 2);     
-
+                                    const uint8_t step = 2);
                 uint16_t matchGeneric(volatile uint16_t *data_ptr,
                                         uint64_t *result_ptr,
                                         const uint16_t remaining, const uint16_t nbits,
@@ -157,7 +164,8 @@ namespace rfir {
                                         const uint8_t tolerance,
                                         const int16_t excess,
                                         const bool MSBfirst,
-                                        const uint8_t step);
+                                        const uint8_t step,
+                                        const uint16_t lastspace);
                 uint16_t matchGeneric(volatile uint16_t *data_ptr, uint8_t *result_ptr,
                                         const uint16_t remaining, const uint16_t nbits,
                                         const uint16_t hdrmark, const uint32_t hdrspace,
@@ -169,13 +177,13 @@ namespace rfir {
                                         const uint8_t tolerance,
                                         const int16_t excess,
                                         const bool MSBfirst,
-                                        const uint8_t step);
+                                        const uint8_t step,
+                                        const uint16_t lastspace);
                 uint16_t matchGeneric(volatile uint16_t *data_ptr, uint64_t *result_bits_ptr, uint8_t *result_ptr,
                                         const uint16_t remaining, const Params params);
             public:
                 
-                static bool parseParams(neb::CJsonObject* jp, rfir::module::ttl::Decoder::Params* p);   
-                static std::string packDecodedCmd(Decoder* decoder, DecodeResults* data, String name);
+                static std::string packDecodedCmd(Decoder* decoder, DecodeResults* data);
             };
         }
     }

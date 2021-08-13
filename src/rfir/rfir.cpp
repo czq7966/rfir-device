@@ -1,26 +1,113 @@
 #include "rfir.h"
 #include "util/file.h"
+#include "rfir/service/serial/receiver.h"
+#include "rfir/service/serial/sender.h"
 
+std::map<std::string, rfir::RFIR*>* rfir::RFIR::RfirMap = new std::map<std::string, rfir::RFIR*>();
 
-void rfir::RFIR::start(const char* fn, 
-                        rfir::module::ttl::Sniffer::OnSniffed onSniffed, 
-                        rfir::module::ttl::Decoder::OnDecoded onDecoded,
-                        rfir::module::ttl::Encoder::OnEncoded onEncoded) {
-    if (!SPIFFS.begin())
-        Serial.println("error::SPIFFS文件系统挂载失败！");
+std::string rfir::RFIR::ConfigFile = "/rfir-config.json";
+rfir::module::ttl::Config* rfir::RFIR::Config = new rfir::module::ttl::Config();
+std::function<void(void *)> rfir::RFIR::OnStart = 0;
+rfir::module::ttl::Sniffer::OnSniffed rfir::RFIR::OnSniffed = 0;
+rfir::module::ttl::Decoder::OnDecoded rfir::RFIR::OnDecoded = 0;
+rfir::module::ttl::Encoder::OnEncoded rfir::RFIR::OnEncoded = 0;
+rfir::module::ttl::Sender::OnSended rfir::RFIR::OnSended = 0;
 
-    if (fn)
-        rfir::module::ttl::Config::ConfigFilename = fn;
+rfir::RFIR* rfir::RFIR::Get(std::string name) {
+    auto rfir = (*RfirMap)[name];
+    if (!rfir) {
+        rfir = new RFIR();
+        (*RfirMap)[name] = rfir;
+    }
 
-    if (rfir::service::ttl::Config::ttlconfig->init())
-        Serial.println("配置初始化成功");
-    rfir::service::ttl::Sniffer::ttlsniffer->onSniffed = onSniffed;
-    rfir::service::ttl::Decoder::ttldecoder->onDecoded = onDecoded;
-    rfir::service::ttl::Encoder::ttlencoder->onEncoded = onEncoded;
-
+    return rfir;
 }
-void rfir::RFIR::loop() {
-  rfir::service::serial::Receiver::dealCmd();
-  rfir::service::ttl::Decoder::decode();
-  rfir::service::serial::Sender::dealCmd();
+
+void rfir::RFIR::Loop() {
+    rfir::service::serial::Receiver::dealCmd();
+    for (auto it = RfirMap->begin(); it != RfirMap->end(); it++)
+    {        
+        it->second->loop();
+    }
+    rfir::service::serial::Sender::dealCmd();
 }
+
+bool rfir::RFIR::RefreshConfig() {
+    rfir::RFIR::Config->init(rfir::RFIR::ConfigFile);
+    for (auto it = RfirMap->begin(); it != RfirMap->end(); it++)
+    {   
+        auto Rfir = it->second;
+        
+        for (auto it1 = Rfir->rfirMap.begin(); it1 !=  Rfir->rfirMap.end(); it1++)
+        {   
+            auto rfir = it1->second;
+            rfir->config->init(rfir::RFIR::ConfigFile);
+        }        
+        
+    }
+}
+
+bool rfir::RFIR::RefreshConfig(const char* content) {
+    rfir::RFIR::Config->loadFromString(content);
+    for (auto it = RfirMap->begin(); it != RfirMap->end(); it++)
+    {    
+        auto Rfir = it->second;
+        
+        for (auto it1 = Rfir->rfirMap.begin(); it1 !=  Rfir->rfirMap.end(); it1++)
+        {   
+            auto rfir = it1->second;
+            rfir->config->loadFromString(content);
+        }        
+
+    }
+}
+
+void rfir::RFIR::StopSniff() {
+    for (auto it = RfirMap->begin(); it != RfirMap->end(); it++)
+    {  
+        auto Rfir = it->second;
+        
+        for (auto it1 = Rfir->rfirMap.begin(); it1 !=  Rfir->rfirMap.end(); it1++)
+        {   
+            auto rfir = it1->second;
+            rfir->sniffer->stop();
+        }  
+    }
+}
+
+void rfir::RFIR::Start() {
+    if (OnStart)
+        OnStart(0);
+}
+
+void rfir::RFIR::Stop() {
+    StopSniff();
+}
+
+void rfir::RFIR::loop() {        
+    for (auto it = rfirMap.begin(); it != rfirMap.end(); it++)
+    {   
+        auto rfir = it->second;
+        rfir->sniffer->start();
+        rfir->decoder->decode(); 
+    }    
+}
+
+rfir::module::ttl::RFIR* rfir::RFIR::getRfir(std::string name) {
+    auto Rfir = rfir::Get();
+    auto rfir = Rfir->rfirMap[name];
+    if (!rfir) {
+        rfir = new rfir::module::ttl::RFIR();
+        rfir->sniffer->onSniffed = rfir::RFIR::OnSniffed;
+        rfir->decoder->onDecoded = rfir::RFIR::OnDecoded;
+        rfir->encoder->onEncoded = rfir::RFIR::OnEncoded;
+        rfir->sender->onSended   = rfir::RFIR::OnSended;
+        //rfir->config->init(rfir::RFIR::ConfigFile);   
+        rfir->config->devices.clone(&rfir::RFIR::Config->devices);
+        Rfir->rfirMap[name] = rfir;         
+    }
+
+    return rfir;
+}
+
+

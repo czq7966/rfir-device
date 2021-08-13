@@ -4,15 +4,26 @@
 #include <stdint.h>
 #include "platform.h"
 
+
+// #ifndef FileFS
+// #define FileFS SPIFFS
+// #endif
+
 namespace rfir {
     namespace util {
-        class TxtFile {   
+        class File {
+        public:
+            static bool remove(const char* path);
+        };
+
+        class TxtFile: File {   
         private:
-            String fn;
+            std::string fn;
         public:
             TxtFile(const char * fn);
-            int  readString(String& txt);
-            int  writeString(String txt);
+            bool begin();
+            int  readString(std::string& txt);
+            int  writeString(std::string txt);
             int  writeString(const char* buf, uint32_t size);
         };
     }

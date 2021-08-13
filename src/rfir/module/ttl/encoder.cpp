@@ -1,21 +1,23 @@
-#include "encoder.h"
-#include "config.h"
+#include "rfir.h"
 #include <sys/time.h>
 #include "rfir/util/util.h"
 
-rfir::module::ttl::Encoder::Encoder() {
-
+rfir::module::ttl::Encoder::Encoder(RFIR* rfir) {
+  this->rfir = rfir;
 }
 
 rfir::module::ttl::Encoder::~Encoder() {  
-  setEncodeParams(0);
+  this->encodeParams.free();
+  this->encodeResult.free();
+  this->getEncodeParams()->free();
   uninitEncodeResult();
 }
 
 
 void rfir::module::ttl::Encoder::initEncodeResult() {
   uninitEncodeResult();
-  this->encodeResult.result = new uint16_t[1024*2];
+  int bufSize = this->rfir->sniffer->getSniffParams()->params.bufSize;
+  this->encodeResult.result = new uint16_t[bufSize];
   this->encodeResult.count = 0; 
 }
 
@@ -114,6 +116,9 @@ int  rfir::module::ttl::Encoder::encode(Params p, uint8_t* data, int nbits, uint
   if (p.footermark) result[offset++] = p.footermark;
   if (p.footerspace) result[offset++] = p.footerspace;  
 
+  if(!p.footermark && !p.footerspace && p.lastspace)
+    result[offset-1] = p.lastspace;
+
   return offset;
 
 }
@@ -124,7 +129,7 @@ int rfir::module::ttl::Encoder::encode(neb::CJsonObject* jblocks,  uint16_t* res
       int count = jblocks->GetArraySize();   
       for (size_t i = 0; i < count; i++)
       {
-          neb::CJsonObject bl;// = jblocks[i];
+          neb::CJsonObject bl;
           neb::CJsonObject jp;
           jblocks->Get(i, bl);
           std::string data;
@@ -133,11 +138,15 @@ int rfir::module::ttl::Encoder::encode(neb::CJsonObject* jblocks,  uint16_t* res
             if (i < this->getEncodeParamsCount())
               p = this->getEncodeParams()->params[i];
             
-            if (bl.Get("params", jp)) {                    
-              parseParams(&jp, &p);
+            if (bl.Get("params", jp)) {      
+              p.parseFromJson(&jp);
             }
 
-            uint8_t* dataBits = new uint8_t[256];
+            int bufSize = this->rfir->sniffer->getSniffParams()->params.bufSize;
+
+            int size = bufSize / 8 + 1;
+
+            uint8_t* dataBits = new uint8_t[size];
 
             int len = parseData(String(data.c_str()), dataBits, p.MSBfirst);
             offset += encode(p, dataBits, len, result + offset);
@@ -150,36 +159,19 @@ int rfir::module::ttl::Encoder::encode(neb::CJsonObject* jblocks,  uint16_t* res
   return offset;
 }
 
-int rfir::module::ttl::Encoder::encode(neb::CJsonObject* blocks) {
+int rfir::module::ttl::Encoder::encode(neb::CJsonObject* jblocks) {
+  rfir->encoder->getEncodeParams()->parseFromJson(jblocks);
   initEncodeResult();
-  this->getEncodeResult()->count = encode(blocks, this->getEncodeResult()->result);
+  this->getEncodeResult()->count = encode(jblocks, this->getEncodeResult()->result);
   if (this->onEncoded)
-    this->onEncoded(this, this->getEncodeResult(), this->name);
+    this->onEncoded(this, this->getEncodeResult());
   return this->getEncodeResultCount();
 }
 
-String  rfir::module::ttl::Encoder::toString() {
-    String result;
- 
-    return result;
-
+std::string  rfir::module::ttl::Encoder::toString() {
+  return this->getEncodeResult()->toString();
 }
 
-void  rfir::module::ttl::Encoder::setEncodeParams(EncodeParams* params, String name) {
-    delete this->encodeParams.params;
-    this->encodeParams.params = 0;
-    this->encodeParams.count = 0;
-    
-    this->name = name;
-    if (params) {
-      this->encodeParams.params = new Params[params->count];
-      this->encodeParams.count = params->count;
-      for (size_t i = 0; i < params->count; i++)
-      {
-        this->encodeParams.params[i] = params->params[i];
-      }      
-    }
-}
 
 rfir::module::ttl::Encoder::EncodeParams* rfir::module::ttl::Encoder::getEncodeParams() {
   return &(this->encodeParams);
@@ -189,50 +181,6 @@ int rfir::module::ttl::Encoder::getEncodeParamsCount() {
   return this->encodeParams.count;
 }
 
-void rfir::module::ttl::Encoder::setJEncode(neb::CJsonObject* jencode) {
-  rfir::module::ttl::Encoder::EncodeParams encode;
-  rfir::module::ttl::Config::initDeviceEncode(jencode, &encode);  
-  this->setEncodeParams(&encode);
-  rfir::module::ttl::Config::uninitDeviceEncode(&encode);  
-
-  this->jEncode = *jencode;
-}
-
-neb::CJsonObject* rfir::module::ttl::Encoder::getJEncode(neb::CJsonObject* jencode) {
-  return &this->jEncode;
-}
-
-bool rfir::module::ttl::Encoder::parseParams(neb::CJsonObject* jp, rfir::module::ttl::Encoder::Params* p) {
-    if (jp && p) {
-        int       nbits = 0;
-        int       headermark = 0;
-        int       headerspace = 0;
-        int       onemark = 0;
-        int       onespace = 0;
-        int       zeromark = 0;
-        int       zerospace = 0;
-        int       footermark = 0;
-        int       footerspace = 0;
-        int       step = 2;
-        int       MSBfirst = 1;
-
-        if (jp->Get("nbits", nbits))              p->nbits = nbits;
-        if (jp->Get("headermark", headermark))    p->headermark = headermark;
-        if (jp->Get("headerspace", headerspace))  p->headerspace = headerspace;
-        if (jp->Get("onemark", onemark))          p->onemark = onemark;
-        if (jp->Get("onespace", onespace))        p->onespace = onespace;
-        if (jp->Get("zeromark", zeromark))        p->zeromark = zeromark;    
-        if (jp->Get("zerospace", zerospace))      p->zerospace = zerospace;   
-        if (jp->Get("footermark", footermark))    p->footermark = footermark;
-        if (jp->Get("footerspace", footerspace))  p->footerspace = footerspace;
- 
-        if (jp->Get("MSBfirst", MSBfirst))        p->MSBfirst = MSBfirst;    
-        if (jp->Get("step", step))                p->step = step;   
-        return true;
-    }
-
-    return false;
-}
 
 int  rfir::module::ttl::Encoder::parseData(const char* data, int nbits, uint8_t* result, bool MSBFirst) {
     int offset = 0;
@@ -279,14 +227,10 @@ int  rfir::module::ttl::Encoder::parseData(String data, uint8_t* result, bool MS
     if (count > 2 && data[0] == '0' && data[1] == 'x') {
       for (size_t i = 2; i < count; i += 2)
       {
-        String p = "0x" + data[i];
-        int len = 4;        
-        if (i + 1 < count) {
-           p = p +  data[i + 1];
-           len = 8;
-        }
-
-        char* str;   
+        char* str;
+        String p = data.substring(i, i + 2);
+        int len = 4 * p.length();   
+       
         uint8_t byte = (uint8_t)strtol(p.c_str(), &str, 16);  
         //if (!MSBFirst) byte = rfir::util::Util::reverseBits(byte, len);
         result[(i - 2) / 2] = byte;
@@ -326,8 +270,9 @@ uint16_t*  rfir::module::ttl::Encoder::parseRaw(const char* data, int size, int&
   return result;
 }
 
-std::string rfir::module::ttl::Encoder::packEncodedCmd(Encoder* encoder, EncodeResult* data, String name) {
+std::string rfir::module::ttl::Encoder::packEncodedCmd(Encoder* encoder, EncodeResult* data) {
     neb::CJsonObject jp, hd, pld, encode, blocks, raw;
+    hd.Add("did", rfir::util::Util::GetChipId());
     hd.Add("cmd", 10);
     hd.Add("stp", 1);
     
@@ -342,6 +287,7 @@ std::string rfir::module::ttl::Encoder::packEncodedCmd(Encoder* encoder, EncodeR
     }
     encode.Add("blocks", blocks);
     encode.Add("raw", data->toString());
+    pld.Add("device", encoder->name);
     pld.Add("encode", encode);
 
     
@@ -365,6 +311,12 @@ std::string  rfir::module::ttl::Encoder::EncodeResult::toString() {
   return std::string(str.c_str());
 }
 
+void rfir::module::ttl::Encoder::EncodeResult::free() {
+  delete this->result;
+  this->result = 0;
+  this->count = 0;
+}
+
 std::string  rfir::module::ttl::Encoder::Params::toString() {
   neb::CJsonObject json;
   
@@ -379,6 +331,144 @@ std::string  rfir::module::ttl::Encoder::Params::toString() {
   json.Add("footerspace", footerspace);
   json.Add("MSBfirst", MSBfirst);  
   json.Add("step", step); 
+  json.Add("lastspace", lastspace);
   return json.ToString();
 
 }
+
+bool rfir::module::ttl::Encoder::Params::parseFromJson(neb::CJsonObject* jp) {
+    if (jp) {
+        int       nbits = 0;
+        int       headermark = 0;
+        int       headerspace = 0;
+        int       onemark = 0;
+        int       onespace = 0;
+        int       zeromark = 0;
+        int       zerospace = 0;
+        int       footermark = 0;
+        int       footerspace = 0;
+        int       step = 2;
+        int       lastspace = 0;
+        int       MSBfirst = 1;
+
+        if (jp->Get("nbits", nbits))              this->nbits = nbits;
+        if (jp->Get("headermark", headermark))    this->headermark = headermark;
+        if (jp->Get("headerspace", headerspace))  this->headerspace = headerspace;
+        if (jp->Get("onemark", onemark))          this->onemark = onemark;
+        if (jp->Get("onespace", onespace))        this->onespace = onespace;
+        if (jp->Get("zeromark", zeromark))        this->zeromark = zeromark;    
+        if (jp->Get("zerospace", zerospace))      this->zerospace = zerospace;   
+        if (jp->Get("footermark", footermark))    this->footermark = footermark;
+        if (jp->Get("footerspace", footerspace))  this->footerspace = footerspace;
+ 
+        if (jp->Get("MSBfirst", MSBfirst))        this->MSBfirst = MSBfirst;    
+        if (jp->Get("step", step))                this->step = step;   
+        if (jp->Get("lastspace", lastspace))      this->lastspace = lastspace;   
+        return true;
+    }
+
+    return false;
+}
+
+bool rfir::module::ttl::Encoder::Params::clone(Decoder::Params* p) {
+    if (p) {
+        this->nbits = p->nbits;
+        this->headermark = p->headermark;
+        this->headerspace = p->headerspace;
+        this->onemark = p->onemark;
+        this->onespace = p->onespace;
+        this->zeromark = p->zeromark;    
+        this->zerospace = p->zerospace;   
+        this->footermark = p->footermark;
+        this->footerspace = p->footerspace;
+ 
+        this->MSBfirst = p->MSBfirst;    
+        this->step = p->step;   
+        this->lastspace = p->lastspace;   
+        return true;
+    }
+    return false;
+}
+
+bool rfir::module::ttl::Encoder::EncodeParams::parseFromJson(neb::CJsonObject* jencode) {
+  neb::CJsonObject* jblocks = 0;
+  neb::CJsonObject  blocks;
+  int response = 0;
+  if (jencode && jencode->Get("response", response)) {    
+      this->response = response;     
+  }
+
+  if (jencode) {
+    if (jencode->IsArray())
+      jblocks = jencode;
+    else {
+      if (jencode->Get("blocks", blocks))
+        jblocks = &blocks;
+    }
+  }
+
+  if (jblocks && jblocks->IsArray()) {
+    int count = jblocks->GetArraySize();  
+    if (count > 0) {  
+      if (this->count != count) {
+        this->free();    
+        this->params = new Params[count];
+        this->count = count;
+      }
+      
+      for (size_t i = 0; i < count; i++)
+      {
+        neb::CJsonObject bl;
+        neb::CJsonObject jp;
+        jblocks->Get(i, bl);
+        if (bl.Get("params", jp))
+          (this->params + i)->parseFromJson(&jp);
+      }
+    }
+    return true;    
+  }
+  Serial.println("EncodeParams->parseFromJson: Failed");
+  return false;
+}
+
+void rfir::module::ttl::Encoder::EncodeParams::free() {
+  delete this->params;
+  this->params = 0;
+  this->count = 0;
+
+}
+
+bool rfir::module::ttl::Encoder::EncodeParams::clone(EncodeParams* p) {
+  if (p) {
+    free();
+    this->params = new Params[p->count];
+    this->count = p->count;
+    this->response = p->response;
+    for (size_t i = 0; i < p->count; i++)
+    {
+      this->params[i] = p->params[i];
+    } 
+    return 1;
+  }
+
+  return 0;
+
+}
+
+bool rfir::module::ttl::Encoder::EncodeParams::clone(Decoder::DecodeParams* p) {
+  if (p) {
+    free();
+    this->params = new Params[p->count];
+    this->count = p->count;
+    for (size_t i = 0; i < p->count; i++)
+    {
+      (this->params + i)->clone(p->params + i);
+    } 
+    return 1;
+  }
+
+  return 0;
+
+}
+
+

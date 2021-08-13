@@ -1,221 +1,186 @@
-#include "config.h"
+#include "rfir.h"
+#include "mem.h"
 
-String rfir::module::ttl::Config::ConfigFilename = "/rfir-config.json";
-
-rfir::module::ttl::Config::Config() {
-    //init();
+rfir::module::ttl::Config::Config(RFIR* rfir) {
+    this->rfir = rfir;
 }
 
 rfir::module::ttl::Config::~Config() {
-    uninit();
+    this->devices.free();
 }
 
-bool rfir::module::ttl::Config::init() {
-    if (!loadConfig()) {
-        Serial.println("error::加载配置文件失败");
-        String str = TTL_DEFAULT_CONFIG_STR;
-            str.replace(" ", "");
-            str.replace("   ", "");
-            str.replace("\r", "");
-            str.replace("\n", "");
-            str.replace("\r\n", "");
-        if (!changeConfig(str, true)) {
-            Serial.println("error::加载默认配置内容失败");
-            Serial.println(str.c_str());
-            return false;
-        }       
-    }    
-    return true;
-}
+bool rfir::module::ttl::Config::init(std::string fn) {
+    if (loadFromFile(fn)) {
+        Serial.println("加载文件配置成功");
+    } else {
+        Serial.println(("加载文件配置失败：" + fn).c_str());
 
-bool rfir::module::ttl::Config::init(neb::CJsonObject* jCfg) {
-    initDevices(jCfg, &this->devices);
-
-    if (jCfg != &jDevices) {
-        jDevices = *jCfg;
-    }
-    
-    return true;
-}
-
-bool rfir::module::ttl::Config::initDevices(neb::CJsonObject* jdevices, Devices* devices) {
-    uninitDevices(devices);
-    std::string name;
-    int  count = 0;
-    while(jdevices->GetKey(name)) {
-        count++;
-    }
-
-    devices->device = new Device[count];
-    devices->count = count;
-
-    int idx = 0;
-    while(jdevices->GetKey(name)) {
-        Device* device = devices->device + idx;
-        device->name = name;
-        neb::CJsonObject jdevice;
-        if (jdevices->Get(name, jdevice)) {
-            initDevice(&jdevice, devices->device + idx);
+        if (loadFromString(TTL_DEFAULT_CONFIG_STR)) {
+            Serial.println("加载默认配置成功");
         }
-        
-        idx++;        
+        else {
+            Serial.println("加载默认配置失败");        
+            return false;
+        }
     }    
 
     return true;
-
 }
 
-bool rfir::module::ttl::Config::initDevice(neb::CJsonObject* jdevice, Device* device) {
-    neb::CJsonObject jsniff, jdecode, jsend, jencode;
-    if (jdevice->Get("sniff", jsniff)) {
-        if (!initDeviceSniff(&jsniff, &(device->packet.sniff)))
-            return false;
-    }
-    
-    if (jdevice->Get("decode", jdecode)) {
-        if (!initDeviceDecode(&jdecode, &(device->packet.decode)))
-            return false;
-    }
-    if (jdevice->Get("send", jsend)) {
-        if (!initDeviceSend(&jsend, &(device->packet.send)))
-            return false;
-    }
-    if (jdevice->Get("encode", jencode)) {
-        if (!initDeviceEncode(&jencode, &(device->packet.encode)))
-            return false;
-    }    
-    
-    return true;
-}
-
-bool rfir::module::ttl::Config::initDeviceSniff(neb::CJsonObject* jsniff, rfir::module::ttl::Sniffer::SniffParams* sniff) {
-    neb::CJsonObject jp;
-    if (!jsniff->Get("params", jp) || !Sniffer::parseParams(&jp, &(sniff->params))) {
-        Serial.println("initDeviceSniff Failed");
-        return false;        
-    }
-    return true;
-}
-
-bool rfir::module::ttl::Config::initDeviceDecode(neb::CJsonObject* jdecode, rfir::module::ttl::Decoder::DecodeParams* decode) {
-    neb::CJsonObject jblocks;
-    if (jdecode->Get("blocks", jblocks)) {
-        if (jblocks.IsArray()) {
-            int count = jblocks.GetArraySize();            
-            decode->params = new Decoder::Params[count];
-            decode->count = count;
-            for (size_t i = 0; i < count; i++)
-            {
-                neb::CJsonObject bl;
-                neb::CJsonObject jp;                
-                if (!jblocks.Get(i, bl) || !bl.Get("params", jp) || !Decoder::parseParams(&jp, decode->params + i)) {
-                    Serial.println("initDeviceDecode Failed");                
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-    return false;
-}
-
-bool rfir::module::ttl::Config::initDeviceSend(neb::CJsonObject* jsend, rfir::module::ttl::Sender::SendParams* send) {
-    neb::CJsonObject jp;
-    if (!jsend->Get("params", jp) || !Sender::parseParams(&jp, &(send->params))) {
-        Serial.println("initDeviceSend Failed");
-        return false;        
-    }
-    return true;
-}
-
-bool rfir::module::ttl::Config::initDeviceEncode(neb::CJsonObject* jencode, rfir::module::ttl::Encoder::EncodeParams* encode) {
-    neb::CJsonObject jblocks;
-    if (jencode->Get("blocks", jblocks)) {
-        if (jblocks.IsArray()) {
-            int count = jblocks.GetArraySize();            
-            encode->params = new Encoder::Params[count];
-            encode->count = count;
-            for (size_t i = 0; i < count; i++)
-            {
-                neb::CJsonObject bl;
-                neb::CJsonObject jp;
-                
-                if (!jblocks.Get(i, bl) || !bl.Get("params", jp) || !Encoder::parseParams(&jp, encode->params + i)) {
-                    Serial.println("initDeviceEncode Failed");                
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-    return false;
-}
 
 void rfir::module::ttl::Config::uninit() {
-    uninitDevices(&this->devices);
+    this->devices.free();
+    //uninitDevices(&this->devices);
 }
 
-bool rfir::module::ttl::Config::uninitDevices(Devices* devices) {
-    for (size_t i = 0; i < devices->count; i++)
-    {
-        uninitDevice(devices->device + i);
-    }
-    
-    delete devices->device;
-    devices->device = 0;
-    devices->count = 0;
-    return true;
+rfir::module::ttl::Config::Device* rfir::module::ttl::Config::getDevice(std::string name) {
+    return this->devices.getDevice(name);
 }
 
-bool rfir::module::ttl::Config::uninitDevice(Device* device) {
-    uninitDeviceDecode(&(device->packet.decode));
-    uninitDeviceEncode(&(device->packet.encode));
-    return true;
+bool rfir::module::ttl::Config::loadFromFile(std::string fn) {
+    util::TxtFile file(fn.c_str());
+    std::string str;
+    if (file.readString(str))
+        return loadFromString(str.c_str());
+
+    return 0;
 }
 
-bool rfir::module::ttl::Config::uninitDeviceDecode(rfir::module::ttl::Decoder::DecodeParams* decode) {
-    delete decode->params;
-    decode->params = 0;
-    decode->count = 0;
-    return 1;
+bool rfir::module::ttl::Config::loadFromJson(neb::CJsonObject * jdevices) {
+    return this->devices.parseFromJson(jdevices);
 }
 
-bool rfir::module::ttl::Config::uninitDeviceEncode(rfir::module::ttl::Encoder::EncodeParams* encode) {
-    delete encode->params;
-    encode->params = 0;
-    encode->count = 0;
-    return 1;
-}
-
-bool rfir::module::ttl::Config::changeConfig(neb::CJsonObject& jCfg, bool save) {
-    bool result = init(&jCfg);
-
-    if (save) {
-        rfir::util::TxtFile file(rfir::module::ttl::Config::ConfigFilename.c_str());
-        std::string str = jCfg.ToString();
-        int count = file.writeString(str.c_str(), str.length());
-        Serial.println("写入文件: " + String(count));        
-    }
-
-    return result;
-}
-
-bool rfir::module::ttl::Config::changeConfig(String& strCfg, bool save) {
+bool rfir::module::ttl::Config::loadFromString(const char* str) {
     neb::CJsonObject json;
-    if (json.Parse(strCfg.c_str()))    
-        return changeConfig(json, save);
+    if (json.Parse(str)) {
+        return loadFromJson(&json);
+    }
 
+    return 0;
+}
+
+void rfir::module::ttl::Config::Packet::free() {
+    this->decode.free();
+    this->encode.free();
+}
+
+bool rfir::module::ttl::Config::Packet::parseFromJson(neb::CJsonObject* jp) {
+    if (jp) {
+        this->free();
+        neb::CJsonObject jsniff, jsend, jdecode, jencode;
+        if (jp->Get("sniff", jsniff)) {
+            this->sniff.parseFromJson(&jsniff);
+        }
+        if (jp->Get("send", jsend))
+            this->send.parseFromJson(&jsend);
+        if (jp->Get("decode", jdecode)) {
+            this->decode.parseFromJson(&jdecode);            
+            this->encode.clone(&this->decode);
+        }
+        if (jp->Get("encode", jencode))
+            this->encode.parseFromJson(&jencode);    
+        // this->sniff.params.bufSize = 512;     
+        return true;   
+    }
+    return false;
+
+}
+
+bool rfir::module::ttl::Config::Packet::clone(Packet* p) {
+    free();
+
+    this->sniff.clone(&p->sniff);
+    this->send.clone(&p->send);
+    this->decode.clone(&p->decode);
+    this->encode.clone(&p->encode);
+    return 1;
+}
+
+void rfir::module::ttl::Config::Device::free() {
+    delete this->name;
+    this->name = 0;
+    this->packet.free();
+    
+}
+
+
+bool rfir::module::ttl::Config::Device::parseFromJson(neb::CJsonObject* jp, const char* name) {    
+    this->free();
+    this->name = new std::string();
+    if (name) (*this->name) = name;
+    return this->packet.parseFromJson(jp);
+}
+
+bool rfir::module::ttl::Config::Device::clone(Device* d) {
+    this->free();
+    this->name = new std::string(d->getName());
+    return this->packet.clone(&d->packet);
+    
+}
+
+std::string rfir::module::ttl::Config::Device::getName() {
+    if (this->name)
+        return *this->name;
+
+    return "";
+}
+
+void rfir::module::ttl::Config::Devices::free() {
+    for (size_t i = 0; i < count; i++)
+    {
+        this->device[i].free();
+    }    
+
+    delete this->device;
+    this->device = 0;
+    this->count = 0;
+}
+
+bool  rfir::module::ttl::Config::Devices::parseFromJson(neb::CJsonObject* jp) {
+    std::string key;
+    int count = 0;
+    while (!jp->IsEmpty() && jp->GetKey(key)) count++;
+    this->free();
+    this->device = new Device[count];
+    this->count = count;
+    int idx = 0;
+    while (!jp->IsEmpty() && jp->GetKey(key))
+    {
+        neb::CJsonObject jdevice;
+        if (jp->Get(key, jdevice)) 
+            (this->device + idx)->parseFromJson(&jdevice, key.c_str());
+
+        idx++;
+    }
+    return true;
+}
+
+
+rfir::module::ttl::Config::Device* rfir::module::ttl::Config::Devices::getDevice(std::string name) {
+    if (this->count > 0) {        
+        if (name == "")
+            return this->device + 0;
+
+        for (size_t i = 0; i < count; i++)
+        {            
+            if ((this->device + i)->getName() == name)
+                return this->device + i;
+        } 
+
+
+    }
+
+    return 0;
+}
+
+bool rfir::module::ttl::Config::Devices::clone(Devices* ds) {
+    if (ds) {
+        this->device = new Device[ds->count];
+        this->count = ds->count;
+        for (size_t i = 0; i < this->count; i++)
+        {
+            (this->device + i)->clone(ds->device + i);
+        }
+    }
     return false;
 }
-
-bool rfir::module::ttl::Config::changeConfigFromFile(String fn) {
-    util::TxtFile file(fn.c_str());
-    String str;
-    if (file.readString(str))
-        return changeConfig(str, false);
-    return false; 
-}
-
-bool rfir::module::ttl::Config::loadConfig() {
-    return changeConfigFromFile(rfir::module::ttl::Config::ConfigFilename);
-}    

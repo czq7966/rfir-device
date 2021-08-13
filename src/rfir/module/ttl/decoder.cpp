@@ -1,13 +1,14 @@
-#include "decoder.h"
-#include "config.h"
+#include "rfir.h"
 #include <sys/time.h>
 
-rfir::module::ttl::Decoder::Decoder() {
-
+rfir::module::ttl::Decoder::Decoder(RFIR* rfir) {
+  this->rfir = rfir;
 }
 
 rfir::module::ttl::Decoder::~Decoder() {  
-  setDecodeParams(0);
+  this->decodeParams.free();
+  this->decodeResults.free();
+  this->getDecodeParams()->free();
   uninitDecodeResults();
 }
 
@@ -71,7 +72,7 @@ rfir::module::ttl::Decoder::DecodeResults* rfir::module::ttl::Decoder::getDecode
   return &this->decodeResults;
 }
 
-int  rfir::module::ttl::Decoder::decode(uint16_t* data, int size) {
+int  rfir::module::ttl::Decoder::_decode(uint16_t* data, int size) {
   initDecodeResults();
   //int offset = data[0] > 1 ? 0 : (data[0] == 1 ? 1 : 2);
   int offset = data[0] == 1 ? 1 : 0;
@@ -83,7 +84,7 @@ int  rfir::module::ttl::Decoder::decode(uint16_t* data, int size) {
     int matchCount = 0;
     for (size_t i = 0; i < getDecodeParamsCount(); i++)
     {
-      Params* p = this->decodeParams.params + i;
+      Params* p = this->getDecodeParams()->params + i;
       DecodeResult* r = this->decodeResults.result + i;       
       p->step = p->step == 1 ? 1 : 2;
 
@@ -103,7 +104,7 @@ int  rfir::module::ttl::Decoder::decode(uint16_t* data, int size) {
       offset += matchCount;
       matched = 1;
       if (onDecoded) 
-          onDecoded(this, getDecodeResults(), this->name);
+          onDecoded(this, getDecodeResults());
       break;
     }
     else
@@ -116,6 +117,35 @@ int  rfir::module::ttl::Decoder::decode(uint16_t* data, int size) {
   return 0;
 }
 
+int  rfir::module::ttl::Decoder::decode(uint16_t* data, int size, int maxTimes) {
+    int offset = 0;
+    int times = 0;
+    while (offset < size) {
+        int matched = this->_decode(data + offset, size - offset);
+        if (!matched) 
+            break;
+        offset += matched;
+
+        times++;
+        if (times >= maxTimes)
+          break;
+    }
+
+    return offset;
+}
+
+int  rfir::module::ttl::Decoder::decode() {
+  if (this->rfir) {
+    int count = rfir->sniffer->sniffDelta();
+    if (count > 0) {
+        auto data = (uint16_t*)(rfir->sniffer->getSniffedDelta());
+        int offset = decode(data, count);
+        rfir->sniffer->resetSniff();    
+        return offset;
+    }  
+  }
+  return 0;
+}
 
 String  rfir::module::ttl::Decoder::toString() {
     String result;
@@ -162,21 +192,6 @@ String  rfir::module::ttl::Decoder::toString() {
     return result;
 
 }
-void  rfir::module::ttl::Decoder::setDecodeParams(DecodeParams* params, String name) {  
-    this->name = name;
-
-    delete this->decodeParams.params;
-    this->decodeParams.params = 0;
-    this->decodeParams.count = 0;
-    if (params) {
-      this->decodeParams.params = new Params[params->count];      
-      this->decodeParams.count = params->count;
-      for (size_t i = 0; i < params->count; i++)
-      {
-        this->decodeParams.params[i] = params->params[i];
-      }      
-    }
-}
 
 rfir::module::ttl::Decoder::DecodeParams* rfir::module::ttl::Decoder::getDecodeParams() {
   return &this->decodeParams;
@@ -186,18 +201,7 @@ int rfir::module::ttl::Decoder::getDecodeParamsCount() {
   return this->decodeParams.count;
 }
 
-void rfir::module::ttl::Decoder::setJDecode(neb::CJsonObject* jdecode) {
-  rfir::module::ttl::Decoder::DecodeParams decode;
-  rfir::module::ttl::Config::initDeviceDecode(jdecode, &decode);  
-  this->setDecodeParams(&decode);
-  rfir::module::ttl::Config::uninitDeviceDecode(&decode);  
-  this->jDecode = *jdecode;  
-}
 
-
-neb::CJsonObject* rfir::module::ttl::Decoder::getJDecode() {
-  return &this->jDecode;
-}
 
 uint32_t rfir::module::ttl::Decoder::ticksLow(const uint32_t usecs, const uint8_t tolerance, const uint16_t delta) {
     return ((uint32_t)std::max((int32_t)(usecs * (1.0 - (tolerance) / 100.0) - delta),0));
@@ -260,16 +264,17 @@ uint16_t rfir::module::ttl::Decoder::_matchGeneric(volatile uint16_t *data_ptr,
                               const uint32_t zerospace,
                               const uint16_t footermark,
                               const uint32_t footerspace,
-                              const uint8_t tolerance,
-                              const int16_t excess,
-                              const bool atleast,                              
-                              const bool MSBfirst,
-                              const uint8_t step) {
+                              const uint8_t  tolerance,
+                              const int16_t  excess,
+                              const bool     atleast,                              
+                              const bool     MSBfirst,
+                              const uint8_t  step,
+                              const uint16_t lastspace) {
 
 
   if (!use_bits && nbits % 8 != 0)  return 0;
   // Calculate if we expect a trailing space in the data section.
-  const bool kexpectspace = footermark || (onespace != zerospace);
+  const bool kexpectspace = lastspace ? 0 : (footermark || (onespace != zerospace));
   // Calculate how much remaining buffer is required.
   uint16_t min_remaining = nbits * step - (kexpectspace ? 0 : 1);
 
@@ -354,7 +359,7 @@ rfir::module::ttl::Decoder::match_result_t rfir::module::ttl::Decoder::matchData
                  matchSpace(*(data_ptr + 1), zerospace, tolerance, excess)) {
         result.data <<= 1;  // The bit is a '0'.
       } else {
-        if (!MSBfirst) result.data = reverseBits(result.data, result.used / 2);
+        if (!MSBfirst) result.data = reverseBits(result.data, result.used / step);
         return result;  // It's neither, so fail.
       }
     }
@@ -372,7 +377,7 @@ rfir::module::ttl::Decoder::match_result_t rfir::module::ttl::Decoder::matchData
         result.data <<= 1;  // The bit is a '0'.
       else
         result.success = false;
-      if (result.success) result.used++;
+      if (result.success) result.used += step;
     }
   }
   if (!MSBfirst) result.data = reverseBits(result.data, nbits);
@@ -447,7 +452,7 @@ uint16_t rfir::module::ttl::Decoder::matchBytes(volatile uint16_t *data_ptr, uin
                                     const bool expectlastspace,
                                     const uint8_t step) {
   // Check if there is enough capture buffer to possibly have the desired bytes.
-  if (remaining + expectlastspace < (nbytes * 8 * step) + 1)
+  if (remaining  < (nbytes * 8 * step) )
     return 0;  // Nope, so abort.
   uint16_t offset = 0;
   for (uint16_t byte_pos = 0; byte_pos < nbytes; byte_pos++) {
@@ -476,12 +481,13 @@ uint16_t rfir::module::ttl::Decoder::matchGeneric(volatile uint16_t *data_ptr,
                         const uint8_t tolerance,
                         const int16_t excess,
                         const bool MSBfirst,
-                        const uint8_t step) {
+                        const uint8_t step,
+                        const uint16_t exceptlastspace) {
 
   return _matchGeneric(data_ptr, result_ptr, NULL, true, remaining, nbits,
                        hdrmark, hdrspace, onemark, onespace,
                        zeromark, zerospace, footermark, footerspace,
-                       tolerance, excess, atleast, MSBfirst, step);
+                       tolerance, excess, atleast, MSBfirst, step, exceptlastspace);
 }
 uint16_t rfir::module::ttl::Decoder::matchGeneric(volatile uint16_t *data_ptr, uint8_t *result_ptr,
                         const uint16_t remaining, const uint16_t nbits,
@@ -494,11 +500,12 @@ uint16_t rfir::module::ttl::Decoder::matchGeneric(volatile uint16_t *data_ptr, u
                         const uint8_t tolerance,
                         const int16_t excess,
                         const bool MSBfirst,
-                        const uint8_t step) {
+                        const uint8_t step,
+                        const uint16_t exceptlastspace) {
   return _matchGeneric(data_ptr, NULL, result_ptr, false, remaining, nbits,
                        headermark, headerspace, onemark, onespace,
                        zeromark, zerospace, footermark, footerspace, 
-                       tolerance, excess, atleast, MSBfirst, step);
+                       tolerance, excess, atleast, MSBfirst, step, exceptlastspace);
 }
 
 uint16_t rfir::module::ttl::Decoder::matchGeneric(volatile uint16_t *data_ptr, uint64_t *result_bits_ptr, uint8_t *result_ptr,
@@ -507,57 +514,14 @@ uint16_t rfir::module::ttl::Decoder::matchGeneric(volatile uint16_t *data_ptr, u
   return _matchGeneric(data_ptr, result_bits_ptr, result_ptr, params.use_bits, remaining,  params.nbits,
                        params.headermark, params.headerspace, params.onemark, params.onespace,
                        params.zeromark, params.zerospace, params.footermark, params.footerspace, 
-                       params.tolerance, params.excess, params.atleast, params.MSBfirst, params.step);
+                       params.tolerance, params.excess, params.atleast, params.MSBfirst, params.step, params.lastspace);
 }
 
 
 
-bool rfir::module::ttl::Decoder::parseParams(neb::CJsonObject* jp, rfir::module::ttl::Decoder::Params* p) {
-    if (jp && p) {
-        bool      use_bits = true;
-        int       nbits = 32;
-        int       headermark = 9000;
-        int       headerspace = 4500;
-        int       onemark = 600;
-        int       onespace = 1600;
-        int       zeromark = 600;
-        int       zerospace = 550;
-        int       footermark = 600;
-        int       footerspace = 18000;
-        int       tolerance = 30;
-        int       excess = 0;
-        int       atleast = true;                              
-        int       MSBfirst = true;
-        int       step = 2;
-
-        if (jp->Get("use_bits", use_bits))        p->use_bits = use_bits;
-        if (jp->Get("nbits", nbits))              p->nbits = nbits;
-
-        if (jp->Get("headermark", headermark))    p->headermark = headermark;
-        if (jp->Get("headerspace", headerspace))  p->headerspace = headerspace;
-        if (jp->Get("onemark", onemark))          p->onemark = onemark;
-        if (jp->Get("onespace", onespace))        p->onespace = onespace;
-        if (jp->Get("zeromark", zeromark))        p->zeromark = zeromark;    
-        if (jp->Get("zerospace", zerospace))      p->zerospace = zerospace;   
-        if (jp->Get("footermark", footermark))    p->footermark = footermark;
-        if (jp->Get("footerspace", footerspace))  p->footerspace = footerspace;
-
-        if (jp->Get("tolerance", tolerance))      p->tolerance = tolerance;
-        if (jp->Get("excess", excess))            p->excess = excess;
-        if (jp->Get("atleast", atleast))          p->atleast = atleast;    
-        if (jp->Get("MSBfirst", MSBfirst))        p->MSBfirst = MSBfirst;    
-        if (jp->Get("step", step))                p->step = step;    
-        
-        p->use_bits = p->nbits % 8;
-
-        return true;
-    }
-
-    return false;
-}
-
-std::string rfir::module::ttl::Decoder::packDecodedCmd(Decoder* decoder, DecodeResults* data, String name) {
+std::string rfir::module::ttl::Decoder::packDecodedCmd(Decoder* decoder, DecodeResults* data) {
     neb::CJsonObject jp, hd, pld, decode, blocks;
+    hd.Add("did", rfir::util::Util::GetChipId());
     hd.Add("cmd", 10);
     hd.Add("stp", 1);
     
@@ -572,6 +536,7 @@ std::string rfir::module::ttl::Decoder::packDecodedCmd(Decoder* decoder, DecodeR
       blocks.Add(block);
     }
     decode.Add("blocks", blocks);
+    pld.Add("device", decoder->name);
     pld.Add("decode", decode);
 
     
@@ -633,6 +598,24 @@ std::string  rfir::module::ttl::Decoder::DecodeResult::toHexString() {
     return std::string(result.c_str());
 }
 
+void rfir::module::ttl::Decoder::DecodeResult::free() {
+  delete this->bytes;
+  this->bits = 0;
+  this->bytes = 0;
+  this->nbits = 0;
+}
+
+void rfir::module::ttl::Decoder::DecodeResults::free() {
+  for (size_t i = 0; i < count; i++)
+  {
+    (this->result + i)->free();
+  }
+  
+  delete this->result;
+  this->result = 0;
+  this->count = 0;
+}
+
 std::string  rfir::module::ttl::Decoder::Params::toString() {
   neb::CJsonObject json;
   json.Add("use_bits", use_bits);
@@ -650,6 +633,119 @@ std::string  rfir::module::ttl::Decoder::Params::toString() {
   json.Add("atleast", atleast);  
   json.Add("MSBfirst", MSBfirst);  
   json.Add("step", step);
+  json.Add("lastspace", lastspace);  
   return json.ToString();
 
 }
+
+bool rfir::module::ttl::Decoder::Params::parseFromJson(neb::CJsonObject* jp) {
+    if (jp) {
+        bool      use_bits = true;
+        int       nbits = 32;
+        int       headermark = 9000;
+        int       headerspace = 4500;
+        int       onemark = 600;
+        int       onespace = 1600;
+        int       zeromark = 600;
+        int       zerospace = 550;
+        int       footermark = 600;
+        int       footerspace = 18000;
+        int       tolerance = 30;
+        int       excess = 0;
+        int       atleast = true;                              
+        int       MSBfirst = true;
+        int       step = 2;
+        int       lastspace = 0;
+
+        if (jp->Get("use_bits", use_bits))        this->use_bits = use_bits;
+        if (jp->Get("nbits", nbits))              this->nbits = nbits;
+
+        if (jp->Get("headermark", headermark))    this->headermark = headermark;
+        if (jp->Get("headerspace", headerspace))  this->headerspace = headerspace;
+        if (jp->Get("onemark", onemark))          this->onemark = onemark;
+        if (jp->Get("onespace", onespace))        this->onespace = onespace;
+        if (jp->Get("zeromark", zeromark))        this->zeromark = zeromark;    
+        if (jp->Get("zerospace", zerospace))      this->zerospace = zerospace;   
+        if (jp->Get("footermark", footermark))    this->footermark = footermark;
+        if (jp->Get("footerspace", footerspace))  this->footerspace = footerspace;
+
+        if (jp->Get("tolerance", tolerance))      this->tolerance = tolerance;
+        if (jp->Get("excess", excess))            this->excess = excess;
+        if (jp->Get("atleast", atleast))          this->atleast = atleast;    
+        if (jp->Get("MSBfirst", MSBfirst))        this->MSBfirst = MSBfirst;    
+        if (jp->Get("step", step))                this->step = step;    
+        if (jp->Get("lastspace", lastspace))      this->lastspace = lastspace;    
+        
+        this->use_bits = this->nbits % 8;
+
+        return true;
+    }
+
+    return false;  
+}
+
+
+bool rfir::module::ttl::Decoder::DecodeParams::parseFromJson(neb::CJsonObject* jdecode) {
+  neb::CJsonObject* jblocks = 0;
+  neb::CJsonObject  blocks;
+  int response = 0;
+  if (jdecode && jdecode->Get("response", response)) {    
+      this->response = response;     
+  }
+
+  if (jdecode) {
+    if (jdecode->IsArray())
+      jblocks = jdecode;
+    else {
+      if (jdecode->Get("blocks", blocks))
+        jblocks = &blocks;
+    }
+  }
+
+  if (jblocks && jblocks->IsArray()) {
+    int count = jblocks->GetArraySize();
+    if (count > 0) {
+      if (this->count != count) {
+        this->free();    
+        this->params = new Params[count];
+        this->count = count;
+      }      
+
+      for (size_t i = 0; i < count; i++)
+      {
+        neb::CJsonObject bl;
+        neb::CJsonObject jp;
+        jblocks->Get(i, bl);
+        if (bl.Get("params", jp))
+          (this->params + i)->parseFromJson(&jp);
+      }
+      return true;    
+    } 
+  }
+
+  Serial.println("DecodeParams->parseFromJson: Failed"); 
+  return false;
+}
+
+void rfir::module::ttl::Decoder::DecodeParams::free() {
+  delete this->params;
+  this->params = 0;
+  this->count = 0;
+}
+
+bool rfir::module::ttl::Decoder::DecodeParams::clone(DecodeParams* p) {
+  if (p) {
+    free();
+    this->params = new Params[p->count];
+    this->count = p->count;
+    this->response = p->response;
+    for (size_t i = 0; i < p->count; i++)
+    {
+      this->params[i] = p->params[i];
+    } 
+    return 1;
+  }
+
+  return 0;
+}
+

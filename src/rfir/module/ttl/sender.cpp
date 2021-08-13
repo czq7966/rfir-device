@@ -1,22 +1,24 @@
-#include "sender.h"
+#include "rfir.h"
 #include <sys/time.h>
 
-rfir::module::ttl::Sender::Sender() {
-    new (this) Sender(this->params);
+#include "ir-send.h"
+
+rfir::module::ttl::Sender::Sender(RFIR* rfir) {
+    new (this) Sender(this->sendParams, rfir);
 }
 
-rfir::module::ttl::Sender::Sender(Params params) {
-    this->init(params);    
+rfir::module::ttl::Sender::Sender(SendParams sendParams, RFIR* rfir) {
+    this->init(sendParams);    
 }
 
 rfir::module::ttl::Sender::~Sender() {
     this->uninit();
 }
 
-void rfir::module::ttl::Sender::init(Params params) {
+void rfir::module::ttl::Sender::init(SendParams sendParams) {
     this->uninit();
-    this->params = params;
-    this->gpio.init(this->params.pin, OUTPUT, this->params.inverted);
+    this->sendParams = sendParams;
+    this->gpio.init(this->getSendParams()->params.pin, OUTPUT, this->getSendParams()->params.inverted);
     ledOff();
 }
 
@@ -24,13 +26,17 @@ void rfir::module::ttl::Sender::uninit() {
 
 }
 
+rfir::module::ttl::Sender::SendParams* rfir::module::ttl::Sender::getSendParams() {
+    return &this->sendParams;
+}
+
 void rfir::module::ttl::Sender::enableIROut(uint32_t freq, uint8_t duty) {
-    if (this->params.modulation) {
+    if (this->getSendParams()->params.modulation) {
         _dutycycle = std::min(duty, (uint8_t)100);
     } else {
         _dutycycle = 100;
     }
-    if (this->params.frequency < 1000)  
+    if (this->getSendParams()->params.frequency < 1000)  
         freq *= 1000;
 
     uint32_t period = calcUSecPeriod(freq);
@@ -56,7 +62,7 @@ void rfir::module::ttl::Sender::_delayMicroseconds(uint32_t usec) {
 }
 
 uint16_t rfir::module::ttl::Sender::mark(uint16_t usec) {
-    if (!this->params.modulation || _dutycycle >= 100) {
+    if (!this->getSendParams()->params.modulation || _dutycycle >= 100) {
         ledOn();
         _delayMicroseconds(usec);
         ledOff();
@@ -112,20 +118,25 @@ int8_t rfir::module::ttl::Sender::calibrate(uint16_t hz) {
 }
 
 void rfir::module::ttl::Sender::sendRaw(const uint16_t buf[], const uint16_t len, const uint16_t hz) {
-    enableIROut(hz);
-    for (uint16_t i = 0; i < len; i++) {
-        if (i & 1) {  // Odd bit.
-            space(buf[i]);
-        } else {  // Even bit.
-            mark(buf[i]);
-        }
+    auto p = this->getSendParams()->params;
+
+    IRSend irsend(p.pin, p.inverted, p.modulation);
+    irsend.begin();
+
+    for (size_t i = 0; i <= p.repeat; i++)
+    {
+        irsend.sendRaw(buf, len, hz);
     }
-    ledOff();     
+    if (onSended)
+        onSended(this, buf, len);
+        
 }
 
-void  rfir::module::ttl::Sender::sendRaw(const char* data) {
-
-
+void  rfir::module::ttl::Sender::sendRaw(const char* data, const int size) {
+    int count;
+    uint16_t* raw  = Encoder::parseRaw(data, size, count);        
+    sendRaw(raw, count);
+    delete raw;
 }
 
 void rfir::module::ttl::Sender::sendData(uint16_t onemark, uint32_t onespace, uint16_t zeromark,
@@ -163,12 +174,12 @@ void rfir::module::ttl::Sender::sendData(uint16_t onemark, uint32_t onespace, ui
 }
 
 void rfir::module::ttl::Sender::sendData(uint64_t data, uint16_t nbits) {
-    sendData(params.onemark, params.onespace, params.zeromark, params.zerospace, data, nbits, params.MSBfirst);
+    //sendData(params.onemark, params.onespace, params.zeromark, params.zerospace, data, nbits, params.MSBfirst);
 }
 
 void rfir::module::ttl::Sender::sendData(const uint8_t *dataptr, const uint16_t nbytes) {
-    for (uint16_t i = 0; i < nbytes; i++)
-        sendData(params.onemark, params.onespace, params.zeromark, params.zerospace, *(dataptr + i), 8, params.MSBfirst);        
+    // for (uint16_t i = 0; i < nbytes; i++)
+    //     sendData(params.onemark, params.onespace, params.zeromark, params.zerospace, *(dataptr + i), 8, params.MSBfirst);        
 }
 
 void rfir::module::ttl::Sender::sendGeneric(const uint16_t headermark, const uint32_t headerspace,
@@ -247,57 +258,97 @@ void rfir::module::ttl::Sender::sendGeneric(const uint16_t headermark, const uin
 }
 
 void rfir::module::ttl::Sender::sendGeneric(const Params p, const uint8_t *dataptr, const uint16_t nbytes) {
-    sendGeneric(p.headermark, p.headerspace, p.onemark, p.onespace, p.zeromark, 
-                p.zerospace, p.footermark, p.footerspace, dataptr, nbytes, 
-                p.frequency, p.MSBfirst, p.repeat, p.dutycycle);
+    // sendGeneric(p.headermark, p.headerspace, p.onemark, p.onespace, p.zeromark, 
+    //             p.zerospace, p.footermark, p.footerspace, dataptr, nbytes, 
+    //             p.frequency, p.MSBfirst, p.repeat, p.dutycycle);
 
 } 
 
 void rfir::module::ttl::Sender::sendGeneric(const Params p, const uint64_t data, const uint16_t nbits) {
-    sendGeneric(p.headermark, p.headerspace, p.onemark, p.onespace, p.zeromark, 
-                p.zerospace, p.footermark, p.footerspace, data, nbits, 
-                p.frequency, p.MSBfirst, p.repeat, p.dutycycle);
+    // sendGeneric(p.headermark, p.headerspace, p.onemark, p.onespace, p.zeromark, 
+    //             p.zerospace, p.footermark, p.footerspace, data, nbits, 
+    //             p.frequency, p.MSBfirst, p.repeat, p.dutycycle);
 }
 
 void rfir::module::ttl::Sender::sendGeneric(const uint8_t *dataptr, const uint16_t nbytes) {
-    sendGeneric(this->params, dataptr, nbytes);
+    sendGeneric(this->getSendParams()->params, dataptr, nbytes);
 }
 
 
 void rfir::module::ttl::Sender::sendGeneric(const uint64_t data, const uint16_t nbits) {
-    sendGeneric(this->params, data, nbits);
+    sendGeneric(this->getSendParams()->params, data, nbits);
 }
 
-bool rfir::module::ttl::Sender::parseParams(neb::CJsonObject* jp, rfir::module::ttl::Sender::Params* p) {
-    if (jp && p) {
-        int     pin = 23;
+std::string rfir::module::ttl::Sender::Params::toString() {
+    neb::CJsonObject json;
+    json.Add("pin", pin);
+    json.Add("inverted", inverted);
+    json.Add("modulation", modulation);
+    json.Add("repeat", repeat);
+    json.Add("frequency", frequency);
+    json.Add("dutycycle", dutycycle);
+    return json.ToString();
+}
+
+bool rfir::module::ttl::Sender::Params::parseFromJson(neb::CJsonObject* jp) {
+    if (jp) {
+        int     pin = 0;
         int     inverted = false;
         int     modulation = true;
         int     repeat = 0;
-        int     MSBfirst = true;
         int     frequency = 38;                    
         int     dutycycle = 50;
 
-        int     nbits = 0;
-        int     headermark = 9000;
-        int     headerspace = 4500;
-        int     onemark = 600;
-        int     onespace = 1600;
-        int     zeromark = 600;
-        int     zerospace = 550;
-        int     footermark = 600;
-        int     footerspace = 18000;
-
-        if (jp->Get("pin", pin))                p->pin = pin;
-        if (jp->Get("inverted", inverted))      p->inverted = inverted;
-        if (jp->Get("modulation", modulation))  p->modulation = modulation;
-        if (jp->Get("repeat", repeat))          p->repeat = repeat;
-        if (jp->Get("MSBfirst", MSBfirst))      p->MSBfirst = MSBfirst;
-        if (jp->Get("frequency", frequency))    p->frequency = frequency;
-        if (jp->Get("dutycycle", dutycycle))    p->dutycycle = dutycycle;    
+        if (jp->Get("pin", pin))                this->pin = pin;
+        if (jp->Get("inverted", inverted))      this->inverted = inverted;
+        if (jp->Get("modulation", modulation))  this->modulation = modulation;
+        if (jp->Get("repeat", repeat))          this->repeat = repeat;
+        if (jp->Get("frequency", frequency))    this->frequency = frequency;
+        if (jp->Get("dutycycle", dutycycle))    this->dutycycle = dutycycle;    
         return true;
     }
 
     return false;
+}
+
+bool rfir::module::ttl::Sender::SendParams::parseFromJson(neb::CJsonObject* jsend) {
+    neb::CJsonObject jp;
+    int response = 0;
+    if (jsend && jsend->Get("response", response)) {    
+        this->response = response;     
+    }
+
+    if (jsend && jsend->Get("params", jp))
+        return this->params.parseFromJson(&jp);
+
+    return false;
+}
+
+bool rfir::module::ttl::Sender::SendParams::clone(SendParams* p) {
+    if (p) {
+        this->params = p->params;
+        this->response = p->response;
+        return true;
+    }
+    return false;
+}
+
+std::string rfir::module::ttl::Sender::SendParams::toString() {
+    return this->params.toString();
+}
+
+
+std::string rfir::module::ttl::Sender::packSniffedCmd(Sender* sender, const uint16_t* data, const uint16_t len) {
+    neb::CJsonObject jp, hd, pld, sniff, params;
+    hd.Add("did", rfir::util::Util::GetChipId());
+    hd.Add("cmd", 8);
+    hd.Add("stp", 1);
+
+    pld.Add("device", sender->name);
+    
+    jp.Add("hd", hd);
+    jp.Add("pld", pld);
+    return jp.ToString();      
+
 }
 
