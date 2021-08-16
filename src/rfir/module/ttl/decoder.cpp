@@ -749,3 +749,21 @@ bool rfir::module::ttl::Decoder::DecodeParams::clone(DecodeParams* p) {
   return 0;
 }
 
+int rfir::module::ttl::Decoder::DecodeParams::create(int size) {
+  free();
+  this->params = new Params[size];
+  this->count = size;
+}
+
+std::string rfir::module::ttl::Decoder::DecodeParams::toString() {
+  std::string str;
+  for (size_t i = 0; i < count; i++)
+  {
+    if (str.length() > 0)
+      str = str + "," + (this->params + i)->toString();
+    else
+      str = (this->params + i)->toString();
+  }
+  return str;
+  
+}

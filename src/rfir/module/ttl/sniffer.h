@@ -50,7 +50,7 @@ namespace rfir {
                     bool        inverted = false;
                     uint16_t    minCount = 50;
                     uint32_t    minDelta = 150;
-                    uint32_t    maxDelta = 15000;
+                    uint32_t    maxDelta = 65535;
                     uint32_t    bufSize = 1024;
                     std::string toString();
                     bool        parseFromJson(neb::CJsonObject* jp);  

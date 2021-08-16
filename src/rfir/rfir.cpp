@@ -93,10 +93,15 @@ void rfir::RFIR::loop() {
     }    
 }
 
-rfir::module::ttl::RFIR* rfir::RFIR::getRfir(std::string name) {
+rfir::module::ttl::RFIR* rfir::RFIR::getRfir(std::string name, bool create) {
     auto Rfir = rfir::Get();
-    auto rfir = Rfir->rfirMap[name];
-    if (!rfir) {
+    rfir::module::ttl::RFIR* rfir = 0;
+    auto it = Rfir->rfirMap.find(name);
+    if (it != Rfir->rfirMap.end()) 
+        rfir = it->second;
+    
+    if (!rfir && create) {
+
         rfir = new rfir::module::ttl::RFIR();
         rfir->sniffer->onSniffed = rfir::RFIR::OnSniffed;
         rfir->decoder->onDecoded = rfir::RFIR::OnDecoded;

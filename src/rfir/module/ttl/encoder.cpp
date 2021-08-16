@@ -168,6 +168,37 @@ int rfir::module::ttl::Encoder::encode(neb::CJsonObject* jblocks) {
   return this->getEncodeResultCount();
 }
 
+int rfir::module::ttl::Encoder::encode(rfir::module::ttl::Decoder::DecodeResults* data) {
+  if (data->count != this->getEncodeParams()->count)
+    return 0;
+
+  initEncodeResult();
+  this->getEncodeResult()->count = encode(data, this->getEncodeResult()->result);
+  if (this->onEncoded)
+    this->onEncoded(this, this->getEncodeResult());
+  return this->getEncodeResultCount();
+}
+
+int rfir::module::ttl::Encoder::encode(rfir::module::ttl::Decoder::DecodeResults* results, uint16_t* result) {
+  int offset = 0;
+  int bufSize = this->rfir->sniffer->getSniffParams()->params.bufSize;
+  int size = bufSize / 8 + 1;
+  uint8_t* dataBits = new uint8_t[size];
+
+  for (size_t i = 0; i < results->count; i++)
+  {
+    auto p = this->getEncodeParams()->params[i];
+    std::string data = results->result[i].toBitString();
+    int len = parseData(String(data.c_str()), dataBits, p.MSBfirst);
+    offset += encode(p, dataBits, len, result + offset);
+  }
+
+  delete dataBits;
+
+  return offset;
+
+}
+
 std::string  rfir::module::ttl::Encoder::toString() {
   return this->getEncodeResult()->toString();
 }
@@ -471,4 +502,9 @@ bool rfir::module::ttl::Encoder::EncodeParams::clone(Decoder::DecodeParams* p) {
 
 }
 
+int rfir::module::ttl::Encoder::EncodeParams::create(int size) {
+  free();
+  this->params = new Params[size];
+  this->count = size;
+}
 

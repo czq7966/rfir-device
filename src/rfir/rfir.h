@@ -10,7 +10,7 @@ namespace rfir {
          std::map<std::string,  rfir::module::ttl::RFIR*> rfirMap;
     public:
         void loop();   
-        rfir::module::ttl::RFIR* getRfir(std::string name);
+        rfir::module::ttl::RFIR* getRfir(std::string name, bool create = true);
 
     public:
         static std::map<std::string, RFIR*>* RfirMap;

@@ -1,6 +1,7 @@
 #ifndef __RFIR_MODULE_TTL_CONFIG_H__
 #define __RFIR_MODULE_TTL_CONFIG_H__
 
+#include <vector>
 
 #include "../../util/platform.h"
 #include "../../util/cjson/CJsonObject.hpp"
@@ -37,19 +38,20 @@ namespace rfir {
                     bool    parseFromJson(neb::CJsonObject* jp, const char* name = 0);  
                     bool    clone(Device* device);
                     std::string getName();
+                    void    setName(const char* name);
                 };
 
                 struct Devices {
-                    Device*             device = 0;
-                    int                 count = 0;
+                    std::vector<Device*>    device;
 
                     void                free();
-                    bool                parseFromJson(neb::CJsonObject* jp);
-                    Device*             getDevice(std::string name);
                     bool                clone(Devices* devices);
-                    // std::list<Device*>  device;
-                    // Device*             addDevice(std::string name);
-                    // int                 getCount();
+                    Device*             getDevice(std::string name = "");
+                    Device*             newDevice(std::string name = "");
+                    int                 getCount();
+
+                    bool                parseFromJson(neb::CJsonObject* jp);                    
+
                 };
 
             public:

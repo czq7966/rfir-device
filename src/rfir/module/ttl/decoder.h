@@ -66,6 +66,8 @@ namespace rfir {
                     bool    parseFromJson(neb::CJsonObject* jp);
                     void    free();
                     bool    clone(DecodeParams* p);
+                    int     create(int size);
+                    std::string     toString();
                 };
 
 

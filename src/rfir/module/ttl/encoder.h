@@ -49,6 +49,7 @@ namespace rfir {
                     void    free();
                     bool    clone(EncodeParams* p);
                     bool    clone(Decoder::DecodeParams* p);
+                    int     create(int size);
                 };
                  
 
@@ -86,6 +87,8 @@ namespace rfir {
                 int encode(Params p, uint8_t* data, int nbits, uint16_t* result);
                 int encode(neb::CJsonObject* blocks,  uint16_t* result);
                 int encode(neb::CJsonObject* blocks);
+                int encode(rfir::module::ttl::Decoder::DecodeResults* data, uint16_t* result);
+                int encode(rfir::module::ttl::Decoder::DecodeResults* data);
 
 
                 std::string  toString();

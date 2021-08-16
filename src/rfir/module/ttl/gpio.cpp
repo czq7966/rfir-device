@@ -32,7 +32,6 @@ void rfir::module::ttl::Gpio::uninit() {
 void rfir::module::ttl::Gpio::start() {
     stop();
     //Gpio_0 = this;
-    // Serial.println(this->pin);
     // attachInterrupt(this->pin, gpio_interrupt, CHANGE);  
     //attachInterruptArg(this->pin, Gpio_interruptArg, this, CHANGE);
     OnGpioStart(this);
@@ -99,8 +98,6 @@ void rfir::module::ttl::Gpio::OnGpioStart(Gpio* gpio) {
         }
     }
 
-    Serial.println(idx);
-    Serial.println(gpio->pin);
     switch (idx)
     {
         case 0:
@@ -203,7 +200,6 @@ void rfir::module::ttl::Gpio::Gpio_9_interrupt() {
 
 void rfir::module::ttl::Gpio::Gpio_interruptArg(void* arg) {
     Gpio* gpio = (Gpio*)arg;
-    Serial.println("111");
     if (gpio)
         gpio->emitChange();
 }

@@ -106,8 +106,7 @@ void rfir::module::ttl::Config::Device::free() {
 
 bool rfir::module::ttl::Config::Device::parseFromJson(neb::CJsonObject* jp, const char* name) {    
     this->free();
-    this->name = new std::string();
-    if (name) (*this->name) = name;
+    setName(name);
     return this->packet.parseFromJson(jp);
 }
 
@@ -125,62 +124,83 @@ std::string rfir::module::ttl::Config::Device::getName() {
     return "";
 }
 
-void rfir::module::ttl::Config::Devices::free() {
-    for (size_t i = 0; i < count; i++)
-    {
-        this->device[i].free();
-    }    
 
-    delete this->device;
-    this->device = 0;
-    this->count = 0;
+void  rfir::module::ttl::Config::Device::setName(const char* value) {
+    if (!this->name)
+        this->name = new std::string();
+    *this->name = value;
+}
+
+void rfir::module::ttl::Config::Devices::free() {
+    for (size_t i = 0; i < getCount(); i++)
+    {
+        auto d = this->device[i];
+        d->free();
+        delete d;
+    }    
+    
+    this->device.clear();
 }
 
 bool  rfir::module::ttl::Config::Devices::parseFromJson(neb::CJsonObject* jp) {
     std::string key;
-    int count = 0;
-    while (!jp->IsEmpty() && jp->GetKey(key)) count++;
     this->free();
-    this->device = new Device[count];
-    this->count = count;
-    int idx = 0;
     while (!jp->IsEmpty() && jp->GetKey(key))
     {
         neb::CJsonObject jdevice;
-        if (jp->Get(key, jdevice)) 
-            (this->device + idx)->parseFromJson(&jdevice, key.c_str());
-
-        idx++;
+        if (jp->Get(key, jdevice)) {
+            Device* d = new Device();
+            d->parseFromJson(&jdevice, key.c_str());
+            this->device.push_back(d);
+        }
     }
     return true;
 }
 
 
-rfir::module::ttl::Config::Device* rfir::module::ttl::Config::Devices::getDevice(std::string name) {
-    if (this->count > 0) {        
+rfir::module::ttl::Config::Device* rfir::module::ttl::Config::Devices::getDevice(std::string name) {    
+    if (this->getCount() > 0) {        
+        for (size_t i = 0; i < getCount(); i++)
+        {        
+            if (this->device[i]->getName() == name) {
+                return this->device[i];
+            }
+        }
         if (name == "")
-            return this->device + 0;
-
-        for (size_t i = 0; i < count; i++)
-        {            
-            if ((this->device + i)->getName() == name)
-                return this->device + i;
-        } 
-
-
+            return this->device.front();        
     }
 
     return 0;
 }
 
+rfir::module::ttl::Config::Device* rfir::module::ttl::Config::Devices::newDevice(std::string name) {
+    auto d = getDevice(name);
+    if (d) {
+        Serial.println(("创建设备失败，已存在：" + name).c_str());
+        return 0;
+    }
+    d = new Device();
+    d->setName(name.c_str());
+    this->device.push_back(d);  
+    return getDevice(name);
+
+}
+
 bool rfir::module::ttl::Config::Devices::clone(Devices* ds) {
     if (ds) {
-        this->device = new Device[ds->count];
-        this->count = ds->count;
-        for (size_t i = 0; i < this->count; i++)
+        free();
+        for (size_t i = 0; i < ds->getCount(); i++)
         {
-            (this->device + i)->clone(ds->device + i);
+            auto d = new Device();
+            d->clone(ds->device[i]);
+            this->device.push_back(d);
         }
+        return true;
     }
     return false;
+}
+
+
+int rfir::module::ttl::Config::Devices::getCount() {
+    return this->device.size();
 }
