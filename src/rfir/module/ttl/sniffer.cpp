@@ -296,4 +296,5 @@ std::string  rfir::module::ttl::Sniffer::Params::toString() {
  bool rfir::module::ttl::Sniffer::SniffParams::clone(SniffParams* p) {
      this->params = p->params;
      this->response = p->response;
+     return true;
  }
