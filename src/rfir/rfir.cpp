@@ -45,6 +45,7 @@ bool rfir::RFIR::RefreshConfig() {
         }        
         
     }
+    return 1;
 }
 
 bool rfir::RFIR::RefreshConfig(const char* content) {
@@ -60,6 +61,7 @@ bool rfir::RFIR::RefreshConfig(const char* content) {
         }        
 
     }
+    return true;
 }
 
 void rfir::RFIR::StopSniff() {

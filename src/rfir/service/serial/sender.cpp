@@ -15,7 +15,7 @@ bool rfir::service::serial::Sender::pushCmd(const char* topic, const char* paylo
     neb::CJsonObject* cmd = new neb::CJsonObject();
     cmd->Add("topic", topic);
     cmd->Add("payload", payload);
-    pushCmd(cmd);
+    return pushCmd(cmd);
     
 }
 
