@@ -754,6 +754,7 @@ int rfir::module::ttl::Decoder::DecodeParams::create(int size) {
   free();
   this->params = new Params[size];
   this->count = size;
+  return this->count;
 }
 
 std::string rfir::module::ttl::Decoder::DecodeParams::toString() {

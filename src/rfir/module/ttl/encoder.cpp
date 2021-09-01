@@ -506,5 +506,6 @@ int rfir::module::ttl::Encoder::EncodeParams::create(int size) {
   free();
   this->params = new Params[size];
   this->count = size;
+  return this->count;
 }
 
