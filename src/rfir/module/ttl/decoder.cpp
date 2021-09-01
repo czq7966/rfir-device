@@ -208,7 +208,7 @@ uint32_t rfir::module::ttl::Decoder::ticksLow(const uint32_t usecs, const uint8_
 }
 
 uint32_t rfir::module::ttl::Decoder::ticksHigh(const uint32_t usecs, const uint8_t tolerance,const uint16_t delta) {
-    return ((uint32_t)std::max((int32_t)(usecs * (1.0 + (tolerance) / 100.0) - delta),0));
+  return ((uint32_t)(usecs * (1.0 + (tolerance) / 100.0)) + 1 + delta);  
 }
 
 bool rfir::module::ttl::Decoder::match(uint32_t measured, uint32_t desired, uint8_t tolerance, uint16_t delta) {
@@ -218,7 +218,8 @@ bool rfir::module::ttl::Decoder::match(uint32_t measured, uint32_t desired, uint
 
 bool rfir::module::ttl::Decoder::matchAtLeast(uint32_t measured, uint32_t desired, uint8_t tolerance, uint16_t delta) {
     if (measured == 0) return true;
-    return measured >= ticksLow(std::min(desired, 15 * 1000U), tolerance, delta);
+    // return measured >= ticksLow(std::min(desired, 15 * 1000U), tolerance, delta);
+    return measured >= ticksLow(desired, tolerance, delta);
 }
 
 bool rfir::module::ttl::Decoder::matchMark(uint32_t measured, uint32_t desired, uint8_t tolerance, int16_t excess) {
