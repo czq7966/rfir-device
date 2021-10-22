@@ -82,6 +82,12 @@ namespace rfir {
         return device;
     }
 
+    static rfir::module::ttl::RFIR* GetRfir(std::string name = "") {
+        auto d = getRfirDevice(name);
+        if (d) 
+            return rfir::Get()->getRfir(d->getName());
+        return 0;
+    }   
 
 }
 

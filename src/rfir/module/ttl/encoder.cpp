@@ -199,7 +199,7 @@ int rfir::module::ttl::Encoder::encode(rfir::module::ttl::Decoder::DecodeResults
 
 }
 
-std::string  rfir::module::ttl::Encoder::toString() {
+const char*  rfir::module::ttl::Encoder::toString() {
   return this->getEncodeResult()->toString();
 }
 
@@ -329,7 +329,7 @@ std::string rfir::module::ttl::Encoder::packEncodedCmd(Encoder* encoder, EncodeR
 }
 
 
-std::string  rfir::module::ttl::Encoder::EncodeResult::toString() {
+const char*  rfir::module::ttl::Encoder::EncodeResult::toString() {
   String str;
   for (size_t i = 0; i < count; i++)
   {
@@ -339,7 +339,7 @@ std::string  rfir::module::ttl::Encoder::EncodeResult::toString() {
     str = str + String(c) + ",";    
   }
   
-  return std::string(str.c_str());
+  return str.c_str();
 }
 
 void rfir::module::ttl::Encoder::EncodeResult::free() {

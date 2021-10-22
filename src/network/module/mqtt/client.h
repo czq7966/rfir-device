@@ -1,6 +1,6 @@
 
-#ifndef __RFIR_MODULE_MQTT_CLIENT_H__
-#define __RFIR_MODULE_MQTT_CLIENT_H__
+#ifndef __NETWORK_MODULE_MQTT_CLIENT_H__
+#define __NETWORK_MODULE_MQTT_CLIENT_H__
 
 #include "rfir/util/platform.h"
 #ifdef ESP8266
@@ -24,6 +24,9 @@ namespace network {
                     void* getArg() {return arg;};
                     void  setArg(void* v) {this->arg = v;};
                 };
+
+                typedef std::function<void(MQTT* mqtt)> OnConnectEvent;
+                typedef MQTTClientCallbackAdvancedFunction OnMessageEvent;
             
             public:
                 struct Params {
@@ -34,9 +37,11 @@ namespace network {
                     std::string pub_topic;
                     std::string sub_topic;
                     int         bufsize = 3 * 1024;
+                    std::string id;
                 };
 
-                MQTTClientCallbackAdvancedFunction onMessage = 0;
+                OnMessageEvent onMessage = 0;
+                OnConnectEvent onConnect = 0;
 
             private:
                 WiFiClient* net = 0;
@@ -64,4 +69,4 @@ namespace network {
 
 
 
-#endif //__RFIR_SERVICE_MQTT_CLIENT_H__
+#endif //__NETWORK_SERVICE_MQTT_CLIENT_H__

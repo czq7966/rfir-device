@@ -3,12 +3,16 @@
 
 network::module::mqtt::Client* network::service::mqtt::Client::client = 0;
 
-void network::service::mqtt::Client::Start(network::module::mqtt::Client::Params p) {
+void network::service::mqtt::Client::Start(network::module::mqtt::Client::Params p,
+                                    network::module::mqtt::Client::OnConnectEvent onConnect,
+                                    network::module::mqtt::Client::OnMessageEvent onMessage) {
     if (!client) 
         client = new network::module::mqtt::Client();
     client->init(p);
     client->start();
-    client->onMessage = OnMessage;
+    client->onConnect = onConnect;
+    client->onMessage = onMessage;
+    // client->onMessage = OnMessage;
 }
 
 void network::service::mqtt::Client::Loop() {

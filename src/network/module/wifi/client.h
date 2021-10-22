@@ -1,5 +1,5 @@
-#ifndef __RFIR_MODULE_WIFI_CLIENT_H__
-#define __RFIR_MODULE_WIFI_CLIENT_H__
+#ifndef __NETWORK_MODULE_WIFI_CLIENT_H__
+#define __NETWORK_MODULE_WIFI_CLIENT_H__
 
 #include <string>
 
@@ -13,14 +13,16 @@ namespace network {
                     std::string pass;
                 };
             private:
-                void* manager;
+                void*   manager;
+                Params  params;
             public:
                 void start(Params p);
                 void loop();
+                void checkOrReset(long timeout = 60);
 
             };
         }
     }
 }
 
-#endif //__RFIR_MODULE_WIFI_CLIENT_H__
+#endif

@@ -56,7 +56,7 @@ namespace rfir {
                 struct EncodeResult {
                     uint16_t*   result = 0;
                     int         count = 0;
-                    std::string toString();
+                    const char* toString();
                     void        free();
                 };
 
@@ -91,7 +91,7 @@ namespace rfir {
                 int encode(rfir::module::ttl::Decoder::DecodeResults* data);
 
 
-                std::string  toString();
+                const char*  toString();
 
                 static int  parseData(const char* data, int nbits, uint8_t* result, bool MSBFirst);
                 static int  parseData(const char* data, int nbits, uint64_t& result, bool MSBFirst);

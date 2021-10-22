@@ -1,5 +1,5 @@
-#ifndef __RFIR_MODULE_WIFI_AP_H__
-#define __RFIR_MODULE_WIFI_AP_H__
+#ifndef __NETWORK_MODULE_WIFI_AP_H__
+#define __NETWORK_MODULE_WIFI_AP_H__
 
 #include <string>
 

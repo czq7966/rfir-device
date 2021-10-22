@@ -10,8 +10,8 @@
   Licensed under MIT license
  *****************************************************************************************************************************/
 
-#ifndef __RFIR_MODULE_WIFI_CRED_H__
-#define __RFIR_MODULE_WIFI_CRED_H__
+#ifndef __NETWORK_MODULE_WIFI_CRED_H__
+#define __NETWORK_MODULE_WIFI_CRED_H__
 
 #include "def.h"
 

@@ -46,7 +46,7 @@ void rfir::module::ttl::Sniffer::uninit() {
 }
 
 void rfir::module::ttl::Sniffer::start() {
-    if (!this->gpio.started()) {
+    if (!sniffStopped && !this->gpio.started()) {
         this->gpio.onChange = onGpioChange;
         this->gpio.start();
         Serial.println(("start sniff......: (" + this->name + ")" + this->getSniffParams()->toString()).c_str());
@@ -56,6 +56,7 @@ void rfir::module::ttl::Sniffer::start() {
 void rfir::module::ttl::Sniffer::stop() {
     this->gpio.stop();
     this->gpio.onChange = 0;
+    Serial.println(("stopped sniff (" + this->name + ")").c_str());
 }
 
 bool rfir::module::ttl::Sniffer::started() {

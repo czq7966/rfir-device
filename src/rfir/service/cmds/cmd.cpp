@@ -109,8 +109,8 @@ bool rfir::service::cmds::Cmd::onCmd_sendEncode(rfir::module::ttl::Config::Devic
             auto rfir = rfir::Get()->getRfir(d->getName());
             rfir->encoder->getEncodeParams()->clone(&d->packet.encode);
             if (rfir->encoder->encode(&jblocks)) {
-                std::string data = rfir->encoder->toString();
-                return onCmd_sendRaw(d, data.c_str(), data.length());                
+                const char* data = rfir->encoder->toString();
+                return onCmd_sendRaw(d, data, strlen(data));
             }
         } 
     }

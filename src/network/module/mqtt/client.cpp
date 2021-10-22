@@ -42,7 +42,7 @@ void network::module::mqtt::Client::connect() {
     if(WiFi.status() == WL_CONNECTED) {
         Serial.println("mqtt connecting...:" + String(this->params.ip.c_str()) + ":" + String(this->params.port));
         
-        if (!mqtt->connect(rfir::util::Util::GetChipId().c_str() , this->params.user.c_str(), this->params.pass.c_str()) && (WiFi.status() == WL_CONNECTED)) {
+        if (!mqtt->connect(this->params.id.c_str() , this->params.user.c_str(), this->params.pass.c_str()) && (WiFi.status() == WL_CONNECTED)) {
             delay(1000);
         }
 
@@ -51,6 +51,9 @@ void network::module::mqtt::Client::connect() {
             Serial.println("\nmqtt connected!");
 
             mqtt->subscribe(this->params.sub_topic.c_str()); 
+            if (this->onConnect) {
+                this->onConnect(mqtt);
+            }
         }        
     }
 }

@@ -25,6 +25,7 @@
                             "atleast": 1,
                             "MSBfirst": 1,
                             "step": 1,
+                            "use_bits": false,
         
                             "nbits":80,  
                             "headermark": 2600,
@@ -44,6 +45,8 @@
                             "atleast": 1,
                             "MSBfirst": 1,
                             "step": 1,
+                            "use_bits": true,
+
         
                             "nbits":2,  
                             "headermark": 0,

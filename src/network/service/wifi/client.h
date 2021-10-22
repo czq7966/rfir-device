@@ -1,5 +1,5 @@
-#ifndef __RFIR_SERVICE_WIFI_CLIENT_H__
-#define __RFIR_SERVICE_WIFI_CLIENT_H__
+#ifndef __NETWORK_SERVICE_WIFI_CLIENT_H__
+#define __NETWORK_SERVICE_WIFI_CLIENT_H__
 
 
 #include "network/module/wifi/client.h"

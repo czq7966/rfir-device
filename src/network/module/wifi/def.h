@@ -10,8 +10,8 @@
   Licensed under MIT license      
  *****************************************************************************************************************************/
 
-#ifndef __RFIR_MODULE_WIFI_DEF_H__
-#define __RFIR_MODULE_WIFI_DEF_H__
+#ifndef __NETWORK_MODULE_WIFI_DEF_H__
+#define __NETWORK_MODULE_WIFI_DEF_H__
 
 #if !( ESP8266 || ESP32)
   #error This code is intended to run only on the ESP8266/ESP32 boards ! Please check your Tools->Board setting.
