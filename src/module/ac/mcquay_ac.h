@@ -10,11 +10,11 @@
 
 namespace module {
     namespace ac {
-        class McquayAC {
+        class McquayAC {        
         public:
-            static const uint8_t KMcQuayStateLength = 8;
+            static const uint8_t KMcQuayStateLength = 8;            
             //Header
-            static const uint8_t KMcQuayHeader  = 0x16;
+            static const uint8_t KMcQuayHeader  = 0x16;            
 
             //Mode
             static const uint8_t KMcQuayModeNone = 0b0000;
@@ -41,7 +41,18 @@ namespace module {
             static const uint8_t KMcQuayMinTempC = 16;  // Celsius
             static const uint8_t KMcQuayMaxTempC = 30;  // Celsius
 
-            static const uint16_t KMcQuayTimerMax = 24 * 60;        
+            static const uint16_t KMcQuayTimerMax = 24 * 60;  
+        public:
+            static const uint8_t    KMcQuayEncodeRawLength = 134;
+            static const uint16_t   KMcQuayEncodeHeaderMark = 4690;
+            static const uint16_t   KMcQuayEncodeHeaderSpace = 2610;
+            static const uint16_t   KMcQuayEncodeOneMark = 375;
+            static const uint16_t   KMcQuayEncodeOneSpace = 910;
+            static const uint16_t   KMcQuayEncodeZeroMark = 375;
+            static const uint16_t   KMcQuayEncodeZeroSpace = 390;
+            static const uint16_t   KMcQuayEncodeFooterMark = 375;
+            static const uint16_t   KMcQuayEncodeFooterSpace = 20470;
+
         public:
             union Protocol{
                 uint8_t remote_state[KMcQuayStateLength];  
@@ -66,14 +77,17 @@ namespace module {
                     // Byte 7
                     uint8_t Swing           :1;       //摇摆开关，1=开；0=关
                     uint8_t Sleep           :1;       //睡眠开关，1=开；0=关
-                    uint8_t unknown         :2;       //未知，保留
+                    uint8_t Unknown         :1;       //未知，保留
+                    uint8_t PowerSwitch     :1;       //开、关转换
                     uint8_t Sum             :4;       //高4位=校验值=前7个字节的高4位 + 低4位 + 第8字节低4位的和，取总和的低4位
                 };
             };            
 
         public:
             Protocol protocol;
-
+            uint16_t encodeRaw[KMcQuayEncodeRawLength];
+            void    setHeader(const uint8_t header);
+            uint8_t getHeader();
             void    setTemp(const uint8_t temp, const bool fahrenheit = false);
             uint8_t getTemp();
             void    setFan(const uint8_t speed);
@@ -84,6 +98,8 @@ namespace module {
             bool    getSleep();
             void    setSwing(const bool on);
             bool    getSwing();  
+            void    setPowerSwitch(const bool on);
+            bool    getPowerSwitch();              
             uint8_t getTimerHour();
             void    setTimerHour(const uint8_t hour);
             uint8_t getTimerMinute();
@@ -104,6 +120,9 @@ namespace module {
             std::string toString();
             std::string toBitString();
             std::string toHexString();
+
+            uint16_t*   getEncodeRaw();      
+            std::string getEncodeString();
 
             static uint8_t calcBlockChecksum(const uint8_t* block, const uint16_t length = KMcQuayStateLength);
             static bool validChecksum(const uint8_t state[],const uint16_t length = KMcQuayStateLength);

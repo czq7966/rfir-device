@@ -36,5 +36,6 @@ rfir::module::ttl::Config::Device* rfir::module::ttl::device::Mcquay::Init(rfir:
 
     //编码参数
     d->packet.encode.clone(&d->packet.decode);
+    
     return d;
 }

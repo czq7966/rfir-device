@@ -41,14 +41,18 @@ void network::module::mqtt::Client::loop() {
 void network::module::mqtt::Client::connect() {
     if(WiFi.status() == WL_CONNECTED) {
         Serial.println("mqtt connecting...:" + String(this->params.ip.c_str()) + ":" + String(this->params.port));
+        digitalWrite(LED_BUILTIN, LOW);        
         
         if (!mqtt->connect(this->params.id.c_str() , this->params.user.c_str(), this->params.pass.c_str()) && (WiFi.status() == WL_CONNECTED)) {
-            delay(1000);
+            delay(300);
+            digitalWrite(LED_BUILTIN, HIGH);
+            delay(700);
         }
 
         if (mqtt->connected()) {
 
             Serial.println("\nmqtt connected!");
+            digitalWrite(LED_BUILTIN, HIGH);
 
             mqtt->subscribe(this->params.sub_topic.c_str()); 
             if (this->onConnect) {

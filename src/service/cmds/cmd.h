@@ -20,7 +20,8 @@ namespace service {
                 GetVersion = 5,
                 Update = 6,
                 Reboot = 7,
-                Send = 8                
+                Send = 8, 
+                Codec = 10
             };
         public:       
             static bool PublishMsg(const char* msg);
@@ -32,6 +33,7 @@ namespace service {
             static bool OnCmd_ac_set(neb::CJsonObject* cmd);
             static bool OnCmd_ac_get(neb::CJsonObject* cmd);
             static bool OnCmd_send(neb::CJsonObject* cmd);
+            static bool OnCmd_Codec(neb::CJsonObject* cmd);
             static bool On_Decoded(uint8_t* bytes, uint16_t nbits);
 
         };

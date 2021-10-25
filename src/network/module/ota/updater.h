@@ -2,6 +2,7 @@
 #ifndef __NETWORK_MODULE_OTA_UPDATER_H__
 #define __NETWORK_MODULE_OTA_UPDATER_H__
 
+#ifdef ESP8266
 #include <string>
 #include <EOTAUpdate.h>
 
@@ -29,6 +30,6 @@ namespace network {
     }
 }
 
-
+#endif //ESP8266
 
 #endif //

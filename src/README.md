@@ -1,0 +1,1 @@
+certutil -hashfile E:\data\rfir-mcquay\output\firmware_v12.0.bin MD5

@@ -3,8 +3,8 @@
 
 //OTA
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          11
-#define OTA_VERSION_STRING          "11.0"
+#define OTA_VERSION_NUMBER          21
+#define OTA_VERSION_STRING          "21.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-ir-ac/cfg.txt"
 
 

@@ -1,12 +1,16 @@
 #include "mcquay_ac.h"
 
-void module::ac::McquayAC::setTemp(const uint8_t temp, const bool fahrenheit) {
-    uint8_t safecelsius = temp;
-    safecelsius = std::max(KMcQuayMinTempC, safecelsius);
-    safecelsius = std::min(KMcQuayMaxTempC, safecelsius);
+void module::ac::McquayAC::setHeader(const uint8_t header) {
+    protocol.Header = header;
+}
 
-    protocol.Temp = dec2hex(safecelsius);    
-    
+uint8_t module::ac::McquayAC::getHeader() {
+    return protocol.Header;
+}
+
+void module::ac::McquayAC::setTemp(const uint8_t temp, const bool fahrenheit) {
+    uint8_t safecelsius = (temp >= KMcQuayMinTempC && temp <= KMcQuayMaxTempC) ? temp : 25;
+    protocol.Temp = dec2hex(safecelsius);        
 }
 
 uint8_t module::ac::McquayAC::getTemp()  {
@@ -14,7 +18,7 @@ uint8_t module::ac::McquayAC::getTemp()  {
 }
 
 void module::ac::McquayAC::setFan(const uint8_t speed) {
-  uint8_t fan = speed;  
+  uint8_t fan = speed ? speed : KMcQuayFanAuto;
   protocol.Fan = fan;       
 }
 
@@ -23,7 +27,7 @@ uint8_t module::ac::McquayAC::getFan()  {
 }
 
 void    module::ac::McquayAC::setMode(const uint8_t new_mode) {
-    uint8_t mode = new_mode;
+    uint8_t mode = new_mode ? new_mode : KMcQuayModeDry;
     protocol.Mode = mode;
 }
 
@@ -45,6 +49,14 @@ void    module::ac::McquayAC::setSwing(const bool on) {
 
 bool    module::ac::McquayAC::getSwing() {
     return protocol.Swing;
+}
+
+void    module::ac::McquayAC::setPowerSwitch(const bool on) {
+    protocol.PowerSwitch = on;
+}
+
+bool    module::ac::McquayAC::getPowerSwitch() {
+    return protocol.PowerSwitch;
 }
 
 uint8_t  module::ac::McquayAC::getTimerHour() {
@@ -81,6 +93,13 @@ bool module::ac::McquayAC::validsum() {
 }
 
 void module::ac::McquayAC::fixup() {
+    protocol.Header = KMcQuayHeader;
+    setMode(getMode());
+    setFan(getFan());
+    setTemp(getTemp());
+    setSleep(getSleep());
+    setSwing(getSwing());
+    
     checksum();
 }
 
@@ -122,6 +141,62 @@ std::string module::ac::McquayAC::toHexString() {
             result = result + (" " + hex);
         else
             result = result + hex; 
+    }
+    return std::string(result.c_str());
+}
+
+uint16_t* module::ac::McquayAC::getEncodeRaw() {
+
+    uint16_t offset = 0;
+
+    //Header
+    this->encodeRaw[offset++] = KMcQuayEncodeHeaderMark;
+    this->encodeRaw[offset++] = KMcQuayEncodeHeaderSpace;
+
+    auto raw = getRaw();
+    uint8_t prebit = 0;
+    for(uint8_t i = 0; i < 8; i++) {
+        auto byte = *(raw + i);
+        for(uint8_t j = 0; j < 8; j++) {
+            auto bit = byte >> j & 0x01;
+            uint16_t mark = 0, space = 0;
+            if (bit == 0) {
+                mark = KMcQuayEncodeZeroMark;
+                space = KMcQuayEncodeZeroSpace;
+            } else {
+                mark = KMcQuayEncodeOneMark;
+                space = KMcQuayEncodeOneSpace;
+            }
+
+            if ( i + j == 0)  
+                mark += 40;
+            
+            if ((j + 1) % 4 == 0)
+                space += 70;
+            if (prebit == 1) 
+                mark += 30;
+
+            this->encodeRaw[offset++] = mark;
+            this->encodeRaw[offset++] = space;
+
+            prebit = bit;
+        }
+    }
+    this->encodeRaw[offset++] = KMcQuayEncodeFooterMark;
+    this->encodeRaw[offset++] = KMcQuayEncodeFooterSpace;
+
+    this->encodeRaw[offset++] = KMcQuayEncodeHeaderMark;
+    this->encodeRaw[offset++] = KMcQuayEncodeHeaderSpace;
+
+
+    return this->encodeRaw;
+}
+
+std::string module::ac::McquayAC::getEncodeString() {
+    auto raw = getEncodeRaw();
+    String result;
+    for(auto i = 0; i < KMcQuayEncodeRawLength; i++) {
+        result = result + String(*(raw + i)) + ",";
     }
     return std::string(result.c_str());
 }

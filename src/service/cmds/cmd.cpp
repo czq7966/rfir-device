@@ -39,7 +39,10 @@ bool service::cmds::Cmd::OnCmd(neb::CJsonObject* jcmd) {
                 break;
             case ECmdId::Send:
                 return OnCmd_send(jcmd);
-                break;            
+                break;  
+            case ECmdId::Codec:
+                return OnCmd_Codec(jcmd);
+                break;                            
             default:
                 break;
         }        
@@ -54,6 +57,8 @@ bool service::cmds::Cmd::OnCmd_heartbeat(neb::CJsonObject* _cmd, uint8_t st) {
     hd.Add("cmd", ECmdId::HeartBeet);
     hd.Add("stp", 1);
     pld.Add("st", st);
+    pld.Add("ver", OTA_VERSION_NUMBER);
+    pld.Add("rssi", WiFi.RSSI());
     cmd.Add("hd", hd);
     cmd.Add("pld", pld);
     
@@ -91,6 +96,7 @@ bool service::cmds::Cmd::OnCmd_getversion(neb::CJsonObject* _doc) {
     hd.Add("stp", 1);
 
     pld.Add("version", OTA_VERSION_NUMBER);
+    pld.Add("rssi", WiFi.RSSI());
 
     cmd.Add("hd", hd);
     cmd.Add("pld", pld);    
@@ -105,7 +111,7 @@ bool service::cmds::Cmd::OnCmd_ac_set(neb::CJsonObject* cmd) {
         return OnCmd_ac_get(cmd);
     
     auto ac = module::ac::Mcquay::AC;
-Serial.println("11111111111111");
+
     //Power
     auto power = module::ac::Mcquay::getPower();
     std::string powerStr;
@@ -155,40 +161,30 @@ Serial.println("11111111111111");
     ac->setSleep(sleep);
     ac->setSwing(swing);
     ac->setTemp(temp);
+    ac->setPowerSwitch(power != module::ac::Mcquay::getPower());
 
-    ac->getRaw();
-
-    cmd->Clear();
-    neb::CJsonObject jcmd;
-
-    String cmdStr = "{'hd': {'did': '%did%','cmd': %cmd% }, 'pld': {'encode': {'blocks': [{'data': '%data%'}]}} }";
-    cmdStr.replace("'", "\"");
-    cmdStr.replace("%did%", rfir::util::Util::GetChipId().c_str());
-    cmdStr.replace("%cmd%", String(ECmdId::Send));
-    cmdStr.replace("%data%", ac->toBitString().c_str());
-    jcmd.Parse(cmdStr.c_str());
-
-    OnCmd_send(&jcmd);
-
-
-
-
-
-
-
-//     String pldStr = "{\"encode\": { \"blocks\": [{\"data\": \"{data}\" }]}}"; 
-//     pldStr.replace("{data}", ac->toBitString().c_str());
-
-// Serial.println(pldStr.c_str());
-
-//     jpld.Parse(pldStr.c_str());
-//     Serial.println(jpld.ToString().c_str());
-
-
+    auto raw = ac->getEncodeRaw();
+    auto rfir = rfir::GetRfir();
+    rfir->sniffer->stop();
+    rfir->sender->sendRaw(raw, module::ac::McquayAC::KMcQuayEncodeRawLength);
+    rfir->sniffer->start();
     
-    
-    // rfir::service::cmds::Cmd::onCmd()
+    // Serial.println(ac->getEncodeString().c_str());
+    // Serial.println(ac->toHexString().c_str());
 
+    // ac->getRaw();
+
+    // cmd->Clear();
+    // neb::CJsonObject jcmd;
+
+    // String cmdStr = "{'hd': {'did': '%did%','cmd': %cmd% }, 'pld': {'encode': {'blocks': [{'data': '%data%'}]}} }";
+    // cmdStr.replace("'", "\"");
+    // cmdStr.replace("%did%", rfir::util::Util::GetChipId().c_str());
+    // cmdStr.replace("%cmd%", String(ECmdId::Send));
+    // cmdStr.replace("%data%", ac->toBitString().c_str());
+    // jcmd.Parse(cmdStr.c_str());
+
+    // OnCmd_send(&jcmd);
 
     return true;
 }
@@ -210,9 +206,15 @@ bool service::cmds::Cmd::OnCmd_send(neb::CJsonObject* cmd) {
     auto rfir = rfir::GetRfir();
     rfir->sniffer->stop();
     // rfir->sniffer->stopSniff();
-    rfir::service::cmds::Cmd::onCmd(cmd);   
+    rfir::service::cmds::Cmd::onCmd(cmd); 
     rfir->sniffer->start();
     return true;
+}
+
+
+
+bool service::cmds::Cmd::OnCmd_Codec(neb::CJsonObject* cmd) {
+    return rfir::service::cmds::Cmd::onCmd(cmd); 
 }
 
 bool service::cmds::Cmd::On_Decoded(uint8_t* bytes, uint16_t nbits) {

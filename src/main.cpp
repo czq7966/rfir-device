@@ -15,7 +15,11 @@
 #include "rfir/module/ttl/device/mcquay.h"
 
 #include "service/cmds/cmd.h"
+#include "service/ac/mcquay.h"
 
+#include <LittleFS.h>
+
+#define FILESYSTEM LittleFS
 
 
 std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
@@ -68,8 +72,8 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
 }
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
-    Serial.println("onRfirEncoded");
-    // Serial.println(data->toString());
+    Serial.println("onRfirEncoded: " + String(data->count));
+    Serial.println(data->toString());
     // std::string str = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data);
     // Serial.println(str.c_str()); 
     // Serial.println(""); 
@@ -94,7 +98,7 @@ void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encod
 }
 
 void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const uint16_t len) {
-    Serial.println("onRfirSended");
+    Serial.println("onRfirSended: " + String(len));
     // std::string str = rfir::module::ttl::Sender::packSniffedCmd(sender, data, len);
     // Serial.println(str.c_str());  
     // Serial.println("");
@@ -121,7 +125,7 @@ void onRfirStart(void* data) {
     d->packet.sniff.params.bufSize = 512;
     //发码参数 
     d->packet.send.params.pin = 4;
-    d->packet.send.params.repeat = 1;
+    d->packet.send.params.repeat = 2;
 #else
     //采码参数
     d->packet.sniff.params.pin = 22;
@@ -155,6 +159,10 @@ void setup() {
     Serial.begin(115200);
     Serial.println("begin chid id: " + String(ChipID.c_str()));
 
+    if (!FILESYSTEM.begin())    
+        Serial.println("Failed to mount file system");
+    else
+        Serial.println("mounted file system: LittleFS");
 
     //启动wifi
     network::module::wifi::Client::Params np;
@@ -182,6 +190,9 @@ void setup() {
     //启动收发器
     rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
 
+    //启动AC
+    service::ac::Mcquay::Start();
+
 }
 
 
@@ -195,6 +206,8 @@ void loop() {
     network::service::mqtt::Client::Loop();
     //收发器循环
     rfir::Loop();  
+    //AC循环
+    service::ac::Mcquay::Loop();
 }
 
 

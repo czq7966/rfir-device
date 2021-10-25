@@ -34,7 +34,7 @@ std::string module::ac::Mcquay::toString() {
     std::string sleepStr =    AC->getSleep() ? "on" : "off";
     std::string swingStr =    AC->getSwing() ? "on" : "off";
     uint8_t temp = AC->getTemp();    
-    bool powerStr = getPower() ? "on" : "off";
+    std::string powerStr = getPower() ? "on" : "off";
     neb::CJsonObject json;
     json.Add("power", powerStr);
     json.Add("mode", modeStr);

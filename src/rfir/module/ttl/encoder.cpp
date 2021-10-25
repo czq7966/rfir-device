@@ -281,8 +281,8 @@ uint16_t*  rfir::module::ttl::Encoder::parseRaw(const char* data, int size, int&
   for (size_t i = 0; i < size; i++)
   {
     char c = data[i];
-    if (c != ',' ) cnt++;
-  }
+    if (c == ',' ) cnt++;
+  }  
 
   uint16_t* result = new uint16_t[cnt];
 
