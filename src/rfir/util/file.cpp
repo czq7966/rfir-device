@@ -3,8 +3,8 @@
 #include <fstream>
 
 bool rfir::util::File::remove(const char * fn) {
-    if (SPIFFS.exists(fn)) {
-        return SPIFFS.remove(fn);
+    if (FileFS.exists(fn)) {
+        return FileFS.remove(fn);
     }
     return 1;
 }
@@ -15,16 +15,16 @@ rfir::util::TxtFile::TxtFile(const char * fn) {
 
 bool rfir::util::TxtFile::begin() {
 #if ESP8266
-    if (!SPIFFS.begin())
+    if (!FileFS.begin())
     {
-        SPIFFS.format();
+        // FileFS.format();
 #else
-    if (!SPIFFS.begin(true))
+    if (!FileFS.begin(true))
     {
 #endif        
-        if (!SPIFFS.begin())
+        if (!FileFS.begin())
         {
-            Serial.println("SPIFFS begin failed");
+            Serial.println("LittleFS begin failed");
             return false;
         }
     }    
@@ -35,8 +35,8 @@ bool rfir::util::TxtFile::begin() {
 int rfir::util::TxtFile::readString(std::string& str) {
     if (begin()) {
         fs::File file;
-        if (SPIFFS.exists(this->fn.c_str())) {
-            file = SPIFFS.open(this->fn.c_str(), "r");
+        if (FileFS.exists(this->fn.c_str())) {
+            file = FileFS.open(this->fn.c_str(), "r");
         } else return 0;
 
         while (file.available())
@@ -76,7 +76,7 @@ int  rfir::util::TxtFile::writeString(std::string txt) {
 
 int rfir::util::TxtFile::writeString(const char* buf, uint32_t size) {
     if (begin()) {
-        fs::File file = SPIFFS.open(this->fn.c_str(), "w");
+        fs::File file = FileFS.open(this->fn.c_str(), "w");
         if (!file)
             return -1;
 
@@ -89,10 +89,10 @@ int rfir::util::TxtFile::writeString(const char* buf, uint32_t size) {
     return -1;
 
 // #ifdef ESP32
-//     fs::File file = SPIFFS.open(this->fn.c_str(), FILE_WRITE);
+//     fs::File file = FileFS.open(this->fn.c_str(), FILE_WRITE);
 // #endif
 // #ifdef ESP8266
-//     fs::File file = SPIFFS.open(this->fn.c_str(), "w");
+//     fs::File file = FileFS.open(this->fn.c_str(), "w");
 // #endif    
      
 //     if (!file)

@@ -31,7 +31,7 @@ namespace service {
             static bool OnCmd_reboot(neb::CJsonObject* cmd, std::string reason);
             static bool OnCmd_getversion(neb::CJsonObject* cmd);
             static bool OnCmd_ac_set(neb::CJsonObject* cmd);
-            static bool OnCmd_ac_get(neb::CJsonObject* cmd);
+            static bool OnCmd_ac_get(neb::CJsonObject* cmd, std::string reason = "User Get");
             static bool OnCmd_send(neb::CJsonObject* cmd);
             static bool OnCmd_Codec(neb::CJsonObject* cmd);
             static bool On_Decoded(uint8_t* bytes, uint16_t nbits);

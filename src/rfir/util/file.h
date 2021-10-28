@@ -4,10 +4,11 @@
 #include <stdint.h>
 #include "platform.h"
 
+#include <LittleFS.h>
 
-// #ifndef FileFS
-// #define FileFS SPIFFS
-// #endif
+#ifndef FileFS
+#define FileFS LittleFS
+#endif
 
 namespace rfir {
     namespace util {

@@ -17,16 +17,12 @@
 #include "service/cmds/cmd.h"
 #include "service/ac/mcquay.h"
 
-#include <LittleFS.h>
-
-#define FILESYSTEM LittleFS
-
 
 std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
 
 void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta* data, int count) {
     Serial.println("onRfirSniffed");
-    Serial.println(sniffer->toString());
+    // Serial.println(sniffer->toString());
     
     // std::string str = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str());
     // Serial.println(str.c_str());  
@@ -73,7 +69,7 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
     Serial.println("onRfirEncoded: " + String(data->count));
-    Serial.println(data->toString());
+    // Serial.println(data->toString());
     // std::string str = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data);
     // Serial.println(str.c_str()); 
     // Serial.println(""); 
@@ -125,7 +121,6 @@ void onRfirStart(void* data) {
     d->packet.sniff.params.bufSize = 512;
     //发码参数 
     d->packet.send.params.pin = 4;
-    d->packet.send.params.repeat = 2;
 #else
     //采码参数
     d->packet.sniff.params.pin = 22;
@@ -148,6 +143,7 @@ void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
         service::cmds::Cmd::OnCmd_heartbeat(0, 1);
     else 
         service::cmds::Cmd::OnCmd_heartbeat(0, 2);
+    module::ac::Mcquay::DoTimerReport(true);
 }
 
 void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
@@ -158,11 +154,6 @@ void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
 void setup() {
     Serial.begin(115200);
     Serial.println("begin chid id: " + String(ChipID.c_str()));
-
-    if (!FILESYSTEM.begin())    
-        Serial.println("Failed to mount file system");
-    else
-        Serial.println("mounted file system: LittleFS");
 
     //启动wifi
     network::module::wifi::Client::Params np;
@@ -204,10 +195,10 @@ void loop() {
     network::service::ota::Updater::Loop();
     //mqtt循环
     network::service::mqtt::Client::Loop();
-    //收发器循环
-    rfir::Loop();  
     //AC循环
     service::ac::Mcquay::Loop();
+    //收发器循环
+    rfir::Loop();  
 }
 
 

@@ -36,6 +36,12 @@ rfir::module::ttl::Config::Device* rfir::module::ttl::device::Mcquay::Init(rfir:
 
     //编码参数
     d->packet.encode.clone(&d->packet.decode);
+
+    //发送参数
+    d->packet.send.params.inverted = false;
+    d->packet.send.params.repeat = 0;    
+    d->packet.send.params.modulation = true;    
     
     return d;
 }
+

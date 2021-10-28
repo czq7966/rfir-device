@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-ir-ac/firmware_v21.bin
-21
-52feb081694e52e9df64169beb525439
-21.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-ir-ac/firmware_v28.bin
+28
+ef6934d634f64c9174b87f1a217a4694
+28.0
 1
-ESP8266_6145655,ESP8266_6145672,
+ESP8266_6145672,ESP8266_6145655,

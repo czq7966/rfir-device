@@ -3,14 +3,17 @@
 
 
 #include <Arduino.h>
+#include "module/ac/mcquay.h"
 
 namespace service {
     namespace ac {
         class Mcquay {
         public:
-            static void Start(){}
+            static void Start(){
+                module::ac::Mcquay::Start();
+            }
             static bool Loop() {
-                return false;
+                return module::ac::Mcquay::Loop();
             }
         };
     }
@@ -18,4 +21,4 @@ namespace service {
 
 
 
-#endif //__MODULE_AC_MCQUAY_H__
+#endif //__SERVICE_AC_MCQUAY_H__

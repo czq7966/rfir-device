@@ -59,20 +59,20 @@ bool    module::ac::McquayAC::getPowerSwitch() {
     return protocol.PowerSwitch;
 }
 
-uint8_t  module::ac::McquayAC::getTimerHour() {
-    return hex2dec(protocol.TimerHour);
+uint8_t  module::ac::McquayAC::getHour() {
+    return hex2dec(protocol.Hour);
 }
 
-void     module::ac::McquayAC::setTimerHour(const uint8_t hour) {
-    protocol.TimerHour = dec2hex(hour);
+void     module::ac::McquayAC::setHour(const uint8_t hour) {
+    protocol.Hour = dec2hex(hour);
 }
 
-uint8_t  module::ac::McquayAC::getTimerMinute() {
-    return hex2dec(protocol.TimerMinute);
+uint8_t  module::ac::McquayAC::getMinute() {
+    return hex2dec(protocol.Minute);
 }
 
-void     module::ac::McquayAC::setTimerMinute(const uint8_t minute) {
-    protocol.TimerHour = dec2hex(minute);
+void     module::ac::McquayAC::setMinute(const uint8_t minute) {
+    protocol.Minute = dec2hex(minute);
 }
 
 
@@ -83,6 +83,8 @@ uint8_t* module::ac::McquayAC::getRaw(void) {
 
 void    module::ac::McquayAC::setRaw(const uint8_t new_code[]) {
     std::memcpy(protocol.remote_state, new_code, KMcQuayStateLength);
+    if (this->onSetRaw)
+        this->onSetRaw(this);
 }
 
 void module::ac::McquayAC::checksum(const uint16_t length) {

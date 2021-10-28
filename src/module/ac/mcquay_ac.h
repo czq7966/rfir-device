@@ -63,9 +63,9 @@ namespace module {
                     uint8_t Mode            :4;       // 低4位=模式：0b0000=除湿；0b0001=吹风；0b1001=制冷；其它值待续
                     uint8_t Fan             :4;       // 高4位=风速：0b1000=低风；0b0100=中风；0b0010=高风；0b0001=自动
                     // Byte 2    
-                    uint8_t TimerMinute     :8;       // 高4位=分钟之十位的值，如36分钟的3，=0b0011// 低4位=分钟之个位的值，如36分钟的6，=0b0110
+                    uint8_t Minute          :8;       // 高4位=分钟之十位的值，如36分钟的3，=0b0011// 低4位=分钟之个位的值，如36分钟的6，=0b0110
                     // Byte 3
-                    uint8_t TimerHour       :8;       // 高4位=小时之十位的值，如14时的1，=0b0001  // 低4位=小时之个位的值，如14时的4，=0b0100
+                    uint8_t Hour            :8;       // 高4位=小时之十位的值，如14时的1，=0b0001  // 低4位=小时之个位的值，如14时的4，=0b0100
                     // Byte 4
                     uint8_t OpenTime        :7;       //定时开时间，具体说明待续
                     uint8_t TimingOpen      :1;       //第8位="定时开"功能开关，1=开启"定时开"功能；0=关闭"定时开"功能
@@ -86,6 +86,7 @@ namespace module {
         public:
             Protocol protocol;
             uint16_t encodeRaw[KMcQuayEncodeRawLength];
+            std::function<void(void*)> onSetRaw;
             void    setHeader(const uint8_t header);
             uint8_t getHeader();
             void    setTemp(const uint8_t temp, const bool fahrenheit = false);
@@ -100,10 +101,10 @@ namespace module {
             bool    getSwing();  
             void    setPowerSwitch(const bool on);
             bool    getPowerSwitch();              
-            uint8_t getTimerHour();
-            void    setTimerHour(const uint8_t hour);
-            uint8_t getTimerMinute();
-            void    setTimerMinute(const uint8_t minute);  
+            uint8_t getHour();
+            void    setHour(const uint8_t hour);
+            uint8_t getMinute();
+            void    setMinute(const uint8_t minute);  
             bool    getPower();
             uint8_t getPinMode();
 
