@@ -1,0 +1,2 @@
+#define RFIR_DEVICE_GREE
+#define RFIR_DEVICE_MCQUAY

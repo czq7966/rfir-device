@@ -30,3 +30,29 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
 
   
 }
+
+
+std::string rfir::util::Util::BitsToString(uint8_t bytes[], uint16_t nbits) {
+  String bitStr;
+  for (size_t i = 0; i < nbits; i++)
+  {
+    uint8_t b = bytes[i / 8];
+    uint16_t j = i % 8;
+    b >>= j;
+    bitStr = String(b & 1 ? 1: 0) + bitStr;      
+  }
+  return std::string(bitStr.c_str());
+}
+
+std::string rfir::util::Util::BytesToString(uint8_t bytes[], uint16_t nbytes) {
+  std::string byteStr;
+  for (size_t i = 0; i < nbytes; i++)
+  {
+    uint8_t b = bytes[i];
+    if (i == 0)
+      byteStr = BitsToString(bytes + i, 8);
+    else
+      byteStr = BitsToString(bytes + i, 8) + " " + byteStr;
+  }
+  return byteStr;
+}

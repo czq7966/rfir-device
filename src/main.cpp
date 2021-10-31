@@ -11,6 +11,7 @@
 #include "rfir/service/serial/receiver.h"
 #include "rfir/service/serial/sender.h"
 #include "rfir/service/cmds/cmd.h"
+#include "rfir/service/device/device.h"
 #include "rfir/rfir.h"
 #include "rfir/module/ttl/device/mcquay.h"
 
@@ -114,7 +115,8 @@ void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const
 void onRfirStart(void* data) {
     Serial.println("onStart");
 
-    auto d = rfir::module::ttl::device::Mcquay::Init(&rfir::RFIR::Config->devices);
+    // auto d = rfir::module::ttl::device::Mcquay::Init(&rfir::RFIR::Config->devices);
+    auto d = rfir::service::device::Device::Init();
 #ifdef ESP8266
     //采码参数
     d->packet.sniff.params.pin = 14;
@@ -182,6 +184,7 @@ void setup() {
     rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
 
     //启动AC
+    rfir::service::device::Device::Start();
     service::ac::Mcquay::Start();
 
 }
