@@ -1,100 +1,100 @@
 #include "mcquay_ac.h"
 
-void module::ac::McquayAC::setHeader(const uint8_t header) {
+void rfir::module::device::ac::McquayAC::setHeader(const uint8_t header) {
     protocol.Header = header;
 }
 
-uint8_t module::ac::McquayAC::getHeader() {
+uint8_t rfir::module::device::ac::McquayAC::getHeader() {
     return protocol.Header;
 }
 
-void module::ac::McquayAC::setTemp(const uint8_t temp, const bool fahrenheit) {
+void rfir::module::device::ac::McquayAC::setTemp(const uint8_t temp, const bool fahrenheit) {
     uint8_t safecelsius = (temp >= KMcQuayMinTempC && temp <= KMcQuayMaxTempC) ? temp : 25;
     protocol.Temp = dec2hex(safecelsius);        
 }
 
-uint8_t module::ac::McquayAC::getTemp()  {
+uint8_t rfir::module::device::ac::McquayAC::getTemp()  {
     return hex2dec(protocol.Temp); 
 }
 
-void module::ac::McquayAC::setFan(const uint8_t speed) {
+void rfir::module::device::ac::McquayAC::setFan(const uint8_t speed) {
   uint8_t fan = speed ? speed : KMcQuayFanAuto;
   protocol.Fan = fan;       
 }
 
-uint8_t module::ac::McquayAC::getFan()  {
+uint8_t rfir::module::device::ac::McquayAC::getFan()  {
     return protocol.Fan;
 }
 
-void    module::ac::McquayAC::setMode(const uint8_t new_mode) {
+void    rfir::module::device::ac::McquayAC::setMode(const uint8_t new_mode) {
     uint8_t mode = new_mode ? new_mode : KMcQuayModeDry;
     protocol.Mode = mode;
 }
 
-uint8_t module::ac::McquayAC::getMode() {
+uint8_t rfir::module::device::ac::McquayAC::getMode() {
     return protocol.Mode;
 }
 
-void    module::ac::McquayAC::setSleep(const bool on) {
+void    rfir::module::device::ac::McquayAC::setSleep(const bool on) {
     protocol.Sleep = on;
 }
 
-bool    module::ac::McquayAC::getSleep() {
+bool    rfir::module::device::ac::McquayAC::getSleep() {
     return protocol.Sleep;
 }
 
-void    module::ac::McquayAC::setSwing(const bool on) {
+void    rfir::module::device::ac::McquayAC::setSwing(const bool on) {
     protocol.Swing = on;
 }
 
-bool    module::ac::McquayAC::getSwing() {
+bool    rfir::module::device::ac::McquayAC::getSwing() {
     return protocol.Swing;
 }
 
-void    module::ac::McquayAC::setPowerSwitch(const bool on) {
+void    rfir::module::device::ac::McquayAC::setPowerSwitch(const bool on) {
     protocol.PowerSwitch = on;
 }
 
-bool    module::ac::McquayAC::getPowerSwitch() {
+bool    rfir::module::device::ac::McquayAC::getPowerSwitch() {
     return protocol.PowerSwitch;
 }
 
-uint8_t  module::ac::McquayAC::getHour() {
+uint8_t  rfir::module::device::ac::McquayAC::getHour() {
     return hex2dec(protocol.Hour);
 }
 
-void     module::ac::McquayAC::setHour(const uint8_t hour) {
+void     rfir::module::device::ac::McquayAC::setHour(const uint8_t hour) {
     protocol.Hour = dec2hex(hour);
 }
 
-uint8_t  module::ac::McquayAC::getMinute() {
+uint8_t  rfir::module::device::ac::McquayAC::getMinute() {
     return hex2dec(protocol.Minute);
 }
 
-void     module::ac::McquayAC::setMinute(const uint8_t minute) {
+void     rfir::module::device::ac::McquayAC::setMinute(const uint8_t minute) {
     protocol.Minute = dec2hex(minute);
 }
 
 
-uint8_t* module::ac::McquayAC::getRaw(void) {
+uint8_t* rfir::module::device::ac::McquayAC::getRaw(void) {
     fixup(); 
     return protocol.remote_state;
 }
 
-void    module::ac::McquayAC::setRaw(const uint8_t new_code[]) {
+void    rfir::module::device::ac::McquayAC::setRaw(const uint8_t new_code[]) {
     memcpy(protocol.remote_state, new_code, KMcQuayStateLength);
     if (this->onSetRaw)
         this->onSetRaw(this);
 }
 
-void module::ac::McquayAC::checksum(const uint16_t length) {
+void rfir::module::device::ac::McquayAC::checksum(const uint16_t length) {
     protocol.Sum = McquayAC::calcBlockChecksum(protocol.remote_state, length);
 }
-bool module::ac::McquayAC::validsum() {
+bool rfir::module::device::ac::McquayAC::validsum() {
     return validChecksum(this->protocol.remote_state);
 }
 
-void module::ac::McquayAC::fixup() {
+void rfir::module::device::ac::McquayAC::fixup() {
     protocol.Header = KMcQuayHeader;
     setMode(getMode());
     setFan(getFan());
@@ -105,11 +105,11 @@ void module::ac::McquayAC::fixup() {
     checksum();
 }
 
-std::string module::ac::McquayAC::toString() {
+std::string rfir::module::device::ac::McquayAC::toString() {
     return "";
 }
 
-std::string module::ac::McquayAC::toBitString() {
+std::string rfir::module::device::ac::McquayAC::toBitString() {
     String result;
 
     for (size_t j = 0; j < KMcQuayStateLength; j++)
@@ -130,7 +130,7 @@ std::string module::ac::McquayAC::toBitString() {
     return std::string(result.c_str());    
 }
 
-std::string module::ac::McquayAC::toHexString() {
+std::string rfir::module::device::ac::McquayAC::toHexString() {
     String result;
     for (size_t j = 0; j < KMcQuayStateLength; j++)
     {
@@ -147,7 +147,7 @@ std::string module::ac::McquayAC::toHexString() {
     return std::string(result.c_str());
 }
 
-uint16_t* module::ac::McquayAC::getEncodeRaw() {
+uint16_t* rfir::module::device::ac::McquayAC::getEncodeRaw() {
 
     uint16_t offset = 0;
 
@@ -194,7 +194,7 @@ uint16_t* module::ac::McquayAC::getEncodeRaw() {
     return this->encodeRaw;
 }
 
-std::string module::ac::McquayAC::getEncodeString() {
+std::string rfir::module::device::ac::McquayAC::getEncodeString() {
     auto raw = getEncodeRaw();
     String result;
     for(auto i = 0; i < KMcQuayEncodeRawLength; i++) {
@@ -203,7 +203,7 @@ std::string module::ac::McquayAC::getEncodeString() {
     return std::string(result.c_str());
 }
 
-uint8_t module::ac::McquayAC::calcBlockChecksum(const uint8_t* block, const uint16_t length) {
+uint8_t rfir::module::device::ac::McquayAC::calcBlockChecksum(const uint8_t* block, const uint16_t length) {
     uint8_t sum = 0;
     // Sum the upper half and lower half of this block.
     for (uint8_t i = 0; i < length - 1; i++, block++) {
@@ -214,14 +214,14 @@ uint8_t module::ac::McquayAC::calcBlockChecksum(const uint8_t* block, const uint
     return sum & 0b1111; 
 }
 
-bool module::ac::McquayAC::validChecksum(const uint8_t state[], const uint16_t length) {
+bool rfir::module::device::ac::McquayAC::validChecksum(const uint8_t state[], const uint16_t length) {
   return GETBITS8(state[length - 1], 4, 4) ==  calcBlockChecksum(state, length);
 }
 
-uint8_t module::ac::McquayAC::dec2hex(const uint8_t dec) {
+uint8_t rfir::module::device::ac::McquayAC::dec2hex(const uint8_t dec) {
     return  ((dec / 10) << 4) + ((dec % 10) & 0b1111);
 }
 
-uint8_t module::ac::McquayAC::hex2dec(const uint8_t hex) {
+uint8_t rfir::module::device::ac::McquayAC::hex2dec(const uint8_t hex) {
     return  (hex >> 4) * 10 + (hex & 0b1111);
 }

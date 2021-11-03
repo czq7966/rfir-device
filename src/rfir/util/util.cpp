@@ -25,9 +25,6 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
   uint32_t chipId = (uint32_t)ESP.getEfuseMac();
   return prefix + std::string(String(chipId, HEX).c_str());
 #endif
-
-
-
   
 }
 
@@ -55,4 +52,82 @@ std::string rfir::util::Util::BytesToString(uint8_t bytes[], uint16_t nbytes) {
       byteStr = BitsToString(bytes + i, 8) + " " + byteStr;
   }
   return byteStr;
+}
+
+
+std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes) {
+    String result;
+    for (size_t j = 0; j < nbytes; j++)
+    {
+        char c[3];
+        uint8_t b = bytes[j];  
+        itoa(b, c, 16);
+        String hex = (strlen(c) == 1) ? ("0" + String(c)) :  String(c);
+
+        if (result.length() > 0)
+            result = result + (" " + hex);
+        else
+            result = result + hex; 
+    }
+    return std::string(result.c_str());  
+}
+
+
+int  rfir::util::Util::StringToBits(const char* data, int nbits, uint64_t& result) {
+  for (size_t i = 0; i < nbits; i++)
+  {
+    data[i] == '0' ? result <<= 1 : result = (result << 1) | 1;    
+  }
+  
+  return  nbits;  
+}
+
+int  rfir::util::Util::StringToBytes(const char* data, int nbits, uint8_t* bytes) {
+  int offset = 0;
+  for (size_t i = 0; i < nbits / 8; i++)
+  {
+    uint64_t byte = 0;
+    offset += StringToBits(data + offset, 8, byte);
+    bytes[i] = (uint8_t)byte; 
+  }
+
+  if (nbits % 8) {
+      uint64_t byte = 0;
+      offset += StringToBits(data + offset, nbits % 8, byte);
+      bytes[offset / 8] = (uint8_t)byte; 
+  }
+
+  return offset;
+}
+
+int  rfir::util::Util::StringToBytes(std::string str, uint8_t* bytes) {
+  String data(str.c_str());
+  int idx = data.indexOf(",");
+  
+  if (idx > 0) {
+    data = data.substring(0, idx);
+  }
+
+  int nbits = 0;
+  data.replace(" ", "");
+  
+  int count = data.length();
+  if (count > 0) {
+    if (count > 2 && data[0] == '0' && data[1] == 'x') {
+      for (size_t i = 2; i < count; i += 2)
+      {
+        char* str;
+        String p = data.substring(i, i + 2);
+        int len = 4 * p.length();   
+       
+        uint8_t byte = (uint8_t)strtol(p.c_str(), &str, 16);  
+        bytes[(i - 2) / 2] = byte;
+        nbits += len;
+      }
+    } else {
+      nbits = StringToBytes(data.c_str(), count, bytes);
+    }
+  }
+
+  return nbits;
 }

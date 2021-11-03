@@ -33,7 +33,8 @@ namespace rfir {
                 struct DecodeResults {
                     DecodeResult* result = 0;
                     int           count = 0;
-                    void         free();
+                    void          free();
+                    std::string   toJsonString(bool hex = false);
                 };                
 
                 typedef std::function<void(Decoder* decoder, DecodeResults* data)> OnDecoded;  

@@ -16,14 +16,13 @@
 #include "rfir/module/ttl/device/mcquay.h"
 
 #include "service/cmds/cmd.h"
-#include "service/ac/mcquay.h"
 
 
 std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
 
 void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta* data, int count) {
     Serial.println("onRfirSniffed");
-    // Serial.println(sniffer->toString());
+    Serial.println(sniffer->toString());
     
     // std::string str = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str());
     // Serial.println(str.c_str());  
@@ -43,13 +42,16 @@ void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta
 }
 
 void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decoder::DecodeResults* data) {
-     Serial.println("onRfirDecoded");
+    Serial.println("onRfirDecoded");
+    Serial.println(data->toJsonString().c_str());
+    Serial.println(data->toJsonString(true).c_str());
+
     // std::string str = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data);
     // Serial.println(str.c_str()); 
     // Serial.println("");
 
     if (data->count > 0) 
-        service::cmds::Cmd::On_Decoded(data->result[0].bytes, data->result[0].nbits);
+        service::cmds::Cmd::OnCmd_decoded(data);
     return;
 
 
@@ -70,7 +72,7 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
     Serial.println("onRfirEncoded: " + String(data->count));
-    // Serial.println(data->toString());
+    Serial.println(data->toString());
     // std::string str = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data);
     // Serial.println(str.c_str()); 
     // Serial.println(""); 
@@ -96,8 +98,8 @@ void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encod
 
 void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const uint16_t len) {
     Serial.println("onRfirSended: " + String(len));
-    // std::string str = rfir::module::ttl::Sender::packSniffedCmd(sender, data, len);
-    // Serial.println(str.c_str());  
+    std::string str = rfir::module::ttl::Sender::packSniffedCmd(sender, data, len);
+    Serial.println(str.c_str());  
     // Serial.println("");
     // if (sender->getSendParams()->response) {
     //     if (network::service::mqtt::Client::Publish(str.c_str())) {
@@ -112,11 +114,17 @@ void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const
     
 }
 
-void onRfirStart(void* data) {
-    Serial.println("onStart");
+void onDeviceChange(void* device, const char* reason) {
+    Serial.printf("onDeviceChange: %s\n", reason);
+    service::cmds::Cmd::OnCmd_get(0, reason);
+}
 
-    // auto d = rfir::module::ttl::device::Mcquay::Init(&rfir::RFIR::Config->devices);
+void onRfirStart(void* data) {
+    Serial.println("onRfirStart");
+
+    //初始化设备
     auto d = rfir::service::device::Device::Init();
+
 #ifdef ESP8266
     //采码参数
     d->packet.sniff.params.pin = 14;
@@ -128,13 +136,11 @@ void onRfirStart(void* data) {
     d->packet.sniff.params.pin = 22;
     d->packet.sniff.params.bufSize = 512;
     //发码参数 
-    d->packet.send.params.pin = 23;
-    d->packet.send.params.repeat = 1;
+    d->packet.send.params.pin = 15;
 #endif    
 
     rfir::service::cmds::Cmd::onCmd_sniff(d);
     rfir::service::cmds::Cmd::onCmd_send(d);
-
 }
 
 uint16_t onMqttConnect_count = 0;
@@ -145,7 +151,7 @@ void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
         service::cmds::Cmd::OnCmd_heartbeat(0, 1);
     else 
         service::cmds::Cmd::OnCmd_heartbeat(0, 2);
-    module::ac::Mcquay::DoTimerReport(true);
+    service::cmds::Cmd::DoTimerReport(true);
 }
 
 void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
@@ -159,7 +165,7 @@ void setup() {
 
     //启动wifi
     network::module::wifi::Client::Params np;
-    np.ssid = DJ_ROOM_WIFI_SSID; np.pass = DJ_ROOM_WIFI_PAWD;
+    np.ssid = WIFI_SSID; np.pass = WIFI_PAWD;
     network::service::wifi::Client::Start(np);
 
     //启动OTA
@@ -183,10 +189,11 @@ void setup() {
     //启动收发器
     rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
 
-    //启动AC
-    rfir::service::device::Device::Start();
-    service::ac::Mcquay::Start();
-
+    //启动 设备
+    rfir::service::device::Device::Start(onDeviceChange);
+    
+    //业务开始
+    service::cmds::Cmd::Start();
 }
 
 
@@ -198,10 +205,13 @@ void loop() {
     network::service::ota::Updater::Loop();
     //mqtt循环
     network::service::mqtt::Client::Loop();
-    //AC循环
-    service::ac::Mcquay::Loop();
+
     //收发器循环
     rfir::Loop();  
+
+    //业务循环
+    service::cmds::Cmd::Loop();
+
 }
 
 

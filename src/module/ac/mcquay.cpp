@@ -142,7 +142,7 @@ void module::ac::Mcquay::DoTimerReport(bool reset) {
 
 
     if (millis() - G_DoTimerReport_LastTime > G_DoTimerReport_Interval) {
-        service::cmds::Cmd::OnCmd_ac_get(0, "Timer Report");
+        service::cmds::Cmd::OnCmd_get(0, "Timer Report");
 
         if (G_DoTimerReport_Interval == 1 * 1000) 
             G_DoTimerReport_Interval = 2 * 1000;
@@ -161,7 +161,7 @@ void module::ac::Mcquay::DoModePinChange() {
 
         auto pinMode = GetPinMode();
         auto reason = "Mode Change: gpioMode(" + String(GetPinModeStr(gpioPin).c_str()) + ") -> pinMode(" + String(GetModeStr(pinMode).c_str())+")"; 
-        service::cmds::Cmd::OnCmd_ac_get(0, std::string(reason.c_str()));    
+        service::cmds::Cmd::OnCmd_get(0, std::string(reason.c_str()));    
     }
 }       
 

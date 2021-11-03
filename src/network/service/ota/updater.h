@@ -2,8 +2,6 @@
 #ifndef __NETWORK_SERVICE_OTA_UPDATER_H__
 #define __NETWORK_SERVICE_OTA_UPDATER_H__
 
-#ifdef ESP8266
-
 #include "rfir/util/platform.h"
 #include "network/module/ota/updater.h"
 
@@ -21,8 +19,6 @@ namespace network {
         }
     }
 }
-
-#endif
 
 
 #endif //__NETWORK_SERVICE_OTA_UPDATER_H__

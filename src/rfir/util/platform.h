@@ -9,7 +9,7 @@
 #ifdef ESP32
 #include <Arduino.h>
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <sstream>   
 
 #include <utility>
@@ -19,9 +19,12 @@
 #include <list>
 #include <mutex>
 #include <sys/time.h>
+
 #include "FS.h"
-#include "SPIFFS.h"
+#include <LITTLEFS.h>
 #include "cjson/CJsonObject.hpp"
+
+#define FileFS LITTLEFS
 
 
 #endif //ESP32
@@ -41,7 +44,10 @@
 #include <mutex>
 #include <sys/time.h>
 #include <FS.h>
+#include <LittleFS.h>
 #include "cjson/CJsonObject.hpp"
+
+#define FileFS LittleFS
 
 #define	timerisset(tvp)		((tvp)->tv_sec || (tvp)->tv_usec)
 #define	timerclear(tvp)		((tvp)->tv_sec = (tvp)->tv_usec = 0)

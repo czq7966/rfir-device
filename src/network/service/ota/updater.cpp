@@ -1,5 +1,3 @@
-#ifdef ESP8266
-
 #include "updater.h"
 
 network::module::ota::Updater* network::service::ota::Updater::updater = 0;
@@ -15,5 +13,3 @@ void network::service::ota::Updater::Loop() {
     if (updater)
         updater->loop();
 }
-
-#endif

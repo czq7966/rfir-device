@@ -3,25 +3,28 @@
 
 
 #include <Arduino.h>
-#include "config-rfir.h"
+#include "config.h"
 #include "rfir/util/cjson/CJsonObject.hpp"
-#include "rfir/module/ttl/gpio.h"
-#include "service/cmds/cmd.h"
+#include "rfir/module/device/device.h"
+
 
 namespace rfir {
     namespace service {
         namespace device {
             class Device {
             public:
+                static rfir::module::device::Device* GDevice;
                 static rfir::module::ttl::Config::Device* Init();
-                static void Start();
+                static rfir::module::ttl::Config::Device* GetConfig();
+            public:
+                static void Start(rfir::module::device::Device::OnChange onChange);
                 static void Loop();
-                static bool OnCmd(const char* cmd);
-                static bool OnCmd(neb::CJsonObject* cmd);
-                static void OnSetRaw(void*);
-                static void SetRaw(void*);
-                static bool InitRaw();      
-                static void DoTimerReport(bool reset = false);          
+                static void DoTimerReport(bool reset = false);     
+                static bool SendEncodeRaw();
+            public:
+                static bool OnCmd_set(neb::CJsonObject* pld);
+                static bool OnCmd_get(neb::CJsonObject* pld);
+                static bool OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data);
             };
         }
     }

@@ -617,6 +617,28 @@ void rfir::module::ttl::Decoder::DecodeResults::free() {
   this->count = 0;
 }
 
+std::string  rfir::module::ttl::Decoder::DecodeResults::toJsonString(bool hex) {
+  String str;
+  str +="[";
+  for (size_t i = 0; i < count; i++)
+  {
+    str += "{'data': '%data" + String(i)+"%'}";
+    if (i < count - 1)
+      str += ",";
+  }  
+  str += "]";
+
+  str.replace("'", "\"");
+
+  for (size_t i = 0; i < count; i++)
+  {
+    str.replace("%data"+String(i)+"%", hex ?  ("0x" + this->result[i].toHexString()).c_str() : this->result[i].toBitString().c_str());
+
+  }
+  return std::string(str.c_str());
+
+}
+
 std::string  rfir::module::ttl::Decoder::Params::toString() {
   neb::CJsonObject json;
   json.Add("use_bits", use_bits);

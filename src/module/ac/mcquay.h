@@ -13,11 +13,11 @@ namespace module {
     namespace ac {
         class Mcquay {
         public:
-            static const u_int8_t MODE_NONE     = 0b0000;
-            static const u_int8_t MODE_DRY      = 0b0001;
-            static const u_int8_t MODE_COOL     = 0b0010;
-            static const u_int8_t MODE_FAN      = 0b0100;            
-            static const u_int8_t MODE_HEAT     = 0b1000;
+            static const uint8_t MODE_NONE     = 0b0000;
+            static const uint8_t MODE_DRY      = 0b0001;
+            static const uint8_t MODE_COOL     = 0b0010;
+            static const uint8_t MODE_FAN      = 0b0100;            
+            static const uint8_t MODE_HEAT     = 0b1000;
             static McquayAC* AC;
             static rfir::module::ttl::Gpio*    GpioFan;
             static rfir::module::ttl::Gpio*    GpioCool;

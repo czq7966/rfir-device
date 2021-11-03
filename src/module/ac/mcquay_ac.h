@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include <string>
+#include "rfir/util/platform.h"
 
 #define GETBITS8(data, offset, size) \
     (((data) & (((uint8_t)UINT8_MAX >> (8 - (size))) << (offset))) >> (offset))

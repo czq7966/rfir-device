@@ -1,4 +1,3 @@
-#ifdef ESP8266
 #include "updater.h"
 
 void network::module::ota::Updater::start(Params p) {
@@ -10,4 +9,3 @@ void network::module::ota::Updater::loop() {
     if (eOtaUpdater) 
         eOtaUpdater->CheckAndUpdate();     
 }
-#endif
