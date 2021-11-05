@@ -13,7 +13,6 @@
 #include "rfir/service/cmds/cmd.h"
 #include "rfir/service/device/device.h"
 #include "rfir/rfir.h"
-#include "rfir/module/ttl/device/mcquay.h"
 
 #include "service/cmds/cmd.h"
 
