@@ -23,21 +23,10 @@ std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
 void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta* data, int count) {
     Serial.println("onRfirSniffed");
     Serial.println(sniffer->toString());
-    
-    // std::string str = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str());
-    // Serial.println(str.c_str());  
-    // Serial.println("");  
 
-    // if (sniffer->getSniffParams()->response) {
-    //     if (network::service::mqtt::Client::Publish(str.c_str())) {
-    //         Serial.println("mqtt 发送成功");
-
-    //     } else {
-    //         Serial.println("mqtt 发送失败");
-    //     }
-    // } else {
-    //     Serial.println("sniffer->getSniffParams()->response: false");
-    // }
+    if (sniffer->getSniffParams()->response) {
+        network::service::mqtt::Client::Publish(rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str());
+    } 
     
 }
 
@@ -46,71 +35,31 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
     Serial.println(data->toJsonString().c_str());
     Serial.println(data->toJsonString(true).c_str());
 
-    // std::string str = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data);
-    // Serial.println(str.c_str()); 
-    // Serial.println("");
+    if (decoder->getDecodeParams()->response) {
+        network::service::mqtt::Client::Publish(rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str());
+    } 
 
     if (data->count > 0) 
         service::cmds::Cmd::OnCmd_decoded(data);
     return;
-
-
-    // if (decoder->getDecodeParams()->response) {
-    //     network::service::mqtt::Client::Publish(str.c_str());
-    // } else {
-    //     Serial.println("sniffer->getDecodeParams()->response: false");
-    // }
-    
-    // neb::CJsonObject cmd, pld, jdecode, blocks;
-    // cmd.Parse(str);
-    // cmd.Get("pld", pld);
-    // pld.Get("decode", jdecode);
-    // jdecode.Get("blocks", blocks);
-    // decoder->rfir->encoder->getEncodeParams()->clone(decoder->getDecodeParams());
-    // decoder->rfir->encoder->encode(data);
 }
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
     Serial.println("onRfirEncoded: " + String(data->count));
     Serial.println(data->toString());
-    // std::string str = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data);
-    // Serial.println(str.c_str()); 
-    // Serial.println(""); 
-    // if (encoder->getEncodeParams()->response) {
-    //     network::service::mqtt::Client::Publish(str.c_str());
-    // }  else {
-    //     Serial.println("encoder->getEncodeParams()->response: false");
-    // }   
 
-    // encoder->rfir->sender->sendRaw(data->result, data->count);
+    if (encoder->getEncodeParams()->response) {
+        network::service::mqtt::Client::Publish(rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str());
+    } 
 
-
-
-
-    // auto rfir = rfir::Get()->getRfir("38_gree", false);
-    // if (rfir) {
-    //     Serial.println(rfir->sender->getSendParams()->toString().c_str());
-    //     rfir->sender->sendRaw(data->result, data->count);
-    // } else {
-    //     Serial.println("没有设备：38_gree");
-    // }    
 }
 
 void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const uint16_t len) {
     Serial.println("onRfirSended: " + String(len));
-    std::string str = rfir::module::ttl::Sender::packSendedCmd(sender, data, len);
-    Serial.println(str.c_str());  
-    // Serial.println("");
-    // if (sender->getSendParams()->response) {
-    //     if (network::service::mqtt::Client::Publish(str.c_str())) {
-    //         Serial.println("mqtt 发送成功");
 
-    //     } else {
-    //         Serial.println("mqtt 发送失败");
-    //     }
-    // } else {
-    //     Serial.println("sender->getSendParams()->response: false");
-    // }
+    if (sender->getSendParams()->response) {
+        network::service::mqtt::Client::Publish(rfir::module::ttl::Sender::packSendedCmd(sender, data, len).c_str());
+    }
     
 }
 
