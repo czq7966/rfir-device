@@ -1,9 +1,18 @@
 #include "device.h"
-#include "rfir/module/device/ac/kelvinator/kelvinator.h"
 
+#ifdef DEVICE_FZ_DM4_TEAROOM_AC_GREE
+#include "rfir/module/device/ac/kelvinator/fz-dm4-tearoom-gree.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::FZDM4_TeaRoom_Gree();
+#endif
 
-#ifdef DEVICE_FZ_DM4_AC_GREE
-rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::Kelvinator();
+#ifdef DEVICE_CL_DJROOM_AC_MCQUAY
+#include "rfir/module/device/ac/mcquay/cl-djroom-mcquay.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_DJROOM_Mcquay();
+#endif
+
+#ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
+#include "rfir/module/device/speaker/sansui/cl-cxy-sansui-p300.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::speaker::CL_CXY_SANSUI_P300();
 #endif
 
 

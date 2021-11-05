@@ -49,9 +49,13 @@ bool service::cmds::Cmd::OnCmd(neb::CJsonObject* jcmd) {
             case ECmdId::Reboot: //重启
                 return OnCmd_reboot(jcmd, "reboot by user cmd");                
                 break;
+            case ECmdId::IRSend: //射频发送指令
             case ECmdId::Send:
                 return OnCmd_send(jcmd);
                 break;  
+            case ECmdId::Sniff:
+                return OnCmd_sniff(jcmd);
+                break;                  
             case ECmdId::Codec:
                 return OnCmd_codec(jcmd);
                 break;                            
@@ -149,6 +153,13 @@ bool service::cmds::Cmd::OnCmd_send(neb::CJsonObject* cmd) {
     return true;
 }
 
+bool service::cmds::Cmd::OnCmd_sniff(neb::CJsonObject* cmd) {
+    auto rfir = rfir::GetRfir();
+    rfir->sniffer->stop();
+    rfir::service::cmds::Cmd::onCmd(cmd); 
+    rfir->sniffer->start();
+    return true;
+}
 
 
 bool service::cmds::Cmd::OnCmd_codec(neb::CJsonObject* cmd) {

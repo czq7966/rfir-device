@@ -108,7 +108,7 @@ namespace rfir {
                 void sendGeneric(const uint8_t *dataptr, const uint16_t nbytes);
                 void sendGeneric(const uint64_t data, const uint16_t nbits);                   
             public:
-                static std::string packSniffedCmd(Sender* sender, const uint16_t* data, const uint16_t len);
+                static std::string packSendedCmd(Sender* sender, const uint16_t* data, const uint16_t len);
             };
         }
     }

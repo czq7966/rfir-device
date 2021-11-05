@@ -84,8 +84,6 @@ rfir::module::device::ac::Kelvinator::~Kelvinator() {
 void rfir::module::device::ac::Kelvinator::start(void *) {
     auto ds = &rfir::RFIR::Config->devices;
     auto d = ds->getDevice(this->name);
-    Serial.println("aaaaaaaaaaaaaa");
-    Serial.println(d->packet.send.params.pin);
     this->ac = new IRKelvinatorAC(d->packet.send.params.pin); 
 }
 
@@ -132,11 +130,8 @@ uint16_t* rfir::module::device::ac::Kelvinator::getEncodeRaw(int& count) {
 }
 
 bool rfir::module::device::ac::Kelvinator::onCmd_set(neb::CJsonObject* pld) {
-    std::string key;
+    if (!pld)  return 0;
 
-    if (!pld || !pld->GetKey(key))
-        return 0;
-    
     //Power
     auto power = ac->getPower();
     std::string powerStr;

@@ -98,7 +98,7 @@ void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encod
 
 void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const uint16_t len) {
     Serial.println("onRfirSended: " + String(len));
-    std::string str = rfir::module::ttl::Sender::packSniffedCmd(sender, data, len);
+    std::string str = rfir::module::ttl::Sender::packSendedCmd(sender, data, len);
     Serial.println(str.c_str());  
     // Serial.println("");
     // if (sender->getSendParams()->response) {
@@ -124,21 +124,6 @@ void onRfirStart(void* data) {
 
     //初始化设备
     auto d = rfir::service::device::Device::Init();
-
-#ifdef ESP8266
-    //采码参数
-    d->packet.sniff.params.pin = 14;
-    d->packet.sniff.params.bufSize = 512;
-    //发码参数 
-    d->packet.send.params.pin = 4;
-#else
-    //采码参数
-    d->packet.sniff.params.pin = 22;
-    d->packet.sniff.params.bufSize = 512;
-    //发码参数 
-    d->packet.send.params.pin = 15;
-#endif    
-
     rfir::service::cmds::Cmd::onCmd_sniff(d);
     rfir::service::cmds::Cmd::onCmd_send(d);
 }
