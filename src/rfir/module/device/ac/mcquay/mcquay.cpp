@@ -1,6 +1,8 @@
 #include "mcquay.h"
 
 
+int rfir::module::device::ac::Mcquay::ModePinChange_GpioPin = 0;
+
 rfir::module::ttl::Config::Device* rfir::module::device::ac::Mcquay::init() {
     this->name = "mcquay";
     //创建设备
@@ -64,31 +66,37 @@ rfir::module::device::ac::Mcquay::~Mcquay() {
 void rfir::module::device::ac::Mcquay::start(void * p) {
     Device::start(p);
 
-    gpioCool->setArg((void*)(int)(EModePin::COOL));
-    gpioDry->setArg((void*)(int)(EModePin::DRY));
-    gpioFan->setArg((void*)(int)(EModePin::FAN));
-    gpioHeat->setArg((void*)(int)(EModePin::HEAT));
+    // gpioCool = new rfir::module::ttl::Gpio();
+    // gpioDry = new rfir::module::ttl::Gpio();
+    // gpioFan = new rfir::module::ttl::Gpio();
+    // gpioHeat = new rfir::module::ttl::Gpio();
 
-    gpioCool->init(EModePin::COOL, INPUT);
-    gpioDry->init(EModePin::DRY, INPUT);
-    gpioFan->init(EModePin::FAN, INPUT);
-    gpioHeat->init(EModePin::HEAT, INPUT);
+    gpioCool.setArg((void*)(int)(EModePin::COOL));
+    gpioDry.setArg((void*)(int)(EModePin::DRY));
+    gpioFan.setArg((void*)(int)(EModePin::FAN));
+    gpioHeat.setArg((void*)(int)(EModePin::HEAT));
 
-    gpioCool->onChange = OnModePinChange;
-    gpioDry->onChange = OnModePinChange;
-    gpioFan->onChange = OnModePinChange;
-    gpioHeat->onChange = OnModePinChange;
+    gpioCool.init(EModePin::COOL, INPUT);
+    gpioDry.init(EModePin::DRY, INPUT);
+    gpioFan.init(EModePin::FAN, INPUT);
+    gpioHeat.init(EModePin::HEAT, INPUT);
 
-    gpioCool->start();
-    gpioDry->start();
-    gpioFan->start();
-    gpioHeat->start();
+    gpioCool.onChange = OnModePinChange;
+    gpioDry.onChange = OnModePinChange;
+    gpioFan.onChange = OnModePinChange;
+    gpioHeat.onChange = OnModePinChange;
+
+    gpioCool.start();
+    gpioDry.start();
+    gpioFan.start();
+    gpioHeat.start();
 
 }
 
 
 void rfir::module::device::ac::Mcquay::loop() {
-
+    doModePinChange();
+    Device::loop();
 }
 
 bool rfir::module::device::ac::Mcquay::setRaw(uint8_t* raw) {
@@ -98,156 +106,173 @@ bool rfir::module::device::ac::Mcquay::setRaw(uint8_t* raw) {
 }
 
 uint8_t* rfir::module::device::ac::Mcquay::getRaw(int& count) {
-    // count = kGreeStateLength;
+    count = McquayAC::KMcQuayStateLength;
     return this->ac->getRaw();
 }
 
 uint16_t* rfir::module::device::ac::Mcquay::getEncodeRaw(int& count) {
-    int length = 0;
-    auto raw = getRaw(length);
-    auto str1 = rfir::util::Util::BytesToString(raw, 4);
-    uint8_t bits[1] = {0b010};
-    auto str2 = rfir::util::Util::BitsToString(bits, 3);
-    auto str3 = rfir::util::Util::BytesToString(raw + 3, 4);
-
-    String str = "[{'data': '%data1%'}, {'data': '%data2%'}, {'data': '%data3%'}]";
-    str.replace("'", "\"");
-    str.replace("%data1%", str1.c_str());
-    str.replace("%data2%", str2.c_str());
-    str.replace("%data3%", str3.c_str());
-    
-    neb::CJsonObject blocks;
-    blocks.Parse(str.c_str());
-
-    auto rfir = rfir::GetRfir(this->name);
-    rfir->encoder->encode(&blocks);
-    auto encode = rfir->encoder->getEncodeResult();    
-    count = encode->count;
-    return encode->result;    
+    count = McquayAC::KMcQuayEncodeRawLength;
+    return ac->getEncodeRaw();
 }
 
 bool rfir::module::device::ac::Mcquay::onCmd_set(neb::CJsonObject* pld) {
-    std::string key;
+    if (!pld ) return 0;
 
-    // if (!pld || !pld->GetKey(key))
-    //     return 0;
+    //Power
+    auto power = getPower();
+    std::string powerStr;
+    pld->Get("power", powerStr);
+    power = powerStr == "on" ? true : 
+            powerStr == "off" ? false : true;
+
+    //Mode
+    auto mode = ac->getMode();
+    std::string modeStr;
+    pld->Get("mode", modeStr);
+    mode =  modeStr == "cool" ? McquayAC::KMcQuayModeCool : 
+            modeStr == "dry" ? McquayAC::KMcQuayModeDry : 
+            modeStr == "fan" ? McquayAC::KMcQuayModeFan : 
+            modeStr == "fan_only" ? McquayAC::KMcQuayModeFan : 
+            modeStr == "heat" ? McquayAC::KMcQuayModeHeat : mode;
+
+    //FanSpeed
+    auto fan = ac->getFan();
+    std::string fanStr;
+    pld->Get("fanSpeed", fanStr);
+    fan =   fanStr == "auto" ? McquayAC::KMcQuayFanAuto : 
+            fanStr == "low" ? McquayAC::KMcQuayFanMin : 
+            fanStr == "medium" ? McquayAC::KMcQuayFanMed : 
+            fanStr == "high" ? McquayAC::KMcQuayFanMax : fan;
+
+    //Sleep
+    auto sleep = ac->getSleep();
+    std::string sleepStr;
+    pld->Get("sleep", sleepStr);
+    sleep = sleepStr == "on" ? true : 
+            sleepStr == "off" ? false : sleep;
+
+    //Swing
+    auto swing = ac->getSwing();
+    std::string swingStr;
+    pld->Get("swing", swingStr);
+    swing = swingStr == "on" ? true : 
+            swingStr == "off" ? false : swing;
+
+    //Temp
+    uint32 temp = ac->getTemp();
+    pld->Get("temperature", temp);
+
+    //小时
+    uint32 hour = ac->getHour();
+    if (!pld->Get("hour", hour)) 
+        hour = millis() / 1000 / 60 / 60 % 24;    
+    //分钟
+    uint32 minute = ac->getMinute();
+    if (!pld->Get("minute", minute))
+        minute = millis() / 1000 / 60 % 60;
+
+
+    ac->setMode(mode);
+    ac->setFan(fan);
+    ac->setSleep(sleep);
+    ac->setSwing(swing);
+    ac->setTemp(temp);
+    ac->setHour(hour);
+    ac->setMinute(minute);
+    ac->setPowerSwitch(power != getPower());
     
-
-    // //Power
-    // auto power = ac->getPower();
-    // std::string powerStr;
-    // pld->Get("power", powerStr);
-    // power = powerStr == "on" ? true : 
-    //         powerStr == "off" ? false : true;
-
-    // //Mode
-    // auto mode = ac->getMode();
-    // std::string modeStr;
-    // pld->Get("mode", modeStr);
-    // mode =  modeStr == "auto" ? kGreeAuto : 
-    //         modeStr == "cool" ? kGreeCool : 
-    //         modeStr == "dry" ? kGreeDry : 
-    //         modeStr == "fan" ? kGreeFan : 
-    //         modeStr == "fan_only" ? kGreeFan : 
-    //         modeStr == "heat" ? kGreeHeat : mode;
-
-    // //FanSpeed
-    // auto fan = ac->getFan();
-    // std::string fanStr;
-    // pld->Get("fanSpeed", fanStr);
-    // fan =   fanStr == "auto" ? kGreeFanAuto : 
-    //         fanStr == "low" ? kGreeFanMin : 
-    //         fanStr == "medium" ? kGreeFanMed : 
-    //         fanStr == "high" ? kGreeFanMax : fan;
-
-    // //Sleep
-    // auto sleep = ac->getSleep();
-    // std::string sleepStr;
-    // pld->Get("sleep", sleepStr);
-    // sleep = sleepStr == "on" ? true : 
-    //         sleepStr == "off" ? false : sleep;
-
-    // //Swing
-    // auto swing = ac->getSwingVerticalAuto();
-    // std::string swingStr;
-    // pld->Get("swing", swingStr);
-    // swing = swingStr == "on" ? true : 
-    //         swingStr == "off" ? false : swing;
-
-    // //Temp
-    // uint32 temp = ac->getTemp();
-    // pld->Get("temperature", temp);
-
-
-    // ac->setMode(mode);
-    // ac->setFan(fan);
-    // ac->setSleep(sleep);
-    // ac->setSwingVertical(swing, kGreeSwingAuto);
-    // ac->setTemp(temp);
-    // ac->setPower(power);
-    // this->setRaw(ac->getRaw());
+    this->setRaw(ac->getRaw());
 
     return true;
 }
 
 
 bool rfir::module::device::ac::Mcquay::onCmd_get(neb::CJsonObject* pld) {
-    //Power
-    // pld->Add("power", ac->getPower() ? "on" : "off");
+    auto mode = getPinMode();
+    std::string modeStr =  getModeStr(mode);
+    auto fan = ac->getFan();
+    std::string fanStr =  getFanStr(fan);
 
-    // //Mode
-    // auto mode = ac->getMode();
-    // std::string modeStr =   mode == kGreeAuto ? "auto" :
-    //                         mode == kGreeCool ? "cool" : 
-    //                         mode == kGreeDry ? "dry" : 
-    //                         mode == kGreeFan ? "fan" : 
-    //                         mode == kGreeFan ? "fan_only" : 
-    //                         mode == kGreeHeat ? "heat" : std::string(String(mode).c_str());
-    // pld->Add("mode", modeStr);
+    std::string sleepStr = ac->getSleep() ? "on" : "off";
+    std::string swingStr = ac->getSwing() ? "on" : "off";
+    std::string powerStr = getPower() ? "on" : "off";
 
-    // //FanSpeed
-    // auto fan = ac->getFan();
-    // std::string fanStr =    fan == kGreeFanAuto ? "auto" : 
-    //                         fan == kGreeFanMin ? "low" : 
-    //                         fan == kGreeFanMed ? "medium" : 
-    //                         fan == kGreeFanMax ? "high" : std::string(String(fan).c_str());
-    // pld->Add("fanSpeed", fanStr);
-
-    // //Sleep
-    // pld->Add("sleep", ac->getSleep() ? "on" : "off");
-
-    // //Swing
-    // pld->Add("swing", ac->getSwingVerticalAuto() ? "on" : "off");
-
-    // //Temp
-    // pld->Add("temperature", ac->getTemp());
+    pld->Add("power", powerStr);
+    pld->Add("mode", modeStr);
+    pld->Add("fanSpeed", fanStr);
+    pld->Add("sleep", sleepStr);
+    pld->Add("swing", swingStr);
+    pld->Add("temperature", ac->getTemp());
+    pld->Add("hour", ac->getHour());
+    pld->Add("minute", ac->getMinute());
+    pld->Add("extra", ac->toBitString() + "," + ac->toHexString());
 
     return true;
 }
 
 bool rfir::module::device::ac::Mcquay::onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
-    if (data->count == 3) {
-        int count = 0;
-        auto raw = getRaw(count);
-        memcpy(raw, data->result[0].bytes, 4);
-        memcpy(raw + 3, data->result[2].bytes, 4);
+    if (data->count >= 1) {
+        int size = 0;
+        auto raw = getRaw(size);
+        memcpy(raw, data->result[0].bytes, size);;
         return setRaw(raw);
     }
     return false;
 }
 
 
-void rfir::module::device::ac::Mcquay::doModePinChange() {
-    // if (G_OnModePinChange_GpioPin != 0) {
-    //     int  gpioPin = G_OnModePinChange_GpioPin;
-    //     G_OnModePinChange_GpioPin = 0;
+bool rfir::module::device::ac::Mcquay::doModePinChange() {
+    if (ModePinChange_GpioPin != 0) {
+        int  gpioPin = ModePinChange_GpioPin;
+        ModePinChange_GpioPin = 0;
 
-    //     auto pinMode = GetPinMode();
-    //     auto reason = "Mode Change: gpioMode(" + String(GetPinModeStr(gpioPin).c_str()) + ") -> pinMode(" + String(GetModeStr(pinMode).c_str())+")"; 
-    //     service::cmds::Cmd::OnCmd_get(0, std::string(reason.c_str()));    
-    // }
+        auto pinMode = getPinMode();
+        auto reason = "Mode Change: gpioMode(" + String(getPinModeStr(gpioPin).c_str()) + ") -> pinMode(" + String(getModeStr(pinMode).c_str())+")"; 
+        emitChange(reason.c_str());
+        return true;
+    }
+    return false;
 }    
 
+bool rfir::module::device::ac::Mcquay::getPower() {
+    return getPinMode() != McquayAC::KMcQuayModeNone;
+}
+
+uint8_t rfir::module::device::ac::Mcquay::getPinMode() {
+    uint8_t mode = McquayAC::KMcQuayModeNone;
+    
+    if (digitalRead(EModePin::COOL)) mode = mode | McquayAC::KMcQuayModeCool;
+    if (digitalRead(EModePin::DRY)) mode = mode | McquayAC::KMcQuayModeDry;
+    if (digitalRead(EModePin::FAN)) mode = mode | McquayAC::KMcQuayModeFan;
+    if (digitalRead(EModePin::HEAT)) mode = mode | McquayAC::KMcQuayModeHeat;
+    
+    return mode;
+}
+
+std::string rfir::module::device::ac::Mcquay::getPinModeStr(int pin) {    
+    std::string modeStr =   pin == EModePin::DRY ? "dry" :
+                            pin == EModePin::COOL ? "cool" :
+                            pin == EModePin::FAN ? "fan" :
+                            pin == EModePin::HEAT ? "heat" : String(pin).c_str();
+    return modeStr;
+
+}
+std::string rfir::module::device::ac::Mcquay::getModeStr(uint8_t mode) {
+    std::string modeStr =   mode == McquayAC::KMcQuayModeDry ? "dry" :
+                            mode == McquayAC::KMcQuayModeCool ? "cool" :
+                            mode == McquayAC::KMcQuayModeFan ? "fan" :
+                            mode == McquayAC::KMcQuayModeHeat ? "heat" : String(mode).c_str();
+    return modeStr;
+}
+
+std::string rfir::module::device::ac::Mcquay::getFanStr(uint8_t fan) {
+    std::string fanStr =    fan == McquayAC::KMcQuayFanAuto ? "auto" :
+                            fan == McquayAC::KMcQuayFanMin ? "low" :
+                            fan == McquayAC::KMcQuayFanMed ? "medium" :
+                            fan == McquayAC::KMcQuayFanMax ? "high" : "unknown";
+    return fanStr;
+}
+
 void rfir::module::device::ac::Mcquay::OnModePinChange(rfir::module::ttl::Gpio* gpio, int value) {
-    // G_OnModePinChange_GpioPin = (int)gpio->getArg();
+    ModePinChange_GpioPin = (int)gpio->getArg();
 }   

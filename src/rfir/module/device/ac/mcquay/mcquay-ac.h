@@ -108,7 +108,6 @@ namespace rfir {
                 void    setHour(const uint8_t hour);
                 uint8_t getMinute();
                 void    setMinute(const uint8_t minute);  
-                bool    getPower();
                 uint8_t getPinMode();
 
                 void setTimerEnabled(const bool on);

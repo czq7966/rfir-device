@@ -338,7 +338,7 @@ std::string rfir::module::ttl::Sender::SendParams::toString() {
 }
 
 
-std::string rfir::module::ttl::Sender::packSniffedCmd(Sender* sender, const uint16_t* data, const uint16_t len) {
+std::string rfir::module::ttl::Sender::packSendedCmd(Sender* sender, const uint16_t* data, const uint16_t len) {
     neb::CJsonObject jp, hd, pld, sniff, params;
     hd.Add("did", rfir::util::Util::GetChipId());
     hd.Add("cmd", 8);

@@ -112,10 +112,7 @@ uint16_t* rfir::module::device::ac::Gree::getEncodeRaw(int& count) {
 }
 
 bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
-    std::string key;
-
-    if (!pld || !pld->GetKey(key))
-        return 0;
+    if (!pld) return 0;
     
 
     //Power

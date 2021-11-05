@@ -4,7 +4,7 @@
 
 #include "../../device.h"
 #include "rfir/rfir.h"
-#include "mcquay_ac.h"
+#include "mcquay-ac.h"
 
 
 
@@ -29,10 +29,10 @@ namespace rfir {
                     };                    
                 public:
                     McquayAC* ac = 0;
-                    rfir::module::ttl::Gpio*    gpioFan = 0;
-                    rfir::module::ttl::Gpio*    gpioCool = 0;
-                    rfir::module::ttl::Gpio*    gpioHeat = 0;
-                    rfir::module::ttl::Gpio*    gpioDry = 0;                    
+                    rfir::module::ttl::Gpio    gpioFan;
+                    rfir::module::ttl::Gpio    gpioCool;
+                    rfir::module::ttl::Gpio    gpioHeat;
+                    rfir::module::ttl::Gpio    gpioDry;
                 public:                     
                     Mcquay();
                     ~Mcquay();
@@ -48,8 +48,14 @@ namespace rfir {
                     virtual bool onCmd_get(neb::CJsonObject* pld) override; 
                     virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override; 
                 public:
-                    void doModePinChange();
+                    bool doModePinChange();
+                    bool getPower();
+                    uint8_t getPinMode();
+                    std::string getPinModeStr(int pin);
+                    std::string getModeStr(uint8_t mode);
+                    std::string getFanStr(uint8_t fan);                    
                 public:
+                    static int  ModePinChange_GpioPin;
                     static void OnModePinChange(rfir::module::ttl::Gpio* gpio, int value);
                 };
             }

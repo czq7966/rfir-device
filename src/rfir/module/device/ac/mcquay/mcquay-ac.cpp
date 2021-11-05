@@ -1,4 +1,4 @@
-#include "mcquay_ac.h"
+#include "mcquay-ac.h"
 
 void rfir::module::device::ac::McquayAC::setHeader(const uint8_t header) {
     protocol.Header = header;

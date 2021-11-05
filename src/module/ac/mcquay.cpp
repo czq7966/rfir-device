@@ -29,14 +29,6 @@ void module::ac::Mcquay::Start() {
     GpioDry->start();
     GpioFan->start();
     GpioHeat->start();
-    // pinMode(EModePin::COOL, INPUT);
-    // pinMode(EModePin::DRY, INPUT);
-    // pinMode(EModePin::FAN, INPUT);
-    // pinMode(EModePin::HEAT, INPUT);
-    // attachInterrupt(EModePin::COOL, OnModePinChange_Cool, CHANGE);
-    // attachInterrupt(EModePin::DRY, OnModePinChange_Dry, CHANGE);
-    // attachInterrupt(EModePin::FAN, OnModePinChange_Fan, CHANGE);
-    // attachInterrupt(EModePin::HEAT, OnModePinChange_Heat, CHANGE);
 }
 
 bool module::ac::Mcquay::Loop() {
