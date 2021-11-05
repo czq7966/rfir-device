@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include "config.h"
+#include "rfir/rfir.h"
 #include "rfir/util/cjson/CJsonObject.hpp"
 #include "rfir/module/ttl/gpio.h"
 #include "rfir/module/ttl/config.h"

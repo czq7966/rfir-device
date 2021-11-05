@@ -63,7 +63,7 @@ namespace rfir {
                 struct DecodeParams {
                     Params* params = 0;
                     int     count = 0;
-                    bool    response = 1;
+                    bool    response = 0;
                     bool    parseFromJson(neb::CJsonObject* jp);
                     void    free();
                     bool    clone(DecodeParams* p);
