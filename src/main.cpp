@@ -21,7 +21,7 @@ std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
 
 void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta* data, int count) {
     Serial.println("onRfirSniffed");
-    Serial.println(sniffer->toString());
+    // Serial.println(sniffer->toString());
 
     if (sniffer->getSniffParams()->response) {
         network::service::mqtt::Client::Publish(rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str());
@@ -45,7 +45,7 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
     Serial.println("onRfirEncoded: " + String(data->count));
-    Serial.println(data->toString());
+    // Serial.println(data->toString());
 
     if (encoder->getEncodeParams()->response) {
         network::service::mqtt::Client::Publish(rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str());

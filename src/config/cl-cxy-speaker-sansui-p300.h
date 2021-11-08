@@ -4,9 +4,9 @@
 
 //OTA
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          28
-#define OTA_VERSION_STRING          "28.0"
-#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-ir-ac/cfg.txt"
+#define OTA_VERSION_NUMBER          1
+#define OTA_VERSION_STRING          "1.0"
+#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-cxy-speaker-sansui-p300/cfg.txt"
 
 
 //WIFI

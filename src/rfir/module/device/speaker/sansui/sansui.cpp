@@ -48,3 +48,56 @@ rfir::module::ttl::Config::Device* rfir::module::device::speaker::SANSUI::init()
     return d;    
 }
 
+bool rfir::module::device::speaker::SANSUI::setRaw(uint8_t* raw) {
+    memcpy(protocol.remote_state, raw, KSansuiStateLength);
+    this->onSetRaw();
+    return true;
+};
+
+uint8_t* rfir::module::device::speaker::SANSUI::getRaw(int& count) {
+    count = KSansuiStateLength;
+    return this->protocol.remote_state;
+
+};
+           
+uint16_t* rfir::module::device::speaker::SANSUI::getEncodeRaw(int& count) {
+    int length = 0;
+    auto raw = getRaw(length);
+    auto str1 = rfir::util::Util::BytesToHexString(raw + 0, 4);
+
+    String str = "[{'data': '0x%data1%'}]";
+    str.replace("'", "\"");
+    str.replace("%data1%", str1.c_str());
+    
+    neb::CJsonObject blocks;
+    blocks.Parse(str.c_str());
+
+    auto rfir = rfir::GetRfir(this->name);
+    rfir->encoder->encode(&blocks);
+    auto encode = rfir->encoder->getEncodeResult();    
+    count = encode->count;
+    return encode->result;
+};
+
+bool rfir::module::device::speaker::SANSUI::onCmd_set(neb::CJsonObject* pld) {
+    std::string code;
+    if (pld->Get("code", code)) {        
+        Serial.println(code.c_str());
+        return rfir::util::Util::StringToBytes(code, this->protocol.remote_state);
+    }
+    return false;
+};
+
+bool rfir::module::device::speaker::SANSUI::onCmd_get(neb::CJsonObject* pld) {
+    auto code = "0x" + rfir::util::Util::BytesToHexString(this->protocol.remote_state, KSansuiStateLength);
+    return pld->Add("code", code);
+};
+
+bool rfir::module::device::speaker::SANSUI::onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
+    if (data->count >= 1) {
+        return setRaw(data->result[0].bytes);
+    }
+    return false;
+
+};
+                    
