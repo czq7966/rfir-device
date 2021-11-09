@@ -9,26 +9,14 @@
 void network::module::wifi::Client::start(Params p) {
     this->params = p;
     this->checkOrReset();
-
-    // auto* mng = (ESPAsync_WiFiManager_Lite*) this->manager;
-    // if (!mng) {
-    //     mng = new ESPAsync_WiFiManager_Lite();
-    //     this->manager = (void*) mng;
-    // }
-
-    // mng->setConfigPortalChannel(0);
-    // mng->begin();
 }
 
 void network::module::wifi::Client::loop() {
-    // auto mng = (ESPAsync_WiFiManager_Lite*) this->manager;
-    // if (mng) 
-    //     mng->run();        
     checkOrReset();
 }
 
-void network::module::wifi::Client::checkOrReset(long timeout) {
-    if (WiFi.status() != WL_CONNECTED) {
+void network::module::wifi::Client::checkOrReset() {
+    if (!this->params.apMode && WiFi.status() != WL_CONNECTED ) {
         Serial.println("WiFi connecting......");
         pinMode(LED_BUILTIN, OUTPUT);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -43,7 +31,7 @@ void network::module::wifi::Client::checkOrReset(long timeout) {
         {
             digitalWrite(LED_BUILTIN, LOW);
             delay(500);
-            if (millis() - start > timeout * 1000)
+            if (millis() - start > this->params.resetTimeout * 1000)
             {
                 Serial.println("WiFi connect time out. ESP rest!\n");
                 delay(1000);

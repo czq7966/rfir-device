@@ -10,6 +10,6 @@ void network::service::ota::Updater::Start(network::module::ota::Updater::Params
 
 
 void network::service::ota::Updater::Loop() {
-    if (updater)
+    if (updater && (WiFi.status() == WL_CONNECTED))
         updater->loop();
 }

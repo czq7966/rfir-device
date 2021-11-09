@@ -12,7 +12,7 @@ namespace network {
                 static network::module::wifi::AP* ap;
 
             public:
-                static void Start();
+                static void Start(module::wifi::AP::Params p);
                 static void Loop();
 
             };

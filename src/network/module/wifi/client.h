@@ -2,6 +2,7 @@
 #define __NETWORK_MODULE_WIFI_CLIENT_H__
 
 #include <string>
+#include "ap.h"
 
 namespace network {
     namespace module {
@@ -9,16 +10,18 @@ namespace network {
             class Client {
             public:
                 struct Params {
+                    bool        apMode = false;
                     std::string ssid;
                     std::string pass;
+                    long        resetTimeout = 60;
+                    AP::Params  ap;
                 };
-            private:
-                void*   manager;
+            public:
                 Params  params;
             public:
                 void start(Params p);
                 void loop();
-                void checkOrReset(long timeout = 60);
+                void checkOrReset();
 
             };
         }

@@ -2,6 +2,7 @@
 #define __NETWORK_MODULE_WIFI_AP_H__
 
 #include <string>
+#include <IotWebConf.h>
 
 namespace network {
     namespace module {
@@ -9,14 +10,36 @@ namespace network {
             class AP {
             public:
                 struct Params {
-                    std::string ssid;
-                    std::string pass;
+                    std::string apSsid;
+                    std::string apPass;
+                    std::string wifiSsid;
+                    std::string wifiPass;
+                    std::string configVersion = "0";
+                    int         configPin = -1;
+                    int         configPinTimeout = 5;
+                    long        resetTimeout = 60 * 5;
                 };
-            private:
-                void* manager;
+            protected:
+                long reset_timeout_start = 0;
+                void handleRoot();                
+            public:
+                DNSServer* dnsServer;
+                WebServer* webServer;
+                IotWebConf* iotWebConf;
+                Params params;
             public:
                 void start(Params p);
                 void loop();
+                void checkOrReset();
+                void applyDefault();
+                void setupConfigPin();
+                void checkConfigPin();
+            public:
+                static long ConfigPinChangeTime;
+                static long ConfigPinChangeTime_Low;
+                static long ConfigPinChangeTime_High;
+                static ICACHE_RAM_ATTR void OnConfigPinChanged();
+                static void connectWifi(const char* ssid, const char* password);
 
             };
         }
