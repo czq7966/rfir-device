@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-dm4-gree/firmware_v29.bin
-29
-df1415e1a5822bcd76473ccf5297c1eb
-29.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-dm4-gree/firmware_v30.bin
+30
+e5d8cf6d7d4f5e69134befdcab662ae9
+30.0
 1
-ESP32x6abf713c,ESP32x6dabf498
+ESP32x6dabf498,ESP32x6abf713c
