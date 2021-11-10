@@ -8,7 +8,7 @@ void network::module::wifi::AP::start(Params p) {
     this->iotWebConf = new IotWebConf(this->params.apSsid.c_str(), this->dnsServer, this->webServer, this->params.apPass.c_str(), this->params.configVersion.c_str());
 
     Serial.printf("AP Starting up...%s %s\n:", this->params.apSsid.c_str(), this->params.apPass.c_str());
-    this->iotWebConf->setStatusPin(LED_BUILTIN);
+    this->iotWebConf->setStatusPin(this->params.statusPin, this->params.statusPinOnLevel);
     this->iotWebConf->setConfigPin(this->params.configPin);
     this->iotWebConf->setWifiConnectionHandler(&connectWifi);
 

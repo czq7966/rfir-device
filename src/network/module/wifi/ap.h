@@ -18,6 +18,12 @@ namespace network {
                     int         configPin = -1;
                     int         configPinTimeout = 5;
                     long        resetTimeout = 60 * 5;
+                    int         statusPin = LED_BUILTIN;
+#ifdef ESP32                    
+                    int         statusPinOnLevel = HIGH;
+#else
+                    int         statusPinOnLevel = LOW;
+#endif                    
                 };
             protected:
                 long reset_timeout_start = 0;
