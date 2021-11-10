@@ -27,7 +27,7 @@
 #define MQTT_PORT                   1883
 #define MQTT_USER                   "device"
 #define MQTT_PASSWORD               ""
-#define MQTT_SUB_TOPIC              "cmdgate/device/"
-#define MQTT_PUB_TOPIC              "cmdgate/central/cmd" 
+#define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
+#define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
 
 #endif //

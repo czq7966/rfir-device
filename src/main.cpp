@@ -117,8 +117,10 @@ void setup() {
     mp.ip = MQTT_IP;
     mp.port = MQTT_PORT;
     mp.user = MQTT_USER;
-    mp.sub_topic = MQTT_SUB_TOPIC + ChipID;
-    mp.pub_topic = MQTT_PUB_TOPIC;
+    String sub_topic = MQTT_SUB_TOPIC; sub_topic.replace("{did}", ChipID.c_str());
+    String pub_topic = MQTT_PUB_TOPIC; pub_topic.replace("{did}", ChipID.c_str());
+    mp.sub_topic = sub_topic.c_str();
+    mp.pub_topic = pub_topic.c_str();
     mp.bufsize = 2 * 1024;
     mp.id = ChipID;
     network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);

@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-ir-ac/firmware_v29.bin
+29
+a0f7f12cd93a29189ee725bf8325ebaa
+29.0
+1
+ESP8266x6145672,ESP8266x6145655,ESP8266_6145655,
