@@ -196,6 +196,7 @@ bool rfir::module::device::ac::Mcquay::onCmd_get(neb::CJsonObject* pld) {
     std::string sleepStr = ac->getSleep() ? "on" : "off";
     std::string swingStr = ac->getSwing() ? "on" : "off";
     std::string powerStr = getPower() ? "on" : "off";
+    std::string timerStr = getPinTimer() ? "on" : "off";
 
     pld->Add("power", powerStr);
     pld->Add("mode", modeStr);
@@ -205,6 +206,7 @@ bool rfir::module::device::ac::Mcquay::onCmd_get(neb::CJsonObject* pld) {
     pld->Add("temperature", ac->getTemp());
     pld->Add("hour", ac->getHour());
     pld->Add("minute", ac->getMinute());
+    pld->Add("timer", timerStr);
     pld->Add("extra", ac->toBitString() + "," + ac->toHexString());
 
     return true;
@@ -242,11 +244,15 @@ uint8_t rfir::module::device::ac::Mcquay::getPinMode() {
     uint8_t mode = McquayAC::KMcQuayModeNone;
     
     if (digitalRead(EModePin::COOL)) mode = mode | McquayAC::KMcQuayModeCool;
-    if (digitalRead(EModePin::DRY)) mode = mode | McquayAC::KMcQuayModeDry;
+    // if (digitalRead(EModePin::DRY)) mode = mode | McquayAC::KMcQuayModeDry;
     if (digitalRead(EModePin::FAN)) mode = mode | McquayAC::KMcQuayModeFan;
     if (digitalRead(EModePin::HEAT)) mode = mode | McquayAC::KMcQuayModeHeat;
     
     return mode;
+}
+
+bool rfir::module::device::ac::Mcquay::getPinTimer() {
+    return digitalRead(EModePin::DRY);
 }
 
 std::string rfir::module::device::ac::Mcquay::getPinModeStr(int pin) {    

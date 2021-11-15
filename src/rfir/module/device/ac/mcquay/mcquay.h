@@ -50,6 +50,7 @@ namespace rfir {
                 public:
                     bool doModePinChange();
                     bool getPower();
+                    bool getPinTimer();
                     uint8_t getPinMode();
                     std::string getPinModeStr(int pin);
                     std::string getModeStr(uint8_t mode);
