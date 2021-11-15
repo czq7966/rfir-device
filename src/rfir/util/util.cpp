@@ -20,7 +20,10 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
 #endif  
 #ifdef ESP8266
   uint32_t chipId = ESP.getChipId();
-  return prefix + std::string(String(chipId).c_str());
+  String id = String(BytesToHexString((uint8_t*)(&chipId), sizeof(chipId), true).c_str());
+  id.replace(" ", "");
+  return prefix + std::string(id.c_str());
+  // return prefix + std::string(String(chipId).c_str());
 #else		//ESP32
   uint32_t chipId = (uint32_t)ESP.getEfuseMac();
   return prefix + std::string(String(chipId, HEX).c_str());
@@ -55,9 +58,10 @@ std::string rfir::util::Util::BytesToString(uint8_t bytes[], uint16_t nbytes) {
 }
 
 
-std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes) {
+std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes, bool revert) {
     String result;
-    for (size_t j = 0; j < nbytes; j++)
+    int j = revert ? nbytes - 1 : 0;
+    while (revert && j >=0 || !revert &&  j < nbytes)
     {
         char c[3];
         uint8_t b = bytes[j];  
@@ -67,9 +71,11 @@ std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes
         if (result.length() > 0)
             result = result + (" " + hex);
         else
-            result = result + hex; 
+            result = result + hex;     
+
+        if (revert) j--; else j++;
     }
-    return std::string(result.c_str());  
+    return std::string(result.c_str()); 
 }
 
 
