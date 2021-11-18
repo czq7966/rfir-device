@@ -3,13 +3,13 @@
 
 //OTA
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          33
-#define OTA_VERSION_STRING          "33.0"
+#define OTA_VERSION_NUMBER          34
+#define OTA_VERSION_STRING          "34.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-ir-ac/cfg.txt"
 
 
 //WIFI
-#define WIFI_SSID                   "HUAWEI-House_2.4G"
+#define WIFI_SSID                   "djoffice-internal"
 #define WIFI_PASSWORD               "like91.nd"
 #define WIFI_RESET_TIMEOUT          60  //多少时间内WIFI未连接，重启，单位秒
 
