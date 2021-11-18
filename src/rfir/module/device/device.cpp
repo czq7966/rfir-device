@@ -88,8 +88,7 @@ bool rfir::module::device::Device::loadRaw() {
 
 void rfir::module::device::Device::doTimerReport(bool reset) {
     if (reset) {
-        timerReport_Interval = 1 * 1000;
-        timerReport_LastTime =  millis();
+        reinitTimerReport(reset);
     }
 
 
@@ -105,6 +104,15 @@ void rfir::module::device::Device::doTimerReport(bool reset) {
     }
 }
 
+void rfir::module::device::Device::reinitTimerReport(bool reset) {
+    if (reset) {
+        timerReport_Interval = 1 * 1000;
+    } else {
+        timerReport_Interval = 60 * 1000;
+    }    
+
+    timerReport_LastTime =  millis();    
+}
 
 std::string rfir::module::device::Device::toBitString() {
     int count = 0;

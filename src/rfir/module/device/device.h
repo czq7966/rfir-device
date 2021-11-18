@@ -28,7 +28,8 @@ namespace rfir {
                 virtual void onSetRaw();
                 virtual bool loadRaw();      
                 virtual bool saveRaw();      
-                virtual void doTimerReport(bool reset = false);       
+                virtual void doTimerReport(bool reset = false);    
+                virtual void reinitTimerReport(bool reset = false);
                 virtual std::string toBitString();
                 virtual std::string toHexString();
 

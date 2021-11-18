@@ -62,7 +62,10 @@ bool rfir::service::device::Device::OnCmd_set(neb::CJsonObject* pld) {
 }
 
 bool rfir::service::device::Device::OnCmd_get(neb::CJsonObject* pld) {
-    return GDevice->onCmd_get(pld);
+    auto result = GDevice->onCmd_get(pld);
+    if (result)
+        GDevice->reinitTimerReport();
+    return result;
 }
 
 bool rfir::service::device::Device::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
