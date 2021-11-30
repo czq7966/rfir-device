@@ -99,8 +99,8 @@ void setup() {
     //启动wifi或热点
     network::module::wifi::Client::Params np;
     np.apMode = AP_MODE; 
-    np.ssid = WIFI_SSID;                                np.pass = WIFI_PASSWORD;            np.resetTimeout = WIFI_RESET_TIMEOUT;    
-    np.ap.wifiSsid = WIFI_SSID;                         np.ap.wifiPass = WIFI_PASSWORD;
+    np.ssid = WIFI_SSID;                               np.pass = WIFI_PASSWORD;            np.timeout = WIFI_RESET_TIMEOUT;    
+    np.ap.wifiSsid = np.ssid[0];                       np.ap.wifiPass = np.pass[0];
     np.ap.apSsid = AP_SSID == "" ? ChipID : AP_SSID;    np.ap.apPass = AP_PASSWORD;         np.ap.resetTimeout = AP_RESET_TIMEOUT;
     np.ap.configVersion = AP_CONFIG_VERSION;            np.ap.configPin = AP_CONFIG_PIN;    np.ap.configPinTimeout = AP_CONFIG_PIN_TIMEOUT;
     network::service::wifi::Client::Start(np);
