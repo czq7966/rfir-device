@@ -96,6 +96,7 @@ void setup() {
     Serial.begin(115200);
     Serial.println("begin chid id: " + String(ChipID.c_str()));
 
+#if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)
     //启动wifi或热点
     network::module::wifi::Client::Params np;
     np.apMode = AP_MODE; 
@@ -104,14 +105,18 @@ void setup() {
     np.ap.apSsid = AP_SSID == "" ? ChipID : AP_SSID;    np.ap.apPass = AP_PASSWORD;         np.ap.resetTimeout = AP_RESET_TIMEOUT;
     np.ap.configVersion = AP_CONFIG_VERSION;            np.ap.configPin = AP_CONFIG_PIN;    np.ap.configPinTimeout = AP_CONFIG_PIN_TIMEOUT;
     network::service::wifi::Client::Start(np);
+#endif
 
+#if !(defined(DISABLE_OTA) && DISABLE_OTA == TRUE)
     //启动OTA
     network::module::ota::Updater::Params op;
     op.url = OTA_UPDATE_URL;
     op.id = ChipID;
     op.version = OTA_VERSION_NUMBER;
     network::service::ota::Updater::Start(op);
+#endif
 
+#if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
     //启动mqtt
     network::module::mqtt::Client::Params mp;
     mp.ip = MQTT_IP;
@@ -124,6 +129,7 @@ void setup() {
     mp.bufsize = 2 * 1024;
     mp.id = ChipID;
     network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);
+#endif
 
     //启动收发器
     rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
@@ -131,19 +137,29 @@ void setup() {
     //启动 设备
     rfir::service::device::Device::Start(onDeviceChange);
     
+
     //业务开始
     service::cmds::Cmd::Start();
+
 }
 
 
 
 void loop() {
+#if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)    
     //wifi循环
     network::service::wifi::Client::Loop();
+#endif
+
+#if !(defined(DISABLE_OTA) && DISABLE_OTA == TRUE)
     //OTA循环
     network::service::ota::Updater::Loop();
+#endif
+
+#if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
     //mqtt循环
     network::service::mqtt::Client::Loop();
+#endif    
 
     //收发器循环
     rfir::Loop();  
