@@ -15,6 +15,11 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::speaker::CL_CXY_SANSUI_P300();
 #endif
 
+#ifdef DEVICE_TEST_SNIFFER_ESP32_WROOM
+#include "rfir/module/device/test/sniffer/esp32_wroom.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::test::Sniffer_esp32_wroom();
+#endif
+
 
 rfir::module::ttl::Config::Device* rfir::service::device::Device::Init() {
     return GDevice->init();

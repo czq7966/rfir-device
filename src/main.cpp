@@ -20,22 +20,33 @@
 std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
 
 void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta* data, int count) {
-    Serial.println("onRfirSniffed");
-    // Serial.println(sniffer->toString());
+    // Serial.println("onRfirSniffed");
+    const char * payload;
+#ifdef DEBUG_RFIR
+    if (!payload) payload = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str();
+    Serial.println(payload);
+#endif    
 
     if (sniffer->getSniffParams()->response) {
-        network::service::mqtt::Client::Publish(rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str());
+        if (!payload) payload = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str();
+        network::service::mqtt::Client::Publish(payload);
     } 
     
 }
 
 void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decoder::DecodeResults* data) {
     Serial.println("onRfirDecoded");
-    Serial.println(data->toJsonString().c_str());
-    Serial.println(data->toJsonString(true).c_str());
+    const char * payload;
+#ifdef DEBUG_RFIR    
+    if (!payload) payload = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str();
+    Serial.println(payload);
+    // Serial.println(data->toJsonString().c_str());
+    // Serial.println(data->toJsonString(true).c_str());
+#endif    
 
     if (decoder->getDecodeParams()->response) {
-        network::service::mqtt::Client::Publish(rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str());
+        if (!payload) payload = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str();
+        network::service::mqtt::Client::Publish(payload);
     } 
 
     if (data->count > 0) 
@@ -45,10 +56,15 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
     Serial.println("onRfirEncoded: " + String(data->count));
-    // Serial.println(data->toString());
+    const char * payload;
+#ifdef DEBUG_RFIR    
+    if (!payload) payload = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str();
+    Serial.println(payload);
+#endif
 
     if (encoder->getEncodeParams()->response) {
-        network::service::mqtt::Client::Publish(rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str());
+        if (!payload) payload = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str();
+        network::service::mqtt::Client::Publish(payload);
     } 
 
 }

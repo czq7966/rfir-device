@@ -27,4 +27,10 @@
 #include "config/cl-cxy-speaker-sansui-p300.h"
 #endif
 
+
+//ESP32_WROOM射频采集器
+#ifdef DEVICE_TEST_SNIFFER_ESP32_WROOM
+#include "config/test-sniffer-esp32-wroom.h"
+#endif
+
 #endif
