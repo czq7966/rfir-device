@@ -4,7 +4,7 @@
 bool rfir::module::device::speaker::CL_CXY_SANSUI_P300::PlayPinChanged = false;
 void rfir::module::device::speaker::CL_CXY_SANSUI_P300::start(void * p) {
     SANSUI::start(p);
-    gpioPlay.init(PIN_PLAY);
+    gpioPlay.init(PIN_PLAY, INPUT);
     gpioPlay.onChange = OnPlayPinChange;
     gpioPlay.start();
 };
