@@ -4,8 +4,8 @@
 
 //OTA
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          5
-#define OTA_VERSION_STRING          "5.0"
+#define OTA_VERSION_NUMBER          6
+#define OTA_VERSION_STRING          "6.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-cxy-speaker-sansui-p300/cfg.txt"
 
 

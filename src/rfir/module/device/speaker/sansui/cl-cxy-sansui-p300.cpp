@@ -6,6 +6,7 @@ void rfir::module::device::speaker::CL_CXY_SANSUI_P300::start(void * p) {
     SANSUI::start(p);
     gpioPlay.init(PIN_PLAY);
     gpioPlay.onChange = OnPlayPinChange;
+    gpioPlay.start();
 };
 
 void rfir::module::device::speaker::CL_CXY_SANSUI_P300::loop() {
