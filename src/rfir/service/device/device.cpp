@@ -10,6 +10,11 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_DJROOM_Mcquay();
 #endif
 
+#ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2
+#include "rfir/module/device/mswitch/cl-djroom-light-switch2.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::mswitch::CL_DJROOM_Light_Switch2();
+#endif
+
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 #include "rfir/module/device/speaker/sansui/cl-cxy-sansui-p300.h"
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::speaker::CL_CXY_SANSUI_P300();

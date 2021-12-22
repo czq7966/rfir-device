@@ -22,6 +22,12 @@
 #include "config/cl-djroom-ac-mcquay.h"
 #endif
 
+
+#ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2
+#include "config/cl-djroom-light-mswitch2.h"
+#endif
+
+
 //长乐禅修院山水音箱
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 #include "config/cl-cxy-speaker-sansui-p300.h"
