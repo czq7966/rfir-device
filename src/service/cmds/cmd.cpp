@@ -167,10 +167,12 @@ bool service::cmds::Cmd::OnCmd_codec(neb::CJsonObject* cmd) {
 }
 
 bool service::cmds::Cmd::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
-    rfir::service::device::Device::OnCmd_decoded(data);
-    OnCmd_get(0, "IR Change");
-    
-    //Report
-    DoTimerReport(true);
-    return true;
+    if (rfir::service::device::Device::OnCmd_decoded(data)) {
+        OnCmd_get(0, "IR Change");
+        
+        //Report
+        DoTimerReport(true);
+        return true;
+    }
+    return false;
 }
