@@ -18,12 +18,13 @@ namespace rfir {
                     bool addSwitch(Switch* switch_p);
                     bool removeSwitch(Switch* switch_p);
                     void destroySwitchs();
-                    
+
                     bool doSwitchChange();                    
                 public:
                     virtual void start(void *) override;
                     virtual void loop() override; 
-
+                    // virtual bool loadRaw();      
+                    // virtual bool saveRaw();  
                 public:
                     virtual rfir::module::ttl::Config::Device* init() override;
                     virtual bool onCmd_set(neb::CJsonObject* pld) override; 

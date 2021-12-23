@@ -8,18 +8,28 @@ rfir::module::device::mswitch::MSwitch::~MSwitch() {
 void rfir::module::device::mswitch::MSwitch::start(void * p) {
     Device::start(p);
 
+    for (auto it = switchs.begin(); it != switchs.end(); it++)
+    {
+        it->second->start(p);
+    }
 
 };
 
 void rfir::module::device::mswitch::MSwitch::loop() {
     Device::loop();    
+
+    for (auto it = switchs.begin(); it != switchs.end(); it++)
+    {
+        it->second->loop();
+    }
+
     doSwitchChange();
 }; 
 
 
 bool  rfir::module::device::mswitch::MSwitch::addSwitch(Switch* switch_p) {
     auto n = std::string(switch_p->params.name.c_str());
-    switchs[n] = switch_p;
+    switchs[n] = switch_p;    
     return true;
 };
 
@@ -90,27 +100,27 @@ rfir::module::ttl::Config::Device* rfir::module::device::mswitch::MSwitch::init(
 
 
 bool rfir::module::device::mswitch::MSwitch::onCmd_set(neb::CJsonObject* pld) {
-    auto it = switchs.begin();
-    while (it != switchs.end()) {
+    for (auto it = switchs.begin(); it != switchs.end(); it++)
+    {
         it->second->onCmd_set(pld);
-        it++;
     }
+
     return true;
 };
 
 bool rfir::module::device::mswitch::MSwitch::onCmd_get(neb::CJsonObject* pld) {
-    auto it = switchs.begin();
-    while (it != switchs.end()) {
+    for (auto it = switchs.begin(); it != switchs.end(); it++)
+    {
         it->second->onCmd_get(pld);
-        it++;
     }
+
     return true;
 };
 
 bool rfir::module::device::mswitch::MSwitch::doSwitchChange() {
     if (rfir::module::device::mswitch::Switch::ChangedSwitch) {
         auto sw = (rfir::module::device::mswitch::Switch*)rfir::module::device::mswitch::Switch::ChangedSwitch;
-        auto reason = "State Change: " + sw->params.name; 
+        auto reason = "State change: " + sw->params.name; 
         emitChange(reason.c_str());        
         rfir::module::device::mswitch::Switch::ChangedSwitch = 0;
     }
@@ -119,6 +129,23 @@ bool rfir::module::device::mswitch::MSwitch::doSwitchChange() {
 }
 
 bool rfir::module::device::mswitch::MSwitch::onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
+    static unsigned long onCmd_decoded_micros = 0;    
+    if (data->count >= 1) {
+        if ( micros() - onCmd_decoded_micros > 1 * 1000000) {
+            onCmd_decoded_micros = micros();
+            String hex = "0x" + String(data->result[0].toHexString().c_str());
+            hex.replace(" ", "");
+
+            for (auto it = switchs.begin(); it != switchs.end(); it++)
+            {
+                if (it->second->params.rfirToggle == hex) {
+                    it->second->setState(!it->second->getState());
+                }
+            }
+
+            return true;
+        }
+    }
 
     return false;
 

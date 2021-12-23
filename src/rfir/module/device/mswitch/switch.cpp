@@ -4,6 +4,7 @@
 void* rfir::module::device::mswitch::Switch::ChangedSwitch = 0;
 const std::string rfir::module::device::mswitch::Switch::SWITCH_ON = "on";
 const std::string rfir::module::device::mswitch::Switch::SWITCH_OFF = "off";
+const std::string rfir::module::device::mswitch::Switch::SWITCH_TOGGLE = "toggle";
 
 rfir::module::device::mswitch::Switch::Switch() {
     this->params.name = "state";
@@ -28,7 +29,6 @@ void rfir::module::device::mswitch::Switch::setState(bool state) {
         if (state) gpioOut.on(); else gpioOut.off();
 }
 
-
 void rfir::module::device::mswitch::Switch::start(void * p) {    
     if (params.enabled) {
         if (params.pinIn >=0) {
@@ -40,6 +40,7 @@ void rfir::module::device::mswitch::Switch::start(void * p) {
 
         if (params.pinOut >=0) {
             gpioOut.init(params.pinOut, OUTPUT);
+            setState(params.default_v);
         }
     }
 };
@@ -58,12 +59,16 @@ bool rfir::module::device::mswitch::Switch::onCmd_set(neb::CJsonObject* pld) {
             setState(1);
         if (value == SWITCH_OFF)
             setState(0);
+        if (value == SWITCH_TOGGLE)
+            setState(!getState());            
     }
     return false;
 };
 
 bool rfir::module::device::mswitch::Switch::onCmd_get(neb::CJsonObject* pld) {
-    return pld->Add(this->params.name.c_str(), getState() ? SWITCH_ON : SWITCH_OFF);    
+    auto res =  pld->Add(this->params.name.c_str(), getState() ? SWITCH_ON : SWITCH_OFF);    
+    Serial.println(pld->ToString().c_str());
+    return res;
 };
 
 

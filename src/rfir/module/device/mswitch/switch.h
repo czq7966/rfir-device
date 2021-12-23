@@ -12,12 +12,15 @@ namespace rfir {
                 public:
                     static const std::string SWITCH_ON;
                     static const std::string SWITCH_OFF;
+                    static const std::string SWITCH_TOGGLE;                    
                 public:
                     struct Params {
                         String      name;
+                        String      rfirToggle;
                         bool        enabled;
                         int8_t      pinIn;
                         int8_t      pinOut;
+                        bool        default_v;
                     };
 
                     Params params;

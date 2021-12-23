@@ -1,5 +1,5 @@
-#ifndef __CONFIG_CONFIG_CL_DJ_MCQUAY_H__
-#define __CONFIG_CONFIG_CL_DJ_MCQUAY_H__
+#ifndef __CONFIG_CONFIG_CL_DJROOM_LIGHT_MSwitch2_H__
+#define __CONFIG_CONFIG_CL_DJROOM_LIGHT_MSwitch2_H__
 
 //OTA
 #define OTA_UPDATE
@@ -29,5 +29,26 @@
 #define MQTT_PASSWORD               ""
 #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
 #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
+
+//RFIR
+#define DEBUG_RFIR
+#define RFIR_MSWITCH_SNIFF_PIN      5
+
+#define RFIR_MSWITCH_1_NAME         "state_l1"
+#define RFIR_MSWITCH_1_CODE_TOGGLE  "0x6def7f"
+#define RFIR_MSWITCH_1_PIN_IN       12
+#define RFIR_MSWITCH_1_PIN_OUT      14
+
+#define RFIR_MSWITCH_2_NAME         "state_l2"
+#define RFIR_MSWITCH_2_CODE_TOGGLE  "0x6defbf"
+#define RFIR_MSWITCH_2_PIN_IN       13
+#define RFIR_MSWITCH_2_PIN_OUT      16
+
+#define RFIR_MSWITCH_3_CODE_TOGGLE  ""
+#define RFIR_MSWITCH_4_CODE_TOGGLE  ""
+#define RFIR_MSWITCH_5_CODE_TOGGLE  ""
+#define RFIR_MSWITCH_6_CODE_TOGGLE  ""
+#define RFIR_MSWITCH_7_CODE_TOGGLE  ""
+#define RFIR_MSWITCH_8_CODE_TOGGLE  ""
 
 #endif //
