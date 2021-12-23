@@ -39,7 +39,7 @@ bool rfir::service::cmds::Cmd::onCmd(neb::CJsonObject* jCmd) {
                     return onCmd_decode_encode(&hd, &pld); 
                     break;                                    
                 case 11:
-                    return onCmd_config(&hd, &pld); 
+                    // return onCmd_config(&hd, &pld); 
                     break;                                    
                 default:
                     break;
