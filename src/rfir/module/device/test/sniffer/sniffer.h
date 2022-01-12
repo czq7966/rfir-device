@@ -18,6 +18,9 @@ namespace rfir {
 
                     Protocol protocol;
                 public:
+                    rfir::module::ttl::Config::Device* initTempCodec();                    
+                    rfir::module::ttl::Config::Device* initOkonoffCodec();                    
+                public:
                     virtual rfir::module::ttl::Config::Device* init() override;
                     virtual bool setRaw(uint8_t* raw) override;
                     virtual uint8_t* getRaw(int& count) override;                

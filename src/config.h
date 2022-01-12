@@ -22,11 +22,15 @@
 #include "config/cl-djroom-ac-mcquay.h"
 #endif
 
-
+//长乐DJ会议室射灯
 #ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2
 #include "config/cl-djroom-light-mswitch2.h"
 #endif
 
+//长乐VR体验馆党建一楼柯耐弗空调风盘
+#ifdef DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
+#include "config/cl-vrhall-ff-ac-okonoff.h"
+#endif
 
 //长乐禅修院山水音箱
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300

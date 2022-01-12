@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-cxy-speaker-sansui-p300/firmware_v3.bin
-3
-bd67db2ecb8e9c578178768c7ddd11b0
-3.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-cxy-speaker-sansui-p300/firmware_v4.bin
+4
+65c0089a8c5bfbc6896f5eb246e0146a
+4.0
 1
 ESP8266x14476206

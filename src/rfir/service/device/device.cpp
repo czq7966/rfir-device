@@ -15,6 +15,15 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::mswitch::CL_DJROOM_Light_MSwitch2();
 #endif
 
+
+//长乐VR体验馆党建一楼柯耐弗空调风盘
+#ifdef DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
+#include "rfir/module/device/ac/okonoff/cl-vrhall-ff-okonoff.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_VRHALL_FF_Okonoff();
+#endif
+
+
+
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 #include "rfir/module/device/speaker/sansui/cl-cxy-sansui-p300.h"
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::speaker::CL_CXY_SANSUI_P300();
@@ -81,4 +90,8 @@ bool rfir::service::device::Device::OnCmd_get(neb::CJsonObject* pld) {
 bool rfir::service::device::Device::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
     return GDevice->onCmd_decoded(data);
 
+}
+
+bool rfir::service::device::Device::OnCmd_config(neb::CJsonObject* pld) {
+    return false;
 }

@@ -39,7 +39,7 @@ bool service::cmds::Cmd::OnCmd(neb::CJsonObject* jcmd) {
             case ECmdId::HeartBeet: //心跳        
                 return OnCmd_heartbeat(jcmd);
                 break;
-            case ECmdId::ACSet: //空调控制   
+            case ECmdId::GetSet: //空调控制   
                 return OnCmd_set(jcmd);
                 break;            
             case ECmdId::GetVersion: //获取版本号    
@@ -58,7 +58,10 @@ bool service::cmds::Cmd::OnCmd(neb::CJsonObject* jcmd) {
                 break;                  
             case ECmdId::Codec:
                 return OnCmd_codec(jcmd);
-                break;                            
+                break;   
+            case ECmdId::Config:
+                return OnCmd_config(jcmd);
+                break;                                          
             default:
                 break;
         }        
@@ -135,7 +138,7 @@ bool service::cmds::Cmd::OnCmd_set(neb::CJsonObject* cmd) {
 bool service::cmds::Cmd::OnCmd_get(neb::CJsonObject* _doc, std::string reason) {
     neb::CJsonObject cmd, hd, pld;
     hd.Add("did", rfir::util::Util::GetChipId());
-    hd.Add("cmd", ECmdId::ACSet);
+    hd.Add("cmd", ECmdId::GetSet);
     hd.Add("stp", 1);
     rfir::service::device::Device::OnCmd_get(&pld);
     pld.Add("reason", reason);
@@ -174,5 +177,25 @@ bool service::cmds::Cmd::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults
         DoTimerReport(true);
         return true;
     }
+    return false;
+}
+
+
+bool service::cmds::Cmd::OnCmd_config(neb::CJsonObject* cmd) {
+    neb::CJsonObject pld, content;
+    std::string fn;
+    if (cmd->Get("pld", pld)) {
+        if (pld.Get("filename", fn)) {
+
+        }
+    }
+        return OnCmd_getconfig(&pld);
+    return false;
+}
+
+bool service::cmds::Cmd::OnCmd_getconfig(neb::CJsonObject* cmd) {
+    neb::CJsonObject pld;
+    if (cmd->Get("pld", pld))
+        return rfir::service::device::Device::OnCmd_config(&pld);
     return false;
 }

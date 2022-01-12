@@ -2,6 +2,7 @@
 
 
 void rfir::module::device::mswitch::CL_DJROOM_Light_MSwitch2::start(void * p) {
+#ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2    
     auto sw1 = new Switch();
     sw1->params.name = RFIR_MSWITCH_1_NAME;
     sw1->params.rfirToggle = RFIR_MSWITCH_1_CODE_TOGGLE;
@@ -20,7 +21,7 @@ void rfir::module::device::mswitch::CL_DJROOM_Light_MSwitch2::start(void * p) {
     
     addSwitch(sw1);
     addSwitch(sw2);
-
+#endif
     MSwitch::start(p);
 };
 
@@ -37,7 +38,9 @@ rfir::module::ttl::Config::Device* rfir::module::device::mswitch::CL_DJROOM_Ligh
     sp->minDelta = 150;
     sp->maxDelta = 65535;
     sp->inverted = false;
+#ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2    
     sp->pin = RFIR_MSWITCH_SNIFF_PIN;
+#endif    
 
 // #define RFIF_LIGE 
 #ifdef RFIF_LIGE 

@@ -25,6 +25,7 @@ namespace rfir {
                 static bool OnCmd_set(neb::CJsonObject* pld);
                 static bool OnCmd_get(neb::CJsonObject* pld);
                 static bool OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data);
+                static bool OnCmd_config(neb::CJsonObject* pld);
             };
         }
     }

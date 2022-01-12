@@ -16,14 +16,15 @@ namespace service {
             enum ECmdId {
                 HeartBeet = 1,  //心跳指令
                 IRSend = 2, //红外发送指令
-                ACSet = 3,  //空调指令
+                GetSet = 3,  //状态查询/设置指令
                 Curtain = 4, //窗帘指令
                 GetVersion = 5, //获取版本指令
                 Update = 6, //升级指令
                 Reboot = 7, //重启指令
                 Send = 8, //射频发送指令
                 Sniff = 9, //射频采集指令
-                Codec = 10 //射频编解码指令
+                Codec = 10, //射频编解码指令
+                Config = 11 //修改配置指令
             };
         public:
             static void Start();
@@ -42,6 +43,8 @@ namespace service {
             static bool OnCmd_send(neb::CJsonObject* cmd);
             static bool OnCmd_sniff(neb::CJsonObject* cmd);
             static bool OnCmd_codec(neb::CJsonObject* cmd);
+            static bool OnCmd_config(neb::CJsonObject* cmd);
+            static bool OnCmd_getconfig(neb::CJsonObject* cmd);
         public:
             static bool OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data);
 

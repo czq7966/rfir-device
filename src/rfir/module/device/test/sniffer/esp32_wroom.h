@@ -11,6 +11,9 @@ namespace rfir {
             namespace test {
                 class Sniffer_esp32_wroom: public Sniffer {
                 public:
+                    virtual void start(void *);
+                    virtual void loop();                
+                public:
                     virtual rfir::module::ttl::Config::Device* init() override;
                 };
             }
