@@ -13,7 +13,7 @@ rfir::module::ttl::Config::Device* rfir::module::device::test::Sniffer::init() {
     sp->minCount = 50;
     sp->minDelta = 150;
     sp->maxDelta = 65535;
-    sp->inverted = true;
+    sp->inverted = false;
 
     //解码参数
     d->packet.decode.create(1);    
@@ -27,14 +27,14 @@ rfir::module::ttl::Config::Device* rfir::module::device::test::Sniffer::init() {
     dp[0].use_bits = false;
     
     dp[0].nbits = 32;
-    dp[0].headermark = 8950;
-    dp[0].headerspace = 4450;
+    dp[0].headermark = 3500;
+    dp[0].headerspace = 1700;
     dp[0].onemark = 560;
-    dp[0].onespace = 1700;
+    dp[0].onespace = 1150;
     dp[0].zeromark = 560;
-    dp[0].zerospace = 560;
-    dp[0].footermark = 560;
-    dp[0].footerspace = 39000;
+    dp[0].zerospace = 340;
+    dp[0].footermark = 0;
+    dp[0].footerspace = 0;
     dp[0].lastspace = 0;
 
     //编码参数
@@ -167,7 +167,7 @@ rfir::module::ttl::Config::Device* rfir::module::device::test::Sniffer::initOkon
     sp->minCount = 30;
     sp->minDelta = 150;
     sp->maxDelta = 65535;
-    sp->inverted = false;
+    sp->inverted = true;
 
     //解码参数
     d->packet.decode.create(1);    
@@ -180,15 +180,15 @@ rfir::module::ttl::Config::Device* rfir::module::device::test::Sniffer::initOkon
     dp[0].step = 2;
     dp[0].use_bits = false;
     
-    dp[0].nbits = 24;
-    dp[0].headermark = 0;
-    dp[0].headerspace = 0;
-    dp[0].onemark = 350;
-    dp[0].onespace = 1200;
-    dp[0].zeromark = 1150;
-    dp[0].zerospace = 450;
-    dp[0].footermark = 330;
-    dp[0].footerspace = 12600;
+    dp[0].nbits = 112;
+    dp[0].headermark = 3500;
+    dp[0].headerspace = 1700;
+    dp[0].onemark = 560;
+    dp[0].onespace = 1150;
+    dp[0].zeromark = 560;
+    dp[0].zerospace = 340;
+    dp[0].footermark = 560;
+    dp[0].footerspace = 10000;
     dp[0].lastspace = 0;
 
     //编码参数
