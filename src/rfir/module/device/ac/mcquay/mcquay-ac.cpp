@@ -157,7 +157,7 @@ uint16_t* rfir::module::device::ac::McquayAC::getEncodeRaw() {
 
     auto raw = getRaw();
     uint8_t prebit = 0;
-    for(uint8_t i = 0; i < 8; i++) {
+    for(uint8_t i = 0; i < KMcQuayStateLength; i++) {
         auto byte = *(raw + i);
         for(uint8_t j = 0; j < 8; j++) {
             auto bit = byte >> j & 0x01;
