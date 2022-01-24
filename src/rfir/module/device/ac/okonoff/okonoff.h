@@ -4,6 +4,7 @@
 
 #include "../../device.h"
 #include "rfir/rfir.h"
+#include "okonoff-ac.h"
 
 
 
@@ -16,6 +17,8 @@ namespace rfir {
                     Okonoff();
                     ~Okonoff();
                 public:
+                    OkonoffAC* ac = 0;
+                public:
                     virtual void start(void *) override;
                     virtual void loop() override;                
                 public:
@@ -26,6 +29,9 @@ namespace rfir {
                     virtual bool onCmd_set(neb::CJsonObject* pld) override; 
                     virtual bool onCmd_get(neb::CJsonObject* pld) override; 
                     virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override; 
+                public:
+                    std::string getModeStr(uint8_t mode);
+                    std::string getFanStr(uint8_t fan);                   
                 };
             }
         }

@@ -15,104 +15,92 @@ namespace rfir {
             namespace ac {
                 class OkonoffAC {        
             public:
-                static const uint8_t KOkonoffStateLength = 8;            
+                static const uint8_t KOkonoffStateLength = 14;            
                 //Header
-                static const uint8_t KOkonoffHeader  = 0x16;            
+                static const uint32_t KOkonoffHeader  = 0x7887a965;
+                //Sep
+                static const uint8_t KOkonoffSep      = 0x00;
+
+                //Footer
+                static const uint32_t KOkonoffFooter  = 0x00ff00ff;
+
+                //Power
+                static const uint8_t KOkonoffPowerOn  = 0b1000;
+                static const uint8_t KOkonoffPowerOff = 0b0000;
 
                 //Mode
-                static const uint8_t KOkonoffModeNone = 0b0000;
-                static const uint8_t KOkonoffModeDry  = 0b0001;
-                static const uint8_t KOkonoffModeCool = 0b0010;
-                static const uint8_t KOkonoffModeFan  = 0b0100;
-                static const uint8_t KOkonoffModeHeat = 0b1000;
-                
+                static const uint8_t KOkonoffModeHeat = 0b0001;
+                static const uint8_t KOkonoffModeCool = 0b0011;
+
                 //Fan
-                static const uint8_t KOkonoffFanAuto = 0b0001;
-                static const uint8_t KOkonoffFanMin  = 0b1000;
-                static const uint8_t KOkonoffFanMed  = 0b0100;
-                static const uint8_t KOkonoffFanMax  = 0b0010;
-
-                //Swing
-                static const uint8_t KOkonoffSwingOpen  = 0b1;
-                static const uint8_t KOkonoffSwingClose  = 0b0;
-
-                //Sleep
-                static const uint8_t KOkonoffSleepOpen  = 0b1;
-                static const uint8_t KOkonoffSleepClose  = 0b0;
+                static const uint8_t KOkonoffFanAuto = 0b000;
+                static const uint8_t KOkonoffFanLow  = 0b001;
+                static const uint8_t KOkonoffFanMed  = 0b010;
+                static const uint8_t KOkonoffFanHigh  = 0b011;
 
                 //Temp
-                static const uint8_t KOkonoffMinTempC = 16;  // Celsius
-                static const uint8_t KOkonoffMaxTempC = 30;  // Celsius
+                static const uint8_t KOkonoffMinTempC = 5;   // Celsius
+                static const uint8_t KOkonoffMaxTempC = 35;  // Celsius
 
-                static const uint16_t KOkonoffTimerMax = 24 * 60;         
 
             public:
-                static const uint8_t    KOkonoffEncodeRawLength = 134;
-                static const uint16_t   KOkonoffEncodeHeaderMark = 4690;
-                static const uint16_t   KOkonoffEncodeHeaderSpace = 2610;
-                static const uint16_t   KOkonoffEncodeOneMark = 375;
-                static const uint16_t   KOkonoffEncodeOneSpace = 910;
-                static const uint16_t   KOkonoffEncodeZeroMark = 375;
-                static const uint16_t   KOkonoffEncodeZeroSpace = 390;
-                static const uint16_t   KOkonoffEncodeFooterMark = 375;
-                static const uint16_t   KOkonoffEncodeFooterSpace = 20470;
+                static const uint8_t    KOkonoffEncodeRawLength = KOkonoffStateLength * 8 * 2 + 4;
+                static const uint16_t   KOkonoffEncodeHeaderMark = 3500;
+                static const uint16_t   KOkonoffEncodeHeaderSpace = 1700;
+                static const uint16_t   KOkonoffEncodeOneMark = 560;
+                static const uint16_t   KOkonoffEncodeOneSpace = 1150;
+                static const uint16_t   KOkonoffEncodeZeroMark = 560;
+                static const uint16_t   KOkonoffEncodeZeroSpace = 340;
+                static const uint16_t   KOkonoffEncodeFooterMark = 560;
+                static const uint16_t   KOkonoffEncodeFooterSpace = 10000;
 
             public:
                 union Protocol{
                     uint8_t remote_state[KOkonoffStateLength];  
                     struct {
-                        // Byte 0
-                        uint8_t Header          :8;       // 固定值：0b00010110（0x16）
-                        // Byte 1    
-                        uint8_t Mode            :4;       // 低4位=模式：0b0000=除湿；0b0001=吹风；0b1001=制冷；其它值待续
-                        uint8_t Fan             :4;       // 高4位=风速：0b1000=低风；0b0100=中风；0b0010=高风；0b0001=自动
-                        // Byte 2    
-                        uint8_t Minute          :8;       // 高4位=分钟之十位的值，如36分钟的3，=0b0011// 低4位=分钟之个位的值，如36分钟的6，=0b0110
-                        // Byte 3
-                        uint8_t Hour            :8;       // 高4位=小时之十位的值，如14时的1，=0b0001  // 低4位=小时之个位的值，如14时的4，=0b0100
+                        // Byte 0-3                       // 头部，固定值：0x 65 9a 87 78
+                        uint8_t H1;      
+                        uint8_t H2;
+                        uint8_t H3;
+                        uint8_t H4;
                         // Byte 4
-                        uint8_t OpenTime        :7;       //定时开时间，具体说明待续
-                        uint8_t TimingOpen      :1;       //第8位="定时开"功能开关，1=开启"定时开"功能；0=关闭"定时开"功能
+                        uint8_t S1              :8;       // 每4个字节分隔符 0x00
                         // Byte 5
-                        uint8_t CloseTime       :7;       //定时关时间，具体说明待续
-                        uint8_t TimingClose     :1;       //第8位="定时关"功能开关，1=开启"定时关"功能；0=关闭"定时开"功能    
+                        uint8_t Power           :4;       // 低4位=开关：0b0000=关; 0b1000=开
+                        uint8_t Mode            :4;       // 高4位=模式：0b0001=制热；0b0011=制冷                        
                         // Byte 6
-                        uint8_t Temp            :8;       //高4位=温度之十位的值，如25度的2，=0b0010   //低4位=温度之个位的值，如25时的5，=0b0101
+                        uint8_t N1              :8;       // 第6字符取反
                         // Byte 7
-                        uint8_t Swing           :1;       //摇摆开关，1=开；0=关
-                        uint8_t Sleep           :1;       //睡眠开关，1=开；0=关
-                        uint8_t Unknown         :1;       //未知，保留
-                        uint8_t PowerSwitch     :1;       //开、关转换
-                        uint8_t Sum             :4;       //高4位=校验值=前7个字节的高4位 + 低4位 + 第8字节低4位的和，取总和的低4位
+                        uint8_t Fan             :3;       // 低3位=风速：0b000=自动；低速=0b001; 中速=0b010; 高速=0b011
+                        uint8_t Temp1           :1;       // 第4位=温度 * 15 
+                        uint8_t Temp2           :4;       // 高4位=温度 + 5
+                        // Byte 8                        
+                        uint8_t N2              :8;       // 第8字符取反
+                        // Byte 9
+                        uint8_t S2              :8;       // 每4个字节分隔符 0x00
+                        // Byte 10-13                     // 固定值：0x FF 00 FF 00
+                        uint8_t F1;
+                        uint8_t F2;
+                        uint8_t F3;
+                        uint8_t F4;
                     };
                 };            
 
             public:
+                OkonoffAC();
                 Protocol protocol;
                 uint16_t encodeRaw[KOkonoffEncodeRawLength];
                 std::function<void(void*)> onSetRaw;
-                void    setHeader(const uint8_t header);
-                uint8_t getHeader();
+                void    setHeader();
+                void    setFooter();
                 void    setTemp(const uint8_t temp, const bool fahrenheit = false);
                 uint8_t getTemp();
                 void    setFan(const uint8_t speed);
                 uint8_t getFan();
                 void    setMode(const uint8_t new_mode);
                 uint8_t getMode();
-                void    setSleep(const bool on);
-                bool    getSleep();
-                void    setSwing(const bool on);
-                bool    getSwing();  
-                void    setPowerSwitch(const bool on);
-                bool    getPowerSwitch();              
-                uint8_t getHour();
-                void    setHour(const uint8_t hour);
-                uint8_t getMinute();
-                void    setMinute(const uint8_t minute);  
-                uint8_t getPinMode();
-
-                void setTimerEnabled(const bool on);
-                bool getTimerEnabled();   
+                void    setPower(const bool on);
+                bool    getPower();              
 
                 uint8_t* getRaw(void);
                 void    setRaw(const uint8_t new_code[]);

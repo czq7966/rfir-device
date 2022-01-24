@@ -4,7 +4,7 @@
 #define DEBUG_RFIR
 
 //OTA
-#define DISABLE_OTA                 TRUE
+// #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
 #define OTA_VERSION_NUMBER          35
 #define OTA_VERSION_STRING          "35.0"
@@ -12,10 +12,10 @@
 
 
 //WIFI
-#define DISABLE_WIFI                TRUE
-#define WIFI_SSID                   {"ND-Guest"}
-#define WIFI_PASSWORD               {"88085000"}
-#define WIFI_RESET_TIMEOUT          {60}  //多少时间内WIFI未连接，重启，单位秒
+// #define DISABLE_WIFI                TRUE
+#define WIFI_SSID                   {"MERCURY_95E8"}
+#define WIFI_PASSWORD               {"12345678"}
+#define WIFI_RESET_TIMEOUT          {30}  //多少时间内WIFI未连接，重启，单位秒
 
 //AP
 #define AP_MODE                     false //true时，支持热点配网
@@ -27,7 +27,7 @@
 #define AP_CONFIG_PIN_TIMEOUT       5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位秒
 
 //MQTT
-#define DISABLE_MQTT                TRUE
+// #define DISABLE_MQTT                TRUE
 #define MQTT_IP                     "172.24.140.41"
 #define MQTT_PORT                   1883
 #define MQTT_USER                   "device"

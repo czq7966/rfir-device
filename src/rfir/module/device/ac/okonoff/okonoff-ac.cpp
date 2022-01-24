@@ -1,25 +1,41 @@
 #include "okonoff-ac.h"
 
-void rfir::module::device::ac::OkonoffAC::setHeader(const uint8_t header) {
-    protocol.Header = header;
+
+rfir::module::device::ac::OkonoffAC::OkonoffAC() {
+    fixup();
 }
 
-uint8_t rfir::module::device::ac::OkonoffAC::getHeader() {
-    return protocol.Header;
+void rfir::module::device::ac::OkonoffAC::setHeader() {
+    protocol.H1 = 0x65;
+    protocol.H2 = 0x9a;
+    protocol.H3 = 0x87;
+    protocol.H4 = 0x78;
 }
+
+void rfir::module::device::ac::OkonoffAC::setFooter() {
+    protocol.F1 = 0xFF;
+    protocol.F2 = 0x00;
+    protocol.F3 = 0xFF;
+    protocol.F4 = 0x00;
+}
+
+
 
 void rfir::module::device::ac::OkonoffAC::setTemp(const uint8_t temp, const bool fahrenheit) {
-    uint8_t safecelsius = (temp >= KOkonoffMinTempC && temp <= KOkonoffMaxTempC) ? temp : 25;
-    protocol.Temp = dec2hex(safecelsius);        
+    uint8_t t = (temp >= KOkonoffMinTempC && temp <= KOkonoffMaxTempC) ? temp : 25;
+    t = t - 5;
+    uint8_t t1 = t > 15 ? 1 : 0;
+    uint8_t t2 = t > 15 ? t - 15 : t;
+    protocol.Temp1 = t1;
+    protocol.Temp2 = t2;    
 }
 
 uint8_t rfir::module::device::ac::OkonoffAC::getTemp()  {
-    return hex2dec(protocol.Temp); 
+    return protocol.Temp1 * 15 + protocol.Temp2 + 5;
 }
 
 void rfir::module::device::ac::OkonoffAC::setFan(const uint8_t speed) {
-  uint8_t fan = speed ? speed : KOkonoffFanAuto;
-  protocol.Fan = fan;       
+  protocol.Fan = speed;       
 }
 
 uint8_t rfir::module::device::ac::OkonoffAC::getFan()  {
@@ -27,52 +43,21 @@ uint8_t rfir::module::device::ac::OkonoffAC::getFan()  {
 }
 
 void    rfir::module::device::ac::OkonoffAC::setMode(const uint8_t new_mode) {
-    uint8_t mode = new_mode ? new_mode : KOkonoffModeDry;
-    protocol.Mode = mode;
+    protocol.Mode = new_mode == KOkonoffModeHeat ? KOkonoffModeHeat: KOkonoffModeCool;
 }
 
 uint8_t rfir::module::device::ac::OkonoffAC::getMode() {
     return protocol.Mode;
 }
 
-void    rfir::module::device::ac::OkonoffAC::setSleep(const bool on) {
-    protocol.Sleep = on;
+
+
+void    rfir::module::device::ac::OkonoffAC::setPower(const bool on) {
+    protocol.Power = on ? KOkonoffPowerOn : KOkonoffPowerOff;
 }
 
-bool    rfir::module::device::ac::OkonoffAC::getSleep() {
-    return protocol.Sleep;
-}
-
-void    rfir::module::device::ac::OkonoffAC::setSwing(const bool on) {
-    protocol.Swing = on;
-}
-
-bool    rfir::module::device::ac::OkonoffAC::getSwing() {
-    return protocol.Swing;
-}
-
-void    rfir::module::device::ac::OkonoffAC::setPowerSwitch(const bool on) {
-    protocol.PowerSwitch = on;
-}
-
-bool    rfir::module::device::ac::OkonoffAC::getPowerSwitch() {
-    return protocol.PowerSwitch;
-}
-
-uint8_t  rfir::module::device::ac::OkonoffAC::getHour() {
-    return hex2dec(protocol.Hour);
-}
-
-void     rfir::module::device::ac::OkonoffAC::setHour(const uint8_t hour) {
-    protocol.Hour = dec2hex(hour);
-}
-
-uint8_t  rfir::module::device::ac::OkonoffAC::getMinute() {
-    return hex2dec(protocol.Minute);
-}
-
-void     rfir::module::device::ac::OkonoffAC::setMinute(const uint8_t minute) {
-    protocol.Minute = dec2hex(minute);
+bool    rfir::module::device::ac::OkonoffAC::getPower() {
+    return protocol.Power ? KOkonoffPowerOn : KOkonoffPowerOff;
 }
 
 
@@ -88,20 +73,33 @@ void    rfir::module::device::ac::OkonoffAC::setRaw(const uint8_t new_code[]) {
 }
 
 void rfir::module::device::ac::OkonoffAC::checksum(const uint16_t length) {
-    protocol.Sum = OkonoffAC::calcBlockChecksum(protocol.remote_state, length);
+
 }
+
 bool rfir::module::device::ac::OkonoffAC::validsum() {
-    return validChecksum(this->protocol.remote_state);
+    return true;
 }
 
 void rfir::module::device::ac::OkonoffAC::fixup() {
-    protocol.Header = KOkonoffHeader;
+
+    setHeader();
+    protocol.S1 = KOkonoffSep;
+
+    setPower(getPower());
     setMode(getMode());
+    protocol.N1 = (protocol.Mode << 4) + protocol.Power;
+    protocol.N1 = ~protocol.N1;
+
     setFan(getFan());
     setTemp(getTemp());
-    setSleep(getSleep());
-    setSwing(getSwing());
-    
+    protocol.N2 = (protocol.Temp2 << 4) + (protocol.Temp1 << 3) + protocol.Fan;
+    protocol.N2 = ~protocol.N2;
+
+    protocol.S2 = KOkonoffSep;
+    setFooter();
+
+
+
     checksum();
 }
 
@@ -156,9 +154,9 @@ uint16_t* rfir::module::device::ac::OkonoffAC::getEncodeRaw() {
     this->encodeRaw[offset++] = KOkonoffEncodeHeaderSpace;
 
     auto raw = getRaw();
-    uint8_t prebit = 0;
-    for(uint8_t i = 0; i < 8; i++) {
-        auto byte = *(raw + i);
+
+    for(uint8_t i = 0; i < KOkonoffStateLength; i++) {
+        auto byte = *(raw + i);        
         for(uint8_t j = 0; j < 8; j++) {
             auto bit = byte >> j & 0x01;
             uint16_t mark = 0, space = 0;
@@ -170,26 +168,23 @@ uint16_t* rfir::module::device::ac::OkonoffAC::getEncodeRaw() {
                 space = KOkonoffEncodeOneSpace;
             }
 
-            if ( i + j == 0)  
-                mark += 40;
-            
-            if ((j + 1) % 4 == 0)
-                space += 70;
-            if (prebit == 1) 
-                mark += 30;
-
             this->encodeRaw[offset++] = mark;
             this->encodeRaw[offset++] = space;
-
-            prebit = bit;
         }
     }
     this->encodeRaw[offset++] = KOkonoffEncodeFooterMark;
     this->encodeRaw[offset++] = KOkonoffEncodeFooterSpace;
 
-    this->encodeRaw[offset++] = KOkonoffEncodeHeaderMark;
-    this->encodeRaw[offset++] = KOkonoffEncodeHeaderSpace;
+    uint32_t temp = 0;
+    Serial.println(KOkonoffEncodeRawLength);
+    for (size_t i = 0; i < KOkonoffEncodeRawLength; i++)
+    {
+        // Serial.println(this->encodeRaw[i]);
+        temp += this->encodeRaw[i];        
+    }
 
+    Serial.println(temp);
+    
 
     return this->encodeRaw;
 }
