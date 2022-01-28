@@ -9,11 +9,15 @@ namespace rfir {
     namespace module {
         namespace device {
             namespace ac {
-                class CL_VRHALL_FF_Okonoff: public Okonoff {                
+                class CL_VRHALL_FF_Okonoff: public Okonoff {       
+                public:
+                    bool onCmd_get(neb::CJsonObject* pld);
                 public:
                     virtual void start(void *) override;
                     virtual void loop() override;                                       
                     virtual rfir::module::ttl::Config::Device* init() override;
+                public:
+                    static void On_HLW8110_IA_Switch(int arg, bool ison);
                 };
             }
         }

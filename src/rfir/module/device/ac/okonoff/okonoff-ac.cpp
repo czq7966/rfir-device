@@ -57,7 +57,7 @@ void    rfir::module::device::ac::OkonoffAC::setPower(const bool on) {
 }
 
 bool    rfir::module::device::ac::OkonoffAC::getPower() {
-    return protocol.Power ? KOkonoffPowerOn : KOkonoffPowerOff;
+    return protocol.Power == KOkonoffPowerOff ? false : true;
 }
 
 
