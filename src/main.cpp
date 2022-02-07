@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "config.h"
+#include "global.h"
 #include <IotWebConf.h>
 #include "network/module/wifi/client.h"
 #include "network/module/ota/updater.h"
@@ -111,6 +112,7 @@ void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
 void setup() {
     Serial.begin(115200);
     Serial.println("begin chid id: " + String(ChipID.c_str()));
+    Global::Init();
 
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)
     //启动wifi或热点

@@ -18,6 +18,13 @@ namespace rfir {
                     virtual rfir::module::ttl::Config::Device* init() override;
                 public:
                     static void On_HLW8110_IA_Switch(int arg, bool ison);
+                public:                
+                    bool waitStart(int timeout = 2000);
+                    bool isRunning(float& iaValue);
+                    void syncPower();
+                    bool isPowerOff();
+                    void powerOff();
+                    int  powerOffCountdown(bool reset = false, int timeout = 21 * 1000);
                 };
             }
         }

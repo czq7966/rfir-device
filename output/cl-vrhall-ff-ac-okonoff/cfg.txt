@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-ff-ac-okonoff/firmware_v2.bin
+2
+8da85a3d0a9437ecfc8c64d12a32e01a
+2.0
+1
+ESP8266x0006d432
