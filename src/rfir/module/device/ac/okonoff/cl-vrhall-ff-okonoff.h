@@ -24,7 +24,7 @@ namespace rfir {
                     void syncPower();
                     bool isPowerOff();
                     void powerOff();
-                    int  powerOffCountdown(bool reset = false, int timeout = 21 * 1000);
+                    int  powerOffCountdown(bool reset = false, int timeout = 22 * 1000);
                 };
             }
         }

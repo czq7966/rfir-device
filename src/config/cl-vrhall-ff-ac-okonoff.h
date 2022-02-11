@@ -16,6 +16,8 @@
 // #define DISABLE_WIFI                TRUE
 #define WIFI_SSID                   {"MERCURY_95E8", "ND-Guest"}
 #define WIFI_PASSWORD               {"12345678", "88085000"}
+// #define WIFI_SSID                   {"ND-Guest"}
+// #define WIFI_PASSWORD               {"88085000"}
 #define WIFI_RESET_TIMEOUT          {30, 30}  //多少时间内WIFI未连接，重启，单位秒
 
 //AP
@@ -29,9 +31,12 @@
 
 //MQTT
 // #define DISABLE_MQTT                TRUE
-#define MQTT_IP                     "172.24.140.41"
-#define MQTT_PORT                   1883
-#define MQTT_USER                   "device"
+#define MQTT_IP                     "push-access.sdp.101.com"
+#define MQTT_PORT                   1780
+#define MQTT_USER                   "ioe"
+// #define MQTT_IP                     "172.24.140.41"
+// #define MQTT_PORT                   1883
+// #define MQTT_USER                   "device"
 #define MQTT_PASSWORD               ""
 #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
 #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 

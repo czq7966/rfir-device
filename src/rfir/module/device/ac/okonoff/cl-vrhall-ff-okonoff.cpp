@@ -51,8 +51,6 @@ void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::loop() {
             if (!isPowerOff()) {
                 //要关机
                 if(!this->ac->getPower()) {
-                    //发送关机指令
-                    powerOff();
                     //启动关机倒计时
                     powerOffCountdown(true);
                 }
@@ -96,6 +94,8 @@ void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::syncPower() {
     float iaValue = 0;
     auto running = isRunning(iaValue);
     this->ac->setPower(running);    
+    int count = 0;     
+    this->setRaw(this->getRaw(count));    
 }
 
 bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::isPowerOff() {
@@ -114,11 +114,14 @@ void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::powerOff() {
 int rfir::module::device::ac::CL_VRHALL_FF_Okonoff::powerOffCountdown(bool reset, int timeout ) {
     static unsigned long CL_VRHALL_FF_Okonoff_powerOffCountdown_time = 0;
     static bool CL_VRHALL_FF_Okonoff_powerOffCountdown_ing = false;
+    static int  CL_VRHALL_FF_Okonoff_powerOffCountdown_predown = 0;
 
     if (reset) {
         if (timeout > 0) {
             CL_VRHALL_FF_Okonoff_powerOffCountdown_time = millis();
             CL_VRHALL_FF_Okonoff_powerOffCountdown_ing = true;
+            //关机倒记时
+            emitChange(("power off count down: " + String(timeout / 1000)).c_str());
         } else {
             CL_VRHALL_FF_Okonoff_powerOffCountdown_time = 0;
             CL_VRHALL_FF_Okonoff_powerOffCountdown_ing = false;
@@ -132,13 +135,18 @@ int rfir::module::device::ac::CL_VRHALL_FF_Okonoff::powerOffCountdown(bool reset
             //关机成功
             if (isPowerOff()) {
                 emitChange("power off success!");
-            } else { //关机失败
-                //todo 
-
+            } else { //关机失败，恢复电源状态位
+                syncPower();
                 emitChange("power off failed!");
             }
         } else {
             //todo emitChange(...tick down);
+            // int countdown = down / 1000;
+            // if (countdown != CL_VRHALL_FF_Okonoff_powerOffCountdown_predown) {
+            //     CL_VRHALL_FF_Okonoff_powerOffCountdown_predown = countdown;                
+            //     emitChange(("power off count down: " + String(countdown)).c_str());
+            // }
+
             return down;
         }
 
