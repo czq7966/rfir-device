@@ -71,7 +71,8 @@ namespace rfir {
             class HLW8110 {
             public:
                 // static uint16_t ImA; //电流互感器电流值, 单位mA
-                // static uint16_t ImA_Pre;            
+                // static uint16_t ImA_Pre;    
+                static bool Inited;        
             public:
 
                 /*---------------------------------------------------------------------------------------------------------*/
@@ -173,7 +174,7 @@ namespace rfir {
                 static void Uart_Write_HLW8110_Reg(unsigned char ADDR_Reg,unsigned char u8_reg_length,unsigned long u32_data);
                 static void Uart_HLW8110_Reset(void);
                 static unsigned char Judge_CheckSum_HLW8110_Calfactor(void);
-                static void Init_HLW8110(void);
+                static bool Init_HLW8110(bool force = false);
                 static void Check_WriteReg_Success(void);
                 static void Read_HLW8110_IA(void);
                 static void Read_HLW8110_U(void);
@@ -195,7 +196,7 @@ namespace rfir {
 
 
             public:
-                static void Start();
+                static bool Start();
                 static void Loop();
                 static void Check_IA_Switch(bool reset = false);
                 static bool IsIAOn();

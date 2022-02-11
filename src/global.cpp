@@ -10,9 +10,15 @@ void  Global::CheckPowerHardReset() {
 #ifdef PWR_RESET_CHK_PIN
         int pin = PWR_RESET_CHK_PIN;
         pinMode(pin, INPUT);
-        _IsPowerHardReset = (digitalRead(pin) == 0);
-        pinMode(pin, OUTPUT);
-        digitalWrite(pin, 1);
+        int v1 = digitalRead(pin);
+        _IsPowerHardReset = (v1 == PWR_RESET_CHK_VALUE);
+        if (_IsPowerHardReset) {
+            pinMode(pin, OUTPUT);
+            digitalWrite(pin, !PWR_RESET_CHK_VALUE);
+        }
+
+        printf("IsPowerHardReset=%d , %d, %d \r\n", pin, v1, _IsPowerHardReset);
+
 #endif  
 
     }   

@@ -1,4 +1,5 @@
 #include "cl-vrhall-ff-okonoff.h"
+#include "../../../sensor/hlw8110/hlw8110.h"
 #include "../../../../service/device/device.h"
 #include "global.h"
 
@@ -26,24 +27,15 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::CL_VRHALL_FF_Okonof
 
 void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::start(void * p) {
     Okonoff::start(p);
-
-    sensor::HLW8110::Start();
-    sensor::HLW8110::On_IA_Switch = On_HLW8110_IA_Switch;    
-    sensor::HLW8110::IA_Switch_CB_Arg = (int)this;    
-
-    //硬重启？
-    if (Global::IsPowerHardReset()) {
-        syncPower();       
-    }   
 }
 
 
-void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::loop() {
-    Okonoff::loop();
-    sensor::HLW8110::Loop();
-
-    //已等待2秒
+void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::loop() {    
+    //开始先等待2秒，因为HLW8110通讯串口和打印串口相同，可能产生干扰
     if (waitStart(2000)) {
+        initSensor();
+        Okonoff::loop();
+        sensor::HLW8110::Loop();
         //非在倒计时
         if (!powerOffCountdown()) {
             //未关机
@@ -54,7 +46,7 @@ void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::loop() {
                     powerOffCountdown(true);
                 }
             }
-        }    
+        } 
     }
 }
 
@@ -65,6 +57,9 @@ bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::onCmd_get(neb::CJsonObject*
     std::string runningStr = running ? "on" : "off";
     pld->Add("running", runningStr);
     pld->Add("iaValue", iaValue);
+    pld->Add("RMSIAC", sensor::HLW8110::U16_RMSIAC_RegData);
+    pld->Add("PowerHardReset", Global::IsPowerHardReset());    
+    
     return true;
 }
 
@@ -75,8 +70,9 @@ bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::waitStart(int timeout) {
     if (!CL_VRHALL_FF_Okonoff_waitStart_result) {
         if (CL_VRHALL_FF_Okonoff_waitStart_time == 0)
             CL_VRHALL_FF_Okonoff_waitStart_time = millis();
-        if (((millis() - CL_VRHALL_FF_Okonoff_waitStart_time) > timeout))
+        if (((millis() - CL_VRHALL_FF_Okonoff_waitStart_time) > timeout)) {
             CL_VRHALL_FF_Okonoff_waitStart_result = true;
+        }
 
     }
 
@@ -159,4 +155,23 @@ void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::On_HLW8110_IA_Switch(int ar
     if (device) {
         device->emitChange("On IA Switch");
     }
+}
+
+bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::initSensor() {
+    static bool CL_VRHALL_FF_Okonoff_sensor_inited = false;
+    if (!CL_VRHALL_FF_Okonoff_sensor_inited) {
+        if (sensor::HLW8110::Start()) {
+            sensor::HLW8110::On_IA_Switch = On_HLW8110_IA_Switch;    
+            sensor::HLW8110::IA_Switch_Point = HLW8110_IA_Switch_Point;    
+            sensor::HLW8110::IA_Switch_CB_Arg = (int)this;    
+
+            //硬重启？
+            if (Global::IsPowerHardReset()) {
+                syncPower();       
+            }  
+            CL_VRHALL_FF_Okonoff_sensor_inited = true;
+        }
+    }
+
+    return CL_VRHALL_FF_Okonoff_sensor_inited;
 }

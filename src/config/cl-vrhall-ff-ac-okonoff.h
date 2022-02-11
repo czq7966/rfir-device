@@ -1,14 +1,23 @@
 #ifndef __CONFIG_CONFIG_CL_VR_F1_AC_OKONOFF_H__
 #define __CONFIG_CONFIG_CL_VR_F1_AC_OKONOFF_H__
 
+//Other
 #define DEBUG_RFIR
+#define HLW8110_IA_Switch_Point     50
+
+//Power
 #define PWR_RESET_CHK_PIN           5
+#define PWR_RESET_CHK_VALUE         1
+
+//Serial
+#define SERIAL_BAUD                 9600
+#define SERIAL_CONFIG               SERIAL_8E1
 
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          2
-#define OTA_VERSION_STRING          "2.0"
+#define OTA_VERSION_NUMBER          8
+#define OTA_VERSION_STRING          "8.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-ff-ac-okonoff/cfg.txt"
 
 

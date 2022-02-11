@@ -1,7 +1,8 @@
 #include "hlw8110.h"
 
-unsigned char rfir::module::sensor::HLW8110::u8_TxBuf[] = {};
-unsigned char rfir::module::sensor::HLW8110::u8_RxBuf[] = {};
+bool 			rfir::module::sensor::HLW8110::Inited = false;
+unsigned char 	rfir::module::sensor::HLW8110::u8_TxBuf[] = {};
+unsigned char 	rfir::module::sensor::HLW8110::u8_RxBuf[] = {};
 unsigned char	rfir::module::sensor::HLW8110::u8_TX_Length = 0;
 unsigned char	rfir::module::sensor::HLW8110::u8_RX_Length = 0;
 unsigned char	rfir::module::sensor::HLW8110::u8_RX_Index = 0;
@@ -490,8 +491,11 @@ unsigned char rfir::module::sensor::HLW8110::Judge_CheckSum_HLW8110_Calfactor(vo
  * Return   : none
  * Record   : 2019/04/03
 ==========================================================================================================*/
-void rfir::module::sensor::HLW8110::Init_HLW8110(void)
+bool rfir::module::sensor::HLW8110::Init_HLW8110(bool force)
 {
+	if (force) Inited = false;	
+	if (Inited) return Inited;
+	
 #if 0
 	//STM32 IO init
 	RCC->APB2ENR|=1<<2;    //使能PORTA时钟	   	 
@@ -528,7 +532,8 @@ void rfir::module::sensor::HLW8110::Init_HLW8110(void)
 	Uart_HLW8110_WriteREG_DIS();
 //	delay_ms(10);	
   //读取地址是0x6F至0x77的寄存器，验证系数是否正确
-  Judge_CheckSum_HLW8110_Calfactor();	
+  Inited = Judge_CheckSum_HLW8110_Calfactor();	
+  return Inited;
 }
 
 
@@ -989,10 +994,8 @@ float rfir::module::sensor::HLW8110::Hlw8110_Get_Current(void)
     return F_AC_I * 1000;
 }
 
-void rfir::module::sensor::HLW8110::Start() {
-    Serial.end();
-    Serial.begin(9600, SERIAL_8E1);
-    Init_HLW8110();
+bool rfir::module::sensor::HLW8110::Start() {
+    return Init_HLW8110();
 }
 
 void rfir::module::sensor::HLW8110::Loop() {
@@ -1009,12 +1012,10 @@ void rfir::module::sensor::HLW8110::Check_IA_Switch(bool reset) {
         if (On_IA_Switch) {
             bool isOn = IsIAOn();
             if (isOn != HLW8110_Check_IA_Switch_pre_state) {
-                Serial.println(isOn);
                 delay_ms(IA_Switch_elapse);
                 isOn = IsIAOn();
                 if (isOn != HLW8110_Check_IA_Switch_pre_state) {                                    
                     On_IA_Switch(IA_Switch_CB_Arg, isOn);
-                    Serial.println(isOn);
                     HLW8110_Check_IA_Switch_pre_state = isOn;
                 }
             }

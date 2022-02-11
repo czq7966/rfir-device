@@ -110,7 +110,11 @@ void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
 
 
 void setup() {
-    Serial.begin(115200);
+#ifdef SERIAL_BAUD
+    Serial.begin(SERIAL_BAUD, SERIAL_CONFIG);
+#else 
+   Serial.begin(115200);
+#endif
     Serial.println("begin chid id: " + String(ChipID.c_str()));
     Global::Init();
 
