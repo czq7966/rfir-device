@@ -24,7 +24,7 @@ bool service::cmds::Cmd::OnCmd(const char* cmd) {
     Serial.print("OnCmd: ");
     Serial.println(cmd);
     neb::CJsonObject jcmd;
-    if (jcmd.Parse(cmd)) {
+    if ((int)cmd != 0 &&  jcmd.Parse(cmd)) {
         return OnCmd(&jcmd);
     }
     return false;     
