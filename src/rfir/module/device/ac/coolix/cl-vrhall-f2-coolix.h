@@ -1,18 +1,14 @@
-#ifndef __RFIR_MODULE_DEVICE_AC_CL_VRHALL_FF_OKONOFF_H__
-#define __RFIR_MODULE_DEVICE_AC_CL_VRHALL_FF_OKONOFF_H__
+#ifndef __RFIR_MODULE_DEVICE_AC_CL_VRHALL_F2_COOLIX_H__
+#define __RFIR_MODULE_DEVICE_AC_CL_VRHALL_F2_COOLIX_H__
 
-#include "../../../sensor/hlw8110/hlw8110.h"
-#undef D_CAL_A_I
-#define D_CAL_A_I 0.1
-
-#include "okonoff.h"
+#include "coolix.h"
 
 
 namespace rfir {
     namespace module {
         namespace device {
             namespace ac {
-                class CL_VRHALL_FF_Okonoff: public Okonoff {       
+                class CL_VRHALL_F2_Coolix: public Coolix {       
                 public:
                     bool onCmd_get(neb::CJsonObject* pld);
                 public:

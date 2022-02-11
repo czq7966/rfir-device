@@ -18,15 +18,24 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
 #ifdef CHIP_ID_PREFIX
   prefix = CHIP_ID_PREFIX;
 #endif  
+
 #ifdef ESP8266
   uint32_t chipId = ESP.getChipId();
+#ifdef CHIP_ID_USE_DEC  
+  String id = String(chipId);
+#else
   String id = String(BytesToHexString((uint8_t*)(&chipId), sizeof(chipId), true).c_str());
   id.replace(" ", "");
+#endif  
   return prefix + std::string(id.c_str());
-  // return prefix + std::string(String(chipId).c_str());
 #else		//ESP32
   uint32_t chipId = (uint32_t)ESP.getEfuseMac();
+#ifdef CHIP_ID_USE_DEC  
+  return prefix + std::string(String(chipId).c_str());
+#else
   return prefix + std::string(String(chipId, HEX).c_str());
+#endif
+
 #endif
   
 }

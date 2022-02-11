@@ -22,7 +22,11 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_VRHALL_FF_Okonoff();
 #endif
 
-
+//长乐VR体验馆二三楼Coolix空调
+#ifdef DEVICE_CL_VRHALL_F2_AC_COOLIX
+#include "rfir/module/device/ac/coolix/cl-vrhall-f2-coolix.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_VRHALL_F2_Coolix();
+#endif
 
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 #include "rfir/module/device/speaker/sansui/cl-cxy-sansui-p300.h"

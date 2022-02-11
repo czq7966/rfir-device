@@ -32,6 +32,11 @@
 #include "config/cl-vrhall-ff-ac-okonoff.h"
 #endif
 
+//长乐VR体验馆二三楼Coolix空调
+#ifdef DEVICE_CL_VRHALL_F2_AC_COOLIX
+#include "config/cl-vrhall-f2-ac-coolix.h"
+#endif
+
 //长乐禅修院山水音箱
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 #include "config/cl-cxy-speaker-sansui-p300.h"

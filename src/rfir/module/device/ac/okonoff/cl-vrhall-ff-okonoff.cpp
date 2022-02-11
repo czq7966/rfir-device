@@ -1,5 +1,4 @@
 #include "cl-vrhall-ff-okonoff.h"
-#include "../../../sensor/hlw8110/hlw8110.h"
 #include "../../../../service/device/device.h"
 #include "global.h"
 
