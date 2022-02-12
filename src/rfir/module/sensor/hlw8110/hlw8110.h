@@ -184,7 +184,7 @@ namespace rfir {
                 static void Read_HLW8110_PF(void);
                 static void Read_HLW8110_Angle(void);
                 static void Calculate_HLW8110_MeterData(void);
-                static float Hlw8110_Get_Current(void);
+                static float Hlw8110_Get_Current(bool realtime = true);
             public:
                 typedef std::function<void(int arg, bool ison)> OnIASwitch;  
                 static int      IA_Switch_CB_Arg;

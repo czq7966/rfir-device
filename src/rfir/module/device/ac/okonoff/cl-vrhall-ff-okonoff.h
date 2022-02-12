@@ -21,9 +21,9 @@ namespace rfir {
                     bool initSensor();
                 public:                
                     bool waitStart(int timeout = 2000);
-                    bool isRunning(float& iaValue);
+                    bool isRunning(float& iaValue, bool realtime = true);
                     void syncPower();
-                    bool isPowerOff();
+                    bool isPowerOff(bool realtime = true);
                     void powerOff();
                     int  powerOffCountdown(bool reset = false, int timeout = 22 * 1000);
                 };

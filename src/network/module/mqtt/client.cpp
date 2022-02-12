@@ -39,6 +39,8 @@ void network::module::mqtt::Client::loop() {
 }
 
 void network::module::mqtt::Client::connect() {
+    static unsigned long Mqtt_client_connect_time = 0;
+
     if(WiFi.status() == WL_CONNECTED) {
         Serial.println("mqtt connecting...:" + String(this->params.ip.c_str()) + ":" + String(this->params.port));
         digitalWrite(LED_BUILTIN, LOW);        
@@ -49,14 +51,27 @@ void network::module::mqtt::Client::connect() {
             delay(700);
         }
 
-        if (mqtt->connected()) {
+        if (Mqtt_client_connect_time == 0)
+            Mqtt_client_connect_time = millis();
 
+        if (mqtt->connected()) {
+            Mqtt_client_connect_time = 0;
             Serial.println("\nmqtt connected!");
             digitalWrite(LED_BUILTIN, HIGH);
 
             mqtt->subscribe(this->params.sub_topic.c_str()); 
             if (this->onConnect) {
                 this->onConnect(mqtt);
+            }
+        } else { //超时重启
+            if (millis() - Mqtt_client_connect_time > MQTT_RESET_TIMEOUT * 1000 )  {
+                Serial.println("MQTT connect time out. ESP reset!\n");
+                delay(1000);
+#ifdef ESP8266                   
+                ESP.reset();
+#else
+                ESP.restart();
+#endif   
             }
         }        
     }

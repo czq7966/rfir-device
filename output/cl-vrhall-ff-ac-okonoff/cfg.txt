@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-ff-ac-okonoff/firmware_v8.bin
-8
-d06a4576048f999f4ad38719902995b7
-8.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-ff-ac-okonoff/firmware_v11.bin
+11
+2f7a8b114b2f10da9b7eca9eacf7e389
+11.0
 1
 ESP8266x0006d432,ESP8266x0006d778,ESP8266x005dc775

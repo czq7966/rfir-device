@@ -39,7 +39,7 @@ void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::loop() {
         //非在倒计时
         if (!powerOffCountdown()) {
             //未关机
-            if (!isPowerOff()) {
+            if (!isPowerOff(false)) {
                 //要关机
                 if(!this->ac->getPower()) {
                     //启动关机倒计时
@@ -80,22 +80,22 @@ bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::waitStart(int timeout) {
 
 }
 
-bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::isRunning(float& iaValue) {
-    iaValue = sensor::HLW8110::Hlw8110_Get_Current();
+bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::isRunning(float& iaValue, bool realtime ) {
+    iaValue = sensor::HLW8110::Hlw8110_Get_Current(realtime);
     return iaValue >= sensor::HLW8110::IA_Switch_Point;
 }
 
 void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::syncPower() {
     float iaValue = 0;
-    auto running = isRunning(iaValue);
+    auto running = isRunning(iaValue, true);
     this->ac->setPower(running);    
     int count = 0;     
     this->setRaw(this->getRaw(count));    
 }
 
-bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::isPowerOff() {
+bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::isPowerOff(bool realtime) {
     float iaValue = 0;
-    return !this->ac->getPower() && !isRunning(iaValue);
+    return !this->ac->getPower() && !isRunning(iaValue, realtime);
 }
 
 void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::powerOff() {

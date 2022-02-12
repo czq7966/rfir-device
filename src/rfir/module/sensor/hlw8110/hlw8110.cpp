@@ -988,9 +988,9 @@ void rfir::module::sensor::HLW8110::Calculate_HLW8110_MeterData(void)
 //-------------------------------------
 
 
-float rfir::module::sensor::HLW8110::Hlw8110_Get_Current(void)
+float rfir::module::sensor::HLW8110::Hlw8110_Get_Current(bool realtime)
 {
-	Read_HLW8110_IA();
+	if (realtime) Read_HLW8110_IA();
     return F_AC_I * 1000;
 }
 
