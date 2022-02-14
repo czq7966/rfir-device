@@ -2,7 +2,6 @@
 #define __CONFIG_CONFIG_CL_VR_F2_AC_COOLIX_H__
 
 #define DEBUG_RFIR
-#define PWR_RESET_CHK_PIN           5
 
 //OTA
 // #define DISABLE_OTA                 TRUE
@@ -35,5 +34,6 @@
 #define MQTT_PASSWORD               ""
 #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
 #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
+#define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
 
 #endif //

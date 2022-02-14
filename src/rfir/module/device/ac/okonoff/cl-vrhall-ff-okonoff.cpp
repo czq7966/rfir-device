@@ -162,7 +162,11 @@ bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::initSensor() {
     if (!CL_VRHALL_FF_Okonoff_sensor_inited) {
         if (sensor::HLW8110::Start()) {
             sensor::HLW8110::On_IA_Switch = On_HLW8110_IA_Switch;    
-            sensor::HLW8110::IA_Switch_Point = HLW8110_IA_Switch_Point;    
+#ifdef HLW8110_IA_Switch_Point
+            sensor::HLW8110::IA_Switch_Point = HLW8110_IA_Switch_Point; 
+#else
+            sensor::HLW8110::IA_Switch_Point = 50;
+#endif   
             sensor::HLW8110::IA_Switch_CB_Arg = (int)this;    
 
             //硬重启？
