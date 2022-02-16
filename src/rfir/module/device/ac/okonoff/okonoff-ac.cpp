@@ -175,17 +175,6 @@ uint16_t* rfir::module::device::ac::OkonoffAC::getEncodeRaw() {
     this->encodeRaw[offset++] = KOkonoffEncodeFooterMark;
     this->encodeRaw[offset++] = KOkonoffEncodeFooterSpace;
 
-    uint32_t temp = 0;
-    Serial.println(KOkonoffEncodeRawLength);
-    for (size_t i = 0; i < KOkonoffEncodeRawLength; i++)
-    {
-        // Serial.println(this->encodeRaw[i]);
-        temp += this->encodeRaw[i];        
-    }
-
-    Serial.println(temp);
-    
-
     return this->encodeRaw;
 }
 

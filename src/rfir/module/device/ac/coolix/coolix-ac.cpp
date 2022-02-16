@@ -1,63 +1,45 @@
 #include "coolix-ac.h"
+#include "rfir/util/util.h"
 
 
 rfir::module::device::ac::CoolixAC::CoolixAC() {
+    this->ac = new IRCoolixAC(0);
     fixup();
 }
 
-void rfir::module::device::ac::CoolixAC::setHeader() {
-    protocol.H1 = 0x65;
-    protocol.H2 = 0x9a;
-    protocol.H3 = 0x87;
-    protocol.H4 = 0x78;
-}
-
-void rfir::module::device::ac::CoolixAC::setFooter() {
-    protocol.F1 = 0xFF;
-    protocol.F2 = 0x00;
-    protocol.F3 = 0xFF;
-    protocol.F4 = 0x00;
-}
-
-
-
 void rfir::module::device::ac::CoolixAC::setTemp(const uint8_t temp, const bool fahrenheit) {
-    uint8_t t = (temp >= KCoolixMinTempC && temp <= KCoolixMaxTempC) ? temp : 25;
-    t = t - 5;
-    uint8_t t1 = t > 15 ? 1 : 0;
-    uint8_t t2 = t > 15 ? t - 15 : t;
-    protocol.Temp1 = t1;
-    protocol.Temp2 = t2;    
+    this->ac->setTemp(temp); 
 }
 
 uint8_t rfir::module::device::ac::CoolixAC::getTemp()  {
-    return protocol.Temp1 * 15 + protocol.Temp2 + 5;
+    return this->ac->getTemp();
 }
 
 void rfir::module::device::ac::CoolixAC::setFan(const uint8_t speed) {
-  protocol.Fan = speed;       
+    this->ac->setFan(speed);
 }
 
 uint8_t rfir::module::device::ac::CoolixAC::getFan()  {
-    return protocol.Fan;
+    return this->ac->getFan();
 }
 
 void    rfir::module::device::ac::CoolixAC::setMode(const uint8_t new_mode) {
-    protocol.Mode = new_mode == KCoolixModeHeat ? KCoolixModeHeat: KCoolixModeCool;
+    this->ac->setMode(new_mode);
 }
 
 uint8_t rfir::module::device::ac::CoolixAC::getMode() {
-    return protocol.Mode;
+    return this->ac->getMode();
 }
 
 
 
 void    rfir::module::device::ac::CoolixAC::setPower(const bool on) {
-    protocol.Power = on ? KCoolixPowerOn : KCoolixPowerOff;
+    this->ac->setPower(on);
+    
 }
 
 bool    rfir::module::device::ac::CoolixAC::getPower() {
-    return protocol.Power == KCoolixPowerOff ? false : true;
+    return this->ac->getPower();
 }
 
 
@@ -68,6 +50,14 @@ uint8_t* rfir::module::device::ac::CoolixAC::getRaw(void) {
 
 void    rfir::module::device::ac::CoolixAC::setRaw(const uint8_t new_code[]) {
     memcpy(protocol.remote_state, new_code, KCoolixStateLength);
+    uint32_t raw0 = protocol.remote_state[0];
+    uint32_t raw1 = protocol.remote_state[2];
+    uint32_t raw2 = protocol.remote_state[4];
+    uint32_t raw = raw0 << 16 | raw1 << 8 | raw2;
+    this->ac->setRaw(raw);
+    raw = this->ac->getRaw();
+
+    fixup();
     if (this->onSetRaw)
         this->onSetRaw(this);
 }
@@ -81,26 +71,14 @@ bool rfir::module::device::ac::CoolixAC::validsum() {
 }
 
 void rfir::module::device::ac::CoolixAC::fixup() {
-
-    setHeader();
-    protocol.S1 = KCoolixSep;
-
-    setPower(getPower());
-    setMode(getMode());
-    protocol.N1 = (protocol.Mode << 4) + protocol.Power;
-    protocol.N1 = ~protocol.N1;
-
-    setFan(getFan());
-    setTemp(getTemp());
-    protocol.N2 = (protocol.Temp2 << 4) + (protocol.Temp1 << 3) + protocol.Fan;
-    protocol.N2 = ~protocol.N2;
-
-    protocol.S2 = KCoolixSep;
-    setFooter();
-
-
-
-    checksum();
+    uint32_t raw =  this->ac->getRaw();
+    for (size_t i = 8; i <= kCoolixBits; i += 8)
+    {
+        int idx = i / 8;
+        int pos = (idx - 1) * 2;
+        protocol.remote_state[pos] = (raw >> (kCoolixBits - i)) & 0xFF;
+        protocol.remote_state[pos + 1] = protocol.remote_state[pos] ^ 0xFF;
+    }
 }
 
 std::string rfir::module::device::ac::CoolixAC::toString() {
@@ -175,17 +153,6 @@ uint16_t* rfir::module::device::ac::CoolixAC::getEncodeRaw() {
     this->encodeRaw[offset++] = KCoolixEncodeFooterMark;
     this->encodeRaw[offset++] = KCoolixEncodeFooterSpace;
 
-    uint32_t temp = 0;
-    Serial.println(KCoolixEncodeRawLength);
-    for (size_t i = 0; i < KCoolixEncodeRawLength; i++)
-    {
-        // Serial.println(this->encodeRaw[i]);
-        temp += this->encodeRaw[i];        
-    }
-
-    Serial.println(temp);
-    
-
     return this->encodeRaw;
 }
 
@@ -196,27 +163,4 @@ std::string rfir::module::device::ac::CoolixAC::getEncodeString() {
         result = result + String(*(raw + i)) + ",";
     }
     return std::string(result.c_str());
-}
-
-uint8_t rfir::module::device::ac::CoolixAC::calcBlockChecksum(const uint8_t* block, const uint16_t length) {
-    uint8_t sum = 0;
-    // Sum the upper half and lower half of this block.
-    for (uint8_t i = 0; i < length - 1; i++, block++) {
-        sum += (*block & 0b1111) + (*block >> 4);
-    }
-    sum = sum + (*block & 0b1111);
-
-    return sum & 0b1111; 
-}
-
-bool rfir::module::device::ac::CoolixAC::validChecksum(const uint8_t state[], const uint16_t length) {
-  return true;
-}
-
-uint8_t rfir::module::device::ac::CoolixAC::dec2hex(const uint8_t dec) {
-    return  ((dec / 10) << 4) + ((dec % 10) & 0b1111);
-}
-
-uint8_t rfir::module::device::ac::CoolixAC::hex2dec(const uint8_t hex) {
-    return  (hex >> 4) * 10 + (hex & 0b1111);
 }

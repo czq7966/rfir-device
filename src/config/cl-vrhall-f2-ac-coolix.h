@@ -1,6 +1,11 @@
 #ifndef __CONFIG_CONFIG_CL_VR_F2_AC_COOLIX_H__
 #define __CONFIG_CONFIG_CL_VR_F2_AC_COOLIX_H__
 
+#include "config.h"
+#undef CHIP_ID_PREFIX
+#define CHIP_ID_PREFIX              "ESP8266_"
+#define CHIP_ID_USE_DEC             TRUE
+
 #define DEBUG_RFIR
 
 //OTA

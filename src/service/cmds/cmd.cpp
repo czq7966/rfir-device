@@ -78,6 +78,7 @@ bool service::cmds::Cmd::OnCmd_heartbeat(neb::CJsonObject* _cmd, uint8_t st) {
     pld.Add("st", st);
     pld.Add("ver", OTA_VERSION_NUMBER);
     pld.Add("rssi", WiFi.RSSI());
+    pld.Add("mac", rfir::util::Util::GetMacAddress());
     cmd.Add("hd", hd);
     cmd.Add("pld", pld);
     
@@ -116,6 +117,7 @@ bool service::cmds::Cmd::OnCmd_getversion(neb::CJsonObject* _doc) {
 
     pld.Add("version", OTA_VERSION_NUMBER);
     pld.Add("rssi", WiFi.RSSI());
+    pld.Add("mac", rfir::util::Util::GetMacAddress());
 
     cmd.Add("hd", hd);
     cmd.Add("pld", pld);    

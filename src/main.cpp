@@ -115,7 +115,7 @@ void setup() {
 #else 
    Serial.begin(115200);
 #endif
-    Serial.println("begin chid id: " + String(ChipID.c_str()));
+    Serial.println("begin chid id: " + String(ChipID.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
     Global::Init();
 
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)

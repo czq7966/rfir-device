@@ -17,7 +17,7 @@ namespace rfir {
                     Coolix();
                     ~Coolix();
                 public:
-                    CoolixAC* ac = 0;
+                    CoolixAC* ac;
                 public:
                     virtual void start(void *) override;
                     virtual void loop() override;                

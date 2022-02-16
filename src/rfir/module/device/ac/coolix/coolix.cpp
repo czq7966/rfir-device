@@ -23,7 +23,7 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Coolix::init() {
     dp[0].tolerance = 30;
     dp[0].excess = 0;
     dp[0].atleast = true;                              
-    dp[0].MSBfirst = false;
+    dp[0].MSBfirst = true;
     dp[0].step = 2;
     dp[0].use_bits = false;
 
@@ -43,7 +43,7 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Coolix::init() {
 
     //发送参数
     d->packet.send.params.inverted = false;
-    d->packet.send.params.repeat = 0;    
+    d->packet.send.params.repeat = 1;    
     d->packet.send.params.modulation = true;    
     
     return d;   
@@ -63,7 +63,7 @@ rfir::module::device::ac::Coolix::~Coolix() {
 
 void rfir::module::device::ac::Coolix::start(void * p) {
     Device::start(p);
-
+    this->ac->setRaw(this->ac->protocol.remote_state);
 }
 
 
@@ -97,21 +97,27 @@ bool rfir::module::device::ac::Coolix::onCmd_set(neb::CJsonObject* pld) {
     power = powerStr == "on" ? true : 
             powerStr == "off" ? false : true;
 
+    //恢复关闭前的状态
+    ac->setPower(true);
+
     //Mode
     auto mode = ac->getMode();
     std::string modeStr;
     pld->Get("mode", modeStr);
-    mode =  modeStr == "cool" ? CoolixAC::KCoolixModeCool : 
-            modeStr == "heat" ? CoolixAC::KCoolixModeHeat : mode;
+    mode =  modeStr == "cool" ? kCoolixCool : 
+            modeStr == "auto" ? kCoolixAuto :
+            modeStr == "dry" ? kCoolixDry :
+            modeStr == "fan" ? kCoolixFan :
+            modeStr == "heat" ? kCoolixHeat : mode;
 
     //FanSpeed
     auto fan = ac->getFan();
     std::string fanStr;
     pld->Get("fanSpeed", fanStr);
-    fan =   fanStr == "auto" ? CoolixAC::KCoolixFanAuto : 
-            fanStr == "low" ? CoolixAC::KCoolixFanLow : 
-            fanStr == "medium" ? CoolixAC::KCoolixFanMed : 
-            fanStr == "high" ? CoolixAC::KCoolixFanHigh : fan;
+    fan =   fanStr == "auto" ? kCoolixFanAuto : 
+            fanStr == "low" ? kCoolixFanMin : 
+            fanStr == "medium" ? kCoolixFanMed : 
+            fanStr == "high" ? kCoolixFanMax : fan;
 
 
     //Temp
@@ -119,12 +125,11 @@ bool rfir::module::device::ac::Coolix::onCmd_set(neb::CJsonObject* pld) {
     pld->Get("temperature", temp);
 
 
-
-    ac->setPower(power);
     ac->setMode(mode);
     ac->setFan(fan);
     ac->setTemp(temp);
 
+    ac->setPower(power);
     
     this->setRaw(ac->getRaw());
 
@@ -133,11 +138,13 @@ bool rfir::module::device::ac::Coolix::onCmd_set(neb::CJsonObject* pld) {
 
 
 bool rfir::module::device::ac::Coolix::onCmd_get(neb::CJsonObject* pld) {
-    ac->fixup();
+    auto power = ac->getPower();
+    ac->setPower(true);
     auto mode = ac->getMode();
     std::string modeStr =  getModeStr(mode);
     auto fan = ac->getFan();
     std::string fanStr =  getFanStr(fan);
+    ac->setPower(power);
 
     std::string powerStr = ac->getPower() ? "on" : "off";
 
@@ -161,15 +168,54 @@ bool rfir::module::device::ac::Coolix::onCmd_decoded(rfir::module::ttl::Decoder:
 }
 
 std::string rfir::module::device::ac::Coolix::getModeStr(uint8_t mode) {
-    std::string modeStr =   mode == CoolixAC::KCoolixModeCool ? "cool" :
-                            mode == CoolixAC::KCoolixModeHeat ? "heat" : String(mode).c_str();
+    std::string modeStr = String(mode).c_str();
+    switch (mode)
+    {
+        case kCoolixCool:
+            modeStr = "cool";
+            break;
+        case kCoolixDry:
+            modeStr = "dry";
+            break;
+        case kCoolixAuto:
+            modeStr = "auto";
+            break;
+        case kCoolixHeat:
+            modeStr = "heat";
+            break;
+        case kCoolixFan:
+            modeStr = "fan";
+            break;                                            
+        default:
+            break;
+    }
+
     return modeStr;
 }
 
 std::string rfir::module::device::ac::Coolix::getFanStr(uint8_t fan) {
-    std::string fanStr =    fan == CoolixAC::KCoolixFanAuto ? "auto" :
-                            fan == CoolixAC::KCoolixFanLow ? "low" :
-                            fan == CoolixAC::KCoolixFanMed ? "medium" :
-                            fan == CoolixAC::KCoolixFanHigh ? "high" : "unknown";
-    return fanStr;
+    std::string str = String(fan).c_str();
+    switch (fan)
+    {
+        case kCoolixFanMin:
+            str = "low";
+            break;
+        case kCoolixFanMed:
+            str = "medium";
+            break;
+        case kCoolixFanMax:
+            str = "high";
+            break;
+        case kCoolixFanAuto:
+        case kCoolixFanAuto0:
+        case kCoolixFanZoneFollow:
+        case kCoolixFanFixed:
+            str = "auto";
+            break;
+                                      
+        default:
+            break;
+    }
+
+    return str;
 }

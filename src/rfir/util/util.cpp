@@ -40,6 +40,11 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
   
 }
 
+std::string rfir::util::Util::GetMacAddress() {
+  uint8_t mac[WL_MAC_ADDR_LENGTH] = {};
+  WiFi.macAddress(mac);
+  return BytesToHexString(mac, WL_MAC_ADDR_LENGTH, false, '-');
+}
 
 std::string rfir::util::Util::BitsToString(uint8_t bytes[], uint16_t nbits) {
   String bitStr;
@@ -67,7 +72,7 @@ std::string rfir::util::Util::BytesToString(uint8_t bytes[], uint16_t nbytes) {
 }
 
 
-std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes, bool revert) {
+std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes, bool revert, char separater) {
     String result;
     int j = revert ? nbytes - 1 : 0;
     while (revert && j >=0 || !revert &&  j < nbytes)
@@ -78,7 +83,7 @@ std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes
         String hex = (strlen(c) == 1) ? ("0" + String(c)) :  String(c);
 
         if (result.length() > 0)
-            result = result + (" " + hex);
+            result = result + (separater + hex);
         else
             result = result + hex;     
 
