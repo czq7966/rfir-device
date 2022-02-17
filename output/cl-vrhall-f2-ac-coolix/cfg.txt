@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-f2-ac-coolix/firmware_v200.bin
-200
-2ad97e7c5ff555afb6c63235bc2107ed
-200.0
-1
-ESP8266_486720,ESP8266_469370,ESP8266_9922593,ESP8266_491535
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-f2-ac-coolix/firmware_v201.bin
+201
+810e691eb379139465e771aed10bc3d3
+201.0
+0
+ESP8266_486720,ESP8266_469370,ESP8266_9922593,ESP8266_491535,ESP8266_9959024,ESP8266_9925572

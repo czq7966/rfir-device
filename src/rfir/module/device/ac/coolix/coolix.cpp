@@ -144,6 +144,7 @@ bool rfir::module::device::ac::Coolix::onCmd_get(neb::CJsonObject* pld) {
     std::string modeStr =  getModeStr(mode);
     auto fan = ac->getFan();
     std::string fanStr =  getFanStr(fan);
+    auto temp = ac->getTemp();
     ac->setPower(power);
 
     std::string powerStr = ac->getPower() ? "on" : "off";
@@ -151,7 +152,7 @@ bool rfir::module::device::ac::Coolix::onCmd_get(neb::CJsonObject* pld) {
     pld->Add("power", powerStr);
     pld->Add("mode", modeStr);
     pld->Add("fanSpeed", fanStr);
-    pld->Add("temperature", ac->getTemp());
+    pld->Add("temperature", temp);
     pld->Add("extra", ac->toBitString() + "," + ac->toHexString());
 
     return true;

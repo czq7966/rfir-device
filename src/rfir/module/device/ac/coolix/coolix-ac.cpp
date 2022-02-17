@@ -55,7 +55,10 @@ void    rfir::module::device::ac::CoolixAC::setRaw(const uint8_t new_code[]) {
     uint32_t raw2 = protocol.remote_state[4];
     uint32_t raw = raw0 << 16 | raw1 << 8 | raw2;
     this->ac->setRaw(raw);
-    raw = this->ac->getRaw();
+    //Save state
+    auto power = getPower();
+    setPower(false);
+    setPower(power);
 
     fixup();
     if (this->onSetRaw)
@@ -136,7 +139,7 @@ uint16_t* rfir::module::device::ac::CoolixAC::getEncodeRaw() {
     for(uint8_t i = 0; i < KCoolixStateLength; i++) {
         auto byte = *(raw + i);        
         for(uint8_t j = 0; j < 8; j++) {
-            auto bit = byte >> j & 0x01;
+            auto bit = byte >> (7 - j) & 0x01;
             uint16_t mark = 0, space = 0;
             if (bit == 0) {
                 mark = KCoolixEncodeZeroMark;
