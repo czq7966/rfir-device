@@ -17,6 +17,11 @@
 #include "config/fz-dm4-tearoom-ac-gree.h"
 #endif
 
+// 福州飘渺庄2楼食堂格力空调
+#ifdef DEVICE_FZ_PMZ_F2_AC_GREE
+#include "config/fz-pmz-f2-ac-gree.h"
+#endif
+
 //长乐DJ会议室Mcquay空调
 #ifdef DEVICE_CL_DJROOM_AC_MCQUAY
 #include "config/cl-djroom-ac-mcquay.h"

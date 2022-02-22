@@ -38,6 +38,11 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::test::Sniffer_esp32_wroom();
 #endif
 
+//福州飘渺庄2楼食堂格力空调
+#ifdef DEVICE_FZ_PMZ_F2_AC_GREE
+#include "rfir/module/device/ac/gree/fz-pmz-f2-gree.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::FZ_PMZ_F2_Gree();
+#endif
 
 rfir::module::ttl::Config::Device* rfir::service::device::Device::Init() {
     return GDevice->init();

@@ -1,4 +1,5 @@
 #include "gree.h"
+#include "gree-ac.h"
 
 
 rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
@@ -32,12 +33,12 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
     dp[0].use_bits = false;
     
     dp[0].nbits = 32;
-    dp[0].headermark = 8900;
-    dp[0].headerspace = 4500;
-    dp[0].onemark = 595;
-    dp[0].onespace = 1660;
-    dp[0].zeromark = 595;
-    dp[0].zerospace = 595;
+    dp[0].headermark = GreeAC::KGreeHdrMark;
+    dp[0].headerspace = GreeAC::KGreeHdrSpace;
+    dp[0].onemark = GreeAC::KGreeBitMark;
+    dp[0].onespace = GreeAC::KGreeOneSpace;
+    dp[0].zeromark = GreeAC::KGreeBitMark;
+    dp[0].zerospace = GreeAC::KGreeZeroSpace;
     dp[0].footermark = 0;
     dp[0].footerspace = 0;
     dp[0].lastspace = 0;
@@ -47,15 +48,15 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
     dp[1].nbits = 3;
     dp[1].headermark = 0;
     dp[1].headerspace = 0;
-    dp[1].footermark = 595;
-    dp[1].footerspace = 20000;
+    dp[1].footermark = GreeAC::KGreeBitMark;
+    dp[1].footerspace = GreeAC::KGreeMsgSpace;
 
     dp[2] = dp[0];
     dp[2].nbits = 32;
     dp[2].headermark = 0;
     dp[2].headerspace = 0;
-    dp[2].footermark = 595;
-    dp[2].footerspace = 40000;    
+    dp[2].footermark = GreeAC::KGreeBitMark;
+    dp[2].footerspace = GreeAC::KGreeMsgSpace;    
 
     //编码参数
     d->packet.encode.clone(&d->packet.decode);
@@ -67,27 +68,32 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
 
 
 rfir::module::device::ac::Gree::Gree() {
-    this->ac = new IRGreeAC(0); 
+
 }
 
 rfir::module::device::ac::Gree::~Gree() {
-    delete this->ac;
-    this->ac = 0;
+
 }
 
 
 bool rfir::module::device::ac::Gree::setRaw(uint8_t* raw) {
-    this->ac->setRaw(raw);
-    this->onSetRaw();
+    this->ac.ac->setRaw(raw);
+    dump();
+
+    // this->onSetRaw();
     return 1;
 }
 
 uint8_t* rfir::module::device::ac::Gree::getRaw(int& count) {
     count = kGreeStateLength;
-    return this->ac->getRaw();
+    return this->ac.ac->getRaw();
 }
 
 uint16_t* rfir::module::device::ac::Gree::getEncodeRaw(int& count) {
+    return 0;
+    // count = GreeAC::KGreeEncodeRawLength;
+    // return this->ac.getEncodeRaw();
+Serial.println("11111");    
     int length = 0;
     auto raw = getRaw(length);
     auto str1 = rfir::util::Util::BytesToString(raw, 4);
@@ -100,15 +106,18 @@ uint16_t* rfir::module::device::ac::Gree::getEncodeRaw(int& count) {
     str.replace("%data1%", str1.c_str());
     str.replace("%data2%", str2.c_str());
     str.replace("%data3%", str3.c_str());
+Serial.println(str);
     
     neb::CJsonObject blocks;
     blocks.Parse(str.c_str());
-
+Serial.println("22222");    
     auto rfir = rfir::GetRfir(this->name);
     rfir->encoder->encode(&blocks);
     auto encode = rfir->encoder->getEncodeResult();    
     count = encode->count;
+Serial.println("33333");        
     return encode->result;    
+//     return 0;
 }
 
 bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
@@ -116,14 +125,14 @@ bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
     
 
     //Power
-    auto power = ac->getPower();
+    auto power = ac.ac->getPower();
     std::string powerStr;
     pld->Get("power", powerStr);
     power = powerStr == "on" ? true : 
             powerStr == "off" ? false : true;
 
     //Mode
-    auto mode = ac->getMode();
+    auto mode = ac.ac->getMode();
     std::string modeStr;
     pld->Get("mode", modeStr);
     mode =  modeStr == "auto" ? kGreeAuto : 
@@ -134,7 +143,7 @@ bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
             modeStr == "heat" ? kGreeHeat : mode;
 
     //FanSpeed
-    auto fan = ac->getFan();
+    auto fan = ac.ac->getFan();
     std::string fanStr;
     pld->Get("fanSpeed", fanStr);
     fan =   fanStr == "auto" ? kGreeFanAuto : 
@@ -143,42 +152,46 @@ bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
             fanStr == "high" ? kGreeFanMax : fan;
 
     //Sleep
-    auto sleep = ac->getSleep();
+    auto sleep = ac.ac->getSleep();
     std::string sleepStr;
     pld->Get("sleep", sleepStr);
     sleep = sleepStr == "on" ? true : 
             sleepStr == "off" ? false : sleep;
 
     //Swing
-    auto swing = ac->getSwingVerticalAuto();
+    auto swing = ac.ac->getSwingVerticalAuto();
     std::string swingStr;
     pld->Get("swing", swingStr);
     swing = swingStr == "on" ? true : 
             swingStr == "off" ? false : swing;
 
     //Temp
-    uint32 temp = ac->getTemp();
+    uint32 temp = ac.ac->getTemp();
     pld->Get("temperature", temp);
 
 
-    ac->setMode(mode);
-    ac->setFan(fan);
-    ac->setSleep(sleep);
-    ac->setSwingVertical(swing, kGreeSwingAuto);
-    ac->setTemp(temp);
-    ac->setPower(power);
-    this->setRaw(ac->getRaw());
+    ac.ac->setMode(mode);
+    ac.ac->setFan(fan);
+    ac.ac->setSleep(sleep);
+    ac.ac->setSwingVertical(swing, kGreeSwingAuto);
+    ac.ac->setTemp(temp);
+    ac.ac->setPower(power);
 
+    dump();
+    ac.ac->begin();
+    ac.ac->send();
+
+    this->setRaw(ac.ac->getRaw());
     return true;
 }
 
 
 bool rfir::module::device::ac::Gree::onCmd_get(neb::CJsonObject* pld) {
     //Power
-    pld->Add("power", ac->getPower() ? "on" : "off");
+    pld->Add("power", ac.ac->getPower() ? "on" : "off");
 
     //Mode
-    auto mode = ac->getMode();
+    auto mode = ac.ac->getMode();
     std::string modeStr =   mode == kGreeAuto ? "auto" :
                             mode == kGreeCool ? "cool" : 
                             mode == kGreeDry ? "dry" : 
@@ -188,7 +201,7 @@ bool rfir::module::device::ac::Gree::onCmd_get(neb::CJsonObject* pld) {
     pld->Add("mode", modeStr);
 
     //FanSpeed
-    auto fan = ac->getFan();
+    auto fan = ac.ac->getFan();
     std::string fanStr =    fan == kGreeFanAuto ? "auto" : 
                             fan == kGreeFanMin ? "low" : 
                             fan == kGreeFanMed ? "medium" : 
@@ -196,13 +209,14 @@ bool rfir::module::device::ac::Gree::onCmd_get(neb::CJsonObject* pld) {
     pld->Add("fanSpeed", fanStr);
 
     //Sleep
-    pld->Add("sleep", ac->getSleep() ? "on" : "off");
+    pld->Add("sleep", ac.ac->getSleep() ? "on" : "off");
 
     //Swing
-    pld->Add("swing", ac->getSwingVerticalAuto() ? "on" : "off");
+    pld->Add("swing", ac.ac->getSwingVerticalAuto() ? "on" : "off");
 
     //Temp
-    pld->Add("temperature", ac->getTemp());
+    pld->Add("temperature", ac.ac->getTemp());
+    pld->Add("extra", ac.toBitString() + "," + ac.toHexString());
 
     return true;
 }
@@ -216,5 +230,21 @@ bool rfir::module::device::ac::Gree::onCmd_decoded(rfir::module::ttl::Decoder::D
         return setRaw(raw);
     }
     return false;
+}
+
+void  rfir::module::device::ac::Gree::dump() {
+    int length = 0;
+    auto raw = getRaw(length);
+    auto str1 = rfir::util::Util::BytesToHexString(raw, 4);
+    uint8_t bits[1] = {0b010};
+    auto str2 = rfir::util::Util::BitsToString(bits, 3);
+    auto str3 = rfir::util::Util::BytesToHexString(raw + 3, 4);
+
+    String str = "[{'data': '%data1%'}, {'data': '%data2%'}, {'data': '%data3%'}]";
+    str.replace("'", "\"");
+    str.replace("%data1%", str1.c_str());
+    str.replace("%data2%", str2.c_str());
+    str.replace("%data3%", str3.c_str());
+    Serial.println(str);
 }
 

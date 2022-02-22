@@ -4,7 +4,7 @@
 
 #include "../../device.h"
 #include "rfir/rfir.h"
-#include "ir_Gree.h"
+#include "gree-ac.h"
 
 
 
@@ -14,7 +14,7 @@ namespace rfir {
             namespace ac {
                 class Gree: public Device {
                 protected:
-                    IRGreeAC* ac = 0;
+                    GreeAC ac;
                 public:                     
                     Gree();
                     ~Gree();
@@ -26,6 +26,7 @@ namespace rfir {
                     virtual bool onCmd_set(neb::CJsonObject* pld) override; 
                     virtual bool onCmd_get(neb::CJsonObject* pld) override; 
                     virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override; 
+                    void dump();
                 };
             }
         }
