@@ -41,9 +41,9 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
 }
 
 std::string rfir::util::Util::GetMacAddress() {
-  uint8_t mac[WL_MAC_ADDR_LENGTH] = {};
+  uint8_t mac[6] = {};
   WiFi.macAddress(mac);
-  return BytesToHexString(mac, WL_MAC_ADDR_LENGTH, false, '-');
+  return BytesToHexString(mac, 6, false, '-');
 }
 
 std::string rfir::util::Util::BitsToString(uint8_t bytes[], uint16_t nbits) {
