@@ -17,6 +17,7 @@ void rfir::module::device::Device::start(void *) {
 
 void rfir::module::device::Device::loop() {
     doTimerReport();
+    doRawChanged();
 }
 
 
@@ -45,7 +46,8 @@ uint16_t* rfir::module::device::Device::getEncodeRaw(int& count) {
 }
 
 void rfir::module::device::Device::onSetRaw() {
-    saveRaw();
+    // saveRaw();
+    rawChanged = true;
 }
 
 
@@ -112,6 +114,13 @@ void rfir::module::device::Device::reinitTimerReport(bool reset) {
     }    
 
     timerReport_LastTime =  millis();    
+}
+
+void rfir::module::device::Device::doRawChanged() {
+    if (rawChanged) {
+        rawChanged = false;
+        saveRaw();
+    }
 }
 
 std::string rfir::module::device::Device::toBitString() {

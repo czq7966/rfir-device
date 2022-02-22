@@ -20,7 +20,8 @@ namespace rfir {
                 void emitChange(const char* reason);
             public:
                 int timerReport_LastTime = 0;
-                int timerReport_Interval = 60 * 1000;            
+                int timerReport_Interval = 60 * 1000;      
+                bool rawChanged = false;      
 
             public:
                 virtual void start(void *);
@@ -30,6 +31,7 @@ namespace rfir {
                 virtual bool saveRaw();      
                 virtual void doTimerReport(bool reset = false);    
                 virtual void reinitTimerReport(bool reset = false);
+                virtual void doRawChanged();    
                 virtual std::string toBitString();
                 virtual std::string toHexString();
 
