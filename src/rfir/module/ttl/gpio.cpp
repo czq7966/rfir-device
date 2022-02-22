@@ -97,48 +97,50 @@ void rfir::module::ttl::Gpio::OnGpioStart(Gpio* gpio) {
             }
         }
     }
-
+#ifndef ESP_INTR_FLAG_IRAM
+#define ESP_INTR_FLAG_IRAM 0
+#endif
     switch (idx)
     {
         case 0:
             Gpio_0 = gpio;            
-            attachInterrupt(gpio->pin, Gpio_0_interrupt, CHANGE);                            
+            attachInterrupt(gpio->pin, Gpio_0_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                            
             break;
         case 1:
             Gpio_1 = gpio;
-            attachInterrupt(gpio->pin, Gpio_1_interrupt, CHANGE);                               
+            attachInterrupt(gpio->pin, Gpio_1_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                               
             break;
         case 2:
             Gpio_2 = gpio;
-            attachInterrupt(gpio->pin, Gpio_2_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_2_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 3:
             Gpio_3 = gpio;
-            attachInterrupt(gpio->pin, Gpio_3_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_3_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 4:
             Gpio_4 = gpio;
-            attachInterrupt(gpio->pin, Gpio_4_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_4_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 5:
             Gpio_5 = gpio;
-            attachInterrupt(gpio->pin, Gpio_5_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_5_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 6:
             Gpio_6 = gpio;
-            attachInterrupt(gpio->pin, Gpio_6_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_6_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 7:
             Gpio_7 = gpio;
-            attachInterrupt(gpio->pin, Gpio_7_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_7_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 8:
             Gpio_8 = gpio;
-            attachInterrupt(gpio->pin, Gpio_8_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_8_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;
         case 9:
             Gpio_9 = gpio;
-            attachInterrupt(gpio->pin, Gpio_9_interrupt, CHANGE);                                                           
+            attachInterrupt(gpio->pin, Gpio_9_interrupt, CHANGE | ESP_INTR_FLAG_IRAM);                                                           
             break;                                                                                                                                                                                                                                                            
         
         default:
