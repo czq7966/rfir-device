@@ -11,15 +11,15 @@
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          201
-#define OTA_VERSION_STRING          "201.0"
+#define OTA_VERSION_NUMBER          202
+#define OTA_VERSION_STRING          "202.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-f2-ac-coolix/cfg.txt"
 
 
 //WIFI
 // #define DISABLE_WIFI                TRUE
-#define WIFI_SSID                   {"ND-Guest", "MERCURY_95E8"}
-#define WIFI_PASSWORD               {"88085000", "12345678"}
+#define WIFI_SSID                   {"ND-MAC", "MERCURY_95E8"}
+#define WIFI_PASSWORD               {"wanglong", "12345678"}
 #define WIFI_RESET_TIMEOUT          {30, 30}  //多少时间内WIFI未连接，重启，单位秒
 
 //AP
