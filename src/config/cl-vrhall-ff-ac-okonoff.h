@@ -16,15 +16,15 @@
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          12
-#define OTA_VERSION_STRING          "12.0"
+#define OTA_VERSION_NUMBER          13
+#define OTA_VERSION_STRING          "13.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-ff-ac-okonoff/cfg.txt"
 
 
 //WIFI
 // #define DISABLE_WIFI                TRUE
-#define WIFI_SSID                   {"ND-Guest", "MERCURY_95E8"}
-#define WIFI_PASSWORD               {"88085000", "12345678"}
+#define WIFI_SSID                   {"ND-MAC", "MERCURY_95E8"}
+#define WIFI_PASSWORD               {"wanglong", "12345678"}
 // #define WIFI_SSID                   {"ND-Guest"}
 // #define WIFI_PASSWORD               {"88085000"}
 #define WIFI_RESET_TIMEOUT          {30, 30}  //多少时间内WIFI未连接，重启，单位秒
