@@ -17,6 +17,7 @@ namespace rfir {
                     virtual void loop() override;                                       
                     virtual rfir::module::ttl::Config::Device* init() override;
                     virtual bool onCmd_get(neb::CJsonObject* pld) override; 
+                    virtual bool onCmd_set(neb::CJsonObject* pld) override; 
                 public:
                     static const uint8_t PIN_POWER  = 13;  
                     static bool PowerPinChanged;

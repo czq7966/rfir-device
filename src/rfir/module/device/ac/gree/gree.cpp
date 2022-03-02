@@ -177,10 +177,6 @@ bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
     ac.ac->setTemp(temp);
     ac.ac->setPower(power);
 
-    dump();
-    ac.ac->begin();
-    ac.ac->send();
-
     this->setRaw(ac.ac->getRaw());
     return true;
 }

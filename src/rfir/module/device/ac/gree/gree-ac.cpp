@@ -3,12 +3,7 @@
 
 
 rfir::module::device::ac::GreeAC::GreeAC() {
-#ifdef ESP8266
-    this->ac = new IRGreeAC(4);
-#else     
-    this->ac = new IRGreeAC(22);
-#endif       
-    
+    this->ac = new IRGreeAC(0);
 }
 
 
