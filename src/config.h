@@ -27,6 +27,11 @@
 #include "config/cl-djroom-ac-mcquay.h"
 #endif
 
+//长乐DJ会议室杜亚窗帘
+#ifdef DEVICE_CL_DJROOM_CURTAIN_DOOYA
+#include "config/cl-djroom-curtain-dooya.h"
+#endif
+
 //长乐DJ会议室射灯
 #ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2
 #include "config/cl-djroom-light-mswitch2.h"

@@ -5,11 +5,19 @@
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::FZDM4_TeaRoom_Gree();
 #endif
 
+//长乐DJ会议室Mcquay空调
 #ifdef DEVICE_CL_DJROOM_AC_MCQUAY
 #include "rfir/module/device/ac/mcquay/cl-djroom-mcquay.h"
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_DJROOM_Mcquay();
 #endif
 
+//长乐DJ会议室杜亚窗帘
+#ifdef DEVICE_CL_DJROOM_CURTAIN_DOOYA
+#include "rfir/module/device/curtain/dooya/cl-djroom-dooya.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::curtain::CL_DJROOM_Dooya();
+#endif
+
+//长乐DJ会议室乐高区2路射灯开关
 #ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2
 #include "rfir/module/device/mswitch/cl-djroom-light-mswitch2.h"
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::mswitch::CL_DJROOM_Light_MSwitch2();
