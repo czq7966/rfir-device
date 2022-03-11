@@ -125,10 +125,11 @@ bool service::cmds::Cmd::OnCmd_getversion(neb::CJsonObject* _doc) {
 }
 
 bool service::cmds::Cmd::OnCmd_set(neb::CJsonObject* cmd) {
-    neb::CJsonObject pld;
+    neb::CJsonObject hd, pld;
     std::string key;
+    int stp;
 
-    if (!cmd->Get("pld", pld) || !pld.GetKey(key))
+    if (!cmd->Get("pld", pld) || !pld.GetKey(key) || (cmd->Get("hd", hd) && hd.Get("stp", stp) && stp == 2))
         return OnCmd_get(cmd);
     else {
         auto result = rfir::service::device::Device::OnCmd_set(&pld);
