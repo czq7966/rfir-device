@@ -9,9 +9,12 @@
 
 
 //WIFI
-#define WIFI_SSID                   {"HUAWEI-House_2.4G",   "djoffice-internal"}
-#define WIFI_PASSWORD               {"like91.nd",           "like91.nd"}
-#define WIFI_RESET_TIMEOUT          {30,                    30}  //多少时间内WIFI未连接，重启，单位秒
+// #define WIFI_SSID                   {"HUAWEI-House_2.4G",   "djoffice-internal", "MERCURY_95E8"}
+// #define WIFI_PASSWORD               {"like91.nd",           "like91.nd",         "12345678"}
+#define WIFI_SSID                   {"MERCURY_95E8"}
+#define WIFI_PASSWORD               {"12345678"}
+#define WIFI_RESET_TIMEOUT          {30,                    30,                   30}  //多少时间内WIFI未连接，重启，单位秒
+// #define WIFI_CONNECT_ON_START       false
 
 //AP
 #define AP_MODE                     false //true时，支持热点配网
@@ -23,12 +26,13 @@
 #define AP_CONFIG_PIN_TIMEOUT       5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位秒
 
 //MQTT
-#define MQTT_IP                     "172.24.140.41"
-#define MQTT_PORT                   1883
-#define MQTT_USER                   "device"
+#define MQTT_IP                     "push-access.sdp.101.com"
+#define MQTT_PORT                   1780
+#define MQTT_USER                   "ioe"
 #define MQTT_PASSWORD               ""
 #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
 #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
+#define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
 
 //RFIR
 #define DEBUG_RFIR

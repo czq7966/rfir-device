@@ -7,7 +7,7 @@
 // #define DEVICE_CL_DJROOM_AC_MCQUAY
 
 // 长乐DJ会议室杜亚窗帘
-#define DEVICE_CL_DJROOM_CURTAIN_DOOYA
+// #define DEVICE_CL_DJROOM_CURTAIN_DOOYA
 
 //长乐VR体验馆党建一楼柯耐弗空调风盘
 // #define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
@@ -16,7 +16,7 @@
 // #define DEVICE_CL_VRHALL_F2_AC_COOLIX
 
 //长乐DJ会议室乐高区2路射灯开关
-// #define DEVICE_CL_DJROOM_LIGHT_MSWITCH2
+#define DEVICE_CL_DJROOM_LIGHT_MSWITCH2
 
 //长乐禅修院山水音箱
 // #define DEVICE_CL_CXY_SPEAKER_SANSUI_P300

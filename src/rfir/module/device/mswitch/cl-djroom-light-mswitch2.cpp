@@ -34,10 +34,11 @@ rfir::module::ttl::Config::Device* rfir::module::device::mswitch::CL_DJROOM_Ligh
 
     //采码参数
     auto sp = &d->packet.sniff.params;
-    sp->minCount = 30;
+    sp->minCount = 40;
     sp->minDelta = 150;
     sp->maxDelta = 65535;
     sp->inverted = false;
+    sp->mode = INPUT;
 #ifdef DEVICE_CL_DJROOM_LIGHT_MSWITCH2    
     sp->pin = RFIR_MSWITCH_SNIFF_PIN;
 #endif    
@@ -96,7 +97,6 @@ rfir::module::ttl::Config::Device* rfir::module::device::mswitch::CL_DJROOM_Ligh
     d->packet.send.params.inverted = false;
     d->packet.send.params.repeat = 0;    
     d->packet.send.params.modulation = true;    
-
 
     
     return d;    
