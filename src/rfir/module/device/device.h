@@ -21,7 +21,9 @@ namespace rfir {
             public:
                 int timerReport_LastTime = 0;
                 int timerReport_Interval = 60 * 1000;      
-                bool rawChanged = false;      
+                bool rawChanged = false;    
+                unsigned long  rawChanged_time = 0; 
+                unsigned long  rawChanged_timeout = 2000; 
 
             public:
                 virtual void start(void *);

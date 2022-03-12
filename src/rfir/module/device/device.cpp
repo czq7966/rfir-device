@@ -48,6 +48,7 @@ uint16_t* rfir::module::device::Device::getEncodeRaw(int& count) {
 void rfir::module::device::Device::onSetRaw() {
     // saveRaw();
     rawChanged = true;
+    rawChanged_time = millis();
 }
 
 
@@ -117,7 +118,7 @@ void rfir::module::device::Device::reinitTimerReport(bool reset) {
 }
 
 void rfir::module::device::Device::doRawChanged() {
-    if (rawChanged) {
+    if (rawChanged && millis() - rawChanged_time > rawChanged_timeout) {
         rawChanged = false;
         saveRaw();
     }

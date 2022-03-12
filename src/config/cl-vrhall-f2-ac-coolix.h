@@ -11,8 +11,8 @@
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          202
-#define OTA_VERSION_STRING          "202.0"
+#define OTA_VERSION_NUMBER          206
+#define OTA_VERSION_STRING          "206.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-f2-ac-coolix/cfg.txt"
 
 
