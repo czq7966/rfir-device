@@ -16,7 +16,7 @@
 // #define DEVICE_CL_VRHALL_F2_AC_COOLIX
 
 //长乐DJ会议室乐高区2路射灯开关
-#define DEVICE_CL_DJROOM_LIGHT_MSWITCH2
+// #define DEVICE_CL_DJROOM_LIGHT_MSWITCH2
 
 //长乐禅修院山水音箱
 // #define DEVICE_CL_CXY_SPEAKER_SANSUI_P300
@@ -25,6 +25,6 @@
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
 
 // 福州飘渺庄2楼食堂格力空调
-// #define DEVICE_FZ_PMZ_F2_AC_GREE
+#define DEVICE_FZ_PMZ_F2_AC_GREE
 
 #endif

@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/firmware_v5.bin
-5
-040714391e5fa15aa969558bff4e0c23
-5.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/firmware_v6.bin
+6
+b28b8013509eff9edabeec50daaf46e3
+6.0
 1
 ESP8266x0006d906,ESP8266x005dcac5

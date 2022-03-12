@@ -45,8 +45,10 @@ void rfir::module::device::ac::FZ_PMZ_F2_Gree::loop() {
 
 bool rfir::module::device::ac::FZ_PMZ_F2_Gree::onCmd_get(neb::CJsonObject* pld) {
     auto r = Gree::onCmd_get(pld);
-    pld->ReplaceAdd("running", this->gpioPower.read() ? "on" : "off");    
-    return true;
+    auto running = this->gpioPower.read() ? "on" : "off";
+    pld->ReplaceAdd("running", running);    
+    pld->ReplaceAdd("power", running);    
+    return r;
 };
 
 bool rfir::module::device::ac::FZ_PMZ_F2_Gree::onCmd_set(neb::CJsonObject* pld) {
