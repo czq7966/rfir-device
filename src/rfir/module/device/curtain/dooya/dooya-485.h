@@ -77,7 +77,12 @@ namespace rfir {
                     bool stop();
 
                     bool startRecvData(uint8_t* rx_buf, uint8_t len, unsigned long timeout_ms);
+                    
                     bool startSendData(uint8_t* tx_buf, uint8_t len);
+
+                    bool sendCode(uint8_t* tx_buf, uint8_t len);
+                    bool recvCode(uint8_t* rx_buf, uint8_t& len, unsigned long timeout_ms = 200);
+                    bool sendCodeAndRecv(uint8_t* tx_buf, uint8_t tx_len, uint8_t* rx_buf, uint8_t& rx_len, unsigned long timeout_ms = 200);
 
                     void dumpReg();
                     void dumpRxBuf(int len = MaxBufLen);

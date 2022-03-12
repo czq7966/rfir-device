@@ -6,6 +6,7 @@ rfir::module::device::curtain::Dooya485::Dooya485(HardwareSerial& hwSerial, int 
   dePin(dePin),
   rePin(rePin)
 {
+    setId(0xFE, 0xFE);
     pinMode(dePin, OUTPUT);
     pinMode(rePin, OUTPUT);   
     readMode();
@@ -22,11 +23,8 @@ void rfir::module::device::curtain::Dooya485::writeMode(){
 };
 
 bool rfir::module::device::curtain::Dooya485::init(){
-    if (!inited) {
-        setId(0xFE, 0xFE);
-        inited = initReg();
-        // if (inited)
-        //     dump();        
+    if (!inited) {        
+        inited = initReg();   
     }
 
     return inited;
@@ -181,10 +179,16 @@ bool rfir::module::device::curtain::Dooya485::startRecvData(uint8_t* rx_buf, uin
 }
 
 bool rfir::module::device::curtain::Dooya485::startSendData(uint8_t* tx_buf,uint8_t len) {
-    writeMode();
+    return sendCode(tx_buf, len);
+}
 
-	int i;
-	for(i = 0; i < len; i++)
+
+bool rfir::module::device::curtain::Dooya485::sendCode(uint8_t* tx_buf, uint8_t len) {
+    // Serial.println(rfir::util::Util::BytesToHexString(tx_buf, len).c_str());
+    this->hwSerial->flush();
+    writeMode();    
+
+	for(int i = 0; i < len; i++)
 	{
         this->hwSerial->write(tx_buf[i]);		
 	}    
@@ -195,6 +199,46 @@ bool rfir::module::device::curtain::Dooya485::startSendData(uint8_t* tx_buf,uint
     return 1;
 }
 
+bool rfir::module::device::curtain::Dooya485::recvCode(uint8_t* rx_buf, uint8_t& len, unsigned long timeout_ms) {
+    bool result = false;
+    readMode();
+
+    static unsigned long Dooya485_Start_Recv_Code_time = 0;
+
+    int c = -1;
+    uint8_t idx = 0;
+    Dooya485_Start_Recv_Code_time = millis();
+    while ((millis() - Dooya485_Start_Recv_Code_time <= timeout_ms)) {
+        if (this->hwSerial->available()) {
+            c = this->hwSerial->read();
+            if (c >=0) {
+                rx_buf[idx] = (char)c;
+                idx++;
+                Dooya485_Start_Recv_Code_time = millis();
+            }
+        }
+    }
+    len = idx;
+    
+    if (len > 2) {
+        uint8_t crcLow;
+        uint8_t crcHigh;
+        curtain::dooya::util::Crc::Get_CRC16(rx_buf, len - 2, crcLow, crcHigh);
+        result = (rx_buf[len - 1] == crcHigh && rx_buf[len - 2] == crcLow);
+    }    
+
+    return result;
+
+}
+
+
+bool rfir::module::device::curtain::Dooya485::sendCodeAndRecv(uint8_t* tx_buf, uint8_t tx_len, uint8_t* rx_buf, uint8_t& rx_len, unsigned long timeout_ms) {
+    if (sendCode(tx_buf, tx_len)) {
+        return recvCode(rx_buf, rx_len, timeout_ms);
+    }
+
+    return 0;
+}
 
 void rfir::module::device::curtain::Dooya485::dumpReg() {
     Serial.printf("id_l = %x \r\n", regData.id_l );
