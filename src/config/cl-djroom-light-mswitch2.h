@@ -9,12 +9,12 @@
 
 
 //WIFI
-// #define WIFI_SSID                   {"HUAWEI-House_2.4G",   "djoffice-internal", "MERCURY_95E8"}
+#define WIFI_SSID                   {"HUAWEI-House_2.4G",   "djoffice-internal", "MERCURY_95E8"}
+#define WIFI_PASSWORD               {"like91.nd",           "like91.nd",         "12345678"}
+// #define WIFI_SSID                   {"HUAWEI-House_2.4G",   "djoffice-internal"}
 // #define WIFI_PASSWORD               {"like91.nd",           "like91.nd",         "12345678"}
-#define WIFI_SSID                   {"MERCURY_95E8"}
-#define WIFI_PASSWORD               {"12345678"}
 #define WIFI_RESET_TIMEOUT          {30,                    30,                   30}  //多少时间内WIFI未连接，重启，单位秒
-// #define WIFI_CONNECT_ON_START       false
+// #define WIFI_RESET_DISABLED         TRUE  //禁止WIFI连接超时自动重启
 
 //AP
 #define AP_MODE                     false //true时，支持热点配网
