@@ -26,6 +26,8 @@ namespace network {
                 void checkOrReset();
                 void multiCheckOrReset();
                 bool connectWifi(std::string ssid, std::string pass, int timeout);
+                int  connectWifi();
+                void multiCheckOrReset2();
 
             };
         }
