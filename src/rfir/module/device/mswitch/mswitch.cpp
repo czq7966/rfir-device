@@ -138,7 +138,7 @@ bool rfir::module::device::mswitch::MSwitch::onCmd_decoded(rfir::module::ttl::De
 
             for (auto it = switchs.begin(); it != switchs.end(); it++)
             {
-                if (it->second->params.rfirToggle == hex) {
+                if ((it->second->params.rfirToggle == hex) || it->second->params.rfirToggle.indexOf(hex + ",") >= 0) {
                     it->second->setState(!it->second->getState());
                 }
             }

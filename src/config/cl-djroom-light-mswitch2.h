@@ -3,8 +3,8 @@
 
 //OTA
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          1
-#define OTA_VERSION_STRING          "1.0"
+#define OTA_VERSION_NUMBER          2
+#define OTA_VERSION_STRING          "2.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/dj-room-light-mswitch2/cfg.txt"
 
 
@@ -36,15 +36,19 @@
 
 //RFIR
 #define DEBUG_RFIR
+#define RFIF_LIGE
 #define RFIR_MSWITCH_SNIFF_PIN      5
 
+//TOGGLE有多个时，每个TOGGLE后面须加逗号
 #define RFIR_MSWITCH_1_NAME         "state_l1"
-#define RFIR_MSWITCH_1_CODE_TOGGLE  "0x6def7f"
+// #define RFIR_MSWITCH_1_CODE_TOGGLE  "0x6def7f"
+#define RFIR_MSWITCH_1_CODE_TOGGLE  "0x4f47fc,0x4f47cf,"
+
 #define RFIR_MSWITCH_1_PIN_IN       12
 #define RFIR_MSWITCH_1_PIN_OUT      14
-
 #define RFIR_MSWITCH_2_NAME         "state_l2"
-#define RFIR_MSWITCH_2_CODE_TOGGLE  "0x6defbf"
+// #define RFIR_MSWITCH_2_CODE_TOGGLE  "0x6defbf"
+#define RFIR_MSWITCH_2_CODE_TOGGLE  "0x4f47f3,0x4f473f,"
 #define RFIR_MSWITCH_2_PIN_IN       13
 #define RFIR_MSWITCH_2_PIN_OUT      16
 
