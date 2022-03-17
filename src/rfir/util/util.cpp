@@ -66,7 +66,7 @@ std::string rfir::util::Util::BytesToString(uint8_t bytes[], uint16_t nbytes) {
     if (i == 0)
       byteStr = BitsToString(bytes + i, 8);
     else
-      byteStr = BitsToString(bytes + i, 8) + " " + byteStr;
+      byteStr = byteStr + " " + BitsToString(bytes + i, 8);
   }
   return byteStr;
 }
