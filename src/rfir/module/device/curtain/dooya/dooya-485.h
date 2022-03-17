@@ -54,8 +54,8 @@ namespace rfir {
                     Dooya485(HardwareSerial& hwSerial, int dePin, int rePin);
                 public:
                     HardwareSerial* hwSerial;
-                    int rePin;
                     int dePin;
+                    int rePin;
                     uint8_t rxBuf[MaxBufLen];
                     uint8_t txBuf[MaxBufLen];
                 public:
