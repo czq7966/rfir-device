@@ -19,12 +19,12 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::FZ_PMZ_F2_Gree::ini
     // 发码参数 
     d->packet.send.params.pin = 23;  
 #endif    
-    d->packet.sniff.params.bufSize = 256;
+    d->packet.sniff.params.bufSize = 150;
     d->packet.send.params.repeat = 1;
 
-    if (this->ac.ac)
-        delete this->ac.ac;
-    this->ac.ac = new IRGreeAC(d->packet.send.params.pin);
+    // if (this->ac.ac)
+    //     delete this->ac.ac;
+    // this->ac.ac = new IRGreeAC(d->packet.send.params.pin);
 
     return d;
 }
@@ -47,14 +47,15 @@ bool rfir::module::device::ac::FZ_PMZ_F2_Gree::onCmd_get(neb::CJsonObject* pld) 
     auto r = Gree::onCmd_get(pld);
     auto running = this->gpioPower.read() ? "on" : "off";
     pld->ReplaceAdd("running", running);    
-    pld->ReplaceAdd("power", running);    
+    // pld->ReplaceAdd("power", running);    
     return r;
 };
 
 bool rfir::module::device::ac::FZ_PMZ_F2_Gree::onCmd_set(neb::CJsonObject* pld) {
+    ac.ac->setLight(true);
     auto r = Gree::onCmd_set(pld);
-    ac.ac->begin();
-    ac.ac->send(1);
+    // ac.ac->begin();
+    // ac.ac->send(1);
     return r;
 }
 bool rfir::module::device::ac::FZ_PMZ_F2_Gree::doPowerPinChange() {

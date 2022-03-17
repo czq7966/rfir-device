@@ -5,8 +5,8 @@
 
 //OTA
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          6
-#define OTA_VERSION_STRING          "6.0"
+#define OTA_VERSION_NUMBER          7
+#define OTA_VERSION_STRING          "7.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/cfg.txt"
 
 

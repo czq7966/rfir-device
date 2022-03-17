@@ -15,6 +15,7 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
     sp->minDelta = 150;
     sp->maxDelta = 65535;
     sp->inverted = true;
+    sp->mode = INPUT;
 
     //发码参数
     d->packet.send.params.inverted = false;
@@ -90,34 +91,27 @@ uint8_t* rfir::module::device::ac::Gree::getRaw(int& count) {
 }
 
 uint16_t* rfir::module::device::ac::Gree::getEncodeRaw(int& count) {
-    return 0;
-    // count = GreeAC::KGreeEncodeRawLength;
-    // return this->ac.getEncodeRaw();
-Serial.println("11111");    
     int length = 0;
     auto raw = getRaw(length);
     auto str1 = rfir::util::Util::BytesToString(raw, 4);
     uint8_t bits[1] = {0b010};
     auto str2 = rfir::util::Util::BitsToString(bits, 3);
-    auto str3 = rfir::util::Util::BytesToString(raw + 3, 4);
+    auto str3 = rfir::util::Util::BytesToString(raw + 4, 4);
 
     String str = "[{'data': '%data1%'}, {'data': '%data2%'}, {'data': '%data3%'}]";
     str.replace("'", "\"");
     str.replace("%data1%", str1.c_str());
     str.replace("%data2%", str2.c_str());
     str.replace("%data3%", str3.c_str());
-Serial.println(str);
     
     neb::CJsonObject blocks;
     blocks.Parse(str.c_str());
-Serial.println("22222");    
     auto rfir = rfir::GetRfir(this->name);
     rfir->encoder->encode(&blocks);
     auto encode = rfir->encoder->getEncodeResult();    
     count = encode->count;
-Serial.println("33333");        
+
     return encode->result;    
-//     return 0;
 }
 
 bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
@@ -222,7 +216,7 @@ bool rfir::module::device::ac::Gree::onCmd_decoded(rfir::module::ttl::Decoder::D
         int count = 0;
         auto raw = getRaw(count);
         memcpy(raw, data->result[0].bytes, 4);
-        memcpy(raw + 3, data->result[2].bytes, 4);
+        memcpy(raw + 4, data->result[2].bytes, 4);
         return setRaw(raw);
     }
     return false;
@@ -234,7 +228,7 @@ void  rfir::module::device::ac::Gree::dump() {
     auto str1 = rfir::util::Util::BytesToHexString(raw, 4);
     uint8_t bits[1] = {0b010};
     auto str2 = rfir::util::Util::BitsToString(bits, 3);
-    auto str3 = rfir::util::Util::BytesToHexString(raw + 3, 4);
+    auto str3 = rfir::util::Util::BytesToHexString(raw + 4, 4);
 
     String str = "[{'data': '%data1%'}, {'data': '%data2%'}, {'data': '%data3%'}]";
     str.replace("'", "\"");
