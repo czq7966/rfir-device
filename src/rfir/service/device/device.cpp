@@ -52,6 +52,12 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::FZ_PMZ_F2_Gree();
 #endif
 
+//福州飘渺庄2楼食堂格力空调
+#ifdef DEVICE_FZ_DM3_AC_MEDIA
+#include "rfir/module/device/ac/midea/fz-dm3-midea.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::FZ_DM3_Midea();
+#endif
+
 rfir::module::ttl::Config::Device* rfir::service::device::Device::Init() {
     return GDevice->init();
 }
