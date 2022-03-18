@@ -24,7 +24,7 @@ bool rfir::util::TxtFile::begin() {
 #endif        
         if (!FileFS.begin())
         {
-            Serial.println("LittleFS begin failed");
+            DEBUGER.println("LittleFS begin failed");
             return false;
         }
     }    

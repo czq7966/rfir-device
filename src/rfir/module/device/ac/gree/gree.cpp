@@ -235,6 +235,6 @@ void  rfir::module::device::ac::Gree::dump() {
     str.replace("%data1%", str1.c_str());
     str.replace("%data2%", str2.c_str());
     str.replace("%data3%", str3.c_str());
-    Serial.println(str);
+    DEBUGER.println(str);
 }
 

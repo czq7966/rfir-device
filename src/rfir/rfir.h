@@ -71,14 +71,14 @@ namespace rfir {
     static rfir::module::ttl::Config::Device* getRfirDevice(std::string name) {
         auto device = rfir::RFIR::Config->getDevice(name);
         if (!device) {
-            Serial.println(("RFIR->getRfirDevice-> no Config device:" + name).c_str());
+            DEBUGER.println(("RFIR->getRfirDevice-> no Config device:" + name).c_str());
             return 0;
         }
 
         auto rfir = rfir::Get()->getRfir(device->getName());
         device = rfir->config->getDevice(device->getName());        
         if (!device)
-            Serial.println(("RFIR->getRfirDevice-> no config device:" + name).c_str());
+            DEBUGER.println(("RFIR->getRfirDevice-> no config device:" + name).c_str());
         return device;
     }
 

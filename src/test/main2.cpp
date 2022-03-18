@@ -59,7 +59,7 @@
 // void setup() {
 //   //irgree.begin();
 //   irsend.begin();
-//   Serial.begin(115200, SERIAL_8N1, SERIAL_FULL);
+//   DEBUGER.begin(115200, SERIAL_8N1, SERIAL_FULL);
 
 //   // rfir::module::ttl::Sender::Params p1;
 //   // p1.pin = kIrLed;   
@@ -72,14 +72,14 @@
 
 
 // void loop() {
-//   // Serial.println("NEC");
+//   // DEBUGER.println("NEC");
 //   // irsend.sendNEC(0x00FFE01FUL);
 //   // delay(2000);
-//   // Serial.println("Sony");
+//   // DEBUGER.println("Sony");
 //   // irsend.sendSony(0xa90, 12, 2);  // 12 bits & 2 repeats
 //   // delay(2000);
 
-//   // Serial.println("a Samsung A/C state from IRrecvDumpV2");
+//   // DEBUGER.println("a Samsung A/C state from IRrecvDumpV2");
 //   // irsend.sendSamsungAC(samsungState);
 //   // delay(2000);
 //     // timeval t1,t2,t3;
@@ -90,7 +90,7 @@
 //   // rfir::service::ttl::Decoder::decode();
 //   // rfir::service::serial::Sender::dealCmd();   
   
-//   Serial.println("a rawData capture from IRrecvDumpV2");
+//   DEBUGER.println("a rawData capture from IRrecvDumpV2");
 //   irsend.sendRaw(rawData, 263, 38);  // Send a raw data capture at 38kHz.
 //   delay(3000);
 //   //rfir::service::ttl::Sender::ttlsender->sendRaw(rawData, 68);

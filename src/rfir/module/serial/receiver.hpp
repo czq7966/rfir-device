@@ -19,14 +19,14 @@ namespace rfir {
             public:
                 std::list<neb::CJsonObject*> cmds;
                 void dealCmd() {
-                    if (Serial.available()) {
-                        int c = Serial.read();
+                    if (DEBUGER.available()) {
+                        int c = DEBUGER.read();
                         while (c > 0) {
                             if (c > 0 && (char)c != '\n') {
-                                String str = (char)c + Serial.readStringUntil('\n');
+                                String str = (char)c + DEBUGER.readStringUntil('\n');
                                 pushCmd(str.c_str());
                             }
-                            c = Serial.read();
+                            c = DEBUGER.read();
                         }
                     }
                 }

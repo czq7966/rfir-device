@@ -10,7 +10,7 @@ bool rfir::service::cmds::Cmd::onCmd(const char * cmdStr) {
         onCmd(&cmd);
         return true;
     } else {
-        Serial.println("not json");
+        DEBUGER.println("not json");
     }
     return false;
 }
@@ -22,8 +22,8 @@ bool rfir::service::cmds::Cmd::onCmd(neb::CJsonObject* jCmd) {
         int cmd = 0;
         if (hd.Get("cmd", cmd)) {
             if (!(jCmd->Get("pld", pld)))
-                Serial.println("no pld");
-            Serial.println("on Cmd: " + String(cmd));
+                DEBUGER.println("no pld");
+            DEBUGER.println("on Cmd: " + String(cmd));
             switch (cmd)
             {
                 case 7:     //restart
@@ -80,7 +80,7 @@ bool rfir::service::cmds::Cmd::onCmd_send(neb::CJsonObject* hd, neb::CJsonObject
         return true;
 
     } else {
-        Serial.println(("onCmd_sniff->no config device:" + name).c_str());
+        DEBUGER.println(("onCmd_sniff->no config device:" + name).c_str());
     }
 
     return false;
@@ -188,13 +188,13 @@ bool rfir::service::cmds::Cmd::onCmd_decode(rfir::module::ttl::Config::Device* d
 
         bool result = rfir->decoder->decode(raw, count);
         if (!result)
-            Serial.println("onCmd_decode failed: 无符合格式的数据");
+            DEBUGER.println("onCmd_decode failed: 无符合格式的数据");
         
         delete raw; 
 
         return result;
     } else {
-        Serial.println("onCmd_decode failed: 没有原始数据 ");
+        DEBUGER.println("onCmd_decode failed: 没有原始数据 ");
     }
     return false;
 }
@@ -207,11 +207,11 @@ bool rfir::service::cmds::Cmd::onCmd_encode(rfir::module::ttl::Config::Device* d
         rfir->encoder->getEncodeParams()->parseFromJson(jencode);
         bool result = rfir->encoder->encode(&jblocks);
         if (!result)
-            Serial.println("onCmd_encode failed");
+            DEBUGER.println("onCmd_encode failed");
         
         return result;
     } else {
-        Serial.println("onCmd_encode failed: 没有编码数据");
+        DEBUGER.println("onCmd_encode failed: 没有编码数据");
     }
     return false;
 }

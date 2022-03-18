@@ -458,7 +458,7 @@ bool rfir::module::ttl::Encoder::EncodeParams::parseFromJson(neb::CJsonObject* j
     }
     return true;    
   }
-  Serial.println("EncodeParams->parseFromJson: Failed");
+  DEBUGER.println("EncodeParams->parseFromJson: Failed");
   return false;
 }
 

@@ -24,7 +24,7 @@ void rfir::module::ttl::Sniffer::init(SniffParams params) {
     this->sniffedDelta = new Delta[p.bufSize];
 
     if (!this->dataBuf || !this->sniffedDelta) {
-        Serial.println(("Sniff data buffer is too much: " + String(p.bufSize)).c_str());
+        DEBUGER.println(("Sniff data buffer is too much: " + String(p.bufSize)).c_str());
     }
 
     this->pushCount = 0;
@@ -50,10 +50,10 @@ void rfir::module::ttl::Sniffer::start() {
         if (this->gpio.pin > 0) {
             this->gpio.onChange = onGpioChange;
             this->gpio.start();
-            Serial.println(("start sniff......: (" + this->name + ")" + this->getSniffParams()->toString()).c_str());
+            DEBUGER.println(("start sniff......: (" + this->name + ")" + this->getSniffParams()->toString()).c_str());
         } else {
             sniffStopped = true;
-            Serial.println(("start sniff failed, pin is 0: (" + this->name + ")" + this->getSniffParams()->toString()).c_str());
+            DEBUGER.println(("start sniff failed, pin is 0: (" + this->name + ")" + this->getSniffParams()->toString()).c_str());
         }
     }
 }
@@ -61,7 +61,7 @@ void rfir::module::ttl::Sniffer::start() {
 void rfir::module::ttl::Sniffer::stop() {
     this->gpio.stop();
     this->gpio.onChange = 0;
-    Serial.println(("stopped sniff (" + this->name + ")").c_str());
+    DEBUGER.println(("stopped sniff (" + this->name + ")").c_str());
 }
 
 bool rfir::module::ttl::Sniffer::started() {

@@ -82,7 +82,7 @@ uint16_t* rfir::module::device::speaker::SANSUI::getEncodeRaw(int& count) {
 bool rfir::module::device::speaker::SANSUI::onCmd_set(neb::CJsonObject* pld) {
     std::string code;
     if (pld->Get("code", code)) {        
-        Serial.println(code.c_str());
+        DEBUGER.println(code.c_str());
         return rfir::util::Util::StringToBytes(code, this->protocol.remote_state);
     }
     return false;

@@ -21,8 +21,8 @@ void service::cmds::Cmd::DoTimerReport(bool reset) {
 
 
 bool service::cmds::Cmd::OnCmd(const char* cmd) {
-    Serial.print("OnCmd: ");
-    Serial.println(cmd);
+    DEBUGER.print("OnCmd: ");
+    DEBUGER.println(cmd);
     neb::CJsonObject jcmd;
     if ((int)cmd != 0 &&  jcmd.Parse(cmd)) {
         return OnCmd(&jcmd);

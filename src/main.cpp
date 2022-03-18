@@ -21,11 +21,11 @@
 std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
 
 void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta* data, int count) {
-    // Serial.println("onRfirSniffed");
+    // DEBUGER.println("onRfirSniffed");
     const char * payload;
 #ifdef DEBUG_RFIR
     if (!payload) payload = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str();
-    Serial.println(payload);
+    DEBUGER.println(payload);
 #endif    
 
     if (sniffer->getSniffParams()->response) {
@@ -36,13 +36,13 @@ void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta
 }
 
 void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decoder::DecodeResults* data) {
-    Serial.println("onRfirDecoded");
+    DEBUGER.println("onRfirDecoded");
     const char * payload;
 #ifdef DEBUG_RFIR    
     if (!payload) payload = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str();
-    Serial.println(payload);
-    // Serial.println(data->toJsonString().c_str());
-    // Serial.println(data->toJsonString(true).c_str());
+    DEBUGER.println(payload);
+    // DEBUGER.println(data->toJsonString().c_str());
+    // DEBUGER.println(data->toJsonString(true).c_str());
 #endif    
 
     if (decoder->getDecodeParams()->response) {
@@ -56,11 +56,11 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
 }
 
 void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encoder::EncodeResult* data) {
-    Serial.println("onRfirEncoded: " + String(data->count));
+    DEBUGER.println("onRfirEncoded: " + String(data->count));
     const char * payload;
 #ifdef DEBUG_RFIR    
     if (!payload) payload = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str();
-    Serial.println(payload);
+    DEBUGER.println(payload);
 #endif
 
     if (encoder->getEncodeParams()->response) {
@@ -71,7 +71,7 @@ void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encod
 }
 
 void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const uint16_t len) {
-    Serial.println("onRfirSended: " + String(len));
+    DEBUGER.println("onRfirSended: " + String(len));
 
     if (sender->getSendParams()->response) {
         network::service::mqtt::Client::Publish(rfir::module::ttl::Sender::packSendedCmd(sender, data, len).c_str());
@@ -80,12 +80,12 @@ void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const
 }
 
 void onDeviceChange(void* device, const char* reason) {
-    Serial.printf("onDeviceChange: %s\n", reason);
+    DEBUGER.printf("onDeviceChange: %s\n", reason);
     service::cmds::Cmd::OnCmd_get(0, reason);
 }
 
 void onRfirStart(void* data) {
-    Serial.println("onRfirStart");
+    DEBUGER.println("onRfirStart");
 
     //初始化设备
     auto d = rfir::service::device::Device::Init();
@@ -96,7 +96,7 @@ void onRfirStart(void* data) {
 uint16_t onMqttConnect_count = 0;
 void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
     onMqttConnect_count++;
-    Serial.println("onMqttConnect");
+    DEBUGER.println("onMqttConnect");
     if (onMqttConnect_count > 1)
         service::cmds::Cmd::OnCmd_heartbeat(0, 1);
     else 
@@ -111,11 +111,11 @@ void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
 
 void setup() {
 #ifdef SERIAL_BAUD
-    Serial.begin(SERIAL_BAUD, SERIAL_CONFIG);
+    DEBUGER.begin(SERIAL_BAUD, SERIAL_CONFIG);
 #else 
-   Serial.begin(115200);
+   DEBUGER.begin(115200);
 #endif
-    Serial.println("begin chid id: " + String(ChipID.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
+    DEBUGER.println("begin chid id: " + String(ChipID.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
     Global::Init();
 
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)

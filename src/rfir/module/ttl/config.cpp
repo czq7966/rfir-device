@@ -11,15 +11,15 @@ rfir::module::ttl::Config::~Config() {
 
 bool rfir::module::ttl::Config::init(std::string fn) {
     if (loadFromFile(fn)) {
-        Serial.println("加载文件配置成功");
+        DEBUGER.println("加载文件配置成功");
     } else {
-        Serial.println(("加载文件配置失败：" + fn).c_str());
+        DEBUGER.println(("加载文件配置失败：" + fn).c_str());
 
         if (loadFromString(TTL_DEFAULT_CONFIG_STR)) {
-            Serial.println("加载默认配置成功");
+            DEBUGER.println("加载默认配置成功");
         }
         else {
-            Serial.println("加载默认配置失败");        
+            DEBUGER.println("加载默认配置失败");        
             return false;
         }
     }    
@@ -176,7 +176,7 @@ rfir::module::ttl::Config::Device* rfir::module::ttl::Config::Devices::getDevice
 rfir::module::ttl::Config::Device* rfir::module::ttl::Config::Devices::newDevice(std::string name) {
     auto d = getDevice(name);
     if (d) {
-        Serial.println(("创建设备失败，已存在：" + name).c_str());
+        DEBUGER.println(("创建设备失败，已存在：" + name).c_str());
         return 0;
     }
     d = new Device();

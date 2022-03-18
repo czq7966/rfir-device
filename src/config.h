@@ -3,7 +3,6 @@
 
 #include "config-device.h"
 
-#define DEGUG true
 
 //SYSTEM
 #ifdef ESP8266
@@ -61,6 +60,11 @@
 //ESP32_WROOM射频采集器
 #ifdef DEVICE_TEST_SNIFFER_ESP32_WROOM
 #include "config/test-sniffer-esp32-wroom.h"
+#endif
+
+
+#ifndef DEBUGER
+#define DEBUGER Serial
 #endif
 
 #endif

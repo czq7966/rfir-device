@@ -19,14 +19,14 @@
 // void setup() {
 //   irsend.begin();
 // #if ESP8266
-//   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
+//   DEBUGER.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
 // #else  // ESP8266
-//   Serial.begin(115200, SERIAL_8N1);
+//   DEBUGER.begin(115200, SERIAL_8N1);
 // #endif  // ESP8266
 // }
 
 // void loop() {
-//   Serial.println("a McQuay A/C state ");
+//   DEBUGER.println("a McQuay A/C state ");
 //   irsend.sendMcQuay(state);
 //   delay(2000);
 // }

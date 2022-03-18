@@ -184,7 +184,7 @@ bool rfir::module::device::curtain::Dooya485::startSendData(uint8_t* tx_buf,uint
 
 
 bool rfir::module::device::curtain::Dooya485::sendCode(uint8_t* tx_buf, uint8_t len) {
-    // Serial.println(rfir::util::Util::BytesToHexString(tx_buf, len).c_str());
+    // DEBUGER.println(rfir::util::Util::BytesToHexString(tx_buf, len).c_str());
     this->hwSerial->flush();
     writeMode();    
 
@@ -241,27 +241,27 @@ bool rfir::module::device::curtain::Dooya485::sendCodeAndRecv(uint8_t* tx_buf, u
 }
 
 void rfir::module::device::curtain::Dooya485::dumpReg() {
-    Serial.printf("id_l = %x \r\n", regData.id_l );
-    Serial.printf("id_h = %x \r\n", regData.id_h );
-    Serial.printf("pos = %x \r\n", regData.pos );
-    Serial.printf("dir = %x \r\n", regData.dir );
-    Serial.printf("state = %x \r\n", regData.state );
-    Serial.printf("angel = %x \r\n", regData.angel );
-    Serial.printf("angelDir = %x \r\n", regData.angelDir );
-    Serial.printf("angelFac = %x \r\n", regData.angelFac );
-    Serial.printf("travelState = %x \r\n", regData.travelState );
-    Serial.printf("jogMode = %x \r\n", regData.jogMode );
-    Serial.printf("powerOnPrompt = %x \r\n", regData.powerOnPrompt );
-    Serial.printf("model = %s \r\n", regData.model );
-    Serial.printf("type = %x \r\n", regData.type );
-    Serial.printf("channelNum = %x \r\n", regData.channelNum );
-    Serial.printf("appVersion = %x \r\n", regData.appVersion );
-    Serial.printf("proVersion = %x \r\n", regData.proVersion );
+    DEBUGER.printf("id_l = %x \r\n", regData.id_l );
+    DEBUGER.printf("id_h = %x \r\n", regData.id_h );
+    DEBUGER.printf("pos = %x \r\n", regData.pos );
+    DEBUGER.printf("dir = %x \r\n", regData.dir );
+    DEBUGER.printf("state = %x \r\n", regData.state );
+    DEBUGER.printf("angel = %x \r\n", regData.angel );
+    DEBUGER.printf("angelDir = %x \r\n", regData.angelDir );
+    DEBUGER.printf("angelFac = %x \r\n", regData.angelFac );
+    DEBUGER.printf("travelState = %x \r\n", regData.travelState );
+    DEBUGER.printf("jogMode = %x \r\n", regData.jogMode );
+    DEBUGER.printf("powerOnPrompt = %x \r\n", regData.powerOnPrompt );
+    DEBUGER.printf("model = %s \r\n", regData.model );
+    DEBUGER.printf("type = %x \r\n", regData.type );
+    DEBUGER.printf("channelNum = %x \r\n", regData.channelNum );
+    DEBUGER.printf("appVersion = %x \r\n", regData.appVersion );
+    DEBUGER.printf("proVersion = %x \r\n", regData.proVersion );
 }
 
 void rfir::module::device::curtain::Dooya485::dumpRxBuf(int len) {
     for (size_t i = 0; i < len; i++)
     {
-        Serial.write(rxBuf[i]);
+        DEBUGER.write(rxBuf[i]);
     }
 }

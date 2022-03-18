@@ -36,8 +36,8 @@ namespace rfir {
                 bool dealCmd() {
                     neb::CJsonObject* cmd;
                     while (popCmd(cmd)) {
-                        Serial.print(cmd->ToString().c_str());
-                        Serial.print("\n");
+                        DEBUGER.print(cmd->ToString().c_str());
+                        DEBUGER.print("\n");
                         delete cmd;
                         cmd = 0;
                     }

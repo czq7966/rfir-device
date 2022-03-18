@@ -4,12 +4,12 @@
 void rfir::service::serial::Receiver::dealCmd() {
     String cmd;
     neb::CJsonObject json;
-    int c = Serial.read();
+    int c = DEBUGER.read();
     if (c >= 0) {
         cmd += (char)c;
         
         while (true) {
-            String str = Serial.readStringUntil('\n');
+            String str = DEBUGER.readStringUntil('\n');
             if (str.length() == 0)
                 break;
 

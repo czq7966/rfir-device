@@ -5,6 +5,7 @@
 #ifndef __RFIR_UTIL_PLATFORM_H__
 #define __RFIR_UTIL_PLATFORM_H__
 
+#include "config.h"
 
 #ifdef ESP32
 #include <Arduino.h>

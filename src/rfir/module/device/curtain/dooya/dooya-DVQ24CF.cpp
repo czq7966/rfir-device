@@ -22,9 +22,9 @@ void rfir::module::device::curtain::Dooya_DVQ24CF::loop() {
                 pld.ReplaceAdd("code", "0x55 FE FE 03 01 B9 24");
                 if (onCmd_set(&pld))
                 // if (d485->open())                
-                    Serial.println("打开成功");
+                    DEBUGER.println("打开成功");
                 else 
-                    Serial.println("打开失败");
+                    DEBUGER.println("打开失败");
 
                 read_mode = 1;
                 break;
@@ -32,9 +32,9 @@ void rfir::module::device::curtain::Dooya_DVQ24CF::loop() {
                 pld.ReplaceAdd("code", "0x55 FE FE 03 03 38 E5");
                 if (onCmd_set(&pld))
                 // if (d485->stop())
-                    Serial.println("停止成功");
+                    DEBUGER.println("停止成功");
                 else 
-                    Serial.println("停止失败");
+                    DEBUGER.println("停止失败");
 
                 read_mode = 2;
                 break;
@@ -42,9 +42,9 @@ void rfir::module::device::curtain::Dooya_DVQ24CF::loop() {
                 pld.ReplaceAdd("code", "0x55 FE FE 03 02 F9 25");
                 if (onCmd_set(&pld))
                 // if (d485->close())
-                    Serial.println("关闭成功");
+                    DEBUGER.println("关闭成功");
                 else 
-                    Serial.println("关闭失败");
+                    DEBUGER.println("关闭失败");
 
                 read_mode = 3;
                 break;                                
@@ -56,12 +56,12 @@ void rfir::module::device::curtain::Dooya_DVQ24CF::loop() {
 
         // if (!read_mode) {
         //     if (d485->open())
-        //         Serial.println("打开成功");
+        //         DEBUGER.println("打开成功");
         //     // d485->readReg(0x00, 0x01);
         //     read_mode = true;
         // } else {
         //     if (d485->stop())
-        //         Serial.println("停止成功");
+        //         DEBUGER.println("停止成功");
         //     // d485->readReg(0x00, 0x02);
         //     read_mode = false;
         // }

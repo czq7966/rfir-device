@@ -29,8 +29,8 @@ bool network::service::mqtt::Client::Publish(const char* payload) {
 
 
 void network::service::mqtt::Client::OnMessage(MQTTClient *client, char topic[], char bytes[], int length) {
-    Serial.print("OnMessage:");
-    Serial.println(bytes);
+    DEBUGER.print("OnMessage:");
+    DEBUGER.println(bytes);
     neb::CJsonObject jcmd;
     if (jcmd.Parse(bytes)) {
         bool result = 0;

@@ -746,7 +746,7 @@ bool rfir::module::ttl::Decoder::DecodeParams::parseFromJson(neb::CJsonObject* j
     } 
   }
 
-  Serial.println("DecodeParams->parseFromJson: Failed"); 
+  DEBUGER.println("DecodeParams->parseFromJson: Failed"); 
   return false;
 }
 

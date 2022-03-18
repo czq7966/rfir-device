@@ -67,7 +67,7 @@ bool rfir::module::device::mswitch::Switch::onCmd_set(neb::CJsonObject* pld) {
 
 bool rfir::module::device::mswitch::Switch::onCmd_get(neb::CJsonObject* pld) {
     auto res =  pld->Add(this->params.name.c_str(), getState() ? SWITCH_ON : SWITCH_OFF);    
-    Serial.println(pld->ToString().c_str());
+    DEBUGER.println(pld->ToString().c_str());
     return res;
 };
 

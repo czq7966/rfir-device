@@ -1,4 +1,5 @@
 #include "client.h"
+#include "config.h"
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -26,7 +27,7 @@ void network::module::wifi::Client::loop() {
 
 void network::module::wifi::Client::multiCheckOrReset() {
     if (!this->params.apMode && WiFi.status() != WL_CONNECTED ) {
-        Serial.println("WiFi connecting......");
+        DEBUGER.println("WiFi connecting......");
         pinMode(LED_BUILTIN, OUTPUT);
         digitalWrite(LED_BUILTIN, HIGH);
         WiFi.setAutoConnect(true);
@@ -46,7 +47,7 @@ void network::module::wifi::Client::multiCheckOrReset() {
         }
 
         if (WiFi.status() != WL_CONNECTED) {
-            Serial.println("WiFi connect time out. ESP rest!\n");
+            DEBUGER.println("WiFi connect time out. ESP rest!\n");
             delay(1000);
 #ifdef ESP8266                   
             ESP.reset();
@@ -57,13 +58,13 @@ void network::module::wifi::Client::multiCheckOrReset() {
         }
         
  
-        Serial.println("");
-        Serial.println("WiFi connected\n");
+        DEBUGER.println("");
+        DEBUGER.println("WiFi connected\n");
         
-        Serial.println("========= WIFI CONNECT OK! Led Light! ==============\n");
+        DEBUGER.println("========= WIFI CONNECT OK! Led Light! ==============\n");
         IPAddress ip = WiFi.localIP();
         String ipStr = String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]);
-        Serial.println("IP Address:" + ipStr);
+        DEBUGER.println("IP Address:" + ipStr);
         digitalWrite(LED_BUILTIN, HIGH);
 
     }
@@ -71,7 +72,7 @@ void network::module::wifi::Client::multiCheckOrReset() {
 }
 
 bool network::module::wifi::Client::connectWifi(std::string ssid, std::string pass, int timeout) {
-    Serial.printf("WiFi connecting......: %s %s %d \r\n", ssid.c_str(), pass.c_str(), timeout);
+    DEBUGER.printf("WiFi connecting......: %s %s %d \r\n", ssid.c_str(), pass.c_str(), timeout);
     WiFi.disconnect();
     WiFi.begin(ssid.c_str(), pass.c_str());
     long start = millis();
@@ -87,7 +88,7 @@ bool network::module::wifi::Client::connectWifi(std::string ssid, std::string pa
         yield();
         digitalWrite(LED_BUILTIN, HIGH);
         delay(500);
-        Serial.print(".");
+        DEBUGER.print(".");
     }
     return WiFi.status() == WL_CONNECTED;
 }
@@ -102,12 +103,12 @@ void network::module::wifi::Client::multiCheckOrReset2() {
         }
         //连接成功
         if (state == 0) { 
-            Serial.println("");
-            Serial.println("WiFi connected\n");                
-            Serial.println("========= WIFI CONNECT OK! Led Light! ==============\n");
+            DEBUGER.println("");
+            DEBUGER.println("WiFi connected\n");                
+            DEBUGER.println("========= WIFI CONNECT OK! Led Light! ==============\n");
             IPAddress ip = WiFi.localIP();
             String ipStr = String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]);
-            Serial.println("IP Address:" + ipStr);   
+            DEBUGER.println("IP Address:" + ipStr);   
             return;             
         }
 
@@ -120,8 +121,8 @@ void network::module::wifi::Client::multiCheckOrReset2() {
         if (state == 2) { 
 #if (!defined(WIFI_RESET_DISABLED) || WIFI_RESET_DISABLED == TRUE) 
             if (WiFi.status() != WL_CONNECTED) {
-                Serial.println("WiFi connect time out. ESP rest!\n");
-                Serial.flush();
+                DEBUGER.println("WiFi connect time out. ESP rest!\n");
+                DEBUGER.flush();
 #ifdef ESP8266                   
                 ESP.reset();
 #else
@@ -180,7 +181,7 @@ int  network::module::wifi::Client::connectWifi() {
             ssid_ssid = this->params.ssid[ssid_index];
             ssid_pass = this->params.pass[ssid_index];
             ssid_timeout = this->params.timeout[ssid_index];
-            Serial.printf("WiFi connecting......: %s %s %d \r\n", ssid_ssid.c_str(), ssid_pass.c_str(), ssid_timeout);
+            DEBUGER.printf("WiFi connecting......: %s %s %d \r\n", ssid_ssid.c_str(), ssid_pass.c_str(), ssid_timeout);
             WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());
             connecting = true;
             connect_start_time = millis();
@@ -220,7 +221,7 @@ int  network::module::wifi::Client::connectWifi() {
                     led_status = !led_status;
                     digitalWrite(LED_BUILTIN, led_status);  
                     led_breathe_lasttime = millis();
-                    Serial.print("."); 
+                    DEBUGER.print("."); 
                 }
 
                 return 1;

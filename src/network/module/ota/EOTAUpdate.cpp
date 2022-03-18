@@ -1,4 +1,4 @@
-
+#include "Arduino.h"
 
 #ifdef ESP8266
     #include "EOTAUpdate.h"
@@ -49,18 +49,18 @@ bool EOTAUpdate::CheckAndUpdate(bool force)
 
     if (WiFi.status() != WL_CONNECTED)
     {
-        Serial.println("Wifi not connected");
+        DEBUGER.println("Wifi not connected");
         return false;
     }
 
-    Serial.println("Checking for updates");
+    DEBUGER.println("Checking for updates");
 
     _lastUpdateMs = millis();
     String binURL;
     String binMD5;
     if (GetUpdateFWURL(binURL, binMD5))
     {
-        Serial.println("Update found. Performing update");
+        DEBUGER.println("Update found. Performing update");
         return PerformOTA(binURL, binMD5);
     }
     return false;
@@ -73,11 +73,11 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5)
 
 bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &url, const uint16_t retries)
 {
-    Serial.printf("Fetching OTA config from: %s\n", url.c_str());
+    DEBUGER.printf("Fetching OTA config from: %s\n", url.c_str());
 
     if (retries == 0)
     {
-        Serial.println("Too many retries/redirections");
+        DEBUGER.println("Too many retries/redirections");
         return false;
     }
 
@@ -85,7 +85,7 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
 
     if (_forceSSL && !isSSL)
     {
-        Serial.println("Trying to access a non-ssl URL on a secure update checker");
+        DEBUGER.println("Trying to access a non-ssl URL on a secure update checker");
         return false;
     }
 
@@ -93,7 +93,7 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
     //WiFiClient client = WiFiClient();
     if (!httpClient.begin(wf_client,url))
     {
-        Serial.println("Error initializing client");
+        DEBUGER.println("Error initializing client");
         return false;
     }
 
@@ -111,13 +111,13 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
         }
         // Do not break here
     default:
-        Serial.printf("1-[HTTP] [ERROR] [%d] %s\n",httpCode,httpClient.errorToString(httpCode).c_str());
+        DEBUGER.printf("1-[HTTP] [ERROR] [%d] %s\n",httpCode,httpClient.errorToString(httpCode).c_str());
         if (httpCode >= 400) //404 会崩溃
         {
             httpClient.end();
             return false;
         }
-        Serial.printf("Response:\n%s\n",httpClient.getString().c_str());
+        DEBUGER.printf("Response:\n%s\n",httpClient.getString().c_str());
         httpClient.end();
         return false;
     }
@@ -139,39 +139,39 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
     nSub = strUpdateList.lastIndexOf("\r");
     strUpdateList = strUpdateList.substring(0,nSub);
 
-    Serial.printf("binURL=%s\n", binURL.c_str());
-    Serial.printf("binMD5=%s\n", binMD5.c_str());
-    Serial.printf("newVersionNumber=%d\n",newVersionNumber);
-    Serial.printf("newVersionString=%s\n", newVersionString.c_str());
-    Serial.printf("nUpdateFlag=%d\n", nUpdateFlag);
-    Serial.printf("strUpdateList=%s\n", strUpdateList.c_str());
+    DEBUGER.printf("binURL=%s\n", binURL.c_str());
+    DEBUGER.printf("binMD5=%s\n", binMD5.c_str());
+    DEBUGER.printf("newVersionNumber=%d\n",newVersionNumber);
+    DEBUGER.printf("newVersionString=%s\n", newVersionString.c_str());
+    DEBUGER.printf("nUpdateFlag=%d\n", nUpdateFlag);
+    DEBUGER.printf("strUpdateList=%s\n", strUpdateList.c_str());
 
     httpClient.end();
 
     if (binURL.length() == 0)
     {
-        Serial.println("Error parsing remote path of new binary");
+        DEBUGER.println("Error parsing remote path of new binary");
         return false;
     }
 
     if (newVersionNumber == 0)
     {
-        Serial.println("Error parsing version number");
+        DEBUGER.println("Error parsing version number");
         return false;
     }
 
     // int nSub = binMD5.lastIndexOf("\r");
-    // Serial.printf("nSub=%d\n",nSub);
+    // DEBUGER.printf("nSub=%d\n",nSub);
     // binMD5 = binMD5.substring(0,nSub);
     if (binMD5.length() > 0 && binMD5.length() != 32)
     {
-        Serial.printf("The MD5:%s is not 32 characters long. Aborting update! binMD5.length()=%d\n",binMD5.c_str(), binMD5.length());
+        DEBUGER.printf("The MD5:%s is not 32 characters long. Aborting update! binMD5.length()=%d\n",binMD5.c_str(), binMD5.length());
         return false;
     }
 
     
     bool bIsUpdate =   (newVersionNumber > _currentVersion);
-    Serial.printf("Need Update = %d\n", bIsUpdate);
+    DEBUGER.printf("Need Update = %d\n", bIsUpdate);
     if (bIsUpdate)
     {
         if (nUpdateFlag == GRAY_UPDATE)
@@ -186,26 +186,26 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
                 bIsUpdate = false;
             }
             
-            Serial.printf("%s Gray Update: %d\n",m_str8266ChipID.c_str(), bIsUpdate);
+            DEBUGER.printf("%s Gray Update: %d\n",m_str8266ChipID.c_str(), bIsUpdate);
         }
     }
     
-    Serial.println("Fetched update information:");
-    Serial.printf("File url:           %s\n",       binURL.c_str());
-    Serial.printf("File MD5:           %s\n",       binMD5.c_str());
-    Serial.printf("Current version:    %u\n",       _currentVersion);
-    Serial.printf("Current ChipID:     %s\n",       m_str8266ChipID.c_str());
-    Serial.printf("Published version:  [%u] %s\n",  newVersionNumber, newVersionString.c_str());
-    Serial.printf("Update available:   %s\n",       bIsUpdate ? "YES" : "NO");
-    Serial.printf("Update Flag:   %d\n",      nUpdateFlag);
-    Serial.printf("Update List:   %s\n",      strUpdateList.c_str());
+    DEBUGER.println("Fetched update information:");
+    DEBUGER.printf("File url:           %s\n",       binURL.c_str());
+    DEBUGER.printf("File MD5:           %s\n",       binMD5.c_str());
+    DEBUGER.printf("Current version:    %u\n",       _currentVersion);
+    DEBUGER.printf("Current ChipID:     %s\n",       m_str8266ChipID.c_str());
+    DEBUGER.printf("Published version:  [%u] %s\n",  newVersionNumber, newVersionString.c_str());
+    DEBUGER.printf("Update available:   %s\n",       bIsUpdate ? "YES" : "NO");
+    DEBUGER.printf("Update Flag:   %d\n",      nUpdateFlag);
+    DEBUGER.printf("Update List:   %s\n",      strUpdateList.c_str());
 
     return bIsUpdate;
 }
 
 bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
 {   
-    Serial.printf("Fetching OTA from: %s\n", binURL.c_str());
+    DEBUGER.printf("Fetching OTA from: %s\n", binURL.c_str());
 
     if (binURL.length() == 0)
     {
@@ -215,30 +215,30 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     bool isSSL = binURL.startsWith("https");
     if (_forceSSL && !isSSL)
     {
-        Serial.println("Trying to access a non-ssl URL on a secure update checker");
+        DEBUGER.println("Trying to access a non-ssl URL on a secure update checker");
         return false;
     }
 
     if (WiFi.status() != WL_CONNECTED)
     {
-        Serial.println("Wifi not connected");
+        DEBUGER.println("Wifi not connected");
         return false;
     }
 
     HTTPClient httpClient;
     if (!httpClient.begin(wf_client,binURL))
     {
-        Serial.println("Error initializing client");
+        DEBUGER.println("Error initializing client");
         return false;
     }
 
     const auto httpCode = httpClient.GET();
     if (httpCode != HTTP_CODE_OK)
     {
-        Serial.printf("2-[HTTP] [ERROR] [%d] %s\n",
+        DEBUGER.printf("2-[HTTP] [ERROR] [%d] %s\n",
                 httpCode,
                 httpClient.errorToString(httpCode).c_str());
-        Serial.printf("Response:\n%s\n",
+        DEBUGER.printf("Response:\n%s\n",
                 httpClient.getString().c_str());
         return false;
     }
@@ -249,7 +249,7 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     if (binMD5.length() > 0 &&
         !Update.setMD5(binMD5.c_str()))
     {
-            Serial.println("Failed to set the expected MD5");
+            DEBUGER.println("Failed to set the expected MD5");
             return false;
     }
 
@@ -257,20 +257,20 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
 
     if (payloadSize <= 0)
     {
-        Serial.println("Fetched binary has 0 size");
+        DEBUGER.println("Fetched binary has 0 size");
         return false;
     }
 
     if (!canBegin)
     {
-        Serial.println("Not enough space to begin OTA");
+        DEBUGER.println("Not enough space to begin OTA");
         return false;
     }
 
     const auto written = Update.writeStream(payloadStream);
     if (written != payloadSize)
     {
-        Serial.printf("Error. Written %lu out of %lu\n", written, payloadSize);
+        DEBUGER.printf("Error. Written %lu out of %lu\n", written, payloadSize);
         return false;
     }
 
@@ -278,7 +278,7 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     {
         StreamString errorMsg;
         Update.printError(errorMsg);
-        Serial.printf("Error Occurred: %s\n", errorMsg.c_str());
+        DEBUGER.printf("Error Occurred: %s\n", errorMsg.c_str());
         return false;
     }
 
@@ -286,11 +286,11 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     {
         StreamString errorMsg;
         Update.printError(errorMsg);
-        Serial.printf("Undefined OTA update error: %s\n", errorMsg.c_str());
+        DEBUGER.printf("Undefined OTA update error: %s\n", errorMsg.c_str());
         return false;
     }
 
-    Serial.println("Update completed. Rebooting");
+    DEBUGER.println("Update completed. Rebooting");
     ESP.restart();
     return true;
 }
