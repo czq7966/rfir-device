@@ -10,7 +10,7 @@
 // #define DEVICE_CL_DJROOM_CURTAIN_DOOYA
 
 //长乐VR体验馆党建一楼柯耐弗空调风盘
-// #define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
+#define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
 
 //长乐VR体验馆二三楼Coolix空调
 // #define DEVICE_CL_VRHALL_F2_AC_COOLIX
@@ -28,6 +28,6 @@
 // #define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门3楼美的空调
-#define DEVICE_FZ_DM3_AC_MEDIA
+// #define DEVICE_FZ_DM3_AC_MEDIA
 
 #endif

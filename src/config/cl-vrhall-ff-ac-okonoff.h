@@ -16,8 +16,8 @@
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          13
-#define OTA_VERSION_STRING          "13.0"
+#define OTA_VERSION_NUMBER          14
+#define OTA_VERSION_STRING          "14.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-ff-ac-okonoff/cfg.txt"
 
 
