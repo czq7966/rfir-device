@@ -58,6 +58,12 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::FZ_DM3_Midea();
 #endif
 
+//Z3 协调器 ESP8266 + CC2652 
+#ifdef DEVICE_Z3_COORDINATOR_ESP8266_CC2652
+#include "rfir/module/device/z3/co/esp8266_cc2652.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::z3::co::ESP8266_CC2652();
+#endif
+
 rfir::module::ttl::Config::Device* rfir::service::device::Device::Init() {
     return GDevice->init();
 }

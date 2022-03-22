@@ -10,7 +10,7 @@
 // #define DEVICE_CL_DJROOM_CURTAIN_DOOYA
 
 //长乐VR体验馆党建一楼柯耐弗空调风盘
-#define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
+// #define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
 
 //长乐VR体验馆二三楼Coolix空调
 // #define DEVICE_CL_VRHALL_F2_AC_COOLIX
@@ -29,5 +29,8 @@
 
 // 福州东门3楼美的空调
 // #define DEVICE_FZ_DM3_AC_MEDIA
+
+// Z3 协调器 ESP8266 + CC2652 
+#define DEVICE_Z3_COORDINATOR_ESP8266_CC2652
 
 #endif

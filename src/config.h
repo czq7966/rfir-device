@@ -62,6 +62,10 @@
 #include "config/test-sniffer-esp32-wroom.h"
 #endif
 
+// Z3 协调器 ESP8266 + CC2652 
+#ifdef DEVICE_Z3_COORDINATOR_ESP8266_CC2652
+#include "config/z3_coordinator_esp8266_cc2652.h"
+#endif
 
 #ifndef DEBUGER
 #define DEBUGER Serial
