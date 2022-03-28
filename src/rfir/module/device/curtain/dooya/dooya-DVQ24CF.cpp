@@ -102,7 +102,7 @@ bool rfir::module::device::curtain::Dooya_DVQ24CF::onCmd_get(neb::CJsonObject* p
             pld->Add("code", code);
         } else {            
             code = rfir::util::Util::BytesToHexString(d485->rxBuf, len);
-            pld->Add("errEode", code);
+            pld->Add("errCode", code);
         } 
     }
     
