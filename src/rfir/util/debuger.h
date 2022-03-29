@@ -2,6 +2,9 @@
 #define RFIR_UTIL_DEBUGER_H
 
 #include "Arduino.h"
+#ifndef SerialConfig
+#define SerialConfig uint32_t
+#endif
 
 namespace rfir {
     namespace util {
