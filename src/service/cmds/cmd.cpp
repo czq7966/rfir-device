@@ -130,7 +130,7 @@ bool service::cmds::Cmd::OnCmd_set(neb::CJsonObject* cmd) {
     int stp;
 
     if (!cmd->Get("pld", pld) || !pld.GetKey(key) || (cmd->Get("hd", hd) && hd.Get("stp", stp) && stp == 2))
-        return OnCmd_get(cmd);
+        return OnCmd_get(&pld);
     else {
         auto result = rfir::service::device::Device::OnCmd_set(&pld);
         DoTimerReport(true);
@@ -138,8 +138,9 @@ bool service::cmds::Cmd::OnCmd_set(neb::CJsonObject* cmd) {
     }
 }
 
-bool service::cmds::Cmd::OnCmd_get(neb::CJsonObject* _doc, std::string reason) {
+bool service::cmds::Cmd::OnCmd_get(neb::CJsonObject* _pld, std::string reason) {
     neb::CJsonObject cmd, hd, pld;
+    if (_pld)  pld = *_pld;
     hd.Add("did", rfir::util::Util::GetChipId());
     hd.Add("cmd", ECmdId::GetSet);
     hd.Add("stp", 1);

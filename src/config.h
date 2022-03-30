@@ -46,6 +46,12 @@
 #include "config/cl-vrhall-ff-ac-okonoff.h"
 #endif
 
+//长乐VR体验馆党建一楼室外水机McQuay
+#ifdef DEVICE_CL_VRHALL_F1_AC_MCQUAY_485
+#include "config/cl-vrhall-f1-ac-mcquay-485.h"
+#endif
+
+
 //长乐VR体验馆二三楼Coolix空调
 #ifdef DEVICE_CL_VRHALL_F2_AC_COOLIX
 #include "config/cl-vrhall-f2-ac-coolix.h"

@@ -30,6 +30,12 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_VRHALL_FF_Okonoff();
 #endif
 
+//长乐VR体验馆党建一楼室外水机McQuay
+#ifdef DEVICE_CL_VRHALL_F1_AC_MCQUAY_485
+#include "rfir/module/device/ac/mcquay/cl-vrhall-f1-ac-mcquay-485.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::ac::CL_VRHALL_F1_MCQUAY_485();
+#endif
+
 //长乐VR体验馆二三楼Coolix空调
 #ifdef DEVICE_CL_VRHALL_F2_AC_COOLIX
 #include "rfir/module/device/ac/coolix/cl-vrhall-f2-coolix.h"
