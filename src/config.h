@@ -32,8 +32,8 @@
 #endif
 
 //长乐DJ会议室杜亚窗帘
-#ifdef DEVICE_CL_DJROOM_CURTAIN_DOOYA
-#include "config/cl-djroom-curtain-dooya.h"
+#ifdef DEVICE_CL_DJROOM_CURTAIN_DOOYA_485
+#include "config/cl-djroom-curtain-dooya-485.h"
 #endif
 
 //长乐DJ会议室射灯

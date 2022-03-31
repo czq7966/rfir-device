@@ -12,9 +12,9 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 #endif
 
 //长乐DJ会议室杜亚窗帘
-#ifdef DEVICE_CL_DJROOM_CURTAIN_DOOYA
-#include "rfir/module/device/curtain/dooya/cl-djroom-dooya.h"
-rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::curtain::CL_DJROOM_Dooya();
+#ifdef DEVICE_CL_DJROOM_CURTAIN_DOOYA_485
+#include "rfir/module/device/curtain/dooya/cl-djroom-dooya-485.h"
+rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::curtain::CL_DJROOM_Dooya_485();
 #endif
 
 //长乐DJ会议室乐高区2路射灯开关
