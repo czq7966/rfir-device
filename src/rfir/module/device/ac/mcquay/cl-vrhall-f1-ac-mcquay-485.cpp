@@ -10,3 +10,6 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::CL_VRHALL_F1_MCQUAY
     return d;
 }
 
+bool rfir::module::device::ac::CL_VRHALL_F1_MCQUAY_485::onCmd_get(neb::CJsonObject* pld) {
+    return RS485::onCmd_get(pld);
+}
