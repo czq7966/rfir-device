@@ -33,6 +33,18 @@
 #define AP_CONFIG_PIN               -1  //配合AP_CONFIG_PIN_TIMEOUT，长按后进入AP配网模式
 #define AP_CONFIG_PIN_TIMEOUT       5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位秒
 
+//SMC
+#define SMC_MODE                     true //true时，支持智能配网
+#define SMC_CONFIG_VERSION           "1" //该值若有修改，SMC配置将被重置
+#define SMC_CONFIG_FILE              "/config/smc.json"
+#define SMC_CONFIG_PIN               0  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
+#define SMC_CONFIG_PIN_TYPE          0x11  //按键类型，请参考ace_button::ButtonConfig::FeatureFlagType, 如： kFeatureClick = 0x01;
+#define SMC_CONFIG_PIN_NUM           3  //连续按键次数
+#define SMC_CONFIG_PIN_DELAY         0  //按键Delay(秒，0默认)
+#define SMC_CONFIG_PIN_INTERVAL      3  //几秒之内完成动作(秒)，如3秒之内
+#define SMC_CONFIG_JLED              JLed(BUILTIN_LED).Blink(500, 5000).Forever()
+
+
 //MQTT
 // #define DISABLE_MQTT                TRUE
 #define MQTT_IP                     "push-access.sdp.101.com"

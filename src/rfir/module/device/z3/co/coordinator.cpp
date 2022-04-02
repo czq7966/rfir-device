@@ -62,6 +62,8 @@ rfir::module::device::z3::co::Coordinator::Coordinator() {
 #else
     COSerial.begin(115200);
 #endif   
+
+    Serial.println(rfir::util::Util::GetChipId(CHIP_ID_PREFIX).c_str());
 }
 
 rfir::module::device::z3::co::Coordinator::~Coordinator() {
