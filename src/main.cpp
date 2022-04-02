@@ -120,12 +120,33 @@ void setup() {
 
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)
     //启动wifi或热点
-    network::module::wifi::Client::Params np;
+    network::module::wifi::Client::Params np;    
+    np.ssid = WIFI_SSID;                               
+    np.pass = WIFI_PASSWORD;            
+    np.timeout = WIFI_RESET_TIMEOUT;    
+    //AP
+    #ifdef AP_MODE
     np.apMode = AP_MODE; 
-    np.ssid = WIFI_SSID;                               np.pass = WIFI_PASSWORD;            np.timeout = WIFI_RESET_TIMEOUT;    
-    np.ap.wifiSsid = np.ssid[0];                       np.ap.wifiPass = np.pass[0];
-    np.ap.apSsid = AP_SSID == "" ? ChipID : AP_SSID;    np.ap.apPass = AP_PASSWORD;         np.ap.resetTimeout = AP_RESET_TIMEOUT;
-    np.ap.configVersion = AP_CONFIG_VERSION;            np.ap.configPin = AP_CONFIG_PIN;    np.ap.configPinTimeout = AP_CONFIG_PIN_TIMEOUT;
+    np.ap.wifiSsid = np.ssid[0];                       
+    np.ap.wifiPass = np.pass[0];
+    np.ap.apSsid = AP_SSID == "" ? ChipID : AP_SSID;    
+    np.ap.apPass = AP_PASSWORD;         
+    np.ap.resetTimeout = AP_RESET_TIMEOUT;
+    np.ap.configVersion = AP_CONFIG_VERSION;            
+    np.ap.configPin = AP_CONFIG_PIN;    
+    np.ap.configPinTimeout = AP_CONFIG_PIN_TIMEOUT;
+    #endif
+    //SMC
+    #ifdef SMC_MODE
+    np.smcMode = SMC_MODE;
+    np.smc.configVersion = SMC_CONFIG_VERSION;
+    np.smc.configFile = SMC_CONFIG_FILE; 
+    np.smc.configPin = SMC_CONFIG_PIN;  
+    np.smc.configPinType = SMC_CONFIG_PIN_TYPE;
+    np.smc.configPinNum = SMC_CONFIG_PIN_NUM;
+    np.smc.configPinDelay = SMC_CONFIG_PIN_DELAY;
+    np.smc.configPinInterval = SMC_CONFIG_PIN_INTERVAL;
+    #endif    
     network::service::wifi::Client::Start(np);
 #endif
 

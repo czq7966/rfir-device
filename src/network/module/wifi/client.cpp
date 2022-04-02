@@ -10,6 +10,9 @@
 bool network::module::wifi::Client::Params::assign(Params& p) {
     this->apMode = p.apMode;
     this->ap = p.ap;
+    this->smcMode = p.smcMode;
+    this->smc = p.smc;
+    this->smc.clientParams = this;
     this->ssid.assign(p.ssid.begin(), p.ssid.end());
     this->pass.assign(p.pass.begin(), p.pass.end());
     this->timeout.assign(p.timeout.begin(), p.timeout.end());
@@ -18,7 +21,7 @@ bool network::module::wifi::Client::Params::assign(Params& p) {
 
 void network::module::wifi::Client::start(Params& p) {
     this->params.assign(p);
-    this->multiCheckOrReset2();
+    // this->multiCheckOrReset2();
 }
 
 void network::module::wifi::Client::loop() {
@@ -26,7 +29,7 @@ void network::module::wifi::Client::loop() {
 }
 
 void network::module::wifi::Client::multiCheckOrReset() {
-    if (!this->params.apMode && WiFi.status() != WL_CONNECTED ) {
+    if (!this->params.apMode && !this->params.smc.smcIng && WiFi.status() != WL_CONNECTED ) {
         DEBUGER.println("WiFi connecting......");
         pinMode(LED_BUILTIN, OUTPUT);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -95,7 +98,8 @@ bool network::module::wifi::Client::connectWifi(std::string ssid, std::string pa
 
 
 void network::module::wifi::Client::multiCheckOrReset2() {    
-    if (!this->params.apMode) {
+    //非热点模式和非配网模式
+    if (!this->params.apMode && !this->params.smc.smcIng) {
         int state = connectWifi();
         //已经连接
         if (state == -1) {
