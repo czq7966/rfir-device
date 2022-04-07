@@ -5,7 +5,7 @@
 
 // #define DEBUG_RFIR
 
-#define DEBUGER RFIRDebuger
+// #define DEBUGER RFIRDebuger
 #define COSerial Serial
 
 //COSerial
@@ -20,9 +20,11 @@
 
 
 //WIFI
-#define WIFI_SSID                   {"MERCURY_95E8"}
-#define WIFI_PASSWORD               {"12345678"}
-#define WIFI_RESET_TIMEOUT          {30, 30}  //多少时间内WIFI未连接，重启，单位秒
+#define WIFI_SSID_DEV               {"MERCURY_95E8"}
+#define WIFI_PASSWORD_DEV           {"12345678"}
+#define WIFI_SSID                   {}
+#define WIFI_PASSWORD               {}
+#define WIFI_RESET_TIMEOUT          {30, 30, 30, 30, 30, 30}  //多少时间内WIFI未连接，重启，单位秒
 
 //AP
 #define AP_MODE                     false //true时，支持热点配网
@@ -35,7 +37,7 @@
 
 //SMC
 #define SMC_MODE                     true //true时，支持智能配网
-#define SMC_CONFIG_VERSION           "1" //该值若有修改，SMC配置将被重置
+#define SMC_CONFIG_VERSION           "2" //该值若有修改，SMC配置将被重置
 #define SMC_CONFIG_FILE              "/config/smc.json"
 #define SMC_CONFIG_PIN               0  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
 #define SMC_CONFIG_PIN_TYPE          0x11  //按键类型，请参考ace_button::ButtonConfig::FeatureFlagType, 如： kFeatureClick = 0x01;
@@ -43,6 +45,8 @@
 #define SMC_CONFIG_PIN_DELAY         0  //按键Delay(秒，0默认)
 #define SMC_CONFIG_PIN_INTERVAL      3  //几秒之内完成动作(秒)，如3秒之内
 #define SMC_CONFIG_JLED              JLed(BUILTIN_LED).Blink(500, 5000).Forever()
+#define SMC_CONFIG_TIMEOUT           5  //几分钟之内需完成配网，之外重启(分)
+
 
 
 //MQTT
