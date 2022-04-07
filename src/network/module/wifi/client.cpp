@@ -12,7 +12,7 @@ bool network::module::wifi::Client::Params::assign(Params& p) {
     this->ap = p.ap;
     this->smcMode = p.smcMode;
     this->smc = p.smc;
-    this->smc.clientParams = this;
+    this->smc.parent = this;
     this->ssid.assign(p.ssid.begin(), p.ssid.end());
     this->pass.assign(p.pass.begin(), p.pass.end());
     this->timeout.assign(p.timeout.begin(), p.timeout.end());
@@ -135,7 +135,12 @@ void network::module::wifi::Client::multiCheckOrReset2() {
                 return;           
             }                    
 #endif
-        }                  
+        }   
+
+        //未配网
+        if (state == 3) {
+
+        }               
         
     }    
 }
@@ -163,6 +168,11 @@ int  network::module::wifi::Client::connectWifi() {
             return -1; //已经连接
         }
         
+    }
+
+    //未配网
+    if (this->params.ssid.size() == 0) {
+        return 3;
     }
 
     //初始化

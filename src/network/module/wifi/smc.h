@@ -39,8 +39,9 @@ namespace network {
                     int8_t        configPinNum = -1;
                     int8_t        configPinDelay = 0;
                     int8_t        configPinInterval = -1;
+                    int8_t        configTimeout = 5;
 
-                    void*          clientParams;                  
+                    void*          parent;                  
                 };
             protected:
                 long reset_timeout_start = 0;
@@ -59,20 +60,17 @@ namespace network {
                 void start(Params* p);
                 void loop();
 
-                void loadConfig();
-                void saveConfig();
+                bool loadConfig();
+                bool saveConfig();
 
-                void applyDefault();
                 void setupConfigPin();
                 void checkConfigPin();
                 void checkSMC();
                 void checkLED();
+                void checkCallback();
 
                 void setupSMC();
                 void startSMC();
-                void startSMC_esp8266();
-                void startSMC_esp32();
-
                 void handleButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState);
 
                 
@@ -83,9 +81,10 @@ namespace network {
                 static unsigned long ConfigPinChangeTime_High;
                 static ICACHE_RAM_ATTR void OnConfigPinChanged();
 
-                static void smcInfoWifi();
-                static void smcInfoCallback(smc_messages_t code, char * parameter);
-                static void handleAceButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState);
+                static smc_messages_t SmcLastMessage;
+                static void SmcInfoWifi();
+                static void SmcInfoCallback(smc_messages_t code, char * parameter);
+                static void HandleAceButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState);
 
             };
         }

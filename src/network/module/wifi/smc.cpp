@@ -1,6 +1,8 @@
 #include "smc.h"   
 #include "client.h"
 #include "config.h"     
+#include "rfir/util/cjson/CJsonObject.hpp"
+#include "rfir/util/file.h"
 
 
 network::module::wifi::SmcButton::SmcButton(uint8_t pin, uint8_t defaultReleasedState,  uint8_t id)
@@ -18,37 +20,95 @@ void network::module::wifi::SMC::start(Params* p) {
 
 void network::module::wifi::SMC::loop() {
     checkConfigPin();
-    checkSMC();
-    checkLED();
+    if (this->params->smcIng) {
+        checkSMC();
+        checkLED();
+        checkCallback();
+    }
 }
 
+bool network::module::wifi::SMC::loadConfig() {
+    neb::CJsonObject json;
+    std::string fn = this->params->configFile;
+    rfir::util::TxtFile file(fn.c_str());
+    std::string context;
+    file.readString(context);
+    if (context.length() > 0) {
+        json.Parse(context);
+        std::string version;
+        if (json.Get("configVersion", version) && version == this->params->configVersion) {
+            json.Get("apSsid", this->params->apSsid);
+            json.Get("apPass", this->params->apPass);
+            json.Get("wifiSsid", this->params->wifiSsid);
+            json.Get("wifiPass", this->params->wifiPass);     
+            DEBUGER.println(this->params->wifiSsid.c_str());
+            DEBUGER.println(this->params->wifiPass.c_str());
+            return true;       
+        }
+    } 
 
+    return false;
+}
+
+bool network::module::wifi::SMC::saveConfig() {
+    neb::CJsonObject json;
+    std::string fn = this->params->configFile;
+    rfir::util::TxtFile file(fn.c_str());
+    std::string context;
+
+    json.Add("apSsid", this->params->apSsid);
+    json.Add("apPass", this->params->apPass);
+    json.Add("wifiSsid", this->params->wifiSsid);
+    json.Add("wifiPass", this->params->wifiPass);
+    json.Add("configVersion", this->params->configVersion);
+
+    context = json.ToString();
+    return file.writeString(context);
+}
 
 void network::module::wifi::SMC::checkSMC() {
-    if (this->params->smcIng) {
 #ifdef ESP8266
-        jw.loop();
-#else
+    jw.loop();
 #endif        
-        led.Update();
-    }
-
 }
 
 void network::module::wifi::SMC::checkLED() {
-    if (this->params->smcIng) {
-
-    }
+    led.Update();
 }
 
-void network::module::wifi::SMC::applyDefault() {
+void network::module::wifi::SMC::checkCallback() {
+#ifdef ESP8266
 
+    if (SmcLastMessage == MESSAGE_SMARTCONFIG_ERROR) {
+        this->params->configTimeout--;
+        if (this->params->configTimeout <= 0) {
+            ESP.reset();
+        } else {
+            jw.startSmartConfig();
+        }
+    }
+
+    if (SmcLastMessage == MESSAGE_SMARTCONFIG_START) {
+
+    }
+
+    if (SmcLastMessage == MESSAGE_SMARTCONFIG_SUCCESS) {
+        this->params->wifiSsid = WiFi.SSID().c_str();
+        this->params->wifiPass = WiFi.psk().c_str();
+        saveConfig();
+        delay(1000);
+        ESP.reset();
+    }    
+
+
+#endif        
 }
 
 unsigned long network::module::wifi::SMC::ConfigPinChangeTime = 0;
 bool          network::module::wifi::SMC::ConfigPinChanged = false;
 unsigned long network::module::wifi::SMC::ConfigPinChangeTime_Low = 0;
 unsigned long network::module::wifi::SMC::ConfigPinChangeTime_High = 0;
+smc_messages_t network::module::wifi::SMC::SmcLastMessage = MESSAGE_SCANNING;
 void network::module::wifi::SMC::setupConfigPin() {
     if (this->params->configPin >=0) {
         Serial.print("configPin:");
@@ -58,7 +118,7 @@ void network::module::wifi::SMC::setupConfigPin() {
         pinMode(this->params->configPin, INPUT_PULLUP);
 
         ace_button::ButtonConfig* buttonConfig = button->getButtonConfig();
-        buttonConfig->setEventHandler(handleAceButtonEvent);
+        buttonConfig->setEventHandler(HandleAceButtonEvent);
         if (this->params->configPinType > 0)
             buttonConfig->setFeature(this->params->configPinType);
         if (this->params->configPinDelay > 0) {
@@ -116,7 +176,7 @@ void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button
 
 }
 
-void network::module::wifi::SMC::handleAceButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
+void network::module::wifi::SMC::HandleAceButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
     Serial.print(F("handleEvent(): eventType: "));
     Serial.print(eventType);
     Serial.print(F("; buttonState: "));
@@ -136,34 +196,24 @@ void network::module::wifi::SMC::OnConfigPinChanged() {
 void network::module::wifi::SMC::checkConfigPin() {
     if (this->button)
         this->button->check();
-    // if (ConfigPinChanged) {
-    //     ConfigPinChanged = false;
-    //     bool pressed = digitalRead(this->params->configPin) == LOW;
-    //     if (pressed) {
-    //         ConfigPinChangeTime_Low = millis();
-    //         Serial.println("Button pressed");            
-    //     } else {
-    //         ConfigPinChangeTime_High =  millis();
-    //         Serial.println("Button released");            
-    //         auto relay = ConfigPinChangeTime_High - ConfigPinChangeTime_Low;
-    //         if ( ConfigPinChangeTime_Low > 0 && relay > this->params->configPinTimeStart * 1000 && relay < this->params->configPinTimeEnd * 1000) {
-    //             //todo
-    //             startSMC();
-    //         }
-
-    //         ConfigPinChangeTime = 0;            
-    //     }
-
-    // }
 }
 
 void network::module::wifi::SMC::setupSMC() {
 #ifdef ESP8266    
     jw.enableAP(false);
     jw.enableAPFallback(false);
-    jw.subscribe(smcInfoCallback);
+    jw.subscribe(SmcInfoCallback);
 #endif
+    loadConfig();
+    Client::Params* cp = (Client::Params*)this->params->parent;
+    if (this->params->wifiSsid.length() > 0) {
+        cp->ssid.insert(cp->ssid.begin(), this->params->wifiSsid);
+        cp->pass.insert(cp->pass.begin(), this->params->wifiPass);
+    }
 
+    if (cp->ssid.size() == 0) {
+        startSMC();
+    }
 }
 
 void network::module::wifi::SMC::startSMC() {
@@ -171,14 +221,11 @@ void network::module::wifi::SMC::startSMC() {
 #ifdef ESP8266
     jw.startSmartConfig();
     this->params->smcIng = true;
-
-#else        
-    // startSMC_esp32();
 #endif    
 }
 
 
-void network::module::wifi::SMC::smcInfoWifi() {
+void network::module::wifi::SMC::SmcInfoWifi() {
 
 
     if (WiFi.isConnected()) {
@@ -220,8 +267,9 @@ void network::module::wifi::SMC::smcInfoWifi() {
 }
 
 
-void network::module::wifi::SMC::smcInfoCallback(smc_messages_t code, char * parameter) {
+void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * parameter) {
 #ifdef ESP8266
+    SmcLastMessage = code;
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_TURNING_OFF) {
@@ -269,7 +317,7 @@ void network::module::wifi::SMC::smcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_CONNECTED) {
-        smcInfoWifi();
+        SmcInfoWifi();
     }
 
     if (code == MESSAGE_DISCONNECTED) {
@@ -279,7 +327,7 @@ void network::module::wifi::SMC::smcInfoCallback(smc_messages_t code, char * par
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_ACCESSPOINT_CREATED) {
-        smcInfoWifi();
+        SmcInfoWifi();
     }
 
     if (code == MESSAGE_ACCESSPOINT_DESTROYED) {
