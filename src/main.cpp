@@ -127,8 +127,6 @@ void setup() {
     //AP
     #ifdef AP_MODE
     np.apMode = AP_MODE; 
-    np.ap.wifiSsid = np.ssid[0];                       
-    np.ap.wifiPass = np.pass[0];
     np.ap.apSsid = AP_SSID == "" ? ChipID : AP_SSID;    
     np.ap.apPass = AP_PASSWORD;         
     np.ap.resetTimeout = AP_RESET_TIMEOUT;
@@ -146,8 +144,15 @@ void setup() {
     np.smc.configPinNum = SMC_CONFIG_PIN_NUM;
     np.smc.configPinDelay = SMC_CONFIG_PIN_DELAY;
     np.smc.configPinInterval = SMC_CONFIG_PIN_INTERVAL;
+    np.smc.configTimeout = SMC_CONFIG_TIMEOUT;
     #endif    
+
     network::service::wifi::Client::Start(np);
+
+    #ifdef WIFI_SSID_DEV
+    np.ssid.push_back(WIFI_SSID_DEV);
+    np.pass.push_back(WIFI_PASSWORD_DEV);    
+    #endif
 #endif
 
 #if !(defined(DISABLE_OTA) && DISABLE_OTA == TRUE)

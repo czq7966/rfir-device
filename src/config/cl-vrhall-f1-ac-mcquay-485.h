@@ -6,20 +6,20 @@
 
 //Serial
 #define SERIAL_BAUD                 19200
-#define SERIAL_CONFIG               SERIAL_8N1
+#define SERIAL_CONFIG               SERIAL_8N2
 
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE
-#define OTA_VERSION_NUMBER          1
-#define OTA_VERSION_STRING          "1.0"
+#define OTA_VERSION_NUMBER          2
+#define OTA_VERSION_STRING          "2.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-f1-ac-mcquay-485/cfg.txt"
 
 
 //WIFI
 // #define DISABLE_WIFI                TRUE
-#define WIFI_SSID                   {"MERCURY_95E8", "ND-MAC"}
-#define WIFI_PASSWORD               {"12345678", "wanglong"}
+#define WIFI_SSID                   {"电表",        "MERCURY_95E8"}
+#define WIFI_PASSWORD               {"Ndvr123456",  "12345678" }
 #define WIFI_RESET_TIMEOUT          {30, 30}  //多少时间内WIFI未连接，重启，单位秒
 
 
