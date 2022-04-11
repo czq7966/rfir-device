@@ -11,5 +11,11 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::CL_VRHALL_F1_MCQUAY
 }
 
 bool rfir::module::device::ac::CL_VRHALL_F1_MCQUAY_485::onCmd_get(neb::CJsonObject* pld) {
-    return RS485::onCmd_get(pld);
+    std::string innerCode = "0x03 04 13 87 00 19 84 8F";
+    std::string code;
+    if (!pld->Get("code", code) || code.length() == 0) {
+        pld->ReplaceAdd("code", innerCode);
+    }
+
+    return RS485::onCmd_get(pld);    
 }
