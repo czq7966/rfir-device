@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-vrhall-f1-ac-mcquay-485/firmware_v3.bin
+3
+8dafe22084ad250e6d7ba656beafe21d
+3.0
+1
+ESP8266x00c1a13c
