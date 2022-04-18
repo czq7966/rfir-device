@@ -176,6 +176,9 @@ void setup() {
     mp.pub_topic = pub_topic.c_str();
     mp.bufsize = 2 * 1024;
     mp.id = ChipID;
+    #ifdef MQTT_KEEPALIVE
+    mp.keepalive = MQTT_KEEPALIVE;
+    #endif
     network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);
 #endif
 

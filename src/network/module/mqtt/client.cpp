@@ -27,6 +27,7 @@ void network::module::mqtt::Client::uninit() {
 
 
 void network::module::mqtt::Client::start() {
+    mqtt->setKeepAlive(this->params.keepalive);
     mqtt->begin(this->params.ip.c_str(), this->params.port,  *net);
     mqtt->onMessageAdvanced(OnMessage); 
 }

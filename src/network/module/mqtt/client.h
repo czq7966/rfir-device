@@ -32,6 +32,7 @@ namespace network {
                 struct Params {
                     std::string ip;
                     int         port = 1883;
+                    int         keepalive = 10;
                     std::string user;
                     std::string pass;
                     std::string pub_topic;
