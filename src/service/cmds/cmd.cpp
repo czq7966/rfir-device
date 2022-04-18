@@ -79,6 +79,10 @@ bool service::cmds::Cmd::OnCmd_heartbeat(neb::CJsonObject* _cmd, uint8_t st) {
     pld.Add("ver", OTA_VERSION_NUMBER);
     pld.Add("rssi", WiFi.RSSI());
     pld.Add("mac", rfir::util::Util::GetMacAddress());
+#ifdef DEV_FACTURER
+    pld.Add("facturer", DEV_FACTURER);
+    pld.Add("model", DEV_MODEL);
+#endif  
     cmd.Add("hd", hd);
     cmd.Add("pld", pld);
     

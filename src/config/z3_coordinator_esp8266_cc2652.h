@@ -3,9 +3,13 @@
 
 #include "rfir/util/debuger.h"
 
+//Device
+#define DEV_FACTURER "ND"
+#define DEV_MODEL "Z3CO2652ESP8266"
+
 // #define DEBUG_RFIR
 
-// #define DEBUGER RFIRDebuger
+#define DEBUGER RFIRDebuger
 #define COSerial Serial
 
 //COSerial
@@ -55,8 +59,10 @@
 #define MQTT_PORT                   1780
 #define MQTT_USER                   "ioe"
 #define MQTT_PASSWORD               ""
-#define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
-#define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
+// #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
+// #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
+#define MQTT_SUB_TOPIC              "ndiot/device/nd/0/{did}/sub"
+#define MQTT_PUB_TOPIC              "ndiot/device/nd/0/{did}/pub" 
 #define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
 
 #endif //

@@ -28,8 +28,8 @@ namespace rfir {
                         std::string coReadBase64(char data[]);
                         bool coWriteBase64(char data[], size_t size);
                     public:
-                        virtual void start(void *);
-                        virtual void loop();                    
+                        virtual void start(void *) override;
+                        virtual void loop() override;   
                         virtual void doTimerReport(bool reset = false) override;                    
                     public:
                         virtual rfir::module::ttl::Config::Device* init() override;            

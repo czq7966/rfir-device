@@ -12,7 +12,11 @@ namespace rfir {
         namespace device {
             namespace z3 {
                 namespace co {
-                    class ESP8266_CC2652: public Coordinator {};
+                    class ESP8266_CC2652: public Coordinator {
+                    public:
+                        virtual void start(void *) override;
+                        virtual rfir::module::ttl::Config::Device* init() override;                                
+                    };
 
                 }
             }
