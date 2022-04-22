@@ -10,6 +10,8 @@
 #endif
 #include "MQTT.h"
 
+#include "rfir/util/event-emitter.h"
+
 namespace network {
     namespace module {
         namespace mqtt {
@@ -23,6 +25,7 @@ namespace network {
                     explicit MQTT(int bufSize = 3 * 1024): MQTTClient(bufSize) {};
                     void* getArg() {return arg;};
                     void  setArg(void* v) {this->arg = v;};
+                    rfir::util::EventEmitter events;
                 };
 
                 typedef std::function<void(MQTT* mqtt)> OnConnectEvent;
@@ -41,8 +44,24 @@ namespace network {
                     std::string id;
                 };
 
+                struct Message {
+                    Client*     client;
+                    char*       topic;
+                    char*       bytes;
+                    int         length;                  
+                };
+
+                class Events  {
+                public:
+                    static const std::string OnConnected;
+                    static const std::string OnMessage;
+                };
+                
+                
                 OnMessageEvent onMessage = 0;
                 OnConnectEvent onConnect = 0;
+                rfir::util::EventEmitter events;
+                rfir::util::EventEmitter topicEvents;
 
             private:
                 WiFiClient* net = 0;
@@ -59,6 +78,7 @@ namespace network {
                 void loop();
                 void connect();
                 bool publish(const char* msg);
+                bool publish(const char* topic, const char* msg);
             public:
                 static ICACHE_RAM_ATTR void OnMessage(MQTTClient *client, char topic[], char bytes[], int length);
  

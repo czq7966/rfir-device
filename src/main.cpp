@@ -7,6 +7,7 @@
 #include "network/service/wifi/client.h"
 #include "network/service/mqtt/client.h"
 #include "network/service/ota/updater.h"
+#include "network/service/net/networking.h"
 
 
 #include "rfir/service/serial/receiver.h"
@@ -182,6 +183,10 @@ void setup() {
     network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);
 #endif
 
+#if !(defined(DISABLE_NETWORKING) && DISABLE_NETWORKING == TRUE)
+    network::service::net::Networking::Start(network::service::mqtt::Client::client);
+#endif
+
     //启动收发器
     rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
 
@@ -211,6 +216,11 @@ void loop() {
     //mqtt循环
     network::service::mqtt::Client::Loop();
 #endif    
+
+#if !(defined(DISABLE_NETWORKING) && DISABLE_NETWORKING == TRUE)
+    //登入组网
+    network::service::net::Networking::Loop();
+#endif
 
     //收发器循环
     rfir::Loop();  

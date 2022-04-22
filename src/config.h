@@ -77,4 +77,47 @@
 #define DEBUGER Serial
 #endif
 
+
+
+#include <string>
+#include <vector>
+class GlobalConfig {
+public:
+    GlobalConfig();
+    ~GlobalConfig();
+    void fixVars(std::string& name);
+public:
+    //Device
+    std::string dev_id;
+    std::string dev_facturer = DEV_FACTURER;
+    std::string dev_model = DEV_MODEL;
+    //Serial
+    int         serial_baud = SERIAL_BAUD;
+    int         serial_config = SERIAL_CONFIG;
+    //OTA
+    bool        ota_update = OTA_UPDATE;
+    int         ota_version_number = OTA_VERSION_NUMBER;
+    std::string ota_version_string = OTA_VERSION_STRING;
+    std::string ota_update_url = OTA_UPDATE_URL;
+    //WIFI
+    std::vector<std::string>  wifi_ssid_dev = WIFI_SSID_DEV;
+    std::vector<std::string>  wifi_password_dev = WIFI_PASSWORD_DEV;
+    std::vector<std::string>  wifi_ssid = WIFI_SSID;
+    std::vector<std::string>  wifi_password = WIFI_PASSWORD;
+    std::vector<int>          wifi_reset_timeout = WIFI_RESET_TIMEOUT;
+
+    //MQTT
+    std::string mqtt_ip = MQTT_IP;
+    int         mqtt_port = MQTT_PORT;
+    std::string mqtt_user = MQTT_USER;
+    std::string mqtt_password = MQTT_PASSWORD;
+    int         mqtt_reset_timeout = MQTT_RESET_TIMEOUT;
+    std::string mqtt_sub_topic = MQTT_SUB_TOPIC;
+    std::string mqtt_pub_topic = MQTT_PUB_TOPIC;
+    std::string mqtt_net_lgn_topic = MQTT_NET_LGN_TOPIC;
+    std::string mqtt_net_lgn_rsp_topic = MQTT_NET_LGN_RSP_TOPIC;
+    std::string mqtt_net_hbt_topic = MQTT_NET_HBT_TOPIC;
+};
+
+extern GlobalConfig Config;
 #endif

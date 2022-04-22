@@ -1,10 +1,20 @@
 #ifndef __CONFIG_CONFIG_FZ_PMZ_F2_AC_GREE_H__
 #define __CONFIG_CONFIG_FZ_PMZ_F2_AC_GREE_H__
 
+#include "rfir/util/debuger.h"
+
 // #define DEBUG_RFIR
 
+//Device
+#define DEV_FACTURER "ND"
+#define DEV_MODEL "ACGREEPMZ"
+
+//Serial
+#define SERIAL_BAUD                 115200
+#define SERIAL_CONFIG               SERIAL_8N1
+
 //OTA
-#define OTA_UPDATE
+#define OTA_UPDATE                  true
 #define OTA_VERSION_NUMBER          8
 #define OTA_VERSION_STRING          "8.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/cfg.txt"
@@ -45,8 +55,13 @@
 #define MQTT_USER                   "ioe"
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              60  //保活几分钟
-#define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
-#define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
 #define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
+// #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
+// #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
+#define MQTT_SUB_TOPIC              "ndiot/device/nd/0/{did}/sub"
+#define MQTT_PUB_TOPIC              "ndiot/device/nd/0/{did}/pub" 
+#define MQTT_NET_LGN_TOPIC          "ndiot/_net/device/0/{did}/login" 
+#define MQTT_NET_LGN_RSP_TOPIC      "ndiot/_net/device/1/{did}/login" 
+#define MQTT_NET_HBT_TOPIC          "ndiot/_net/device/0/{did}/heartbeat" 
 
 #endif //

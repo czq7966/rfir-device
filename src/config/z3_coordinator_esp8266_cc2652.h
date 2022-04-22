@@ -12,12 +12,16 @@
 #define DEBUGER RFIRDebuger
 #define COSerial Serial
 
+//Serial
+#define SERIAL_BAUD                 115200
+#define SERIAL_CONFIG               SERIAL_8N1
+
 //COSerial
 #define CO_SERIAL_BAUD                 115200
 #define CO_SERIAL_CONFIG               SERIAL_8N1
 
 //OTA
-#define OTA_UPDATE
+#define OTA_UPDATE                  true
 #define OTA_VERSION_NUMBER          1
 #define OTA_VERSION_STRING          "1.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/z3_coordinator_esp8266_cc2652/cfg.txt"
@@ -41,7 +45,7 @@
 
 //SMC
 #define SMC_MODE                     true //true时，支持智能配网
-#define SMC_CONFIG_VERSION           "2" //该值若有修改，SMC配置将被重置
+#define SMC_CONFIG_VERSION           "3" //该值若有修改，SMC配置将被重置
 #define SMC_CONFIG_FILE              "/config/smc.json"
 #define SMC_CONFIG_PIN               0  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
 #define SMC_CONFIG_PIN_TYPE          0x11  //按键类型，请参考ace_button::ButtonConfig::FeatureFlagType, 如： kFeatureClick = 0x01;
@@ -59,10 +63,16 @@
 #define MQTT_PORT                   1780
 #define MQTT_USER                   "ioe"
 #define MQTT_PASSWORD               ""
+#define MQTT_KEEPALIVE              60  //保活几分钟
+#define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
 // #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
 // #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
 #define MQTT_SUB_TOPIC              "ndiot/device/nd/0/{did}/sub"
 #define MQTT_PUB_TOPIC              "ndiot/device/nd/0/{did}/pub" 
-#define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
+#define MQTT_NET_LGN_TOPIC          "ndiot/_net/device/0/{did}/login" 
+#define MQTT_NET_LGN_RSP_TOPIC      "ndiot/_net/device/1/{did}/login" 
+#define MQTT_NET_HBT_TOPIC          "ndiot/_net/device/0/{did}/heartbeat" 
+
+
 
 #endif //
