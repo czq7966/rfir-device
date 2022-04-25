@@ -3,11 +3,11 @@
 
 GlobalConfig::GlobalConfig(){
     dev_id = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
-    fixVars(mqtt_sub_topic);
-    fixVars(mqtt_pub_topic);
-    fixVars(mqtt_net_lgn_topic);
-    fixVars(mqtt_net_lgn_rsp_topic);
-    fixVars(mqtt_net_hbt_topic);
+    // fixVars(mqtt_sub_topic);
+    // fixVars(mqtt_pub_topic);
+    // fixVars(mqtt_net_lgn_topic);
+    // fixVars(mqtt_net_lgn_rsp_topic);
+    // fixVars(mqtt_net_hbt_topic);
 };
 
 GlobalConfig::~GlobalConfig(){};

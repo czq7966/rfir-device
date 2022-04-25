@@ -24,7 +24,6 @@ namespace rfir {
                 bool rawChanged = false;    
                 unsigned long  rawChanged_time = 0; 
                 unsigned long  rawChanged_timeout = 2000; 
-
             public:
                 virtual void start(void *);
                 virtual void loop();
@@ -46,10 +45,36 @@ namespace rfir {
                 virtual bool onCmd_get(neb::CJsonObject* pld); 
                 virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) ; 
             };
+
+            class Networking {
+            public:
+                bool m_logined = false;
+            public:
+                ~Networking();
+            public:
+                void start();            
+                void login();
+                void handshake();
+                void heartbeat();
+            public:
+                void onLoginReq();
+                void onLoginResp();
+                void onHandshakeReq();
+                void onHandshakeResp();
+            public:
+                static void* OnConnect(void* arg, void* p);
+                static void* OnCommand(void* arg, void* p);
+            public:
+                static void* OnLoginReq(void* arg, void* p);
+                static void* OnLoginResp(void* arg, void* p);
+                static void* OnHandshakeReq(void* arg, void* p);
+                static void* OnHandshakeResp(void* arg, void* p);                
+
+            };
+
         }
     }
 }
-
 
 
 #endif //

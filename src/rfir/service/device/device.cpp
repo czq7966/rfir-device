@@ -70,6 +70,8 @@ rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir:
 rfir::module::device::Device* rfir::service::device::Device::GDevice = new rfir::module::device::z3::co::ESP8266_CC2652();
 #endif
 
+
+rfir::module::device::Networking* rfir::service::device::Device::GNetworking = new rfir::module::device::Networking();
 rfir::module::ttl::Config::Device* rfir::service::device::Device::Init() {
     return GDevice->init();
 }
@@ -82,7 +84,8 @@ rfir::module::ttl::Config::Device* rfir::service::device::Device::GetConfig() {
 
 void rfir::service::device::Device::Start(rfir::module::device::Device::OnChange onChange) {
     GDevice->start(0);
-    GDevice->onChange = onChange;    
+    GDevice->onChange = onChange;   
+    GNetworking->start(); 
 }
 
 void rfir::service::device::Device::Loop() {

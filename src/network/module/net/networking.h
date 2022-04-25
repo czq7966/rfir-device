@@ -17,6 +17,7 @@ namespace network {
             public:
                 static void* OnConnected(void* arg, void* p);
                 static void* OnLoginResp(void* arg, void* p);
+                static void* OnLoginTimeout(void* arg, void* p);
             };
 
         }

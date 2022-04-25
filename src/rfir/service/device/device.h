@@ -10,10 +10,11 @@
 
 namespace rfir {
     namespace service {
-        namespace device {
+        namespace device {            
             class Device {
             public:
                 static rfir::module::device::Device* GDevice;
+                static rfir::module::device::Networking* GNetworking;
                 static rfir::module::ttl::Config::Device* Init();
                 static rfir::module::ttl::Config::Device* GetConfig();
             public:
@@ -27,6 +28,7 @@ namespace rfir {
                 static bool OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data);
                 static bool OnCmd_config(neb::CJsonObject* pld);
             };
+
         }
     }
 }

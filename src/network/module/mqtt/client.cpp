@@ -1,11 +1,6 @@
 #include "client.h"
 #include "rfir/util/util.h"
 
-
-const std::string network::module::mqtt::Client::Events::OnConnected = "OnConnected";
-const std::string network::module::mqtt::Client::Events::OnMessage = "OnMessage";
-
-
 network::module::mqtt::Client::Client() {
     
 }
@@ -69,7 +64,7 @@ void network::module::mqtt::Client::connect() {
             if (this->onConnect) {
                 this->onConnect(mqtt);
             }
-            this->events.emit(Events::OnConnected, (void*)this);
+            this->events.onConnect.emit((void*)this);
         } else { //超时重启
             if (millis() - Mqtt_client_connect_time > MQTT_RESET_TIMEOUT * 1000 )  {
                 DEBUGER.println("MQTT connect time out. ESP reset!\n");
@@ -96,8 +91,8 @@ void network::module::mqtt::Client::OnMessage(MQTTClient *mqttClient, char topic
     msg.topic = topic;
     msg.bytes = bytes;
     msg.length = length;
-    client->events.emit(Events::OnMessage, (void*)&msg);
-    client->topicEvents.emit(topic, (void*)&msg);
+    client->events.onMessage.emit((void*)&msg);
+
 }
 
 
@@ -108,7 +103,11 @@ bool network::module::mqtt::Client::publish(const char* msg) {
 }
 
 bool network::module::mqtt::Client::publish(const char* topic, const char* msg) {
-    if (mqtt->connected())
+    DEBUGER.println("network::module::mqtt::Client::publish:");    
+    if (mqtt->connected()) {
+        DEBUGER.println(topic);
+        DEBUGER.println(msg);
         return mqtt->publish(topic, msg);
+    }
     return 0;
 }

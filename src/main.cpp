@@ -14,7 +14,10 @@
 #include "rfir/service/serial/sender.h"
 #include "rfir/service/cmds/cmd.h"
 #include "rfir/service/device/device.h"
+#include "rfir/util/event-timer.h"
 #include "rfir/rfir.h"
+
+#include "cmds/network/mqtt-signaler.h"
 
 #include "service/cmds/cmd.h"
 
@@ -181,10 +184,7 @@ void setup() {
     mp.keepalive = MQTT_KEEPALIVE;
     #endif
     network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);
-#endif
-
-#if !(defined(DISABLE_NETWORKING) && DISABLE_NETWORKING == TRUE)
-    network::service::net::Networking::Start(network::service::mqtt::Client::client);
+    GMqttSignaler.setMqtt(network::service::mqtt::Client::client);
 #endif
 
     //启动收发器
@@ -197,6 +197,8 @@ void setup() {
     //业务开始
     service::cmds::Cmd::Start();
 
+    //定时器
+    GEventTimer.start();
 }
 
 
@@ -217,17 +219,14 @@ void loop() {
     network::service::mqtt::Client::Loop();
 #endif    
 
-#if !(defined(DISABLE_NETWORKING) && DISABLE_NETWORKING == TRUE)
-    //登入组网
-    network::service::net::Networking::Loop();
-#endif
-
     //收发器循环
     rfir::Loop();  
 
     //业务循环
     service::cmds::Cmd::Loop();
 
+    //定时器
+    GEventTimer.loop();
 }
 
 

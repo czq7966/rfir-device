@@ -112,11 +112,18 @@ public:
     std::string mqtt_user = MQTT_USER;
     std::string mqtt_password = MQTT_PASSWORD;
     int         mqtt_reset_timeout = MQTT_RESET_TIMEOUT;
-    std::string mqtt_sub_topic = MQTT_SUB_TOPIC;
-    std::string mqtt_pub_topic = MQTT_PUB_TOPIC;
-    std::string mqtt_net_lgn_topic = MQTT_NET_LGN_TOPIC;
-    std::string mqtt_net_lgn_rsp_topic = MQTT_NET_LGN_RSP_TOPIC;
-    std::string mqtt_net_hbt_topic = MQTT_NET_HBT_TOPIC;
+    std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
+    std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
+
+    std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
+    std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
+    std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;
+    std::string mqtt_dev_svc_set = MQTT_DEV_SVC_SET;
+
+    std::string mqtt_dev_evt_heartbeat = MQTT_DEV_EVT_HEARTBEAT;
+    std::string mqtt_dev_evt_reboot = MQTT_DEV_EVT_REBOOT;
+    std::string mqtt_dev_evt_reconnect = MQTT_DEV_EVT_RECONNECT;
+    std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
 };
 
 extern GlobalConfig Config;

@@ -53,16 +53,14 @@ namespace network {
 
                 class Events  {
                 public:
-                    static const std::string OnConnected;
-                    static const std::string OnMessage;
+                    rfir::util::Event onConnect;
+                    rfir::util::Event onMessage;
                 };
                 
                 
                 OnMessageEvent onMessage = 0;
                 OnConnectEvent onConnect = 0;
-                rfir::util::EventEmitter events;
-                rfir::util::EventEmitter topicEvents;
-
+                Events events;
             private:
                 WiFiClient* net = 0;
                 MQTT* mqtt = 0;

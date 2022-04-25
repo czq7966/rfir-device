@@ -56,12 +56,23 @@
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              60  //保活几分钟
 #define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
-// #define MQTT_SUB_TOPIC              "cmdgate/device/{did}"
-// #define MQTT_PUB_TOPIC              "cmdgate/central/{did}" 
-#define MQTT_SUB_TOPIC              "ndiot/device/nd/0/{did}/sub"
-#define MQTT_PUB_TOPIC              "ndiot/device/nd/0/{did}/pub" 
-#define MQTT_NET_LGN_TOPIC          "ndiot/_net/device/0/{did}/login" 
-#define MQTT_NET_LGN_RSP_TOPIC      "ndiot/_net/device/1/{did}/login" 
-#define MQTT_NET_HBT_TOPIC          "ndiot/_net/device/0/{did}/heartbeat" 
+#define MQTT_SUB_TOPIC              "111ndiot/nd/device/event/report/{did}"
+#define MQTT_PUB_TOPIC              "222ndiot/nd/device/event/report/{did}"
+
+#define MQTT_DSP_SVC_LOGIN          "ndiot/nd/dispatcher/service/login/{did}"
+
+#define MQTT_EDG_SVC_HANDSHAKE      "ndiot/nd/edge/service/handshake/{did}"
+
+#define MQTT_DEV_SVC_LOGIN          "ndiot/nd/device/service/login/{did}"
+#define MQTT_DEV_SVC_HANDSHAKE      "ndiot/nd/device/service/handshake/{did}"
+#define MQTT_DEV_SVC_GET            "ndiot/nd/device/service/get/{did}"
+#define MQTT_DEV_SVC_SET            "ndiot/nd/device/service/set/{did}"
+
+#define MQTT_DEV_EVT_HEARTBEAT      "ndiot/nd/device/event/heartbeat/{did}"
+#define MQTT_DEV_EVT_REBOOT         "ndiot/nd/device/event/reboot/{did}"
+#define MQTT_DEV_EVT_RECONNECT     "ndiot/nd/device/event/reconnect/{did}"
+#define MQTT_DEV_EVT_REPORT         "ndiot/nd/device/event/report/{did}"
+
+
 
 #endif //
