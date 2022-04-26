@@ -115,6 +115,7 @@ public:
     std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
     std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
 
+    std::string mqtt_domain = MQTT_DOMAIN;
     std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
     std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
     std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;

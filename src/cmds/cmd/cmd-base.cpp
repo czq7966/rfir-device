@@ -8,9 +8,6 @@ uint32_t cmds::cmd::CmdBase::Command::getSid(){
     return cache.sid;
 };
 bool cmds::cmd::CmdBase::Command::setSid(uint32_t value){
-    DEBUGER.print("setSid:");
-    DEBUGER.println(value);
-    
     cache.sid = value;
     return 1;
 };
@@ -93,6 +90,11 @@ void cmds::cmd::CmdBase::Events::cloneTo(Events& events){
     events.onTimeout = onTimeout;
 };     
 
+cmds::cmd::CmdBase::Events* cmds::cmd::CmdBase::Events::clone(){
+    auto events = new Events();
+    cloneTo(*events);
+    return events;
+};
 
 bool cmds::cmd::CmdBase::send(const void* p){
     return false;

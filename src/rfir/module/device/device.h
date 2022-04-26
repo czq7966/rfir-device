@@ -51,8 +51,9 @@ namespace rfir {
                 bool m_logined = false;
             public:
                 ~Networking();
+                virtual void start();
+                virtual void loop();
             public:
-                void start();            
                 void login();
                 void handshake();
                 void heartbeat();
@@ -67,6 +68,7 @@ namespace rfir {
             public:
                 static void* OnLoginReq(void* arg, void* p);
                 static void* OnLoginResp(void* arg, void* p);
+                static void* OnLoginTimeout(void* arg, void* p);
                 static void* OnHandshakeReq(void* arg, void* p);
                 static void* OnHandshakeResp(void* arg, void* p);                
 

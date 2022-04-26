@@ -48,14 +48,15 @@ namespace cmds {
                 rfir::util::EventEmitter::Event onTimeout;   
                 rfir::util::EventEmitter::Event onResp;      
                 void cloneFrom(Events& events);
-                void cloneTo(Events& events);                
+                void cloneTo(Events& events);  
+                Events* clone();           
             };
 
         public:
             Command command;
             Events events;
 
-            int respTimeout = 5;
+            int respTimeout = 10;
 
             virtual  bool send(const void* p = 0);
             virtual  void cloneFrom(CmdBase& cmd);

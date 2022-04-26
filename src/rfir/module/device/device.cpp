@@ -140,23 +140,42 @@ std::string rfir::module::device::Device::toHexString() {
 
 
 //Networking
-void rfir::module::device::Networking::start(){
-    GCmdDispatcher->events.onConnect.add((void*)this, OnConnect, (void*)this);
-    GCmdDispatcher->events.onCommand.add((void*)this, OnCommand, (void*)this);
-};
 rfir::module::device::Networking::~Networking(){
     GCmdDispatcher->events.onConnect.remove((void*)this);
     GCmdDispatcher->events.onCommand.remove((void*)this);
 };
 
+void rfir::module::device::Networking::start(){
+    GCmdDispatcher->events.onConnect.add((void*)this, OnConnect, (void*)this);
+    GCmdDispatcher->events.onCommand.add((void*)this, OnCommand, (void*)this);
+};
+
+
+void rfir::module::device::Networking::loop(){
+    static unsigned long timeout = millis();
+    if (millis() - timeout > 500) {
+        if (m_logined)
+            login();
+        timeout = millis();
+    }
+}
+
+
 void rfir::module::device::Networking::login(){
     DEBUGER.println("rfir::module::device::Networking::login");
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
+    cmd.respTimeout = 500;
+    // cmd.events.onResp.callback = OnLoginResp;
+    // cmd.events.onResp.cbArg = (void*) this;
+    // cmd.events.onTimeout.callback = OnLoginTimeout;
+    // cmd.events.onTimeout.cbArg = (void*) this;
+
+
     cmd.topic = Config.mqtt_dsp_svc_login;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    hd.Add("id", Config.dev_id);
+    pld.Add("id", Config.dev_id);
     pld.Add("version", OTA_VERSION_NUMBER);
     pld.Add("rssi", WiFi.RSSI());
     pld.Add("ssid", WiFi.SSID().c_str());
@@ -172,7 +191,8 @@ void rfir::module::device::Networking::heartbeat(){};
 void* rfir::module::device::Networking::OnConnect(void* arg, void* p){
     auto networking = (rfir::module::device::Networking*) arg;
     if (!networking->m_logined) {
-        networking->login();
+        networking->m_logined = true;
+        // networking->login();
     }
     return 0;
 };
@@ -181,4 +201,15 @@ void* rfir::module::device::Networking::OnCommand(void* arg, void* p){
     return 0;
 };
 
-rfir::module::device::Networking GNetworking;
+void* rfir::module::device::Networking::OnLoginResp(void* arg, void* p){
+
+    return 0;
+};
+
+void* rfir::module::device::Networking::OnLoginTimeout(void* arg, void* p){
+    DEBUGER.println("rfir::module::device::Networking::OnLoginTimeout");
+    auto networking = (rfir::module::device::Networking*) arg;
+    networking->login();
+
+    return 0;
+};

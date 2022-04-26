@@ -26,7 +26,7 @@ namespace cmds {
             ~CmdDispatcher();
         public:
             Events events;
-            rfir::util::MapFactory<uint32_t, cmds::cmd::CmdBase* > send_queue;
+            rfir::util::MapFactory<uint32_t, cmds::cmd::CmdBase::Events* > wait_resp_queue;
             bool sendCmd(cmds::cmd::CmdBase* cmd);
         public:
             static void* OnConnect(void* arg, void* p);

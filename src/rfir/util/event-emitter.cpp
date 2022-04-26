@@ -5,33 +5,46 @@ rfir::util::EventEmitter::~EventEmitter(){
     clear();
 };
 void rfir::util::EventEmitter::clear(){
-    while (true)
-    {
-        auto it = m_listeners.begin();
-        if (it != m_listeners.end()) {
-            off(it->first, it->second->begin()->first);
-            continue;
-        } 
+    // while (true)
+    // {
+    //     auto it = m_listeners.begin();
+    //     if (it != m_listeners.end()) {
+    //         off(it->first, it->second->begin()->first);
+    //         continue;
+    //     } 
 
-        break;
-    }
+    //     break;
+    // }
     
 };
 
 int rfir::util::EventEmitter::getEventCount() {
     int count = 0;
-    for (auto  it = m_listeners.begin(); it != m_listeners.end() ; it++) {
-        count = count + it->second->size();
+    auto listeners = m_listeners.getMap();
+
+    for (auto  it = listeners->begin(); it != listeners->end() ; it++) {
+        count = count + getEventCount(it->first);
     }
     return count;
+
+    // int count = 0;
+    // for (auto  it = m_listeners.begin(); it != m_listeners.end() ; it++) {
+    //     count = count + it->second->size();
+    // }
+    // return count;
 }
 
 int rfir::util::EventEmitter::getEventCount(const std::string name) {
-    auto it = m_listeners.find(name);
-    if (it != m_listeners.end()) {
-        return it->second->size();
-    }
+    Events* events = 0;
+    if (m_listeners.get(name, events))
+        return events->getSize();
     return 0;
+
+    // auto it = m_listeners.find(name);
+    // if (it != m_listeners.end()) {
+    //     return it->second->size();
+    // }
+    // return 0;
 }
 
 void rfir::util::EventEmitter::on(const std::string name, const std::string id, Callback cb, void* cbArg, bool once) {
@@ -42,13 +55,30 @@ void rfir::util::EventEmitter::on(const std::string name, const std::string id, 
     event->once = once;
     event->cbArg = cbArg;
 
-    auto lit = m_listeners.find(name);
-    if (lit == m_listeners.end()) {
-        m_listeners[name] = new Events();
+    Events* events;
+
+    if (!m_listeners.get(name, events)) {
+        events = new Events();
+        m_listeners.add(name, events);
     }
 
-    auto events = m_listeners[name];
-    (*events)[id] = event;
+    events->add(id, event);
+
+
+    // off(name, id);
+
+    // auto event = new Event();
+    // event->callback = cb;
+    // event->once = once;
+    // event->cbArg = cbArg;
+
+    // auto lit = m_listeners.find(name);
+    // if (lit == m_listeners.end()) {
+    //     m_listeners[name] = new Events();
+    // }
+
+    // auto events = m_listeners[name];
+    // (*events)[id] = event;
 };
 
 void rfir::util::EventEmitter::on(const std::string name, const int64_t id, Callback cb, void* cbArg, bool once) {
@@ -60,20 +90,32 @@ void rfir::util::EventEmitter::on(const std::string name, const void* id, Callba
 };
 
 void rfir::util::EventEmitter::off(const std::string name, const std::string id) {
-    auto lit = m_listeners.find(name);
-    if (lit != m_listeners.end()) {
-        auto events = lit->second;  
-        auto eit = events->find(id);
-        if (eit != events->end()) {
-            auto event = eit->second;
-            events->erase(eit);
+    Events* events = 0;
+    if (m_listeners.get(name, events)){
+        Event* event = 0;
+        if (events->remove(id, event))
             delete event;
-        }
-        if (events->size() == 0) {            
-            m_listeners.erase(lit);
+        if (events->getSize() == 0) {
+            m_listeners.remove(name);
             delete events;
         }
-    }
+    };
+
+
+    // auto lit = m_listeners.find(name);
+    // if (lit != m_listeners.end()) {
+    //     auto events = lit->second;  
+    //     auto eit = events->find(id);
+    //     if (eit != events->end()) {
+    //         auto event = eit->second;
+    //         events->erase(eit);
+    //         delete event;
+    //     }
+    //     if (events->size() == 0) {            
+    //         m_listeners.erase(lit);
+    //         delete events;
+    //     }
+    // }
 };
 
 void rfir::util::EventEmitter::off(const std::string name, const int64_t id) {
@@ -96,12 +138,12 @@ void rfir::util::EventEmitter::once(const std::string name, const void* id, Call
 };  
 
 void* rfir::util::EventEmitter::emit(std::string name, void* p) {
-    auto lit = m_listeners.find(name);
     void* result = 0;
-    if (lit != m_listeners.end()) {
-        auto events = lit->second;  
-        auto it = events->begin();        
-        while (it != events->end()) {
+    Events* events; 
+    if (m_listeners.get(name, events)) {
+        auto eventsMap = events->getMap();
+        auto it = eventsMap->begin();        
+        while (it != eventsMap->end()) {
             auto id = it->first;
             auto event = it->second;            
             it++;
@@ -112,35 +154,56 @@ void* rfir::util::EventEmitter::emit(std::string name, void* p) {
             if (event->once) {
                 off(name, id);
             }
-        }        
-    }   
+        }  
+    }
 
     return result;
+
+    // void* result = 0;
+    // auto lit = m_listeners.find(name);
+    // if (lit != m_listeners.end()) {
+    //     auto events = lit->second;  
+    //     auto it = events->begin();        
+    //     while (it != events->end()) {
+    //         auto id = it->first;
+    //         auto event = it->second;            
+    //         it++;
+    //         if (event->callback) {
+    //             result = event->callback(event->cbArg, p);
+    //         }
+
+    //         if (event->once) {
+    //             off(name, id);
+    //         }
+    //     }        
+    // }   
+
+    // return result;
 }
 
 void*  rfir::util::EventEmitter::emit2(std::string name, void* p) {
-    auto lit = m_listeners.find(name);
     int preventDefault = EEmit2Result::None;    
     void* result = 0;
-    if (lit != m_listeners.end()) {
-        auto events = lit->second;  
-        auto it = events->begin();        
-        while (it != events->end()) {
-            auto id = it->first;
-            auto event = it->second;            
-            it++;
-            if (event->callback) {
-                result = event->callback(event->cbArg, p);
-            }
+    // auto lit = m_listeners.find(name);
+    // if (lit != m_listeners.end()) {
+    //     auto events = lit->second;  
+    //     auto it = events->begin();        
+    //     while (it != events->end()) {
+    //         auto id = it->first;
+    //         auto event = it->second;            
+    //         it++;
+    //         if (event->callback) {
+    //             result = event->callback(event->cbArg, p);
+    //         }
 
-            if (event->once) {
-                off(name, id);
-            }
+    //         if (event->once) {
+    //             off(name, id);
+    //         }
 
-            preventDefault = preventDefault | ((int)result & EEmit2Result::PreventDefault);
-            if (preventDefault) break;            
-        }        
-    }   
+    //         preventDefault = preventDefault | ((int)result & EEmit2Result::PreventDefault);
+    //         if (preventDefault) break;            
+    //     }        
+    // }   
 
     return result;   
 }

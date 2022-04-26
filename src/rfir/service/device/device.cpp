@@ -90,6 +90,7 @@ void rfir::service::device::Device::Start(rfir::module::device::Device::OnChange
 
 void rfir::service::device::Device::Loop() {
     GDevice->loop();
+    GNetworking->loop(); 
 }
 
 void rfir::service::device::Device::DoTimerReport(bool reset) {

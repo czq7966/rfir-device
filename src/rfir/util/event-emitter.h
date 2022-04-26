@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <functional>
+#include "map-factory.h"
 
 namespace rfir {
     namespace util {
@@ -20,8 +21,11 @@ namespace rfir {
                 bool            once = false;
             };
 
-            typedef std::map<std::string, Event*> Events;
-            typedef std::map<std::string, Events*> Listeners;
+            // typedef std::map<std::string, Event*> Events;
+            // typedef std::map<std::string, Events*> Listeners;
+            
+            typedef rfir::util::MapFactory<std::string, Event*> Events;
+            typedef rfir::util::MapFactory<std::string, Events*> Listeners;
 
             Listeners m_listeners;
         public:

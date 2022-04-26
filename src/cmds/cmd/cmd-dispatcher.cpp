@@ -32,21 +32,21 @@ void* cmds::cmd::CmdDispatcher::OnMessage(void* arg, void* p){
 };   
 
 void* cmds::cmd::CmdDispatcher::OnResp(void* arg, void* p) {
-    auto cmd = (cmds::cmd::CmdBase*)p;
-    auto dispatcher = (CmdDispatcher*)arg;  
-    if (cmd->command.isRespCmd()) {
-        auto sid = cmd->command.getSid();
-        if (sid > 0) {
-            cmds::cmd::CmdBase* cmdSend = 0;
-            if (dispatcher->send_queue.remove(sid, cmdSend)) {
-                if (cmd->events.onResp.callback) {
-                    cmd->events.onResp.callback(cmd->events.onResp.cbArg, p);
-                }
-                delete cmdSend;
-                return (void*)1;
-            }
-        }
-    }
+    // auto cmd = (cmds::cmd::CmdBase*)p;
+    // auto dispatcher = (CmdDispatcher*)arg;  
+    // if (cmd->command.isRespCmd()) {
+    //     auto sid = cmd->command.getSid();
+    //     if (sid > 0) {
+    //         cmds::cmd::CmdBase* cmdSend = 0;
+    //         if (dispatcher->send_queue.remove(sid, cmdSend)) {
+    //             if (cmd->events.onResp.callback) {
+    //                 cmd->events.onResp.callback(cmd->events.onResp.cbArg, p);
+    //             }
+    //             delete cmdSend;
+    //             return (void*)1;
+    //         }
+    //     }
+    // }
 
     return 0;
 }
@@ -55,17 +55,20 @@ void* cmds::cmd::CmdDispatcher::OnRespTimeout(void* arg, void* p) {
     DEBUGER.println("cmds::cmd::CmdDispatcher::OnRespTimeout");
     auto sid = (uint32_t)p;
     auto dispatcher = (CmdDispatcher*)arg;
-    cmds::cmd::CmdBase* cmd = 0;
+    cmds::cmd::CmdBase::Events* events = 0;
     if (!dispatcher) {
         DEBUGER.println("not dispatcher");
     }
-    dispatcher->send_queue.remove(sid, cmd);
-    if (cmd && cmd->events.onTimeout.callback) {
-        cmd->events.onTimeout.callback(cmd->events.onTimeout.cbArg, p);
+    dispatcher->wait_resp_queue.remove(sid, events);
+    if (events && events->onTimeout.callback) {
+        events->onTimeout.callback(events->onTimeout.cbArg, p);
     }
-    delete cmd;
-    DEBUGER.print("GEventTimer.getCount: ");
-    DEBUGER.println(GEventTimer.getCount());
+    Serial.println(sid);
+    if (events) {
+        Serial.println(sid);
+    }
+
+    delete events;
     
     return 0;
 }
@@ -75,9 +78,9 @@ bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){
     auto result = this->signaler->write((void*)cmd);
     if (cmd->command.isNeedResp()) {
         DEBUGER.println("cmd->command.isNeedResp()");
-        auto ccmd = (cmds::cmd::CmdBase*)cmd->clone();
-        send_queue.add(ccmd->command.getSid(), ccmd);
-        GEventTimer.delay(cmd->respTimeout * 1000, OnRespTimeout, (void*)this, cmd->command.getSid());
+        auto events = cmd->events.clone();
+        wait_resp_queue.add(cmd->command.getSid(), events);
+        GEventTimer.delay(cmd->respTimeout, OnRespTimeout, (void*)this, cmd->command.getSid());
     } else {
         DEBUGER.println("not cmd->command.isNeedResp()");
 
