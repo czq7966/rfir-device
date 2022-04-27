@@ -3,26 +3,35 @@
 #include "config.h"
 
 uint32_t& cmds::cmd::CmdBase::Command::SessionID = rfir::util::EventTimer::HandlerIndex;
+cmds::cmd::CmdBase::Command::Address* cmds::cmd::CmdBase::Command::DefaultFrom = new cmds::cmd::CmdBase::Command::Address();
+cmds::cmd::CmdBase::Command::Address* cmds::cmd::CmdBase::Command::DefaultTo = new cmds::cmd::CmdBase::Command::Address();
+
+cmds::cmd::CmdBase::Command::Command(){
+    head.from.type = DefaultFrom->type;
+    head.from.id = DefaultFrom->id;
+    head.to.type = DefaultTo->type;
+    head.to.id = DefaultTo->id;    
+};
 
 uint32_t cmds::cmd::CmdBase::Command::getSid(){
-    return cache.sid;
+    return head.sid;
 };
 bool cmds::cmd::CmdBase::Command::setSid(uint32_t value){
-    cache.sid = value;
+    head.sid = value;
     return 1;
 };
 bool cmds::cmd::CmdBase::Command::isReqCmd(){
-    return cache.stp == 0;
+    return head.stp == 0;
 };
 bool cmds::cmd::CmdBase::Command::isRespCmd(){
-    return cache.stp == 1;
+    return head.stp == 1;
 };
 bool cmds::cmd::CmdBase::Command::setReqCmd(){
-    cache.stp = 0;
+    head.stp = 0;
     return 1;
 };
 bool cmds::cmd::CmdBase::Command::setRespCmd(){
-    cache.stp = 1;
+    head.stp = 1;
     return 1;
 };
 
@@ -39,23 +48,57 @@ bool cmds::cmd::CmdBase::Command::setNeedResp(bool value){
     return 1;
 };
 
+void cmds::cmd::CmdBase::Command::fixUp(){
+    neb::CJsonObject from, to, entry;
+    from.Add("type", head.from.type);
+    from.Add("id", head.from.id);
+    to.Add("type", head.to.type);
+    to.Add("id", head.to.id);
+    entry.Add("type", head.entry.type);
+    entry.Add("id", head.entry.id);
+
+    hd.ReplaceAdd("from", from);
+    hd.ReplaceAdd("to", to);
+    hd.ReplaceAdd("entry", entry);
+    hd.ReplaceAdd("sid", head.sid);
+    hd.ReplaceAdd("stp", head.stp);
+};
+void cmds::cmd::CmdBase::Command::fixDown(){
+    neb::CJsonObject from, to, entry;
+    if (hd.Get("from", from)) {
+        from.Get("type", head.from.type);
+        from.Get("id", head.from.id);
+    }
+
+    if (hd.Get("to", to)) {
+        to.Get("type", head.to.type);
+        to.Get("id", head.to.id);
+    }
+
+    if (hd.Get("entry", entry)) {
+        entry.Get("type", head.entry.type);
+        entry.Get("id", head.entry.id);
+    }
+
+    hd.Get("sid", head.sid);
+    hd.Get("stp", head.stp);    
+};
+
 void cmds::cmd::CmdBase::Command::cloneFrom(Command& cmd){
-    cache = cmd.cache;
+    head = cmd.head;
     cloneFrom(cmd.hd, cmd.pld);
 };
 void cmds::cmd::CmdBase::Command::cloneTo(Command& cmd){
-    cmd.cache = cache;
+    cmd.head = head;
     cloneTo(cmd.hd, cmd.pld);
 };
 void cmds::cmd::CmdBase::Command::cloneFrom(neb::CJsonObject& cmd) {
     cmd.Get("hd", hd);
     cmd.Get("pld", pld);
-    hd.Get("sid", cache.sid);
-    hd.Get("stp", cache.stp);
+    fixDown();
 };
 void cmds::cmd::CmdBase::Command::cloneTo(neb::CJsonObject& cmd){
-    hd.ReplaceAdd("sid", cache.sid);
-    hd.ReplaceAdd("stp", cache.stp);
+    fixUp();
     cmd.ReplaceAdd("hd", hd);
     cmd.ReplaceAdd("pld", pld);
 };
@@ -63,8 +106,10 @@ void cmds::cmd::CmdBase::Command::cloneTo(neb::CJsonObject& cmd){
 void cmds::cmd::CmdBase::Command::cloneFrom(neb::CJsonObject& _hd, neb::CJsonObject& _pld){
     hd.Parse(_hd.ToString());
     pld.Parse(_pld.ToString());
+    fixDown();
 };
 void cmds::cmd::CmdBase::Command::cloneTo(neb::CJsonObject& _hd, neb::CJsonObject& _pld){
+    fixUp();
     _hd.Parse(hd.ToString());
     _pld.Parse(pld.ToString());
 };
@@ -107,9 +152,3 @@ void cmds::cmd::CmdBase::cloneTo(CmdBase& cmd){
     command.cloneTo(cmd.command);
     events.cloneTo(cmd.events);
 };   
-
-void* cmds::cmd::CmdBase::clone() {
-    auto cmd = new CmdBase();
-    this->cloneTo(*cmd);
-    return (void*)cmd;
-}; 

@@ -6,12 +6,13 @@
 namespace cmds {
     namespace cmd {
         class CmdMqtt: public CmdBase {
+        private:
+            std::string zeroTopic(std::string topic);
         public:
             std::string topic;
+            std::string expandTopic();
         public:
-            virtual bool send(const void* p = 0) override;
-        public:
-            virtual void* clone() override;     
+            virtual bool send(const void* p = 0) override; 
         };
     }
 }

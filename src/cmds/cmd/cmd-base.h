@@ -11,16 +11,28 @@ namespace cmds {
         public:
             struct Command {
                 static uint32_t& SessionID;
-                struct Cache {
+                struct Address {                    
+                    std::string type;
+                    std::string id;
+                };
+                struct Head {                    
+                    Address from;
+                    Address to;
+                    Address entry;
+
                     uint32_t sid = 0;
                     uint32_t stp = 0;
                 };
 
 
-                Cache cache;
+               
+                static Address* DefaultFrom;
+                static Address* DefaultTo;
+                Head head;
                 neb::CJsonObject hd;
                 neb::CJsonObject pld;
 
+                Command();
                 uint32_t getSid();
                 bool setSid(uint32_t value);
                 bool isReqCmd();
@@ -31,12 +43,16 @@ namespace cmds {
                 bool isNeedResp();
                 bool setNeedResp(bool value = 1);
 
+                void fixUp();
+                void fixDown();
+
                 void cloneFrom(Command& cmd);
                 void cloneTo(Command& cmd);
                 void cloneFrom(neb::CJsonObject& cmd);
                 void cloneTo(neb::CJsonObject& cmd);
                 void cloneFrom(neb::CJsonObject& hd, neb::CJsonObject& pld);
                 void cloneTo(neb::CJsonObject& hd, neb::CJsonObject& pld);
+
 
 
                 std::string toString();
@@ -61,7 +77,6 @@ namespace cmds {
             virtual  bool send(const void* p = 0);
             virtual  void cloneFrom(CmdBase& cmd);
             virtual  void cloneTo(CmdBase& cmd);      
-            virtual  void* clone();        
         };
     }
 }

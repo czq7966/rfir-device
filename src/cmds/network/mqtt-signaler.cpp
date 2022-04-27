@@ -23,18 +23,20 @@ void cmds::network::MqttSignaler::setMqtt(::network::module::mqtt::Client* p){
 };
 
 int cmds::network::MqttSignaler::write(void* p) {
-    DEBUGER.println("cmds::network::MqttSignaler::write");
     return write((cmds::cmd::CmdMqtt*)p);
 };
 int cmds::network::MqttSignaler::write(cmds::cmd::CmdMqtt* cmd) {
-    DEBUGER.println("cmds::network::MqttSignaler::write2");
-    if (mqtt && cmd->topic.length() > 0) {
+    if (mqtt) {
+        std::string topic = cmd->topic;
+        if (topic == "") {
+            topic = topicPrefix + cmd->expandTopic();
+        }
         DEBUGER.println("cmds::network::MqttSignaler::write3");
-        return mqtt->publish(cmd->topic.c_str(), cmd->command.toString().c_str());
+        return mqtt->publish(topic.c_str(), cmd->command.toString().c_str());
     }
 
     return 0;
 };
 
 
-cmds::network::MqttSignaler GMqttSignaler(0);
+cmds::network::MqttSignaler* GMqttSignaler = 0 ;

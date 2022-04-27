@@ -152,12 +152,12 @@ void rfir::module::device::Networking::start(){
 
 
 void rfir::module::device::Networking::loop(){
-    static unsigned long timeout = millis();
-    if (millis() - timeout > 500) {
-        if (m_logined)
-            login();
-        timeout = millis();
-    }
+    // static unsigned long timeout = millis();
+    // if (millis() - timeout > 500) {
+    //     if (m_logined)
+    //         login();
+    //     timeout = millis();
+    // }
 }
 
 
@@ -165,14 +165,15 @@ void rfir::module::device::Networking::login(){
     DEBUGER.println("rfir::module::device::Networking::login");
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
-    cmd.respTimeout = 500;
-    // cmd.events.onResp.callback = OnLoginResp;
-    // cmd.events.onResp.cbArg = (void*) this;
-    // cmd.events.onTimeout.callback = OnLoginTimeout;
-    // cmd.events.onTimeout.cbArg = (void*) this;
+    cmd.respTimeout = 1 * 1000;
+    cmd.command.head.to.type = "dsp";
+    cmd.command.head.to.id = Config.dsp_id;
+    cmd.command.head.entry.type = "svc";
+    cmd.command.head.entry.id = Config.mqtt_dsp_svc_login;
 
+    cmd.events.onTimeout.callback = OnLoginTimeout;
+    cmd.events.onTimeout.cbArg = (void*) this;
 
-    cmd.topic = Config.mqtt_dsp_svc_login;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
     pld.Add("id", Config.dev_id);
@@ -192,7 +193,7 @@ void* rfir::module::device::Networking::OnConnect(void* arg, void* p){
     auto networking = (rfir::module::device::Networking*) arg;
     if (!networking->m_logined) {
         networking->m_logined = true;
-        // networking->login();
+        networking->login();
     }
     return 0;
 };

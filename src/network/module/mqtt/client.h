@@ -61,7 +61,7 @@ namespace network {
                 OnMessageEvent onMessage = 0;
                 OnConnectEvent onConnect = 0;
                 Events events;
-            private:
+            public:
                 WiFiClient* net = 0;
                 MQTT* mqtt = 0;
                 Params params;

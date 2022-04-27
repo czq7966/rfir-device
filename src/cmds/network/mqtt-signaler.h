@@ -8,9 +8,11 @@
 namespace cmds {
     namespace network {
         class MqttSignaler: public Signaler {
-        protected:      
+        public:      
+            std::string topicPrefix;
             ::network::module::mqtt::Client* mqtt = 0;
         public:
+
             MqttSignaler(::network::module::mqtt::Client* p);
             void setMqtt(::network::module::mqtt::Client* p);
         public:
@@ -20,6 +22,6 @@ namespace cmds {
     }
 }
 
-extern cmds::network::MqttSignaler GMqttSignaler;
+extern cmds::network::MqttSignaler* GMqttSignaler;
 
 #endif //__CMDS_NETWORK_SIGNALER_H

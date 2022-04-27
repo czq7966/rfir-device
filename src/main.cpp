@@ -17,7 +17,10 @@
 #include "rfir/util/event-timer.h"
 #include "rfir/rfir.h"
 
+#include "cmds/cmd/cmd-base.h"
+#include "cmds/cmd/cmd-dispatcher.h"
 #include "cmds/network/mqtt-signaler.h"
+
 
 #include "service/cmds/cmd.h"
 
@@ -97,6 +100,22 @@ void onRfirStart(void* data) {
     rfir::service::cmds::Cmd::onCmd_send(d);
 }
 
+std::string getMqttSvcTopic(std::string func) {
+    return Config.app_id + "/" + Config.dom_id + "/+/+/dev/" + Config.dev_id + "/svc/" + func;
+
+}
+
+void doMqttSubscribe(network::module::mqtt::Client::MQTT* mqtt) {
+    std::string topic = getMqttSvcTopic(Config.mqtt_dev_svc_login);
+    DEBUGER.print("doMqttSubscribe: ");
+    DEBUGER.println(topic.c_str());
+    
+    // mqtt->subscribe(Config.mqtt_dev_svc_get.c_str());
+    // mqtt->subscribe(Config.mqtt_dev_svc_handshake.c_str());
+    mqtt->subscribe(topic.c_str());
+    // mqtt->subscribe(Config.mqtt_dev_svc_set.c_str());
+}
+
 uint16_t onMqttConnect_count = 0;
 void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
     onMqttConnect_count++;
@@ -106,10 +125,23 @@ void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
     else 
         service::cmds::Cmd::OnCmd_heartbeat(0, 2);
     service::cmds::Cmd::DoTimerReport(true);
+
+    doMqttSubscribe(mqtt);
+
 }
+
+
 
 void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
     service::cmds::Cmd::OnCmd(bytes);
+}
+
+void* OnConfigFixup(void* arg, void* p) {
+    cmds::cmd::CmdBase::Command::DefaultFrom->type ="dev";
+    cmds::cmd::CmdBase::Command::DefaultFrom->id = Config.dev_id;
+    GMqttSignaler->topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
+    doMqttSubscribe(GMqttSignaler->mqtt->mqtt);
+    return 0;
 }
 
 
@@ -174,17 +206,22 @@ void setup() {
     mp.ip = MQTT_IP;
     mp.port = MQTT_PORT;
     mp.user = MQTT_USER;
-    String sub_topic = MQTT_SUB_TOPIC; sub_topic.replace("{did}", ChipID.c_str());
-    String pub_topic = MQTT_PUB_TOPIC; pub_topic.replace("{did}", ChipID.c_str());
-    mp.sub_topic = sub_topic.c_str();
-    mp.pub_topic = pub_topic.c_str();
+    // String sub_topic = MQTT_SUB_TOPIC; sub_topic.replace("{did}", ChipID.c_str());
+    // String pub_topic = MQTT_PUB_TOPIC; pub_topic.replace("{did}", ChipID.c_str());
+    // mp.sub_topic = sub_topic.c_str();
+    // mp.pub_topic = pub_topic.c_str();
     mp.bufsize = 2 * 1024;
     mp.id = ChipID;
     #ifdef MQTT_KEEPALIVE
     mp.keepalive = MQTT_KEEPALIVE;
     #endif
+
+    GMqttSignaler =  new cmds::network::MqttSignaler(0);
+    GCmdDispatcher = new cmds::cmd::MqttDispatcher(GMqttSignaler);
+
     network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);
-    GMqttSignaler.setMqtt(network::service::mqtt::Client::client);
+
+    GMqttSignaler->setMqtt(network::service::mqtt::Client::client);
 #endif
 
     //启动收发器
@@ -199,6 +236,9 @@ void setup() {
 
     //定时器
     GEventTimer.start();
+    //全局配置
+    Config.events.onFixup.add((void*)&OnConfigFixup, OnConfigFixup, 0);
+    Config.fixup();
 }
 
 

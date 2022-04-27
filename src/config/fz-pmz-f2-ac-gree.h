@@ -61,20 +61,22 @@
 #define MQTT_SUB_TOPIC              "111ndiot/nd/device/event/report/{did}"
 #define MQTT_PUB_TOPIC              "222ndiot/nd/device/event/report/{did}"
 
+
+#define MQTT_APP                    "ndiot"
 #define MQTT_DOMAIN                 "nd"
-#define MQTT_DSP_SVC_LOGIN          "ndiot/{domain}/dispatcher/service/login/{did}"
 
-#define MQTT_EDG_SVC_HANDSHAKE      "ndiot/{domain}/edge/service/handshake/{did}"
+#define MQTT_DSP_SVC_LOGIN          "login"
+#define MQTT_EDG_SVC_HANDSHAKE      "handshake"
 
-#define MQTT_DEV_SVC_LOGIN          "ndiot/{domain}/device/service/login/{did}"
-#define MQTT_DEV_SVC_HANDSHAKE      "ndiot/{domain}/device/service/handshake/{did}"
-#define MQTT_DEV_SVC_GET            "ndiot/{domain}/device/service/get/{did}"
-#define MQTT_DEV_SVC_SET            "ndiot/{domain}/device/service/set/{did}"
+#define MQTT_DEV_SVC_LOGIN          "login"
+#define MQTT_DEV_SVC_HANDSHAKE      "handshake"
+#define MQTT_DEV_SVC_GET            "get"
+#define MQTT_DEV_SVC_SET            "set"
 
-#define MQTT_DEV_EVT_HEARTBEAT      "ndiot/{domain}/device/event/heartbeat/{did}"
-#define MQTT_DEV_EVT_REBOOT         "ndiot/{domain}/device/event/reboot/{did}"
-#define MQTT_DEV_EVT_RECONNECT     "ndiot/{domain}/device/event/reconnect/{did}"
-#define MQTT_DEV_EVT_REPORT         "ndiot/{domain}/device/event/report/{did}"
+#define MQTT_DEV_EVT_HEARTBEAT      "heartbeat"
+#define MQTT_DEV_EVT_REBOOT         "reboot"
+#define MQTT_DEV_EVT_RECONNECT      "reconnect"
+#define MQTT_DEV_EVT_REPORT         "report"
 
 
 
