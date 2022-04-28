@@ -63,7 +63,9 @@ int  rfir::util::EventTimer::delay(int timeout_ms, EventEmitter::Callback cb, vo
     addHandler(handler, outtime, cb, cbArg);    
     return handler;
 };
-void rfir::util::EventTimer::remove(uint32_t handler){};
+void rfir::util::EventTimer::remove(uint32_t handler){
+    removeHandler(handler);
+};
 void rfir::util::EventTimer::clear(){
     m_handlers.clear();
     m_handlersVec.clear();

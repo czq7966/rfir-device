@@ -17,7 +17,7 @@ namespace rfir {
             typedef std::function<void*(void*, void*)> Callback;
             struct Event {
                 Callback        callback = 0;
-                void*           cbArg;
+                void*           cbArg = 0;
                 bool            once = false;
             };
 

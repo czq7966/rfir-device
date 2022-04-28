@@ -22,12 +22,12 @@ void* cmds::network::Signaler::OnConnect(void* arg, void* p){
 
 void* cmds::network::Signaler::OnDisconnect(void* arg, void* p){
     auto signaler = (Signaler*)arg;
-    // return signaler->events.onDisconnect.emit(p);
+    return signaler->events.onDisconnect.emit(p);
     return 0;
     
 };
-void* cmds::network::Signaler::OnMessage(void* arg, void* p){
+void* cmds::network::Signaler::OnMessage(void* arg, void* p){    
     auto signaler = (Signaler*)arg;
-    // return signaler->events.onMessage.emit(p);
+    return signaler->events.onMessage.emit(p);
     return 0;
 };

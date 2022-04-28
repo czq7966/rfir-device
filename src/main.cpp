@@ -106,14 +106,10 @@ std::string getMqttSvcTopic(std::string func) {
 }
 
 void doMqttSubscribe(network::module::mqtt::Client::MQTT* mqtt) {
-    std::string topic = getMqttSvcTopic(Config.mqtt_dev_svc_login);
-    DEBUGER.print("doMqttSubscribe: ");
-    DEBUGER.println(topic.c_str());
-    
-    // mqtt->subscribe(Config.mqtt_dev_svc_get.c_str());
-    // mqtt->subscribe(Config.mqtt_dev_svc_handshake.c_str());
-    mqtt->subscribe(topic.c_str());
-    // mqtt->subscribe(Config.mqtt_dev_svc_set.c_str());
+    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_login).c_str());
+    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_handshake).c_str());
+    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_get).c_str());
+    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_set).c_str());
 }
 
 uint16_t onMqttConnect_count = 0;
@@ -139,6 +135,7 @@ void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
 void* OnConfigFixup(void* arg, void* p) {
     cmds::cmd::CmdBase::Command::DefaultFrom->type ="dev";
     cmds::cmd::CmdBase::Command::DefaultFrom->id = Config.dev_id;
+    cmds::cmd::CmdBase::Command::DefaultRespTimeout = Config.mqtt_resp_timeout;
     GMqttSignaler->topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
     doMqttSubscribe(GMqttSignaler->mqtt->mqtt);
     return 0;
@@ -153,6 +150,10 @@ void setup() {
 #endif
     DEBUGER.println("begin chid id: " + String(ChipID.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
     Global::Init();
+
+Serial.println(sizeof(GDevice));
+Serial.println(sizeof(GNetworking));    
+GNetworking = (void*) rfir::service::device::Device::SNetworking;
 
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)
     //启动wifi或热点

@@ -28,6 +28,7 @@ namespace cmds {
                
                 static Address* DefaultFrom;
                 static Address* DefaultTo;
+                static int      DefaultRespTimeout;
                 Head head;
                 neb::CJsonObject hd;
                 neb::CJsonObject pld;
@@ -72,7 +73,7 @@ namespace cmds {
             Command command;
             Events events;
 
-            int respTimeout = 10;
+            int respTimeout = 10 * 1000;
 
             virtual  bool send(const void* p = 0);
             virtual  void cloneFrom(CmdBase& cmd);

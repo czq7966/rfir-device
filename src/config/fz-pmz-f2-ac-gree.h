@@ -3,7 +3,7 @@
 
 #include "rfir/util/debuger.h"
 
-// #define DEBUG_RFIR
+#define DEBUG_RFIR
 
 #define DEBUGER RFIRDebuger
 
@@ -78,6 +78,7 @@
 #define MQTT_DEV_EVT_RECONNECT      "reconnect"
 #define MQTT_DEV_EVT_REPORT         "report"
 
+#define MQTT_RESP_TIMEOUT           10*1000 //毫秒
 
 
 #endif //

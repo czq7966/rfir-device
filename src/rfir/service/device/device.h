@@ -13,8 +13,8 @@ namespace rfir {
         namespace device {            
             class Device {
             public:
-                static rfir::module::device::Device* GDevice;
-                static rfir::module::device::Networking* GNetworking;
+                static rfir::module::device::Device* SDevice;
+                static rfir::module::device::Networking* SNetworking;
                 static rfir::module::ttl::Config::Device* Init();
                 static rfir::module::ttl::Config::Device* GetConfig();
             public:

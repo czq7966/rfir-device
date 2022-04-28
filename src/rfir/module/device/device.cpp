@@ -1,6 +1,7 @@
 #include "device.h"
 #include "rfir/rfir.h"
 #include "cmds/cmd/cmd-dispatcher.h"
+#include "rfir/util/event-timer.h"
 
 
 rfir::module::ttl::Config::Device* rfir::module::device::Device::init() {
@@ -21,6 +22,21 @@ void rfir::module::device::Device::loop() {
     doRawChanged();
 }
 
+bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
+    pld->ReplaceAdd("id", Config.dev_id);
+    pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
+    pld->ReplaceAdd("mac", rfir::util::Util::GetMacAddress());
+    pld->ReplaceAdd("rssi", WiFi.RSSI());
+    pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
+    pld->ReplaceAdd("version", OTA_VERSION_NUMBER);
+    pld->ReplaceAdd("facturer", DEV_FACTURER);
+    pld->Add("model", DEV_MODEL);    
+    return true;
+};
+bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
+    onCmd_get(pld);
+    return getCommonProps(pld);
+};
 
 bool rfir::module::device::Device::onCmd_set(neb::CJsonObject* pld) {
     return 0;
@@ -152,48 +168,111 @@ void rfir::module::device::Networking::start(){
 
 
 void rfir::module::device::Networking::loop(){
-    // static unsigned long timeout = millis();
-    // if (millis() - timeout > 500) {
-    //     if (m_logined)
-    //         login();
-    //     timeout = millis();
-    // }
+
 }
 
 
-void rfir::module::device::Networking::login(){
+bool rfir::module::device::Networking::login(){
     DEBUGER.println("rfir::module::device::Networking::login");
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
-    cmd.respTimeout = 1 * 1000;
     cmd.command.head.to.type = "dsp";
     cmd.command.head.to.id = Config.dsp_id;
     cmd.command.head.entry.type = "svc";
     cmd.command.head.entry.id = Config.mqtt_dsp_svc_login;
 
+    cmd.events.onResp.callback = OnLoginResp;
+    cmd.events.onResp.cbArg = (void*)this;   
     cmd.events.onTimeout.callback = OnLoginTimeout;
-    cmd.events.onTimeout.cbArg = (void*) this;
+    cmd.events.onTimeout.cbArg = (void*)this;
+
+    DEBUGER.println(String((int)(cmd.events.onResp.cbArg)).c_str());
+    DEBUGER.println(String((int)cmd.events.onTimeout.cbArg).c_str());
 
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    pld.Add("id", Config.dev_id);
-    pld.Add("version", OTA_VERSION_NUMBER);
-    pld.Add("rssi", WiFi.RSSI());
-    pld.Add("ssid", WiFi.SSID().c_str());
-    pld.Add("ip", WiFi.localIP().toString().c_str());
-    pld.Add("mac", rfir::util::Util::GetMacAddress());
-    pld.Add("facturer", DEV_FACTURER);
-    pld.Add("model", DEV_MODEL);    
-    cmd.send();
+    GDevice->getProps(&pld);
+
+    return cmd.send();
 };
-void rfir::module::device::Networking::handshake(){};
-void rfir::module::device::Networking::heartbeat(){};
+bool rfir::module::device::Networking::handshake(void* _this){
+    // if (Config.edg_id == "") {
+    //     //没有边缘服务，5秒后重新登入
+    //     GEventTimer.delay(5000, DoLogin, (void*)this);
+    //     return false;
+    // } 
+
+    DEBUGER.println("rfir::module::device::Networking::handshake");
+    cmds::cmd::CmdMqtt cmd;
+    cmd.command.setNeedResp();
+    cmd.command.head.to.type = "edg";
+    cmd.command.head.to.id = Config.edg_id;
+    cmd.command.head.entry.type = "svc";
+    cmd.command.head.entry.id = Config.mqtt_edg_svc_handshake;
+
+    cmd.events.onResp.callback = OnHandshakeResp;
+    cmd.events.onResp.cbArg = (void*)this;   
+    cmd.events.onTimeout.callback = OnHandshakeTimeout;
+    cmd.events.onTimeout.cbArg = this;
+
+    DEBUGER.println(String((int)(cmd.events.onResp.cbArg)).c_str());
+    DEBUGER.println(String((int)cmd.events.onTimeout.cbArg).c_str());
+  
+    this->test(123);
+
+
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+    GDevice->getProps(&pld);
+    return cmd.send(); 
+};
+bool rfir::module::device::Networking::heartbeat(){
+    return 0;
+};
+
+void rfir::module::device::Networking::test(int p){
+    DEBUGER.println(String(p).c_str());
+    DEBUGER.println(String((uint64_t)this).c_str());
+     DEBUGER.println("tetset2222222222222222");
+};
+
+void rfir::module::device::Networking::onLoginReq(cmds::cmd::CmdBase* cmd){
+
+};
+void rfir::module::device::Networking::onLoginResp(cmds::cmd::CmdBase* cmd, void* _this){
+    cmd->command.pld.Get("app", Config.app_id);
+    cmd->command.pld.Get("mod", Config.dom_id);
+    cmd->command.pld.Get("dsp", Config.dsp_id);
+    cmd->command.pld.Get("edg", Config.edg_id);
+    handshake(_this);
+
+};
+void rfir::module::device::Networking::onLoginTimeout(uint32_t sid){
+    handshake();
+};
+void rfir::module::device::Networking::onHandshakeReq(::cmds::cmd::CmdBase* cmd){
+
+};
+void rfir::module::device::Networking::onHandshakeResp(::cmds::cmd::CmdBase* cmd){
+    m_handshake_failed_count = 0;
+};
+
+void rfir::module::device::Networking::onHandshakeTimeout(uint32_t sid){    
+    m_handshake_failed_count++;
+    if (m_handshake_failed_count >= 3) {
+        //3次握手失败，重新登入
+        login();
+    } else {
+        //再次请求握手
+        handshake();
+    }    
+};
 
 void* rfir::module::device::Networking::OnConnect(void* arg, void* p){
-    auto networking = (rfir::module::device::Networking*) arg;
-    if (!networking->m_logined) {
-        networking->m_logined = true;
-        networking->login();
+    auto netorking = (rfir::module::device::Networking*) arg;
+    if (!netorking->m_logined) {
+        netorking->m_logined = true;
+        netorking->login();
     }
     return 0;
 };
@@ -202,15 +281,49 @@ void* rfir::module::device::Networking::OnCommand(void* arg, void* p){
     return 0;
 };
 
-void* rfir::module::device::Networking::OnLoginResp(void* arg, void* p){
 
+void* rfir::module::device::Networking::DoLogin(void* arg, void* p) {
+    auto netorking = (rfir::module::device::Networking*) arg;
+    netorking->login();
+    return 0;
+};
+
+void* rfir::module::device::Networking::OnLoginResp(void* arg, void* p){
+    DEBUGER.println("rfir::module::device::Networking::OnLoginResp");    
+
+    rfir::module::device::Networking* netorking = (rfir::module::device::Networking*)arg;
+
+    DEBUGER.println(String((uint64_t)netorking).c_str());
+    DEBUGER.println(String((uint64_t)GNetworking).c_str());
+
+    ((rfir::module::device::Networking*)netorking)->onLoginResp((cmds::cmd::CmdBase*)(p), netorking);
+    // netorking->onLoginResp((cmds::cmd::CmdBase*)(p), netorking);
     return 0;
 };
 
 void* rfir::module::device::Networking::OnLoginTimeout(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::OnLoginTimeout");
-    auto networking = (rfir::module::device::Networking*) arg;
-    networking->login();
+    auto netorking = (rfir::module::device::Networking*) arg;
+    netorking->onLoginTimeout((uint32_t)(p));
+
+
+    return 0;
+};
+
+void* rfir::module::device::Networking::OnHandshakeReq(void* arg, void* p){
+    return 0;
+};
+void* rfir::module::device::Networking::OnHandshakeResp(void* arg, void* p){
+    return 0;
+};               
+void* rfir::module::device::Networking::OnHandshakeTimeout(void* arg, void* p){
+    DEBUGER.println("rfir::module::device::Networking::OnHandshakeTimeout");
+    auto netorking = (rfir::module::device::Networking*) arg;
+    if (!netorking) {
+        DEBUGER.println("netorking = 0 ");
+
+    } else 
+        netorking->onHandshakeTimeout((uint32_t)(p));
 
     return 0;
 };

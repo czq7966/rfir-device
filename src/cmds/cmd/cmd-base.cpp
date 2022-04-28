@@ -5,6 +5,8 @@
 uint32_t& cmds::cmd::CmdBase::Command::SessionID = rfir::util::EventTimer::HandlerIndex;
 cmds::cmd::CmdBase::Command::Address* cmds::cmd::CmdBase::Command::DefaultFrom = new cmds::cmd::CmdBase::Command::Address();
 cmds::cmd::CmdBase::Command::Address* cmds::cmd::CmdBase::Command::DefaultTo = new cmds::cmd::CmdBase::Command::Address();
+int cmds::cmd::CmdBase::Command::DefaultRespTimeout = 10 * 1000;
+
 
 cmds::cmd::CmdBase::Command::Command(){
     head.from.type = DefaultFrom->type;
@@ -128,6 +130,10 @@ void cmds::cmd::CmdBase::Command::fromString(const char* str) {
 void cmds::cmd::CmdBase::Events::cloneFrom(Events& events){
     onResp = events.onResp;
     onTimeout = events.onTimeout;
+    DEBUGER.print("cmds::cmd::CmdBase::Events::cloneFrom: onTimeout: cbArg: ");
+    DEBUGER.print(String((int)events.onTimeout.cbArg).c_str());
+    DEBUGER.println(String((int)onTimeout.cbArg).c_str());
+
 
 };
 void cmds::cmd::CmdBase::Events::cloneTo(Events& events){
@@ -137,7 +143,7 @@ void cmds::cmd::CmdBase::Events::cloneTo(Events& events){
 
 cmds::cmd::CmdBase::Events* cmds::cmd::CmdBase::Events::clone(){
     auto events = new Events();
-    cloneTo(*events);
+    events->cloneFrom(*this);
     return events;
 };
 
