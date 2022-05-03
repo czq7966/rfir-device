@@ -39,15 +39,15 @@ namespace rfir {
             int getEventCount(const std::string name);
         public:
             void on(const std::string name, const std::string id, Callback cb, void* cbArg = NULL, bool once = false);
-            void on(const std::string name, const int64_t id, Callback cb, void* cbArg = NULL, bool once = false);
+            void on(const std::string name, const int32_t id, Callback cb, void* cbArg = NULL, bool once = false);
             void on(const std::string name, const void* id, Callback cb, void* cbArg = NULL, bool once = false);
 
             void off(const std::string name, const std::string id);
-            void off(const std::string name, const int64_t id);
+            void off(const std::string name, const int32_t id);
             void off(const std::string name, const void* id);
 
             void once(const std::string name, const std::string id, Callback cb, void* cbArg = NULL);
-            void once(const std::string name, const int64_t id, Callback cb, void* cbArg = NULL);
+            void once(const std::string name, const int32_t id, Callback cb, void* cbArg = NULL);
             void once(const std::string name, const void* id, Callback cb, void* cbArg = NULL);    
 
             void*  emit(std::string name, void* p);
@@ -64,15 +64,15 @@ namespace rfir {
             int getCount();
 
             void add(const std::string id, EventEmitter::Callback cb, void* cbArg = NULL);
-            void add(const int64_t id, EventEmitter::Callback cb, void* cbArg = NULL);
+            void add(const int32_t id, EventEmitter::Callback cb, void* cbArg = NULL);
             void add(const void* id, EventEmitter::Callback cb, void* cbArg = NULL);
 
             void remove(const std::string id);
-            void remove(const int64_t id);
+            void remove(const int32_t id);
             void remove(const void* id);
 
             void once(const std::string id, EventEmitter::Callback cb, void* cbArg = NULL);
-            void once(const int64_t id, EventEmitter::Callback cb, void* cbArg = NULL);
+            void once(const int32_t id, EventEmitter::Callback cb, void* cbArg = NULL);
             void once(const void* id, EventEmitter::Callback cb, void* cbArg = NULL);    
 
             void*  emit(void* p);

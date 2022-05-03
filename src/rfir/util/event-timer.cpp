@@ -20,12 +20,12 @@ int  rfir::util::EventTimer::generateHandler(){
     return  HandlerIndex;    
 };
 void rfir::util::EventTimer::addHandler(uint32_t handler, unsigned long outtime, EventEmitter::Callback cb, void* cbArg){
-    m_eventEmitter.once(std::to_string(handler), (void*)this, cb, cbArg);
+    m_eventEmitter.once(std::string(String(handler).c_str()), (void*)this, cb, cbArg);    
     m_handlers[handler] = outtime;
     sortHandlers();
 };
 void rfir::util::EventTimer::removeHandler(uint32_t handler, bool sorted){
-    m_eventEmitter.off(std::to_string(handler), (void*)this);
+    m_eventEmitter.off(std::string(String(handler).c_str()), (void*)this);
     m_handlers.erase(handler);
     if (sorted)  {
         sortHandlers();
@@ -35,7 +35,7 @@ void rfir::util::EventTimer::removeHandler(uint32_t handler, bool sorted){
 void rfir::util::EventTimer::emitHandler(uint32_t handler){
     m_handlers.erase(handler);
     sortHandlers();
-    m_eventEmitter.emit(std::to_string(handler), (void*)handler);
+    m_eventEmitter.emit(std::string(String(handler).c_str()), (void*)handler);
 };
 
 bool rfir::util::EventTimer::checkAndEmitTimeout(){

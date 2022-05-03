@@ -108,7 +108,11 @@ unsigned long network::module::wifi::SMC::ConfigPinChangeTime = 0;
 bool          network::module::wifi::SMC::ConfigPinChanged = false;
 unsigned long network::module::wifi::SMC::ConfigPinChangeTime_Low = 0;
 unsigned long network::module::wifi::SMC::ConfigPinChangeTime_High = 0;
+#ifdef ESP8266
 smc_messages_t network::module::wifi::SMC::SmcLastMessage = MESSAGE_SCANNING;
+#else
+smc_messages_t network::module::wifi::SMC::SmcLastMessage = 0;
+#endif
 void network::module::wifi::SMC::setupConfigPin() {
     if (this->params->configPin >=0) {
         Serial.print("configPin:");

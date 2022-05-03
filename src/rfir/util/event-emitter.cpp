@@ -1,4 +1,5 @@
 #include "event-emitter.h"
+#include "WString.h"
 
 
 rfir::util::EventEmitter::~EventEmitter(){
@@ -81,12 +82,12 @@ void rfir::util::EventEmitter::on(const std::string name, const std::string id, 
     // (*events)[id] = event;
 };
 
-void rfir::util::EventEmitter::on(const std::string name, const int64_t id, Callback cb, void* cbArg, bool once) {
-    on(name, std::to_string(id), cb, cbArg, once);
+void rfir::util::EventEmitter::on(const std::string name, const int32_t id, Callback cb, void* cbArg, bool once) {
+    on(name, std::string(String(id).c_str()), cb, cbArg, once);
 };
 
 void rfir::util::EventEmitter::on(const std::string name, const void* id, Callback cb, void* cbArg, bool once) {
-    on(name, int64_t(id) , cb, cbArg, once);
+    on(name, int32_t(id) , cb, cbArg, once);
 };
 
 void rfir::util::EventEmitter::off(const std::string name, const std::string id) {
@@ -118,19 +119,18 @@ void rfir::util::EventEmitter::off(const std::string name, const std::string id)
     // }
 };
 
-void rfir::util::EventEmitter::off(const std::string name, const int64_t id) {
-     off(name, std::to_string(id));
-
+void rfir::util::EventEmitter::off(const std::string name, const int32_t id) {
+     off(name, std::string(String(id).c_str()));
 };
 void rfir::util::EventEmitter::off(const std::string name, const void* id) {
-    off(name, int64_t(id));
+    off(name, int32_t(id));
 };   
 
 
 void rfir::util::EventEmitter::once(const std::string name, const std::string id, Callback cb, void* cbArg) {
     on(name, id, cb, cbArg, true);
 };
-void rfir::util::EventEmitter::once(const std::string name, const int64_t id, Callback cb, void* cbArg) {
+void rfir::util::EventEmitter::once(const std::string name, const int32_t id, Callback cb, void* cbArg) {
     on(name, id, cb, cbArg, true);
 };
 void rfir::util::EventEmitter::once(const std::string name, const void* id, Callback cb, void* cbArg){
@@ -226,7 +226,7 @@ int rfir::util::Event::getCount() {
 void  rfir::util::Event::add(const std::string id, rfir::util::EventEmitter::Callback cb, void* cbArg){
     this->m_eventEmitter.on(this->m_name, id, cb, cbArg);
 };
-void  rfir::util::Event::add(const int64_t id, rfir::util::EventEmitter::Callback cb, void* cbArg){
+void  rfir::util::Event::add(const int32_t id, rfir::util::EventEmitter::Callback cb, void* cbArg){
     this->m_eventEmitter.on(this->m_name, id, cb, cbArg);    
 };
 void  rfir::util::Event::add(const void* id, rfir::util::EventEmitter::Callback cb, void* cbArg){
@@ -236,7 +236,7 @@ void  rfir::util::Event::add(const void* id, rfir::util::EventEmitter::Callback 
 void  rfir::util::Event::remove(const std::string id){
     this->m_eventEmitter.off(this->m_name, id);    
 };
-void  rfir::util::Event::remove(const int64_t id){
+void  rfir::util::Event::remove(const int32_t id){
     this->m_eventEmitter.off(this->m_name, id);    
 };
 void  rfir::util::Event::remove(const void* id){
@@ -246,7 +246,7 @@ void  rfir::util::Event::remove(const void* id){
 void  rfir::util::Event::once(const std::string id, EventEmitter::Callback cb, void* cbArg){
     this->m_eventEmitter.once(this->m_name, id, cb, cbArg);
 };
-void  rfir::util::Event::once(const int64_t id, EventEmitter::Callback cb, void* cbArg){
+void  rfir::util::Event::once(const int32_t id, EventEmitter::Callback cb, void* cbArg){
     this->m_eventEmitter.once(this->m_name, id, cb, cbArg);
 };
 void  rfir::util::Event::once(const void* id, EventEmitter::Callback cb, void* cbArg){

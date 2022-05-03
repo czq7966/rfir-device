@@ -2,6 +2,7 @@
 #define _RFIR_UTIL_EVENT_TIMER_H_
 
 #include "event-emitter.h"
+#include <vector>
 
 namespace rfir {
     namespace util {

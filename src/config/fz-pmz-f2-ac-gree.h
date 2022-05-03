@@ -5,7 +5,7 @@
 
 #define DEBUG_RFIR
 
-#define DEBUGER RFIRDebuger
+// #define DEBUGER RFIRDebuger
 
 //Device
 #define DEV_FACTURER "ND"
@@ -25,8 +25,8 @@
 //WIFI
 #define WIFI_SSID_DEV               {"MERCURY_95E8"}
 #define WIFI_PASSWORD_DEV           {"12345678"}
-#define WIFI_SSID                   {"ND-MAC"}
-#define WIFI_PASSWORD               {"wanglong"}
+#define WIFI_SSID                   {"MERCURY_95E8"}
+#define WIFI_PASSWORD               {"12345678"}
 #define WIFI_RESET_TIMEOUT          {30, 30, 30, 30, 30}  //多少时间内WIFI未连接，重启，单位秒
 
 //AP
@@ -56,7 +56,7 @@
 #define MQTT_PORT                   1780
 #define MQTT_USER                   "ioe"
 #define MQTT_PASSWORD               ""
-#define MQTT_KEEPALIVE              60  //保活几分钟
+#define MQTT_KEEPALIVE              1  //单位秒
 #define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
 #define MQTT_SUB_TOPIC              "111ndiot/nd/device/event/report/{did}"
 #define MQTT_PUB_TOPIC              "222ndiot/nd/device/event/report/{did}"

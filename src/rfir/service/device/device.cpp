@@ -74,10 +74,6 @@ rfir::module::device::Device* rfir::service::device::Device::SDevice = new rfir:
 
 rfir::module::device::Networking* rfir::service::device::Device::SNetworking = new rfir::module::device::Networking();
 rfir::module::device::Device* GDevice = rfir::service::device::Device::SDevice;
-// rfir::module::device::Networking* GNetworking = 0;
-void* GNetworking = 0;
-
-
 
 rfir::module::ttl::Config::Device* rfir::service::device::Device::Init() {
     return SDevice->init();

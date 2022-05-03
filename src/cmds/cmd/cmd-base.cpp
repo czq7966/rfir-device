@@ -130,11 +130,6 @@ void cmds::cmd::CmdBase::Command::fromString(const char* str) {
 void cmds::cmd::CmdBase::Events::cloneFrom(Events& events){
     onResp = events.onResp;
     onTimeout = events.onTimeout;
-    DEBUGER.print("cmds::cmd::CmdBase::Events::cloneFrom: onTimeout: cbArg: ");
-    DEBUGER.print(String((int)events.onTimeout.cbArg).c_str());
-    DEBUGER.println(String((int)onTimeout.cbArg).c_str());
-
-
 };
 void cmds::cmd::CmdBase::Events::cloneTo(Events& events){
     events.onResp = onResp;

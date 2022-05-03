@@ -88,6 +88,5 @@ namespace rfir {
 }
 
 extern rfir::module::device::Device* GDevice;
-extern void* GNetworking;
 
 #endif //

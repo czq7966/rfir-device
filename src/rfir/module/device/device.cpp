@@ -186,9 +186,6 @@ bool rfir::module::device::Networking::login(){
     cmd.events.onTimeout.callback = OnLoginTimeout;
     cmd.events.onTimeout.cbArg = (void*)this;
 
-    DEBUGER.println(String((int)(cmd.events.onResp.cbArg)).c_str());
-    DEBUGER.println(String((int)cmd.events.onTimeout.cbArg).c_str());
-
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
     GDevice->getProps(&pld);
@@ -196,11 +193,11 @@ bool rfir::module::device::Networking::login(){
     return cmd.send();
 };
 bool rfir::module::device::Networking::handshake(void* _this){
-    // if (Config.edg_id == "") {
-    //     //没有边缘服务，5秒后重新登入
-    //     GEventTimer.delay(5000, DoLogin, (void*)this);
-    //     return false;
-    // } 
+    if (Config.edg_id == "") {
+        //没有边缘服务，5秒后重新登入
+        GEventTimer.delay(5000, DoLogin, (void*)this);
+        return false;
+    } 
 
     DEBUGER.println("rfir::module::device::Networking::handshake");
     cmds::cmd::CmdMqtt cmd;
@@ -215,12 +212,6 @@ bool rfir::module::device::Networking::handshake(void* _this){
     cmd.events.onTimeout.callback = OnHandshakeTimeout;
     cmd.events.onTimeout.cbArg = this;
 
-    DEBUGER.println(String((int)(cmd.events.onResp.cbArg)).c_str());
-    DEBUGER.println(String((int)cmd.events.onTimeout.cbArg).c_str());
-  
-    this->test(123);
-
-
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
     GDevice->getProps(&pld);
@@ -228,12 +219,6 @@ bool rfir::module::device::Networking::handshake(void* _this){
 };
 bool rfir::module::device::Networking::heartbeat(){
     return 0;
-};
-
-void rfir::module::device::Networking::test(int p){
-    DEBUGER.println(String(p).c_str());
-    DEBUGER.println(String((uint64_t)this).c_str());
-     DEBUGER.println("tetset2222222222222222");
 };
 
 void rfir::module::device::Networking::onLoginReq(cmds::cmd::CmdBase* cmd){
@@ -248,7 +233,8 @@ void rfir::module::device::Networking::onLoginResp(cmds::cmd::CmdBase* cmd, void
 
 };
 void rfir::module::device::Networking::onLoginTimeout(uint32_t sid){
-    handshake();
+    // handshake();
+    login();
 };
 void rfir::module::device::Networking::onHandshakeReq(::cmds::cmd::CmdBase* cmd){
 
@@ -292,12 +278,7 @@ void* rfir::module::device::Networking::OnLoginResp(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::OnLoginResp");    
 
     rfir::module::device::Networking* netorking = (rfir::module::device::Networking*)arg;
-
-    DEBUGER.println(String((uint64_t)netorking).c_str());
-    DEBUGER.println(String((uint64_t)GNetworking).c_str());
-
-    ((rfir::module::device::Networking*)netorking)->onLoginResp((cmds::cmd::CmdBase*)(p), netorking);
-    // netorking->onLoginResp((cmds::cmd::CmdBase*)(p), netorking);
+    netorking->onLoginResp((cmds::cmd::CmdBase*)(p), netorking);
     return 0;
 };
 
@@ -305,8 +286,6 @@ void* rfir::module::device::Networking::OnLoginTimeout(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::OnLoginTimeout");
     auto netorking = (rfir::module::device::Networking*) arg;
     netorking->onLoginTimeout((uint32_t)(p));
-
-
     return 0;
 };
 
@@ -319,11 +298,6 @@ void* rfir::module::device::Networking::OnHandshakeResp(void* arg, void* p){
 void* rfir::module::device::Networking::OnHandshakeTimeout(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::OnHandshakeTimeout");
     auto netorking = (rfir::module::device::Networking*) arg;
-    if (!netorking) {
-        DEBUGER.println("netorking = 0 ");
-
-    } else 
-        netorking->onHandshakeTimeout((uint32_t)(p));
-
+    netorking->onHandshakeTimeout((uint32_t)(p));
     return 0;
 };
