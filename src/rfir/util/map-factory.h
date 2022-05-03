@@ -77,20 +77,18 @@ namespace rfir {
                 return m_map.size();                
             };
 
-            std::list<KeyType> getKeys(){
-                std::list<KeyType> keys;
+            int getKeys(std::list<KeyType>& keys){
                 for (auto it = m_map.begin(); it != m_map.end(); ++it) {
                     keys.push_back(it->first);
                 }
-                return keys;                
+                return m_map.size();                
             };
 
-            std::list<ValueType> getValues(){
-                std::list<ValueType> values;
+            int getValues(std::list<ValueType>& values){
                 for (auto it = m_map.begin(); it != m_map.end(); ++it) {
                     values.push_back(it->second);
                 }
-                return values;                
+                return m_map.size();                
             };
 
             bool existValue(ValueType value){
