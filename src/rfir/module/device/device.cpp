@@ -157,13 +157,13 @@ std::string rfir::module::device::Device::toHexString() {
 
 //Networking
 rfir::module::device::Networking::~Networking(){
-    GCmdDispatcher->events.onConnect.remove((void*)this);
-    GCmdDispatcher->events.onCommand.remove((void*)this);
+    GCmdDispatcher.events.onConnect.remove((void*)this);
+    GCmdDispatcher.events.onCommand.remove((void*)this);
 };
 
 void rfir::module::device::Networking::start(){
-    GCmdDispatcher->events.onConnect.add((void*)this, OnConnect, (void*)this);
-    GCmdDispatcher->events.onCommand.add((void*)this, OnCommand, (void*)this);
+    GCmdDispatcher.events.onConnect.add((void*)this, std::bind(&Networking::onConnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    GCmdDispatcher.events.onCommand.add((void*)this, std::bind(&Networking::onCommand, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
 
@@ -221,6 +221,15 @@ bool rfir::module::device::Networking::heartbeat(){
     return 0;
 };
 
+void rfir::module::device::Networking::setWill(){
+    cmds::cmd::CmdMqtt cmd;
+    cmd.command.head.entry.type ="evt";
+    cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
+    neb::CJsonObject& pld = cmd.command.pld;
+    pld.Add("online", false);
+    GMqttClient.mqtt.setWill(cmd.expandTopic().c_str(), 2, true, cmd.command.toString().c_str());
+};
+
 void rfir::module::device::Networking::onLoginReq(cmds::cmd::CmdBase* cmd){
 
 };
@@ -254,16 +263,22 @@ void rfir::module::device::Networking::onHandshakeTimeout(uint32_t sid){
     }    
 };
 
-void* rfir::module::device::Networking::OnConnect(void* arg, void* p){
-    auto netorking = (rfir::module::device::Networking*) arg;
-    if (!netorking->m_logined) {
-        netorking->m_logined = true;
-        netorking->login();
-    }
+void* rfir::module::device::Networking::onConnect(void* arg, void* p){
+    setWill();
+    if (!this->m_logined) {
+        this->m_logined = true;
+        this->login();
+    }   
     return 0;
+    // auto netorking = (rfir::module::device::Networking*) arg;
+    // if (!netorking->m_logined) {
+    //     netorking->m_logined = true;
+    //     netorking->login();
+    // }
+    // return 0;
 };
 
-void* rfir::module::device::Networking::OnCommand(void* arg, void* p){
+void* rfir::module::device::Networking::onCommand(void* arg, void* p){
     return 0;
 };
 

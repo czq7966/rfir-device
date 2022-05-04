@@ -24,17 +24,23 @@ void network::module::mqtt::AClient::uninit(){};
 void network::module::mqtt::AClient::start(){
 
 };
-void network::module::mqtt::AClient::loop(){};
-void network::module::mqtt::AClient::connect(){};
-// bool network::module::mqtt::AClient::publish(const char* msg){};
-// bool network::module::mqtt::AClient::publish(const char* topic, const char* msg){};
+void network::module::mqtt::AClient::loop(){
+    if (!mqtt.connected()){
+        connectToMqtt();
+    }
+};
 
-
+ uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length, bool dup, uint16_t message_id){
+     return mqtt.publish(topic, qos, retain, payload, length, dup, message_id);
+ };
+  
 
 
 void network::module::mqtt::AClient::connectToMqtt() {
-    Serial.println("Connecting to MQTT...");
-    mqtt.connect();
+    if (WiFi.isConnected()) {
+        Serial.println("Connecting to MQTT...");
+        mqtt.connect();
+    }
 }
 
 void network::module::mqtt::AClient::onWifiConnect(const WiFiEventStationModeGotIP& event) {
@@ -109,3 +115,6 @@ void network::module::mqtt::AClient::onMqttPublish(uint16_t packetId) {
     Serial.println(packetId);
     events.onMqttPublish.emit((void*)packetId);
 }
+
+
+network::module::mqtt::AClient GMqttClient;

@@ -141,6 +141,7 @@ public:
     std::string mqtt_dev_evt_reboot = MQTT_DEV_EVT_REBOOT;
     std::string mqtt_dev_evt_reconnect = MQTT_DEV_EVT_RECONNECT;
     std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
+    std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
 
     int         mqtt_resp_timeout = MQTT_RESP_TIMEOUT;
 };

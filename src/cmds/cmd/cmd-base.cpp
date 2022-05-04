@@ -127,29 +127,29 @@ void cmds::cmd::CmdBase::Command::fromString(const char* str) {
     cloneFrom(cmd);
 }
 
-void cmds::cmd::CmdBase::Events::cloneFrom(Events& events){
-    onResp = events.onResp;
-    onTimeout = events.onTimeout;
-};
-void cmds::cmd::CmdBase::Events::cloneTo(Events& events){
-    events.onResp = onResp;
-    events.onTimeout = onTimeout;
-};     
+// void cmds::cmd::CmdBase::Events::cloneFrom(Events& events){
+//     onResp = events.onResp;
+//     onTimeout = events.onTimeout;
+// };
+// void cmds::cmd::CmdBase::Events::cloneTo(Events& events){
+//     events.onResp = onResp;
+//     events.onTimeout = onTimeout;
+// };     
 
-cmds::cmd::CmdBase::Events* cmds::cmd::CmdBase::Events::clone(){
-    auto events = new Events();
-    events->cloneFrom(*this);
-    return events;
-};
+// cmds::cmd::CmdBase::Events* cmds::cmd::CmdBase::Events::clone(){
+//     auto events = new Events();
+//     events->cloneFrom(*this);
+//     return events;
+// };
 
 bool cmds::cmd::CmdBase::send(const void* p){
     return false;
 };
 void cmds::cmd::CmdBase::cloneFrom(CmdBase& cmd){
     command.cloneFrom(cmd.command);
-    events.cloneFrom(cmd.events);
+    events = cmd.events;
 };
 void cmds::cmd::CmdBase::cloneTo(CmdBase& cmd){
     command.cloneTo(cmd.command);
-    events.cloneTo(cmd.events);
+    cmd.events = events;
 };   

@@ -77,6 +77,7 @@
 #define MQTT_DEV_EVT_REBOOT         "reboot"
 #define MQTT_DEV_EVT_RECONNECT      "reconnect"
 #define MQTT_DEV_EVT_REPORT         "report"
+#define MQTT_DEV_EVT_STATUS         "status"
 
 #define MQTT_RESP_TIMEOUT           10*1000 //毫秒
 

@@ -61,6 +61,7 @@ namespace rfir {
                 bool login();
                 bool handshake(void* _this = 0);
                 bool heartbeat();
+                void setWill();
                 void test(int p);
             public:
                 void onLoginReq(::cmds::cmd::CmdBase* cmd);
@@ -71,8 +72,8 @@ namespace rfir {
                 void onHandshakeResp(::cmds::cmd::CmdBase* cmd);
                 void onHandshakeTimeout(uint32_t sid);
             public:
-                static void* OnConnect(void* arg, void* p);
-                static void* OnCommand(void* arg, void* p);
+                void* onConnect(void* arg, void* p);
+                void* onCommand(void* arg, void* p);
             public:
                 static void* DoLogin(void* arg, void* p);
                 static void* OnLoginReq(void* arg, void* p);

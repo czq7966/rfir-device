@@ -12,22 +12,26 @@ int cmds::network::Signaler::write(void* p) {
 };
 
 
-void* cmds::network::Signaler::OnConnect(void* arg, void* p){  
+void* cmds::network::Signaler::onConnect(void* arg, void* p){  
     DEBUGER.println("cmds::network::Signaler::OnConnect");
+    return this->events.onConnect.emit(p);
+
     
-    auto signaler = (Signaler*)arg;
-    return signaler->events.onConnect.emit(p);
-    return 0;
+    // auto signaler = (Signaler*)arg;
+    // return signaler->events.onConnect.emit(p);
+    // return 0;
 };
 
-void* cmds::network::Signaler::OnDisconnect(void* arg, void* p){
-    auto signaler = (Signaler*)arg;
-    return signaler->events.onDisconnect.emit(p);
-    return 0;
+void* cmds::network::Signaler::onDisconnect(void* arg, void* p){
+    return this->events.onDisconnect.emit(p);
+    // auto signaler = (Signaler*)arg;
+    // return signaler->events.onDisconnect.emit(p);
+    // return 0;
     
 };
-void* cmds::network::Signaler::OnMessage(void* arg, void* p){    
-    auto signaler = (Signaler*)arg;
-    return signaler->events.onMessage.emit(p);
-    return 0;
+void* cmds::network::Signaler::onMessage(void* arg, void* p){   
+    return this->events.onMessage.emit(p); 
+    // auto signaler = (Signaler*)arg;
+    // return signaler->events.onMessage.emit(p);
+    // return 0;
 };

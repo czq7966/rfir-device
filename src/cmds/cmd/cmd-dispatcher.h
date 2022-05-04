@@ -22,32 +22,29 @@ namespace cmds {
 
         public:
             cmds::network::Signaler* signaler;
-            CmdDispatcher(cmds::network::Signaler* p);
-            ~CmdDispatcher();
+            virtual void setSignaler(cmds::network::Signaler* p);
         public:
             Events events;
-            rfir::util::MapFactory<uint32_t, cmds::cmd::CmdBase::Events* > wait_resp_queue;
+            rfir::util::MapFactory<uint32_t, cmds::cmd::CmdBase::Events > wait_resp_queue;
             bool sendCmd(cmds::cmd::CmdBase* cmd);
         public:
-            static void* OnConnect(void* arg, void* p);
-            static void* OnDisconnect(void* arg, void* p);
-            static void* OnMessage(void* arg, void* p);       
+            void* onConnect(void* arg, void* p);
+            void* onDisconnect(void* arg, void* p);
+            void* onMessage(void* arg, void* p);       
 
         public:
-            static void* OnResp(void* arg, void* p);
-            static void* OnRespTimeout(void* arg, void* p);
+            void* onResp(void* arg, void* p);
+            void* onRespTimeout(void* arg, void* p);
         };
 
         class MqttDispatcher: public CmdDispatcher {
         public:
-            MqttDispatcher(cmds::network::MqttSignaler* p);
-            ~MqttDispatcher();
-        public:
-            static void* OnMqttMessage(void* arg, void* p);       
+            void* onMqttMessage(void* arg, void* p);   
+            void setSignaler(cmds::network::Signaler* p) override;    
         };        
     }
 }
 
-extern cmds::cmd::CmdDispatcher* GCmdDispatcher;
+extern cmds::cmd::MqttDispatcher GCmdDispatcher;
 
 #endif 

@@ -5,7 +5,7 @@
 #include "network/module/wifi/client.h"
 #include "network/module/ota/updater.h"
 #include "network/service/wifi/client.h"
-#include "network/service/mqtt/client.h"
+#include "network/service/mqtt/async-client.h"
 #include "network/service/ota/updater.h"
 #include "network/service/net/networking.h"
 
@@ -35,10 +35,10 @@ void onRfirSniffed(rfir::module::ttl::Sniffer* sniffer, rfir::module::ttl::Delta
     DEBUGER.println(payload);
 #endif    
 
-    if (sniffer->getSniffParams()->response) {
-        if (!payload) payload = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str();
-        network::service::mqtt::Client::Publish(payload);
-    } 
+    // if (sniffer->getSniffParams()->response) {
+    //     if (!payload) payload = rfir::module::ttl::Sniffer::packSniffedCmd(sniffer, sniffer->toString().c_str()).c_str();
+    //     network::service::mqtt::Client::Publish(payload);
+    // } 
     
 }
 
@@ -52,10 +52,10 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
     // DEBUGER.println(data->toJsonString(true).c_str());
 #endif    
 
-    if (decoder->getDecodeParams()->response) {
-        if (!payload) payload = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str();
-        network::service::mqtt::Client::Publish(payload);
-    } 
+    // if (decoder->getDecodeParams()->response) {
+    //     if (!payload) payload = rfir::module::ttl::Decoder::packDecodedCmd(decoder, data).c_str();
+    //     network::service::mqtt::Client::Publish(payload);
+    // } 
 
     if (data->count > 0) 
         service::cmds::Cmd::OnCmd_decoded(data);
@@ -70,19 +70,19 @@ void onRfirEncoded(rfir::module::ttl::Encoder* encoder, rfir::module::ttl::Encod
     DEBUGER.println(payload);
 #endif
 
-    if (encoder->getEncodeParams()->response) {
-        if (!payload) payload = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str();
-        network::service::mqtt::Client::Publish(payload);
-    } 
+    // if (encoder->getEncodeParams()->response) {
+    //     if (!payload) payload = rfir::module::ttl::Encoder::packEncodedCmd(encoder, data).c_str();
+    //     network::service::mqtt::Client::Publish(payload);
+    // } 
 
 }
 
 void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const uint16_t len) {
     DEBUGER.println("onRfirSended: " + String(len));
 
-    if (sender->getSendParams()->response) {
-        network::service::mqtt::Client::Publish(rfir::module::ttl::Sender::packSendedCmd(sender, data, len).c_str());
-    }
+    // if (sender->getSendParams()->response) {
+    //     network::service::mqtt::Client::Publish(rfir::module::ttl::Sender::packSendedCmd(sender, data, len).c_str());
+    // }
     
 }
 
@@ -105,39 +105,59 @@ std::string getMqttSvcTopic(std::string func) {
 
 }
 
-void doMqttSubscribe(network::module::mqtt::Client::MQTT* mqtt) {
-    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_login).c_str());
-    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_handshake).c_str());
-    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_get).c_str());
-    mqtt->subscribe(getMqttSvcTopic(Config.mqtt_dev_svc_set).c_str());
+void doMqttSubscribe(network::module::mqtt::AClient* aclient) {
+    if (!aclient->mqtt.connected())
+        return;
+
+    std::string topic;
+    topic = getMqttSvcTopic(Config.mqtt_dev_svc_login);
+    aclient->mqtt.unsubscribe(topic.c_str()); 
+    aclient->mqtt.subscribe(topic.c_str(), 2);
+
+    topic = getMqttSvcTopic(Config.mqtt_dev_svc_handshake);
+    aclient->mqtt.unsubscribe(topic.c_str()); 
+    aclient->mqtt.subscribe(topic.c_str(), 2);
+
+    topic = getMqttSvcTopic(Config.mqtt_dev_svc_get);
+    aclient->mqtt.unsubscribe(topic.c_str()); 
+    aclient->mqtt.subscribe(topic.c_str(), 2);
+
+    topic = getMqttSvcTopic(Config.mqtt_dev_svc_set);
+    aclient->mqtt.unsubscribe(topic.c_str()); 
+    aclient->mqtt.subscribe(topic.c_str(), 2);
 }
 
-uint16_t onMqttConnect_count = 0;
-void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
-    onMqttConnect_count++;
-    DEBUGER.println("onMqttConnect");
-    if (onMqttConnect_count > 1)
-        service::cmds::Cmd::OnCmd_heartbeat(0, 1);
-    else 
-        service::cmds::Cmd::OnCmd_heartbeat(0, 2);
-    service::cmds::Cmd::DoTimerReport(true);
+// uint16_t onMqttConnect_count = 0;
+// void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
+//     onMqttConnect_count++;
+//     DEBUGER.println("onMqttConnect");
+//     if (onMqttConnect_count > 1)
+//         service::cmds::Cmd::OnCmd_heartbeat(0, 1);
+//     else 
+//         service::cmds::Cmd::OnCmd_heartbeat(0, 2);
+//     service::cmds::Cmd::DoTimerReport(true);
 
-    doMqttSubscribe(mqtt);
+//     doMqttSubscribe(mqtt);
 
+// }
+
+void* onMqttConnect(void* arg, void* p) {
+    doMqttSubscribe(GMqttSignaler.mqtt);
+    return 0;
 }
 
 
 
-void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
-    service::cmds::Cmd::OnCmd(bytes);
-}
+// void onMqttMessage(MQTTClient *client, char topic[], char bytes[], int length) {
+//     service::cmds::Cmd::OnCmd(bytes);
+// }
 
 void* OnConfigFixup(void* arg, void* p) {
     cmds::cmd::CmdBase::Command::DefaultFrom->type ="dev";
     cmds::cmd::CmdBase::Command::DefaultFrom->id = Config.dev_id;
     cmds::cmd::CmdBase::Command::DefaultRespTimeout = Config.mqtt_resp_timeout;
-    GMqttSignaler->topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
-    doMqttSubscribe(GMqttSignaler->mqtt->mqtt);
+    cmds::cmd::CmdMqtt::topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
+    doMqttSubscribe(GMqttSignaler.mqtt);
     return 0;
 }
 
@@ -270,26 +290,21 @@ void setup() {
 
 #if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
     //启动mqtt
-    network::module::mqtt::Client::Params mp;
+    network::module::mqtt::AClient::Params mp;
     mp.ip = MQTT_IP;
     mp.port = MQTT_PORT;
     mp.user = MQTT_USER;
-    // String sub_topic = MQTT_SUB_TOPIC; sub_topic.replace("{did}", ChipID.c_str());
-    // String pub_topic = MQTT_PUB_TOPIC; pub_topic.replace("{did}", ChipID.c_str());
-    // mp.sub_topic = sub_topic.c_str();
-    // mp.pub_topic = pub_topic.c_str();
-    mp.bufsize = 2 * 1024;
+    mp.pass = MQTT_PASSWORD;
     mp.id = ChipID;
     #ifdef MQTT_KEEPALIVE
     mp.keepalive = MQTT_KEEPALIVE;
     #endif
 
-    GMqttSignaler =  new cmds::network::MqttSignaler(0);
-    GCmdDispatcher = new cmds::cmd::MqttDispatcher(GMqttSignaler);
+    GCmdDispatcher.setSignaler(&GMqttSignaler);
+    GMqttSignaler.setMqtt(&GMqttClient);
+    GCmdDispatcher.events.onConnect.add((void*)&onMqttConnect, onMqttConnect);
 
-    network::service::mqtt::Client::Start(mp, onMqttConnect, onMqttMessage);
-
-    GMqttSignaler->setMqtt(network::service::mqtt::Client::client);
+    network::service::mqtt::AClient::Start(mp);
 #endif
 
     //启动收发器
@@ -328,7 +343,7 @@ void loop() {
 
 #if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
     //mqtt循环
-    network::service::mqtt::Client::Loop();
+    network::service::mqtt::AClient::Loop();
 #endif    
 
     //收发器循环

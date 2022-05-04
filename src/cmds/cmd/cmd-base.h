@@ -64,9 +64,9 @@ namespace cmds {
             struct Events {
                 rfir::util::EventEmitter::Event onTimeout;   
                 rfir::util::EventEmitter::Event onResp;      
-                void cloneFrom(Events& events);
-                void cloneTo(Events& events);  
-                Events* clone();           
+                // void cloneFrom(Events& events);
+                // void cloneTo(Events& events);  
+                // Events* clone();           
             };
 
         public:

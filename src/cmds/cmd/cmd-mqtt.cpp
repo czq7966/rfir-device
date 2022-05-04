@@ -1,6 +1,7 @@
 #include "cmd-mqtt.h"
 #include "cmd-dispatcher.h"
 
+std::string cmds::cmd::CmdMqtt::topicPrefix = "";
 
 std::string cmds::cmd::CmdMqtt::zeroTopic(std::string topic){
     if (topic.length() == 0)
@@ -9,7 +10,8 @@ std::string cmds::cmd::CmdMqtt::zeroTopic(std::string topic){
 };
 
 std::string cmds::cmd::CmdMqtt::expandTopic(){
-    return  zeroTopic(command.head.from.type) + "/" + 
+    return  topicPrefix +
+            zeroTopic(command.head.from.type) + "/" + 
             zeroTopic(command.head.from.id) + "/" + 
             zeroTopic(command.head.to.type) + "/" + 
             zeroTopic(command.head.to.id) + "/" + 
@@ -19,6 +21,6 @@ std::string cmds::cmd::CmdMqtt::expandTopic(){
 
 bool cmds::cmd::CmdMqtt::send(const void* p) {
     DEBUGER.println("cmds::cmd::CmdMqtt::send");
-    return GCmdDispatcher->sendCmd(this);
+    return GCmdDispatcher.sendCmd(this);
 };
 

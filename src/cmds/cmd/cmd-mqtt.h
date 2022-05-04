@@ -9,6 +9,7 @@ namespace cmds {
         private:
             std::string zeroTopic(std::string topic);
         public:
+            static std::string topicPrefix;
             std::string topic;
             std::string expandTopic();
         public:

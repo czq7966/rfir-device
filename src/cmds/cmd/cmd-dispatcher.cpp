@@ -2,79 +2,118 @@
 #include "../network/mqtt-signaler.h"
 #include "rfir/util/event-timer.h"
 
-cmds::cmd::CmdDispatcher::CmdDispatcher(cmds::network::Signaler* p){
+void cmds::cmd::CmdDispatcher::setSignaler(cmds::network::Signaler* p){
+    if (signaler) {
+        signaler->events.onConnect.remove((void*)this);
+        signaler->events.onDisconnect.remove((void*)this);
+        signaler->events.onMessage.remove((void*)this);    
+    }
+
     signaler = p;
-    signaler->events.onConnect.add((void*)this, OnConnect, (void*)this);
-    signaler->events.onDisconnect.add((void*)this, OnDisconnect, (void*)this);
-    signaler->events.onMessage.add((void*)this, OnMessage, (void*)this);    
-
-};
-cmds::cmd::CmdDispatcher::~CmdDispatcher(){
-    signaler->events.onConnect.remove((void*)this);
-    signaler->events.onDisconnect.remove((void*)this);
-    signaler->events.onMessage.remove((void*)this);        
-    this->signaler = 0;
+    if (signaler) {
+        signaler->events.onConnect.add((void*)this, std::bind(&CmdDispatcher::onConnect, this, std::placeholders::_1,  std::placeholders::_2), (void*)this);
+        signaler->events.onDisconnect.add((void*)this, std::bind(&CmdDispatcher::onDisconnect, this, std::placeholders::_1,  std::placeholders::_2), (void*)this);
+        signaler->events.onMessage.add((void*)this, std::bind(&CmdDispatcher::onMessage, this, std::placeholders::_1,  std::placeholders::_2), (void*)this);    
+    }
+  
 };
 
-void* cmds::cmd::CmdDispatcher::OnConnect(void* arg, void* p){
+void* cmds::cmd::CmdDispatcher::onConnect(void* arg, void* p){
     DEBUGER.println("cmds::cmd::CmdDispatcher::OnConnect");
-    auto dispatcher = (CmdDispatcher*)arg;
-    return dispatcher->events.onConnect.emit(p);
-    return 0;
+    return this->events.onConnect.emit(p);
+    // auto dispatcher = (CmdDispatcher*)arg;
+    // return dispatcher->events.onConnect.emit(p);
+    // return 0;
 };
-void* cmds::cmd::CmdDispatcher::OnDisconnect(void* arg, void* p){
-    auto dispatcher = (CmdDispatcher*)arg;
-    return dispatcher->events.onConnect.emit(p);    
+void* cmds::cmd::CmdDispatcher::onDisconnect(void* arg, void* p){
+    return this->events.onDisconnect.emit(p);
+    // auto dispatcher = (CmdDispatcher*)arg;
+    // return dispatcher->events.onConnect.emit(p);    
 };
-void* cmds::cmd::CmdDispatcher::OnMessage(void* arg, void* p){
-    auto dispatcher = (CmdDispatcher*)arg;    
-    return dispatcher->events.onMessage.emit(p);    
+void* cmds::cmd::CmdDispatcher::onMessage(void* arg, void* p){
+    return this->events.onMessage.emit(p);
+
+    // auto dispatcher = (CmdDispatcher*)arg;    
+    // return dispatcher->events.onMessage.emit(p);    
 };   
 
-void* cmds::cmd::CmdDispatcher::OnResp(void* arg, void* p) {
+void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
     DEBUGER.print("cmds::cmd::CmdDispatcher::OnResp: ");    
     auto cmd = (cmds::cmd::CmdBase*)p;
-    auto dispatcher = (CmdDispatcher*)arg;  
     if (cmd->command.isRespCmd()) {
         auto sid = cmd->command.getSid();
         DEBUGER.println(String(sid));
         if (sid > 0) {
-            cmds::cmd::CmdBase::Events* events = 0;
+            cmds::cmd::CmdBase::Events events;
             GEventTimer.remove(sid);
-            dispatcher->wait_resp_queue.remove(sid, events);
-            if (events && events->onResp.callback) {
-                events->onResp.callback(events->onResp.cbArg, p);
+            this->wait_resp_queue.remove(sid, events);
+            if (events.onResp.callback) {
+                events.onResp.callback(events.onResp.cbArg, p);
+                return (void*)1;
             }
-            delete events;
         }
     }
 
     return 0;
+
+    // DEBUGER.print("cmds::cmd::CmdDispatcher::OnResp: ");    
+    // auto cmd = (cmds::cmd::CmdBase*)p;
+    // auto dispatcher = (CmdDispatcher*)arg;  
+    // if (cmd->command.isRespCmd()) {
+    //     auto sid = cmd->command.getSid();
+    //     DEBUGER.println(String(sid));
+    //     if (sid > 0) {
+    //         cmds::cmd::CmdBase::Events* events = 0;
+    //         GEventTimer.remove(sid);
+    //         dispatcher->wait_resp_queue.remove(sid, events);
+    //         if (events && events->onResp.callback) {
+    //             events->onResp.callback(events->onResp.cbArg, p);
+    //         }
+    //         delete events;
+    //     }
+    // }
+
+    // return 0;
 }
 
-void* cmds::cmd::CmdDispatcher::OnRespTimeout(void* arg, void* p) {
-    DEBUGER.println("cmds::cmd::CmdDispatcher::OnRespTimeout");
+void* cmds::cmd::CmdDispatcher::onRespTimeout(void* arg, void* p) {
+    DEBUGER.println("cmds::cmd::CmdDispatcher::onRespTimeout");
     auto sid = (uint32_t)p;
-    auto dispatcher = (CmdDispatcher*)arg;
-    cmds::cmd::CmdBase::Events* events = 0;
-    dispatcher->wait_resp_queue.remove(sid, events);
-    if (events && events->onTimeout.callback) {
-        DEBUGER.println(String((int)events->onTimeout.cbArg).c_str());
-        events->onTimeout.callback(events->onTimeout.cbArg, p);
-    }
 
-    delete events;
-    
+    cmds::cmd::CmdBase::Events events;
+    this->wait_resp_queue.remove(sid, events);
+    if (events.onTimeout.callback) {
+        DEBUGER.println(String((int)events.onTimeout.cbArg).c_str());
+        events.onTimeout.callback(events.onTimeout.cbArg, p);
+    }
+  
     return 0;
+
+    // DEBUGER.println("cmds::cmd::CmdDispatcher::OnRespTimeout");
+    // auto sid = (uint32_t)p;
+    // auto dispatcher = (CmdDispatcher*)arg;
+    // cmds::cmd::CmdBase::Events* events = 0;
+    // dispatcher->wait_resp_queue.remove(sid, events);
+    // if (events && events->onTimeout.callback) {
+    //     DEBUGER.println(String((int)events->onTimeout.cbArg).c_str());
+    //     events->onTimeout.callback(events->onTimeout.cbArg, p);
+    // }
+
+    // delete events;
+    
+    // return 0;
 }
 
 bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){    
-    DEBUGER.println("cmds::cmd::CmdDispatcher::sendCmd");
+    DEBUGER.println("cmds::cmd::CmdDispatcher::sendCmd");  
+    if (!signaler)
+        return false;
+          
     auto result = this->signaler->write((void*)cmd);
     if (cmd->command.isNeedResp()) {
-        auto events = cmd->events.clone();
+        auto events = cmd->events;
         wait_resp_queue.add(cmd->command.getSid(), events);
-        GEventTimer.delay(cmd->respTimeout, OnRespTimeout, (void*)this, cmd->command.getSid());
+        GEventTimer.delay(cmd->respTimeout, std::bind(&CmdDispatcher::onRespTimeout, this, std::placeholders::_1, std::placeholders::_2), (void*)this, cmd->command.getSid());
     } 
     return result;
 };
@@ -82,29 +121,45 @@ bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){
 
 //MqttDispatcher
 
-cmds::cmd::MqttDispatcher::MqttDispatcher(cmds::network::MqttSignaler* p): CmdDispatcher(p) {
-    events.onMessage.add((void*)&OnMqttMessage, OnMqttMessage, (void*)this);
-};
-cmds::cmd::MqttDispatcher::~MqttDispatcher(){    
-    events.onMessage.add((void*)&OnMqttMessage, OnMqttMessage, (void*)this);
-};
-
-void* cmds::cmd::MqttDispatcher::OnMqttMessage(void* arg, void* p){
+void cmds::cmd::MqttDispatcher::setSignaler(cmds::network::Signaler* p){
+    events.onMessage.remove((void*)&MqttDispatcher::onMqttMessage);
+    CmdDispatcher::setSignaler(p);
+    events.onMessage.add((void*)&MqttDispatcher::onMqttMessage, std::bind(&MqttDispatcher::onMqttMessage, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+}
+void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
     DEBUGER.print("cmds::cmd::MqttDispatcher::OnMqttMessage: ");
-    auto msg = (::network::module::mqtt::Client::Message*)p;
+    auto msg = (::network::module::mqtt::AClient::Message*)p;
     DEBUGER.println(msg->topic);
+    if(msg->total > msg->len) {
+        DEBUGER.println("Mqtt message max length: 1460");
+        return 0;
+    }
     
-    auto dispatcher = (CmdDispatcher*)arg;   
     cmds::cmd::CmdMqtt cmd;    
     cmd.topic = msg->topic;
-    if (msg->bytes)
-        cmd.command.fromString(msg->bytes);
-    if (cmd.command.isRespCmd() && OnResp(arg, &cmd) ) {
+    if (msg->payload)
+        cmd.command.fromString(msg->payload);
+    if (cmd.command.isRespCmd() && onResp(arg, &cmd) ) {
         return 0;
     }
      
-    return dispatcher->events.onCommand.emit(&cmd); 
+    return this->events.onCommand.emit(&cmd); 
+
+    // DEBUGER.print("cmds::cmd::MqttDispatcher::OnMqttMessage: ");
+    // auto msg = (::network::module::mqtt::Client::Message*)p;
+    // DEBUGER.println(msg->topic);
+    
+    // auto dispatcher = (CmdDispatcher*)arg;   
+    // cmds::cmd::CmdMqtt cmd;    
+    // cmd.topic = msg->topic;
+    // if (msg->bytes)
+    //     cmd.command.fromString(msg->bytes);
+    // if (cmd.command.isRespCmd() && OnResp(arg, &cmd) ) {
+    //     return 0;
+    // }
+     
+    // return dispatcher->events.onCommand.emit(&cmd); 
 }; 
 
 
-cmds::cmd::CmdDispatcher* GCmdDispatcher = 0; 
+cmds::cmd::MqttDispatcher GCmdDispatcher;

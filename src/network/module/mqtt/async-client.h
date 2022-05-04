@@ -59,9 +59,9 @@ namespace network {
 
                 void start();
                 void loop();
-                void connect();
-                bool publish(const char* msg);
-                bool publish(const char* topic, const char* msg);
+
+                uint16_t publish(const char* topic, const char* payload = nullptr, bool retain = false, uint8_t qos = 2, size_t length = 0, bool dup = false, uint16_t message_id = 0);
+  
             public:
                 void connectToMqtt();
                 void onWifiConnect(const WiFiEventStationModeGotIP& event);
@@ -78,6 +78,6 @@ namespace network {
     }
 }
 
-
+extern network::module::mqtt::AClient GMqttClient;
 
 #endif //

@@ -19,9 +19,9 @@ namespace cmds {
             ~Signaler();
             virtual int write(void* p);
 
-            static void* OnConnect(void* arg, void* p);
-            static void* OnDisconnect(void* arg, void* p);
-            static void* OnMessage(void* arg, void* p);
+            void* onConnect(void* arg, void* p);
+            void* onDisconnect(void* arg, void* p);
+            void* onMessage(void* arg, void* p);
 
         };
     }
