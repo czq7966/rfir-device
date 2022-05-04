@@ -85,9 +85,9 @@ rfir::module::ttl::Config::Device* rfir::service::device::Device::GetConfig() {
     return d;
 }
 
-void rfir::service::device::Device::Start(rfir::module::device::Device::OnChange onChange) {
+void rfir::service::device::Device::Start(rfir::util::Event::Callback onChange) {
     SDevice->start(0);
-    SDevice->onChange = onChange;   
+    SDevice->events.onChange.add((void*)&onChange, onChange);
     SNetworking->start(); 
 }
 
@@ -123,7 +123,7 @@ bool rfir::service::device::Device::OnCmd_set(neb::CJsonObject* pld) {
 }
 
 bool rfir::service::device::Device::OnCmd_get(neb::CJsonObject* pld) {
-    auto result = SDevice->onCmd_get(pld);
+    auto result = SDevice->getProps(pld);
     if (result)
         SDevice->reinitTimerReport();
     return result;

@@ -15,9 +15,14 @@ namespace rfir {
         namespace device {
             class Device {
             public:
+                struct Events
+                {
+                    rfir::util::Event onChange;
+                };
+                
                 typedef std::function<void(void* device, const char* reason)> OnChange;
                 std::string name;
-                OnChange onChange;
+                Events events;
                 void emitChange(const char* reason);
             public:
                 int timerReport_LastTime = 0;
@@ -59,29 +64,29 @@ namespace rfir {
                 virtual void loop();
             public:
                 bool login();
-                bool handshake(void* _this = 0);
+                bool handshake();
                 bool heartbeat();
                 void setWill();
-                void test(int p);
+                void setOnline();
             public:
-                void onLoginReq(::cmds::cmd::CmdBase* cmd);
-                void onLoginResp(::cmds::cmd::CmdBase* cmd, void* _this = 0);
-                void onLoginTimeout(uint32_t sid);
+                // void onLoginReq(::cmds::cmd::CmdBase* cmd);
+                // void onLoginResp(::cmds::cmd::CmdBase* cmd, void* _this = 0);
+                // void onLoginTimeout(uint32_t sid);
 
-                void onHandshakeReq(::cmds::cmd::CmdBase* cmd);
-                void onHandshakeResp(::cmds::cmd::CmdBase* cmd);
-                void onHandshakeTimeout(uint32_t sid);
+                // void onHandshakeReq(::cmds::cmd::CmdBase* cmd);
+                // void onHandshakeResp(::cmds::cmd::CmdBase* cmd);
+                // void onHandshakeTimeout(uint32_t sid);
             public:
                 void* onConnect(void* arg, void* p);
                 void* onCommand(void* arg, void* p);
             public:
-                static void* DoLogin(void* arg, void* p);
-                static void* OnLoginReq(void* arg, void* p);
-                static void* OnLoginResp(void* arg, void* p);
-                static void* OnLoginTimeout(void* arg, void* p);
-                static void* OnHandshakeReq(void* arg, void* p);
-                static void* OnHandshakeResp(void* arg, void* p);                
-                static void* OnHandshakeTimeout(void* arg, void* p);
+                void* doLogin(void* arg, void* p);
+                void* onLoginReq(void* arg, void* p);
+                void* onLoginResp(void* arg, void* p);
+                void* onLoginTimeout(void* arg, void* p);
+                void* onHandshakeReq(void* arg, void* p);
+                void* onHandshakeResp(void* arg, void* p);                
+                void* onHandshakeTimeout(void* arg, void* p);
             };
 
         }

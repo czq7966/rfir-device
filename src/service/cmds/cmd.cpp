@@ -1,8 +1,11 @@
 #include "cmd.h"
 #include "rfir/service/device/device.h"
+#include "cmds/cmd/cmd-dispatcher.h"
 
 
 void service::cmds::Cmd::Start() {
+    // GCmdDispatcher.events.onCommand.add()
+    
 
 }
 
@@ -12,7 +15,8 @@ void service::cmds::Cmd::Loop() {
 }
 
 bool service::cmds::Cmd::PublishMsg(const char* msg) {
-    return network::service::mqtt::Client::Publish(msg);
+    // return network::service::mqtt::Client::Publish(msg);
+    return 0;
 }
 
 void service::cmds::Cmd::DoTimerReport(bool reset) {
@@ -179,7 +183,7 @@ bool service::cmds::Cmd::OnCmd_codec(neb::CJsonObject* cmd) {
 
 bool service::cmds::Cmd::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
     if (rfir::service::device::Device::OnCmd_decoded(data)) {
-        OnCmd_get(0, "IR Change");
+        OnCmd_get((neb::CJsonObject*)0, "IR Change");
         
         //Report
         DoTimerReport(true);
@@ -207,3 +211,45 @@ bool service::cmds::Cmd::OnCmd_getconfig(neb::CJsonObject* cmd) {
         return rfir::service::device::Device::OnCmd_config(&pld);
     return false;
 }
+
+void* service::cmds::Cmd::OnCommand(void* arg, void * p){
+    auto cmd = (::cmds::cmd::CmdMqtt*)p;
+    if (cmd->command.head.entry.type == "svc" && cmd->command.head.stp == 0) {
+        if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_get) {
+            return (void*)OnCmd_get(cmd);
+
+        }
+
+        if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_set) {
+            return (void*)OnCmd_set(cmd);
+        }
+    }
+
+    return 0;
+};
+
+
+bool  service::cmds::Cmd::OnCmd_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+    ::cmds::cmd::CmdMqtt cmd;
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+    rfir::service::device::Device::OnCmd_get(&pld);
+    hd.ReplaceAdd("reason", reason);
+
+    if (reqCmd){
+        cmd.command.head = reqCmd->command.head;
+        cmd.command.head.from = reqCmd->command.head.to;
+        cmd.command.head.to = reqCmd->command.head.from;
+        cmd.command.head.stp = 1;
+    }
+
+    cmd.command.head.entry.type = "evt";
+    cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
+    return cmd.send();
+};
+
+bool  service::cmds::Cmd::OnCmd_set(::cmds::cmd::CmdMqtt* cmd){
+    auto result = rfir::service::device::Device::OnCmd_set(&cmd->command.pld);
+    DoTimerReport(true);
+    return result;    
+};

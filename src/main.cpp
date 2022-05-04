@@ -7,8 +7,6 @@
 #include "network/service/wifi/client.h"
 #include "network/service/mqtt/async-client.h"
 #include "network/service/ota/updater.h"
-#include "network/service/net/networking.h"
-
 
 #include "rfir/service/serial/receiver.h"
 #include "rfir/service/serial/sender.h"
@@ -86,9 +84,11 @@ void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const
     
 }
 
-void onDeviceChange(void* device, const char* reason) {
+void* onDeviceChange(void* arg, void* p) {
+    auto reason = (const char*)p;
     DEBUGER.printf("onDeviceChange: %s\n", reason);
-    service::cmds::Cmd::OnCmd_get(0, reason);
+    service::cmds::Cmd::OnCmd_get((::cmds::cmd::CmdMqtt*)0, reason);
+    return 0;
 }
 
 void onRfirStart(void* data) {
@@ -155,6 +155,11 @@ void* onMqttConnect(void* arg, void* p) {
 void* OnConfigFixup(void* arg, void* p) {
     cmds::cmd::CmdBase::Command::DefaultFrom->type ="dev";
     cmds::cmd::CmdBase::Command::DefaultFrom->id = Config.dev_id;
+    if (Config.edg_id != "") {
+        cmds::cmd::CmdBase::Command::DefaultTo->type ="edg";
+        cmds::cmd::CmdBase::Command::DefaultTo->id = Config.edg_id;
+    }
+
     cmds::cmd::CmdBase::Command::DefaultRespTimeout = Config.mqtt_resp_timeout;
     cmds::cmd::CmdMqtt::topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
     doMqttSubscribe(GMqttSignaler.mqtt);

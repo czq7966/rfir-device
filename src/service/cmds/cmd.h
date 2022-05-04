@@ -7,7 +7,8 @@
 #include "rfir/util/cjson/CJsonObject.hpp"
 #include "rfir/util/util.h"
 #include "rfir/service/cmds/cmd.h"
-#include "network/service/mqtt/client.h"
+#include "cmds/cmd/cmd-mqtt.h"
+// #include "network/service/mqtt/client.h"
 
 namespace service {
     namespace cmds {
@@ -47,7 +48,10 @@ namespace service {
             static bool OnCmd_getconfig(neb::CJsonObject* cmd);
         public:
             static bool OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data);
-
+        public:
+            static void* OnCommand(void* arg, void * p);
+            static bool  OnCmd_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
+            static bool  OnCmd_set(::cmds::cmd::CmdMqtt* cmd);
         };
     }
 }

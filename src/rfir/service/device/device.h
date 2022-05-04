@@ -18,7 +18,7 @@ namespace rfir {
                 static rfir::module::ttl::Config::Device* Init();
                 static rfir::module::ttl::Config::Device* GetConfig();
             public:
-                static void Start(rfir::module::device::Device::OnChange onChange);
+                static void Start(rfir::util::Event::Callback onChange);
                 static void Loop();
                 static void DoTimerReport(bool reset = false);     
                 static bool SendEncodeRaw();
