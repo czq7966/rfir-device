@@ -1,4 +1,5 @@
 #include "async-client.h"
+#include "rfir/util/event-timer.h"
 
 void network::module::mqtt::AClient::init(Params p){
     this->params = p;
@@ -21,13 +22,13 @@ void network::module::mqtt::AClient::init(Params p){
 };
 void network::module::mqtt::AClient::uninit(){};
 
-void network::module::mqtt::AClient::start(){
-
+void network::module::mqtt::AClient::start(Params p){
+    init(p);
 };
 void network::module::mqtt::AClient::loop(){
-    if (!mqtt.connected()){
-        connectToMqtt();
-    }
+    // if (!mqtt.connected()){
+    //     connectToMqtt();
+    // }
 };
 
 void network::module::mqtt::AClient::setWill(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length){
@@ -40,7 +41,7 @@ uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* 
 
 
 void network::module::mqtt::AClient::connectToMqtt() {
-    if (WiFi.isConnected()) {
+    if (WiFi.isConnected() && !mqtt.connected()) {
         Serial.println("Connecting to MQTT...");
         mqtt.connect();
     }
@@ -64,6 +65,8 @@ void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
 void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
     Serial.println("Disconnected from MQTT.");
     events.onMqttDisconnect.emit((void*)(int)reason);
+    if (WiFi.isConnected())
+        GEventTimer.delay(1000, std::bind(&AClient::doConnectToMqtt, this, std::placeholders::_1, std::placeholders::_2) );
 }
 
 void network::module::mqtt::AClient::onMqttSubscribe(uint16_t packetId, uint8_t qos) {    
@@ -119,5 +122,10 @@ void network::module::mqtt::AClient::onMqttPublish(uint16_t packetId) {
     events.onMqttPublish.emit((void*)packetId);
 }
 
+
+void*  network::module::mqtt::AClient::doConnectToMqtt(void* arg, void* p) {
+    this->connectToMqtt();
+    return 0;
+}
 
 network::module::mqtt::AClient GMqttClient;

@@ -163,6 +163,7 @@ rfir::module::device::Networking::~Networking(){
 void rfir::module::device::Networking::start(){
     setWill();
     GCmdDispatcher.events.onConnect.add((void*)this, std::bind(&Networking::onConnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    GCmdDispatcher.events.onDisconnect.add((void*)this, std::bind(&Networking::onDisconnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
     GCmdDispatcher.events.onCommand.add((void*)this, std::bind(&Networking::onCommand, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
@@ -188,14 +189,21 @@ bool rfir::module::device::Networking::login(){
 
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    GDevice->getProps(&pld);
+    
+    GDevice->getCommonProps(&pld);
+    Config.getIds(&pld);
 
     return cmd.send();
 };
+
+void rfir::module::device::Networking::delayLogin(int delay_ms) {
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doLogin, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+};
+
 bool rfir::module::device::Networking::handshake(){
     if (Config.edg_id == "") {
-        //没有边缘服务，5秒后重新登入
-        GEventTimer.delay(5000, std::bind(&Networking::doLogin, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+        //没有边缘服务，3秒后重新登入
+        delayLogin();
         return false;
     } 
 
@@ -221,30 +229,47 @@ bool rfir::module::device::Networking::heartbeat(){
     return 0;
 };
 
-void rfir::module::device::Networking::setWill(){
-    cmds::cmd::CmdMqtt cmd;
-    cmd.command.head.to.type ="";
-    cmd.command.head.to.id = "";
-    cmd.command.head.entry.type ="evt";
-    cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
-    neb::CJsonObject& pld = cmd.command.pld;
-    GDevice->getCommonProps(&pld);
-    pld.Add("online", false);
-    GMqttClient.setWill(cmd.expandTopic().c_str(), cmd.command.toString().c_str());
+bool rfir::module::device::Networking::setWill(){
+    if (Config.edg_id != "") {
+        cmds::cmd::CmdMqtt cmd;
+        cmd.command.head.entry.type ="evt";
+        cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
+        neb::CJsonObject& pld = cmd.command.pld;
+        GDevice->getCommonProps(&pld);
+        pld.Add("online", false);
+        Config.getIds(&pld);
+        GMqttClient.setWill(cmd.expandTopic().c_str(), cmd.command.toString().c_str());
+        return 1;
+    }
+    return 0;
 };
 
 void rfir::module::device::Networking::setOnline(){
     cmds::cmd::CmdMqtt cmd;
-    cmd.command.head.to.type ="";
-    cmd.command.head.to.id = "";
     cmd.command.head.entry.type ="evt";
     cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
     neb::CJsonObject& pld = cmd.command.pld;
     GDevice->getCommonProps(&pld);
     pld.Add("online", true);
+    Config.getIds(&pld);
+
     GMqttClient.publish(cmd.expandTopic().c_str(), cmd.command.toString().c_str(), true);
 };
 
+void rfir::module::device::Networking::subscribe() {
+    
+    if (!GMqttClient.mqtt.connected())
+        return;
+
+    std::string topic;
+    topic = Config.getSvcTopic(Config.mqtt_dev_svc_login);
+    GMqttClient.mqtt.unsubscribe(topic.c_str()); 
+    GMqttClient.mqtt.subscribe(topic.c_str(), 2);
+
+    topic = Config.getSvcTopic(Config.mqtt_dev_svc_handshake);
+    GMqttClient.mqtt.unsubscribe(topic.c_str()); 
+    GMqttClient.mqtt.subscribe(topic.c_str(), 2);
+}
 
 // void rfir::module::device::Networking::onLoginReq(cmds::cmd::CmdBase* cmd){
 
@@ -280,18 +305,19 @@ void rfir::module::device::Networking::setOnline(){
 // };
 
 void* rfir::module::device::Networking::onConnect(void* arg, void* p){
+    subscribe();
     setOnline();
     if (!this->m_logined) {
         this->m_logined = true;
         this->login();
     }   
     return 0;
-    // auto netorking = (rfir::module::device::Networking*) arg;
-    // if (!netorking->m_logined) {
-    //     netorking->m_logined = true;
-    //     netorking->login();
-    // }
-    // return 0;
+
+};
+
+void* rfir::module::device::Networking::onDisconnect(void* arg, void* p){
+    setWill();
+    return 0;
 };
 
 void* rfir::module::device::Networking::onCommand(void* arg, void* p){
@@ -307,23 +333,46 @@ void* rfir::module::device::Networking::doLogin(void* arg, void* p) {
 void* rfir::module::device::Networking::onLoginResp(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::OnLoginResp");  
     auto cmd = (cmds::cmd::CmdMqtt*)p;
-    cmd->command.pld.Get("app", Config.app_id);
-    cmd->command.pld.Get("mod", Config.dom_id);
-    cmd->command.pld.Get("dsp", Config.dsp_id);
-    cmd->command.pld.Get("edg", Config.edg_id);
-    this->m_logined = Config.edg_id != "";
-    handshake();     
+    std::string app_id, dom_id, dsp_id, edg_id;
 
-    // rfir::module::device::Networking* netorking = (rfir::module::device::Networking*)arg;
-    // netorking->onLoginResp((cmds::cmd::CmdBase*)(p), netorking);
+    cmd->command.pld.Get("app", app_id);
+    cmd->command.pld.Get("mod", dom_id);
+    cmd->command.pld.Get("dsp", dsp_id);
+    cmd->command.pld.Get("edg", edg_id);
+    
+    
+    m_logined = app_id != "" && dom_id != "" && dsp_id !="" && edg_id != "";
+
+    if (m_logined) {
+        if (app_id != Config.app_id || dom_id != Config.dom_id || dsp_id != Config.dsp_id || edg_id != Config.edg_id){
+            Config.app_id = app_id;
+            Config.dom_id = dom_id;
+            Config.dsp_id = dsp_id;
+            Config.edg_id = edg_id;
+            Config.fixup();
+            GMqttClient.mqtt.disconnect();
+            GMqttClient.mqtt.connect();
+            return 0;
+        }   
+
+        handshake();
+    } else {
+        delayLogin();
+    }
+
     return 0;
 };
 
 void* rfir::module::device::Networking::onLoginTimeout(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::OnLoginTimeout");
-    login();
-    // auto netorking = (rfir::module::device::Networking*) arg;
-    // netorking->onLoginTimeout((uint32_t)(p));
+    m_logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
+
+    if (m_logined) {
+        handshake();
+    } else {
+        login();
+    }
+
     return 0;
 };
 

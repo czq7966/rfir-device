@@ -67,6 +67,7 @@
 
 #define MQTT_DSP_SVC_LOGIN          "login"
 #define MQTT_EDG_SVC_HANDSHAKE      "handshake"
+#define MQTT_EDG_EVT_STATUS         "status"
 
 #define MQTT_DEV_SVC_LOGIN          "login"
 #define MQTT_DEV_SVC_HANDSHAKE      "handshake"

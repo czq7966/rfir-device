@@ -64,10 +64,12 @@ namespace rfir {
                 virtual void loop();
             public:
                 bool login();
+                void delayLogin(int delay_ms = 3000);
                 bool handshake();
                 bool heartbeat();
-                void setWill();
+                bool setWill();
                 void setOnline();
+                void subscribe();
             public:
                 // void onLoginReq(::cmds::cmd::CmdBase* cmd);
                 // void onLoginResp(::cmds::cmd::CmdBase* cmd, void* _this = 0);
@@ -78,6 +80,7 @@ namespace rfir {
                 // void onHandshakeTimeout(uint32_t sid);
             public:
                 void* onConnect(void* arg, void* p);
+                void* onDisconnect(void* arg, void* p);
                 void* onCommand(void* arg, void* p);
             public:
                 void* doLogin(void* arg, void* p);

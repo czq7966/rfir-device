@@ -8,8 +8,8 @@ void network::service::mqtt::AClient::Start(network::module::mqtt::AClient::Para
     //     client = new network::module::mqtt::AClient();
     // client->init(p);
     // client->start();
-    GMqttClient.start();
-    GMqttClient.init(p);
+    GMqttClient.start(p);
+    // GMqttClient.init(p);
 }
 
 void network::service::mqtt::AClient::Loop() {

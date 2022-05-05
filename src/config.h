@@ -82,6 +82,7 @@
 #include <string>
 #include <vector>
 #include "rfir/util/event-emitter.h"
+#include "rfir/util/cjson/CJsonObject.hpp"
 class GlobalConfig {
 public:
     struct Events
@@ -92,9 +93,9 @@ public:
     Events events;    
 public:
     GlobalConfig();
-    ~GlobalConfig();
-    void fixVars(std::string& name);
     void fixup();
+    std::string getSvcTopic(std::string func);
+    void        getIds(neb::CJsonObject* pld);
 public:
     //App
     std::string app_id = MQTT_APP;
@@ -131,15 +132,16 @@ public:
 
     std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
     std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
+    std::string mqtt_edg_evt_status = MQTT_EDG_EVT_STATUS;
 
     std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
     std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
     std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;
     std::string mqtt_dev_svc_set = MQTT_DEV_SVC_SET;
 
-    std::string mqtt_dev_evt_heartbeat = MQTT_DEV_EVT_HEARTBEAT;
-    std::string mqtt_dev_evt_reboot = MQTT_DEV_EVT_REBOOT;
-    std::string mqtt_dev_evt_reconnect = MQTT_DEV_EVT_RECONNECT;
+    // std::string mqtt_dev_evt_heartbeat = MQTT_DEV_EVT_HEARTBEAT;
+    // std::string mqtt_dev_evt_reboot = MQTT_DEV_EVT_REBOOT;
+    // std::string mqtt_dev_evt_reconnect = MQTT_DEV_EVT_RECONNECT;
     std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
     std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
 
