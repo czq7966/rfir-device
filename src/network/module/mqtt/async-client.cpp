@@ -2,9 +2,10 @@
 #include "rfir/util/event-timer.h"
 
 void network::module::mqtt::AClient::init(Params p){
+    Serial.println(" network::module::mqtt::AClient::init");
     this->params = p;
-    WiFi.onStationModeGotIP(std::bind(&AClient::onWifiConnect, this, std::placeholders::_1));
-    WiFi.onStationModeDisconnected(std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1));
+    wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&AClient::onWifiConnect, this, std::placeholders::_1));
+    wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1));
 
     mqtt.onConnect(std::bind(&AClient::onMqttConnect, this, std::placeholders::_1));
     mqtt.onDisconnect(std::bind(&AClient::onMqttDisconnect, this, std::placeholders::_1));

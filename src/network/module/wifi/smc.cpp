@@ -148,8 +148,10 @@ void network::module::wifi::SMC::setupConfigPin() {
 }
 
 void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
-    if (eventType == ace_button::AceButton::kEventPressed || eventType ==  ace_button::AceButton::kEventReleased)
+    if (eventType == ace_button::AceButton::kEventPressed || eventType ==  ace_button::AceButton::kEventReleased) {
+        Serial.println("kEventPressed or kEventReleased");
         return;
+    }
 
     if (this->params->smcIng) {
 #ifdef ESP8266                   
@@ -223,8 +225,8 @@ void network::module::wifi::SMC::setupSMC() {
 void network::module::wifi::SMC::startSMC() {
     Serial.println("startSMC");
 #ifdef ESP8266
-    jw.startSmartConfig();
     this->params->smcIng = true;
+    jw.startSmartConfig();
 #endif    
 }
 
@@ -376,3 +378,5 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
 #endif    
 }
 
+
+network::module::wifi::SMC GSmartConfig;

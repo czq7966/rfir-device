@@ -1,5 +1,6 @@
 #include "client.h"
 #include "config.h"
+#include "rfir/util/event-timer.h"
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -21,11 +22,17 @@ bool network::module::wifi::Client::Params::assign(Params& p) {
 
 void network::module::wifi::Client::start(Params& p) {
     this->params.assign(p);
-    // this->multiCheckOrReset2();
+    //V2
+    startV2();    
 }
 
 void network::module::wifi::Client::loop() {
-    this->multiCheckOrReset2();
+    //V1
+    // this->multiCheckOrReset2();
+
+    //V2
+    loopV2();
+
 }
 
 void network::module::wifi::Client::multiCheckOrReset() {
@@ -247,3 +254,79 @@ int  network::module::wifi::Client::connectWifi() {
     return 1; 
 
 }
+
+
+//V2
+
+void  network::module::wifi::Client::startV2(){
+    wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&Client::onWifiConnect,this, std::placeholders::_1));
+    wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&Client::onWifiDisconnect,this, std::placeholders::_1));
+    delayConnectToWifi();
+};
+void  network::module::wifi::Client::loopV2(){
+    checkLed();
+};
+
+void  network::module::wifi::Client::checkLed() {
+    if (led.IsRunning()) {
+        led.Update();
+    }
+};
+
+void  network::module::wifi::Client::connectToWifi(){
+    if (WiFi.isConnected()) 
+        return;
+
+#ifdef ESP8266     
+        WiFi.setPhyMode(WIFI_PHY_MODE_11B);
+#endif 
+    led.Reset();
+    if (connect_start_time == 0 )
+        connect_start_time = millis();
+    
+    if (connect_ssid_index < params.ssid.size()) {
+        std::string ssid_ssid = this->params.ssid[connect_ssid_index];
+        std::string ssid_pass = this->params.pass[connect_ssid_index];
+        WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());        
+    }    
+};
+
+void  network::module::wifi::Client::delayConnectToWifi(){
+    GEventTimer.delay(500, std::bind(&Client::doConnectToWifi, this, std::placeholders::_1, std::placeholders::_2));
+};
+
+void* network::module::wifi::Client::doConnectToWifi(void* arg, void* p) {
+    connectToWifi();
+    return 0;
+}
+
+void network::module::wifi::Client::onWifiConnect(const WiFiEventStationModeGotIP& event) {
+    connect_start_time = 0;
+    led.Stop();
+};
+
+void network::module::wifi::Client::onWifiDisconnect(const WiFiEventStationModeDisconnected& event){
+    connect_ssid_index++;
+    if (connect_ssid_index >= params.ssid.size()) {
+        int timeout = 0;
+        for (size_t i = 0; i < params.ssid.size(); i++)
+        {
+            timeout += params.timeout[i];
+        }
+
+        if (millis() - connect_start_time >= timeout ) {
+            #ifdef ESP8266                   
+                ESP.reset();
+            #else
+                ESP.restart();
+            #endif              
+        }        
+
+        connect_ssid_index = 0;
+    }
+
+    delayConnectToWifi();
+};
+
+
+network::module::wifi::Client GWifiClient;

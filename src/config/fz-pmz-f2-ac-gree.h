@@ -15,7 +15,11 @@
 #define SERIAL_BAUD                 115200
 #define SERIAL_CONFIG               SERIAL_8N1
 
+//LED
+#define LED_PIN                     BUILTIN_LED
+
 //OTA
+#define DISABLE_OTA                 TRUE
 #define OTA_UPDATE                  true
 #define OTA_VERSION_NUMBER          8
 #define OTA_VERSION_STRING          "8.0"
@@ -27,7 +31,8 @@
 #define WIFI_PASSWORD_DEV           {"12345678"}
 #define WIFI_SSID                   {"MERCURY_95E8"}
 #define WIFI_PASSWORD               {"12345678"}
-#define WIFI_RESET_TIMEOUT          {30, 30, 30, 30, 30}  //多少时间内WIFI未连接，重启，单位秒
+#define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
+#define WIFI_CONNECT_JLED           JLed(LED_PIN).LowActive().Blink(500, 500).Forever()
 
 //AP
 #define AP_MODE                     false //true时，支持热点配网
@@ -39,7 +44,7 @@
 #define AP_CONFIG_PIN_TIMEOUT       5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位秒
 
 //SMC
-#define SMC_MODE                     true //true时，支持智能配网
+// #define DISABLE_SMC                  TRUE
 #define SMC_CONFIG_VERSION           "0" //该值若有修改，SMC配置将被重置
 #define SMC_CONFIG_FILE              "/config/smc.json"
 #define SMC_CONFIG_PIN               0  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
@@ -47,7 +52,7 @@
 #define SMC_CONFIG_PIN_NUM           3  //连续按键次数
 #define SMC_CONFIG_PIN_DELAY         0  //按键Delay(秒，0默认)
 #define SMC_CONFIG_PIN_INTERVAL      3  //几秒之内完成动作(秒)，如3秒之内
-#define SMC_CONFIG_JLED              JLed(BUILTIN_LED).Blink(500, 5000).Forever()
+#define SMC_CONFIG_JLED              JLed(LED_PIN).Blink(500, 5000).Forever()
 #define SMC_CONFIG_TIMEOUT           5  //几分钟之内需完成配网，之外重启(分)
 
 //MQTT

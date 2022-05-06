@@ -91,4 +91,6 @@ namespace network {
     }
 }
 
+extern network::module::wifi::SMC GSmartConfig;
+
 #endif

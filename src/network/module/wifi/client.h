@@ -32,9 +32,30 @@ namespace network {
                 int  connectWifi();
                 void multiCheckOrReset2();
 
+            //V2
+            public:
+                int connect_ssid_index = 0;
+                unsigned long connect_start_time = 0;            
+                JLed led = WIFI_CONNECT_JLED;
+                WiFiEventHandler wifiConnectHandler;
+                WiFiEventHandler wifiDisconnectHandler;
+
+                void  startV2();
+                void  loopV2();
+
+                void  checkLed();
+                void  connectToWifi();
+                void  delayConnectToWifi();
+                void* doConnectToWifi(void* arg, void* p);
+            public:
+                void onWifiConnect(const WiFiEventStationModeGotIP& event);
+                void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+
             };
         }
     }
 }
+
+extern network::module::wifi::Client GWifiClient;
 
 #endif

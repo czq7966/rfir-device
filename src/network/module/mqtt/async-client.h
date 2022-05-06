@@ -52,6 +52,8 @@ namespace network {
             public:
                 AsyncMqttClient mqtt;
                 Params params;
+                WiFiEventHandler wifiConnectHandler;
+                WiFiEventHandler wifiDisconnectHandler;
             public:
 
                 void init(Params p);

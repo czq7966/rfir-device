@@ -192,25 +192,32 @@ void setup() {
     np.ap.configPin = AP_CONFIG_PIN;    
     np.ap.configPinTimeout = AP_CONFIG_PIN_TIMEOUT;
     #endif
-    //SMC
-    #ifdef SMC_MODE
-    np.smcMode = SMC_MODE;
-    np.smc.configVersion = SMC_CONFIG_VERSION;
-    np.smc.configFile = SMC_CONFIG_FILE; 
-    np.smc.configPin = SMC_CONFIG_PIN;  
-    np.smc.configPinType = SMC_CONFIG_PIN_TYPE;
-    np.smc.configPinNum = SMC_CONFIG_PIN_NUM;
-    np.smc.configPinDelay = SMC_CONFIG_PIN_DELAY;
-    np.smc.configPinInterval = SMC_CONFIG_PIN_INTERVAL;
-    np.smc.configTimeout = SMC_CONFIG_TIMEOUT;
-    #endif    
 
-    network::service::wifi::Client::Start(np);
+    // network::service::wifi::Client::Start(np);
 
     #ifdef WIFI_SSID_DEV
     np.ssid.push_back(WIFI_SSID_DEV);
     np.pass.push_back(WIFI_PASSWORD_DEV);    
     #endif
+
+    GWifiClient.start(np);
+
+    //SMC
+    #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
+    auto smc = &GWifiClient.params.smc;
+    smc->configVersion = SMC_CONFIG_VERSION;
+    smc->configFile = SMC_CONFIG_FILE; 
+    smc->configPin = SMC_CONFIG_PIN;  
+    smc->configPinType = SMC_CONFIG_PIN_TYPE;
+    smc->configPinNum = SMC_CONFIG_PIN_NUM;
+    smc->configPinDelay = SMC_CONFIG_PIN_DELAY;
+    smc->configPinInterval = SMC_CONFIG_PIN_INTERVAL;
+    smc->configTimeout = SMC_CONFIG_TIMEOUT;
+    GSmartConfig.start(smc);
+    #endif   
+
+    
+
 #endif
 
 #if !(defined(DISABLE_OTA) && DISABLE_OTA == TRUE)
@@ -258,6 +265,8 @@ void setup() {
     Config.events.onFixup.add((void*)&OnConfigFixup, OnConfigFixup, 0);
     Config.fixup();
 
+
+
 }
 
 
@@ -265,7 +274,11 @@ void setup() {
 void loop() {
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)    
     //wifi循环
-    network::service::wifi::Client::Loop();
+    // network::service::wifi::Client::Loop();
+    GWifiClient.loop();
+    #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
+    GSmartConfig.loop();
+    #endif
 #endif
 
 #if !(defined(DISABLE_OTA) && DISABLE_OTA == TRUE)
