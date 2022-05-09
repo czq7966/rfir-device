@@ -58,6 +58,7 @@ namespace rfir {
             public:
                 bool m_logined = false;
                 int  m_handshake_failed_count = 0;
+                int  m_handshake_success_count = 0;
             public:
                 ~Networking();
                 virtual void start();
@@ -66,7 +67,6 @@ namespace rfir {
                 bool login();
                 void delayLogin(int delay_ms = 3000);
                 bool handshake();
-                bool heartbeat();
                 bool setWill();
                 void setOnline();
                 void subscribe();
@@ -82,6 +82,7 @@ namespace rfir {
                 void* onConnect(void* arg, void* p);
                 void* onDisconnect(void* arg, void* p);
                 void* onCommand(void* arg, void* p);
+                void* onConfigFixup(void* arg, void* p);
             public:
                 void* doLogin(void* arg, void* p);
                 void* onLoginReq(void* arg, void* p);
@@ -90,6 +91,7 @@ namespace rfir {
                 void* onHandshakeReq(void* arg, void* p);
                 void* onHandshakeResp(void* arg, void* p);                
                 void* onHandshakeTimeout(void* arg, void* p);
+                void* onEdgSatusChange(void* arg, void* p);
             };
 
         }

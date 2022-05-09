@@ -25,6 +25,8 @@ namespace network {
                     std::string user;
                     std::string pass;
                     std::string id;
+                    std::string willTopic;
+                    std::string willPayload;
                 };
 
                 struct Message {

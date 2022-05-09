@@ -123,6 +123,11 @@ void network::module::wifi::SMC::setupConfigPin() {
 
         ace_button::ButtonConfig* buttonConfig = button->getButtonConfig();
         buttonConfig->setEventHandler(HandleAceButtonEvent);
+    buttonConfig->setFeature(ace_button::ButtonConfig::kFeatureClick);
+    buttonConfig->setFeature(ace_button::ButtonConfig::kFeatureDoubleClick);
+    buttonConfig->setFeature(ace_button::ButtonConfig::kFeatureLongPress);
+    buttonConfig->setFeature(ace_button::ButtonConfig::kFeatureRepeatPress);
+  return;
         if (this->params->configPinType > 0)
             buttonConfig->setFeature(this->params->configPinType);
         if (this->params->configPinDelay > 0) {
@@ -148,6 +153,7 @@ void network::module::wifi::SMC::setupConfigPin() {
 }
 
 void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
+    Serial.println("network::module::wifi::SMC::handleButtonEvent");
     if (eventType == ace_button::AceButton::kEventPressed || eventType ==  ace_button::AceButton::kEventReleased) {
         Serial.println("kEventPressed or kEventReleased");
         return;
@@ -200,8 +206,9 @@ void network::module::wifi::SMC::OnConfigPinChanged() {
 }
 
 void network::module::wifi::SMC::checkConfigPin() {
-    if (this->button)
+    if (this->button) {
         this->button->check();
+    }
 }
 
 void network::module::wifi::SMC::setupSMC() {

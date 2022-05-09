@@ -95,6 +95,7 @@ public:
     GlobalConfig();
     void fixup();
     std::string getSvcTopic(std::string func);
+    std::string getEdgStatusTopic();
     void        getIds(neb::CJsonObject* pld);
 public:
     //App

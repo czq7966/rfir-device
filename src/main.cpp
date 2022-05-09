@@ -154,6 +154,7 @@ void doMqttSubscribe(network::module::mqtt::AClient* aclient) {
 // }
 
 void* OnConfigFixup(void* arg, void* p) {
+    DEBUGER.println("OnConfigFixup");
     cmds::cmd::CmdBase::Command::DefaultFrom->type ="dev";
     cmds::cmd::CmdBase::Command::DefaultFrom->id = Config.dev_id;
     if (Config.edg_id != "") {
@@ -261,12 +262,10 @@ void setup() {
 
     //定时器
     GEventTimer.start();
-    //全局配置
-    Config.events.onFixup.add((void*)&OnConfigFixup, OnConfigFixup, 0);
+
+    //全局配置, 得先于其他组件
+    Config.events.onFixup.add(0, OnConfigFixup, 0);    
     Config.fixup();
-
-
-
 }
 
 

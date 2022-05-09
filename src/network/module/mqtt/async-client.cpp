@@ -33,7 +33,9 @@ void network::module::mqtt::AClient::loop(){
 };
 
 void network::module::mqtt::AClient::setWill(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length){
-    mqtt.setWill(topic, qos, retain, payload, length);
+    params.willTopic = topic;
+    params.willPayload = payload;
+    mqtt.setWill(params.willTopic.c_str(), qos, retain, params.willPayload.c_str());
 };
 uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length, bool dup, uint16_t message_id){
     return mqtt.publish(topic, qos, retain, payload, length, dup, message_id);
@@ -64,7 +66,7 @@ void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
 }
 
 void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-    Serial.println("Disconnected from MQTT.");
+    Serial.printf("Disconnected from MQTT. %d \r\n", reason);
     events.onMqttDisconnect.emit((void*)(int)reason);
     if (WiFi.isConnected())
         GEventTimer.delay(1000, std::bind(&AClient::doConnectToMqtt, this, std::placeholders::_1, std::placeholders::_2) );
