@@ -99,10 +99,13 @@ bool rfir::module::device::ac::CL_VRHALL_FF_Okonoff::isPowerOff(bool realtime) {
 }
 
 void rfir::module::device::ac::CL_VRHALL_FF_Okonoff::powerOff() {
-    this->ac->setPower(false);
-    rfir::service::device::Device::SendEncodeRaw();   
-    int count = 0;     
-    this->setRaw(this->getRaw(count));
+    // this->ac->setPower(false);
+    // rfir::service::device::Device::SendEncodeRaw();   
+    // int count = 0;     
+    // this->setRaw(this->getRaw(count));
+
+
+    //Todo
 }
 
 //cancel = reset == true && timeout <= 0

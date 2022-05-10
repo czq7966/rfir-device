@@ -118,6 +118,10 @@ bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){
     return result;
 };
 
+bool cmds::cmd::CmdDispatcher::removeWaitResp(uint32_t sid){
+    GEventTimer.remove(sid);
+    return wait_resp_queue.remove(sid);
+};
 
 //MqttDispatcher
 

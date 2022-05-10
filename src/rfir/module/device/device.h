@@ -54,50 +54,46 @@ namespace rfir {
                 virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) ; 
             };
 
-            class Networking {
-            public:
-                bool m_logined = false;
-                int  m_handshake_failed_count = 0;
-                int  m_handshake_success_count = 0;
-            public:
-                ~Networking();
-                virtual void start();
-                virtual void loop();
-            public:
-                bool login();
-                void delayLogin(int delay_ms = 3000);
-                bool handshake();
-                bool setWill();
-                void setOnline();
-                void subscribe();
-            public:
-                // void onLoginReq(::cmds::cmd::CmdBase* cmd);
-                // void onLoginResp(::cmds::cmd::CmdBase* cmd, void* _this = 0);
-                // void onLoginTimeout(uint32_t sid);
-
-                // void onHandshakeReq(::cmds::cmd::CmdBase* cmd);
-                // void onHandshakeResp(::cmds::cmd::CmdBase* cmd);
-                // void onHandshakeTimeout(uint32_t sid);
-            public:
-                void* onConnect(void* arg, void* p);
-                void* onDisconnect(void* arg, void* p);
-                void* onCommand(void* arg, void* p);
-                void* onConfigFixup(void* arg, void* p);
-            public:
-                void* doLogin(void* arg, void* p);
-                void* onLoginReq(void* arg, void* p);
-                void* onLoginResp(void* arg, void* p);
-                void* onLoginTimeout(void* arg, void* p);
-                void* onHandshakeReq(void* arg, void* p);
-                void* onHandshakeResp(void* arg, void* p);                
-                void* onHandshakeTimeout(void* arg, void* p);
-                void* onEdgSatusChange(void* arg, void* p);
-            };
+            // class Networking {
+            // public:
+            //     bool m_logined = false;
+            //     uint32_t m_login_handler = 0;
+            //     uint32_t  m_handshake_handler = 0;
+            //     int  m_handshake_failed_count = 0;
+            //     int  m_handshake_success_count = 0;
+            // public:
+            //     ~Networking();
+            //     virtual void start();
+            //     virtual void loop();
+            // public:
+            //     bool login();
+            //     void delayLogin(int delay_ms = 3000);
+            //     bool handshake();
+            //     bool setWill();
+            //     void setOnline();
+            //     void subscribe();
+            // public:
+            //     void* onConnect(void* arg, void* p);
+            //     void* onDisconnect(void* arg, void* p);
+            //     void* onCommand(void* arg, void* p);
+            //     void* onConfigFixup(void* arg, void* p);
+            // public:
+            //     void* doLogin(void* arg, void* p);
+            //     void* onLoginReq(void* arg, void* p);
+            //     void* onLoginResp(void* arg, void* p);
+            //     void* onLoginTimeout(void* arg, void* p);
+            //     void* onHandshakeReq(void* arg, void* p);
+            //     void* onHandshakeResp(void* arg, void* p);                
+            //     void* onHandshakeTimeout(void* arg, void* p);
+            //     void* onEdgSatusChange(void* arg, void* p);
+            // };
 
         }
     }
 }
 
 extern rfir::module::device::Device* GDevice;
+
+// extern rfir::module::device::Networking GNetworking;
 
 #endif //

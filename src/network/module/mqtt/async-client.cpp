@@ -2,7 +2,7 @@
 #include "rfir/util/event-timer.h"
 
 void network::module::mqtt::AClient::init(Params p){
-    Serial.println(" network::module::mqtt::AClient::init");
+    DEBUGER.println(" network::module::mqtt::AClient::init");
     this->params = p;
     wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&AClient::onWifiConnect, this, std::placeholders::_1));
     wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1));
@@ -45,67 +45,67 @@ uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* 
 
 void network::module::mqtt::AClient::connectToMqtt() {
     if (WiFi.isConnected() && !mqtt.connected()) {
-        Serial.println("Connecting to MQTT...");
+        DEBUGER.println("Connecting to MQTT...");
         mqtt.connect();
     }
 }
 
 void network::module::mqtt::AClient::onWifiConnect(const WiFiEventStationModeGotIP& event) {
-    Serial.println("Connected to Wi-Fi.");
+    DEBUGER.println("Connected to Wi-Fi.");
     connectToMqtt();
 }
 
 void network::module::mqtt::AClient::onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
-    Serial.println("Disconnected from Wi-Fi.");
+    DEBUGER.println("Disconnected from Wi-Fi.");
 
 }
 
 void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
-    Serial.println("Connected to MQTT.");
+    DEBUGER.println("Connected to MQTT.");
     events.onMqttConnect.emit((void*)(int)sessionPresent);
 }
 
 void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-    Serial.printf("Disconnected from MQTT. %d \r\n", reason);
+    DEBUGER.printf("Disconnected from MQTT. %d \r\n", reason);
     events.onMqttDisconnect.emit((void*)(int)reason);
     if (WiFi.isConnected())
         GEventTimer.delay(1000, std::bind(&AClient::doConnectToMqtt, this, std::placeholders::_1, std::placeholders::_2) );
 }
 
 void network::module::mqtt::AClient::onMqttSubscribe(uint16_t packetId, uint8_t qos) {    
-    Serial.println("Subscribe acknowledged.");
-    Serial.print("  packetId: ");
-    Serial.println(packetId);
-    Serial.print("  qos: ");
-    Serial.println(qos);
+    DEBUGER.println("Subscribe acknowledged.");
+    DEBUGER.print("  packetId: ");
+    DEBUGER.println(packetId);
+    DEBUGER.print("  qos: ");
+    DEBUGER.println(qos);
 
     events.onMqttSubscribe.emit((void*)(int)packetId);
 }
 
 void network::module::mqtt::AClient::onMqttUnsubscribe(uint16_t packetId) {
-    Serial.println("Unsubscribe acknowledged.");
-    Serial.print("  packetId: ");
-    Serial.println(packetId);
+    DEBUGER.println("Unsubscribe acknowledged.");
+    DEBUGER.print("  packetId: ");
+    DEBUGER.println(packetId);
 
     events.onMqttUnsubscribe.emit((void*)(int)packetId);
 }
 
 void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-    Serial.println("Publish received.");
-    Serial.print("  topic: ");
-    Serial.println(topic);
-    Serial.print("  qos: ");
-    Serial.println(properties.qos);
-    Serial.print("  dup: ");
-    Serial.println(properties.dup);
-    Serial.print("  retain: ");
-    Serial.println(properties.retain);
-    Serial.print("  len: ");
-    Serial.println(len);
-    Serial.print("  index: ");
-    Serial.println(index);
-    Serial.print("  total: ");
-    Serial.println(total);
+    DEBUGER.println("Publish received.");
+    DEBUGER.print("  topic: ");
+    DEBUGER.println(topic);
+    DEBUGER.print("  qos: ");
+    DEBUGER.println(properties.qos);
+    DEBUGER.print("  dup: ");
+    DEBUGER.println(properties.dup);
+    DEBUGER.print("  retain: ");
+    DEBUGER.println(properties.retain);
+    DEBUGER.print("  len: ");
+    DEBUGER.println(len);
+    DEBUGER.print("  index: ");
+    DEBUGER.println(index);
+    DEBUGER.print("  total: ");
+    DEBUGER.println(total);
 
     Message msg;
     msg.client = (void*)this;
@@ -119,9 +119,9 @@ void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, A
 }
 
 void network::module::mqtt::AClient::onMqttPublish(uint16_t packetId) {
-    Serial.println("Publish acknowledged.");
-    Serial.print("  packetId: ");
-    Serial.println(packetId);
+    DEBUGER.println("Publish acknowledged.");
+    DEBUGER.print("  packetId: ");
+    DEBUGER.println(packetId);
     events.onMqttPublish.emit((void*)packetId);
 }
 

@@ -63,10 +63,8 @@
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              1  //单位秒
 #define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
-#define MQTT_SUB_TOPIC              "111ndiot/nd/device/event/report/{did}"
-#define MQTT_PUB_TOPIC              "222ndiot/nd/device/event/report/{did}"
 
-
+//MQTT Topic
 #define MQTT_APP                    "ndiot"
 #define MQTT_DOMAIN                 "nd"
 
@@ -79,9 +77,6 @@
 #define MQTT_DEV_SVC_GET            "get"
 #define MQTT_DEV_SVC_SET            "set"
 
-#define MQTT_DEV_EVT_HEARTBEAT      "heartbeat"
-#define MQTT_DEV_EVT_REBOOT         "reboot"
-#define MQTT_DEV_EVT_RECONNECT      "reconnect"
 #define MQTT_DEV_EVT_REPORT         "report"
 #define MQTT_DEV_EVT_STATUS         "status"
 

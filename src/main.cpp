@@ -8,10 +8,13 @@
 #include "network/service/mqtt/async-client.h"
 #include "network/service/ota/updater.h"
 
+#include "rfir/module/device/networking.h"
+#include "rfir/module/device/device.h"
+
 #include "rfir/service/serial/receiver.h"
 #include "rfir/service/serial/sender.h"
 #include "rfir/service/cmds/cmd.h"
-#include "rfir/service/device/device.h"
+
 #include "rfir/util/event-timer.h"
 #include "rfir/rfir.h"
 
@@ -55,8 +58,8 @@ void onRfirDecoded(rfir::module::ttl::Decoder* decoder, rfir::module::ttl::Decod
     //     network::service::mqtt::Client::Publish(payload);
     // } 
 
-    if (data->count > 0) 
-        service::cmds::Cmd::OnCmd_decoded(data);
+    // if (data->count > 0) 
+    //     service::cmds::Cmd::OnCmd_decoded(data);
     return;
 }
 
@@ -95,7 +98,7 @@ void onRfirStart(void* data) {
     DEBUGER.println("onRfirStart");
 
     //初始化设备
-    auto d = rfir::service::device::Device::Init();
+    auto d = GDevice->init();
     rfir::service::cmds::Cmd::onCmd_sniff(d);
     rfir::service::cmds::Cmd::onCmd_send(d);
 }
@@ -105,28 +108,7 @@ std::string getMqttSvcTopic(std::string func) {
 
 }
 
-void doMqttSubscribe(network::module::mqtt::AClient* aclient) {
-    
-    if (!aclient->mqtt.connected())
-        return;
 
-    std::string topic;
-    topic = getMqttSvcTopic(Config.mqtt_dev_svc_login);
-    aclient->mqtt.unsubscribe(topic.c_str()); 
-    aclient->mqtt.subscribe(topic.c_str(), 2);
-
-    topic = getMqttSvcTopic(Config.mqtt_dev_svc_handshake);
-    aclient->mqtt.unsubscribe(topic.c_str()); 
-    aclient->mqtt.subscribe(topic.c_str(), 2);
-
-    topic = getMqttSvcTopic(Config.mqtt_dev_svc_get);
-    aclient->mqtt.unsubscribe(topic.c_str()); 
-    aclient->mqtt.subscribe(topic.c_str(), 2);
-
-    topic = getMqttSvcTopic(Config.mqtt_dev_svc_set);
-    aclient->mqtt.unsubscribe(topic.c_str()); 
-    aclient->mqtt.subscribe(topic.c_str(), 2);
-}
 
 // uint16_t onMqttConnect_count = 0;
 // void onMqttConnect(network::module::mqtt::Client::MQTT* mqtt) {
@@ -249,12 +231,18 @@ void setup() {
 
     // network::service::mqtt::AClient::Start(mp);
 #endif
+    //启动组网组件
+    GNetworking.start();
 
     //启动收发器
-    rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
+    // rfir::Start(onRfirStart, onRfirSniffed, onRfirDecoded, onRfirEncoded, onRfirSended);
 
-    //启动 设备
-    rfir::service::device::Device::Start(onDeviceChange);
+
+    //启动设备
+    GDevice->start(0);
+
+    // //启动 设备
+    // rfir::service::device::Device::Start(onDeviceChange);
     
 
     //业务开始
@@ -291,11 +279,16 @@ void loop() {
     GMqttClient.loop();
 #endif    
 
-    //收发器循环
-    rfir::Loop();  
+    //组网组件循环
+    GNetworking.loop();
 
+    // //收发器循环
+    // rfir::Loop();  
+
+    //设备循环
+    GDevice->loop();
     //业务循环
-    service::cmds::Cmd::Loop();
+    // service::cmds::Cmd::Loop();
 
     //定时器
     GEventTimer.loop();

@@ -3,11 +3,15 @@
 
 void rfir::util::Debuger::begin(unsigned long baud) {};
 void rfir::util::Debuger::begin(unsigned long baud, SerialConfig config){};
-void rfir::util::Debuger::print(const char* bytes){};
-void rfir::util::Debuger::println(const char* bytes){};
-void rfir::util::Debuger::println(String bytes){};
-void rfir::util::Debuger::printf(const char *format, ...){};
-void rfir::util::Debuger::flush(void) {};
+// void rfir::util::Debuger::print(const char* bytes){};
+// void rfir::util::Debuger::println(const char* bytes){};
+// void rfir::util::Debuger::println(String bytes){};
+// void rfir::util::Debuger::println(int num){};
+// void rfir::util::Debuger::println(uint16_t num){};
+// void rfir::util::Debuger::println(bool b){};
+// void rfir::util::Debuger::println(size_t b){};
+// void rfir::util::Debuger::printf(const char *format, ...){};
+// void rfir::util::Debuger::flush(void) {};
 size_t rfir::util::Debuger::write(uint8_t c){ return 1;}
 size_t rfir::util::Debuger::write(const uint8_t *buffer, size_t size){ return size;}
 int rfir::util::Debuger::read(void) {  return 0; }

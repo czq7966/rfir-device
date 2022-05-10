@@ -56,8 +56,6 @@ bool rfir::util::EventTimer::checkAndEmitTimeout(){
 };
 
 int  rfir::util::EventTimer::delay(int timeout_ms, EventEmitter::Callback cb, void* cbArg , uint32_t handler){
-    Serial.print("rfir::util::EventTimer::delay:");
-    Serial.println(timeout_ms);
     unsigned long outtime = millis() + timeout_ms;    
     handler = handler != 0 ? handler : generateHandler();
     addHandler(handler, outtime, cb, cbArg);    

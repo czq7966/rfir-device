@@ -1,216 +1,215 @@
 #include "cmd.h"
-#include "rfir/service/device/device.h"
+#include "rfir/module/device/device.h"
 #include "cmds/cmd/cmd-dispatcher.h"
 
 
 void service::cmds::Cmd::Start() {
-    // GCmdDispatcher.events.onCommand.add()
+    GCmdDispatcher.events.onCommand.add((void*)&OnCommand, OnCommand);
+    GDevice->events.onChange.add((void*)OnDeviceChange, OnDeviceChange );
+}
+
+// void service::cmds::Cmd::Loop() {
+//     //Device循环
+//     // rfir::service::device::Device::Loop();
+// }
+
+// bool service::cmds::Cmd::PublishMsg(const char* msg) {
+//     // return network::service::mqtt::Client::Publish(msg);
+//     return 0;
+// }
+
+// void service::cmds::Cmd::DoTimerReport(bool reset) {
+//     GDevice->doTimerReport(reset);
+// }
+
+
+// bool service::cmds::Cmd::OnCmd(const char* cmd) {
+//     DEBUGER.print("OnCmd: ");
+//     DEBUGER.println(cmd);
+//     neb::CJsonObject jcmd;
+//     if ((int)cmd != 0 &&  jcmd.Parse(cmd)) {
+//         return OnCmd(&jcmd);
+//     }
+//     return false;     
+// }
+
+// bool service::cmds::Cmd::OnCmd(neb::CJsonObject* jcmd) {
+//     neb::CJsonObject hd;
+//     int cmd = 0;                
+//     if (jcmd->Get("hd", hd) && hd.Get("cmd", cmd)) {
+//         switch (cmd)
+//         {
+//             case ECmdId::HeartBeet: //心跳        
+//                 return OnCmd_heartbeat(jcmd);
+//                 break;
+//             case ECmdId::GetSet: //空调控制   
+//                 return OnCmd_set(jcmd);
+//                 break;            
+//             case ECmdId::GetVersion: //获取版本号    
+//                 return OnCmd_getversion(jcmd);
+//                 break;   
+//             case ECmdId::Update: //更新/升级             
+//             case ECmdId::Reboot: //重启
+//                 return OnCmd_reboot(jcmd, "reboot by user cmd");                
+//                 break;
+//             case ECmdId::IRSend: //射频发送指令
+//             case ECmdId::Send:
+//                 return OnCmd_send(jcmd);
+//                 break;  
+//             case ECmdId::Sniff:
+//                 return OnCmd_sniff(jcmd);
+//                 break;                  
+//             case ECmdId::Codec:
+//                 return OnCmd_codec(jcmd);
+//                 break;   
+//             case ECmdId::Config:
+//                 return OnCmd_config(jcmd);
+//                 break;                                          
+//             default:
+//                 break;
+//         }        
+//     }
     
+//     return false;
+// }
 
-}
-
-void service::cmds::Cmd::Loop() {
-    //Device循环
-    rfir::service::device::Device::Loop();
-}
-
-bool service::cmds::Cmd::PublishMsg(const char* msg) {
-    // return network::service::mqtt::Client::Publish(msg);
-    return 0;
-}
-
-void service::cmds::Cmd::DoTimerReport(bool reset) {
-    rfir::service::device::Device::DoTimerReport(reset);
-}
-
-
-bool service::cmds::Cmd::OnCmd(const char* cmd) {
-    DEBUGER.print("OnCmd: ");
-    DEBUGER.println(cmd);
-    neb::CJsonObject jcmd;
-    if ((int)cmd != 0 &&  jcmd.Parse(cmd)) {
-        return OnCmd(&jcmd);
-    }
-    return false;     
-}
-
-bool service::cmds::Cmd::OnCmd(neb::CJsonObject* jcmd) {
-    neb::CJsonObject hd;
-    int cmd = 0;                
-    if (jcmd->Get("hd", hd) && hd.Get("cmd", cmd)) {
-        switch (cmd)
-        {
-            case ECmdId::HeartBeet: //心跳        
-                return OnCmd_heartbeat(jcmd);
-                break;
-            case ECmdId::GetSet: //空调控制   
-                return OnCmd_set(jcmd);
-                break;            
-            case ECmdId::GetVersion: //获取版本号    
-                return OnCmd_getversion(jcmd);
-                break;   
-            case ECmdId::Update: //更新/升级             
-            case ECmdId::Reboot: //重启
-                return OnCmd_reboot(jcmd, "reboot by user cmd");                
-                break;
-            case ECmdId::IRSend: //射频发送指令
-            case ECmdId::Send:
-                return OnCmd_send(jcmd);
-                break;  
-            case ECmdId::Sniff:
-                return OnCmd_sniff(jcmd);
-                break;                  
-            case ECmdId::Codec:
-                return OnCmd_codec(jcmd);
-                break;   
-            case ECmdId::Config:
-                return OnCmd_config(jcmd);
-                break;                                          
-            default:
-                break;
-        }        
-    }
+// bool service::cmds::Cmd::OnCmd_heartbeat(neb::CJsonObject* _cmd, uint8_t st) {
+//     neb::CJsonObject cmd, hd, pld;
+//     hd.Add("did", rfir::util::Util::GetChipId());
+//     hd.Add("cmd", ECmdId::HeartBeet);
+//     hd.Add("stp", 1);
+//     pld.Add("st", st);
+//     pld.Add("ver", OTA_VERSION_NUMBER);
+//     pld.Add("rssi", WiFi.RSSI());
+//     pld.Add("mac", rfir::util::Util::GetMacAddress());
+// #ifdef DEV_FACTURER
+//     pld.Add("facturer", DEV_FACTURER);
+//     pld.Add("model", DEV_MODEL);
+// #endif  
+//     cmd.Add("hd", hd);
+//     cmd.Add("pld", pld);
     
-    return false;
-}
+//     return PublishMsg(cmd.ToString().c_str());
+// }
 
-bool service::cmds::Cmd::OnCmd_heartbeat(neb::CJsonObject* _cmd, uint8_t st) {
-    neb::CJsonObject cmd, hd, pld;
-    hd.Add("did", rfir::util::Util::GetChipId());
-    hd.Add("cmd", ECmdId::HeartBeet);
-    hd.Add("stp", 1);
-    pld.Add("st", st);
-    pld.Add("ver", OTA_VERSION_NUMBER);
-    pld.Add("rssi", WiFi.RSSI());
-    pld.Add("mac", rfir::util::Util::GetMacAddress());
-#ifdef DEV_FACTURER
-    pld.Add("facturer", DEV_FACTURER);
-    pld.Add("model", DEV_MODEL);
-#endif  
-    cmd.Add("hd", hd);
-    cmd.Add("pld", pld);
+// bool service::cmds::Cmd::OnCmd_reboot(neb::CJsonObject* _doc, std::string reason) {
+//     neb::CJsonObject cmd, hd, pld;
+//     hd.Add("did", rfir::util::Util::GetChipId());
+//     hd.Add("cmd", ECmdId::Reboot);
+//     hd.Add("stp", 1);
+
+//     pld.Add("extra", reason);
+
+//     cmd.Add("hd", hd);
+//     cmd.Add("pld", pld);
     
-    return PublishMsg(cmd.ToString().c_str());
-}
+//     PublishMsg(cmd.ToString().c_str());
 
-bool service::cmds::Cmd::OnCmd_reboot(neb::CJsonObject* _doc, std::string reason) {
-    neb::CJsonObject cmd, hd, pld;
-    hd.Add("did", rfir::util::Util::GetChipId());
-    hd.Add("cmd", ECmdId::Reboot);
-    hd.Add("stp", 1);
-
-    pld.Add("extra", reason);
-
-    cmd.Add("hd", hd);
-    cmd.Add("pld", pld);
-    
-    PublishMsg(cmd.ToString().c_str());
-
-    delay(5000);
-#ifdef ESP8266    
-    ESP.reset();
-#else 
-    ESP.restart();
-#endif
-    delay(1000);
-    return true;
-}
+//     delay(5000);
+// #ifdef ESP8266    
+//     ESP.reset();
+// #else 
+//     ESP.restart();
+// #endif
+//     delay(1000);
+//     return true;
+// }
 
 
-bool service::cmds::Cmd::OnCmd_getversion(neb::CJsonObject* _doc) {
-    neb::CJsonObject cmd, hd, pld;
-    hd.Add("did", rfir::util::Util::GetChipId());
-    hd.Add("cmd", ECmdId::GetVersion);
-    hd.Add("stp", 1);
+// bool service::cmds::Cmd::OnCmd_getversion(neb::CJsonObject* _doc) {
+//     neb::CJsonObject cmd, hd, pld;
+//     hd.Add("did", rfir::util::Util::GetChipId());
+//     hd.Add("cmd", ECmdId::GetVersion);
+//     hd.Add("stp", 1);
 
-    pld.Add("version", OTA_VERSION_NUMBER);
-    pld.Add("rssi", WiFi.RSSI());
-    pld.Add("mac", rfir::util::Util::GetMacAddress());
+//     pld.Add("version", OTA_VERSION_NUMBER);
+//     pld.Add("rssi", WiFi.RSSI());
+//     pld.Add("mac", rfir::util::Util::GetMacAddress());
 
-    cmd.Add("hd", hd);
-    cmd.Add("pld", pld);    
-    return PublishMsg(cmd.ToString().c_str());
-}
+//     cmd.Add("hd", hd);
+//     cmd.Add("pld", pld);    
+//     return PublishMsg(cmd.ToString().c_str());
+// }
 
-bool service::cmds::Cmd::OnCmd_set(neb::CJsonObject* cmd) {
-    neb::CJsonObject hd, pld;
-    std::string key;
-    int stp;
+// bool service::cmds::Cmd::OnCmd_set(neb::CJsonObject* cmd) {
+//     neb::CJsonObject hd, pld;
+//     std::string key;
+//     int stp;
 
-    if (!cmd->Get("pld", pld) || !pld.GetKey(key) || (cmd->Get("hd", hd) && hd.Get("stp", stp) && stp == 2))
-        return OnCmd_get(&pld);
-    else {
-        auto result = rfir::service::device::Device::OnCmd_set(&pld);
-        DoTimerReport(true);
-        return result;
-    }
-}
+//     if (!cmd->Get("pld", pld) || !pld.GetKey(key) || (cmd->Get("hd", hd) && hd.Get("stp", stp) && stp == 2))
+//         return OnCmd_get(&pld);
+//     else {
+//         auto result = GDevice->onCmd_set(&pld);
+//         DoTimerReport(true);
+//         return result;
+//     }
+// }
 
-bool service::cmds::Cmd::OnCmd_get(neb::CJsonObject* _pld, std::string reason) {
-    neb::CJsonObject cmd, hd, pld;
-    if (_pld)  pld = *_pld;
-    hd.Add("did", rfir::util::Util::GetChipId());
-    hd.Add("cmd", ECmdId::GetSet);
-    hd.Add("stp", 1);
-    rfir::service::device::Device::OnCmd_get(&pld);
-    pld.Add("reason", reason);
+// bool service::cmds::Cmd::OnCmd_get(neb::CJsonObject* _pld, std::string reason) {
+//     neb::CJsonObject cmd, hd, pld;
+//     if (_pld)  pld = *_pld;
+//     hd.Add("did", rfir::util::Util::GetChipId());
+//     hd.Add("cmd", ECmdId::GetSet);
+//     hd.Add("stp", 1);
+//     rfir::service::device::Device::OnCmd_get(&pld);
+//     pld.Add("reason", reason);
 
-    cmd.Add("hd", hd);
-    cmd.Add("pld", pld);    
-    return PublishMsg(cmd.ToString().c_str());
-}
+//     cmd.Add("hd", hd);
+//     cmd.Add("pld", pld);    
+//     return PublishMsg(cmd.ToString().c_str());
+// }
 
-bool service::cmds::Cmd::OnCmd_send(neb::CJsonObject* cmd) {
-    auto rfir = rfir::GetRfir();
-    rfir->sniffer->stop();
-    rfir::service::cmds::Cmd::onCmd(cmd); 
-    rfir->sniffer->start();
-    return true;
-}
+// bool service::cmds::Cmd::OnCmd_send(neb::CJsonObject* cmd) {
+//     auto rfir = rfir::GetRfir();
+//     rfir->sniffer->stop();
+//     rfir::service::cmds::Cmd::onCmd(cmd); 
+//     rfir->sniffer->start();
+//     return true;
+// }
 
-bool service::cmds::Cmd::OnCmd_sniff(neb::CJsonObject* cmd) {
-    auto rfir = rfir::GetRfir();
-    rfir->sniffer->stop();
-    rfir::service::cmds::Cmd::onCmd(cmd); 
-    rfir->sniffer->start();
-    return true;
-}
+// bool service::cmds::Cmd::OnCmd_sniff(neb::CJsonObject* cmd) {
+//     auto rfir = rfir::GetRfir();
+//     rfir->sniffer->stop();
+//     rfir::service::cmds::Cmd::onCmd(cmd); 
+//     rfir->sniffer->start();
+//     return true;
+// }
 
 
-bool service::cmds::Cmd::OnCmd_codec(neb::CJsonObject* cmd) {
-    return rfir::service::cmds::Cmd::onCmd(cmd); 
-}
+// bool service::cmds::Cmd::OnCmd_codec(neb::CJsonObject* cmd) {
+//     return rfir::service::cmds::Cmd::onCmd(cmd); 
+// }
 
-bool service::cmds::Cmd::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
-    if (rfir::service::device::Device::OnCmd_decoded(data)) {
-        OnCmd_get((neb::CJsonObject*)0, "IR Change");
+// bool service::cmds::Cmd::OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
+//     if (GDevice->onCmd_decoded(data)) {
+//         OnCmd_get((neb::CJsonObject*)0, "IR Change");
         
-        //Report
-        DoTimerReport(true);
-        return true;
-    }
-    return false;
-}
+//         //Report
+//         DoTimerReport(true);
+//         return true;
+//     }
+//     return false;
+// }
 
 
-bool service::cmds::Cmd::OnCmd_config(neb::CJsonObject* cmd) {
-    neb::CJsonObject pld, content;
-    std::string fn;
-    if (cmd->Get("pld", pld)) {
-        if (pld.Get("filename", fn)) {
+// bool service::cmds::Cmd::OnCmd_config(neb::CJsonObject* cmd) {
+//     neb::CJsonObject pld, content;
+//     std::string fn;
+//     if (cmd->Get("pld", pld)) {
+//         if (pld.Get("filename", fn)) {
 
-        }
-    }
-        return OnCmd_getconfig(&pld);
-    return false;
-}
+//         }
+//     }
+//         return OnCmd_getconfig(&pld);
+//     return false;
+// }
 
-bool service::cmds::Cmd::OnCmd_getconfig(neb::CJsonObject* cmd) {
-    neb::CJsonObject pld;
-    if (cmd->Get("pld", pld))
-        return rfir::service::device::Device::OnCmd_config(&pld);
-    return false;
-}
+// bool service::cmds::Cmd::OnCmd_getconfig(neb::CJsonObject* cmd) {
+//     neb::CJsonObject pld;
+//     if (cmd->Get("pld", pld))
+//         return rfir::service::device::Device::OnCmd_config(&pld);
+//     return false;
+// }
 
 void* service::cmds::Cmd::OnCommand(void* arg, void * p){
     auto cmd = (::cmds::cmd::CmdMqtt*)p;
@@ -229,11 +228,21 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 };
 
 
+void* service::cmds::Cmd::OnDeviceChange(void* arg, void * p){
+    if (p) 
+        OnCmd_get(0, (const char*)p);
+    else 
+        OnCmd_get(0);
+    
+    return 0;
+};
+
 bool  service::cmds::Cmd::OnCmd_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
     ::cmds::cmd::CmdMqtt cmd;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    rfir::service::device::Device::OnCmd_get(&pld);
+
+    GDevice->onCmd_get(&pld);
     hd.ReplaceAdd("reason", reason);
 
     if (reqCmd){
@@ -249,7 +258,7 @@ bool  service::cmds::Cmd::OnCmd_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
 };
 
 bool  service::cmds::Cmd::OnCmd_set(::cmds::cmd::CmdMqtt* cmd){
-    auto result = rfir::service::device::Device::OnCmd_set(&cmd->command.pld);
-    DoTimerReport(true);
+    auto result = GDevice->onCmd_set(&cmd->command.pld);
+    GDevice->doTimerReport(true);
     return result;    
 };

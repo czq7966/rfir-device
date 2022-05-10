@@ -109,7 +109,7 @@ void rfir::module::sensor::HLW8110::Start_Recv_UartData(unsigned char len, unsig
     int c = -1;
     HLW8110_Start_Recv_UartData_time = millis();
     while ((u8_RX_Index < len) && (millis() - HLW8110_Start_Recv_UartData_time <= timeout_ms)) {
-        c = DEBUGER.read();
+        c = USART.read();
         if (c >=0) {
             u8_RxBuf[u8_RX_Index] = (char)c;
             u8_RX_Index++;

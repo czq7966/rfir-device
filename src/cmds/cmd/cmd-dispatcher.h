@@ -27,6 +27,7 @@ namespace cmds {
             Events events;
             rfir::util::MapFactory<uint32_t, cmds::cmd::CmdBase::Events > wait_resp_queue;
             bool sendCmd(cmds::cmd::CmdBase* cmd);
+            bool removeWaitResp(uint32_t sid);
         public:
             void* onConnect(void* arg, void* p);
             void* onDisconnect(void* arg, void* p);

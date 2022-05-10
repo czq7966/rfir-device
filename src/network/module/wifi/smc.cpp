@@ -12,7 +12,7 @@ network::module::wifi::SmcButton::SmcButton(uint8_t pin, uint8_t defaultReleased
 }
 
 void network::module::wifi::SMC::start(Params* p) {
-    Serial.println("SMC_start");
+    DEBUGER.println("SMC_start");
     this->params = p;
     this->setupSMC();
     this->setupConfigPin();
@@ -115,8 +115,8 @@ smc_messages_t network::module::wifi::SMC::SmcLastMessage = 0;
 #endif
 void network::module::wifi::SMC::setupConfigPin() {
     if (this->params->configPin >=0) {
-        Serial.print("configPin:");
-        Serial.println(this->params->configPin);
+        DEBUGER.print("configPin:");
+        DEBUGER.println(this->params->configPin);
         button = new SmcButton(this->params->configPin);
         button->arg = this;
         pinMode(this->params->configPin, INPUT_PULLUP);
@@ -153,9 +153,9 @@ void network::module::wifi::SMC::setupConfigPin() {
 }
 
 void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
-    Serial.println("network::module::wifi::SMC::handleButtonEvent");
+    DEBUGER.println("network::module::wifi::SMC::handleButtonEvent");
     if (eventType == ace_button::AceButton::kEventPressed || eventType ==  ace_button::AceButton::kEventReleased) {
-        Serial.println("kEventPressed or kEventReleased");
+        DEBUGER.println("kEventPressed or kEventReleased");
         return;
     }
 
@@ -189,10 +189,10 @@ void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button
 }
 
 void network::module::wifi::SMC::HandleAceButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
-    Serial.print(F("handleEvent(): eventType: "));
-    Serial.print(eventType);
-    Serial.print(F("; buttonState: "));
-    Serial.println(buttonState);
+    DEBUGER.print(F("handleEvent(): eventType: "));
+    DEBUGER.print(eventType);
+    DEBUGER.print(F("; buttonState: "));
+    DEBUGER.println(buttonState);
 
     SmcButton* smcB = (SmcButton*)button;
     SMC* smc = (SMC*)(smcB->arg);
@@ -200,7 +200,7 @@ void network::module::wifi::SMC::HandleAceButtonEvent(ace_button::AceButton* but
 }
 
 void network::module::wifi::SMC::OnConfigPinChanged() {
-    Serial.print("OnConfigPinChanged");
+    DEBUGER.print("OnConfigPinChanged");
     ConfigPinChanged = true;
     ConfigPinChangeTime = millis();
 }
@@ -230,7 +230,7 @@ void network::module::wifi::SMC::setupSMC() {
 }
 
 void network::module::wifi::SMC::startSMC() {
-    Serial.println("startSMC");
+    DEBUGER.println("startSMC");
 #ifdef ESP8266
     this->params->smcIng = true;
     jw.startSmartConfig();
@@ -245,35 +245,35 @@ void network::module::wifi::SMC::SmcInfoWifi() {
 
         uint8_t * bssid = WiFi.BSSID();
 
-        Serial.printf("[WIFI] MODE STA -------------------------------------\n");
-        Serial.printf("[WIFI] SSID  %s\n", WiFi.SSID().c_str());
-        Serial.printf("[WIFI] PSW   %s\n", WiFi.psk().c_str());
-        Serial.printf("[WIFI] BSSID %02X:%02X:%02X:%02X:%02X:%02X\n",
+        DEBUGER.printf("[WIFI] MODE STA -------------------------------------\n");
+        DEBUGER.printf("[WIFI] SSID  %s\n", WiFi.SSID().c_str());
+        DEBUGER.printf("[WIFI] PSW   %s\n", WiFi.psk().c_str());
+        DEBUGER.printf("[WIFI] BSSID %02X:%02X:%02X:%02X:%02X:%02X\n",
             bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5]
         );
-        Serial.printf("[WIFI] CH    %d\n", WiFi.channel());
-        Serial.printf("[WIFI] RSSI  %d\n", WiFi.RSSI());
-        Serial.printf("[WIFI] IP    %s\n", WiFi.localIP().toString().c_str());
-        Serial.printf("[WIFI] MAC   %s\n", WiFi.macAddress().c_str());
-        Serial.printf("[WIFI] GW    %s\n", WiFi.gatewayIP().toString().c_str());
-        Serial.printf("[WIFI] MASK  %s\n", WiFi.subnetMask().toString().c_str());
-        Serial.printf("[WIFI] DNS   %s\n", WiFi.dnsIP().toString().c_str());
+        DEBUGER.printf("[WIFI] CH    %d\n", WiFi.channel());
+        DEBUGER.printf("[WIFI] RSSI  %d\n", WiFi.RSSI());
+        DEBUGER.printf("[WIFI] IP    %s\n", WiFi.localIP().toString().c_str());
+        DEBUGER.printf("[WIFI] MAC   %s\n", WiFi.macAddress().c_str());
+        DEBUGER.printf("[WIFI] GW    %s\n", WiFi.gatewayIP().toString().c_str());
+        DEBUGER.printf("[WIFI] MASK  %s\n", WiFi.subnetMask().toString().c_str());
+        DEBUGER.printf("[WIFI] DNS   %s\n", WiFi.dnsIP().toString().c_str());
         #if defined(ARDUINO_ARCH_ESP32)
-            Serial.printf("[WIFI] HOST  %s\n", WiFi.getHostname());
+            DEBUGER.printf("[WIFI] HOST  %s\n", WiFi.getHostname());
         #else
-            Serial.printf("[WIFI] HOST  %s\n", WiFi.hostname().c_str());
+            DEBUGER.printf("[WIFI] HOST  %s\n", WiFi.hostname().c_str());
         #endif
-        Serial.printf("[WIFI] ----------------------------------------------\n");
+        DEBUGER.printf("[WIFI] ----------------------------------------------\n");
 
     }
 
     if (WiFi.getMode() & WIFI_AP) {
 
-        Serial.printf("[WIFI] MODE AP --------------------------------------\n");
-        Serial.printf("[WIFI] SSID  %s\n", WiFi.softAPSSID().c_str());
-        Serial.printf("[WIFI] IP    %s\n", WiFi.softAPIP().toString().c_str());
-        Serial.printf("[WIFI] MAC   %s\n", WiFi.softAPmacAddress().c_str());
-        Serial.printf("[WIFI] ----------------------------------------------\n");
+        DEBUGER.printf("[WIFI] MODE AP --------------------------------------\n");
+        DEBUGER.printf("[WIFI] SSID  %s\n", WiFi.softAPSSID().c_str());
+        DEBUGER.printf("[WIFI] IP    %s\n", WiFi.softAPIP().toString().c_str());
+        DEBUGER.printf("[WIFI] MAC   %s\n", WiFi.softAPmacAddress().c_str());
+        DEBUGER.printf("[WIFI] ----------------------------------------------\n");
 
     }
 
@@ -286,39 +286,39 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_TURNING_OFF) {
-        Serial.printf("[WIFI] Turning OFF\n");
+        DEBUGER.printf("[WIFI] Turning OFF\n");
     }
 
     if (code == MESSAGE_TURNING_ON) {
-        Serial.printf("[WIFI] Turning ON\n");
+        DEBUGER.printf("[WIFI] Turning ON\n");
     }
 
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_SCANNING) {
-        Serial.printf("[WIFI] Scanning\n");
+        DEBUGER.printf("[WIFI] Scanning\n");
     }
 
     if (code == MESSAGE_SCAN_FAILED) {
-        Serial.printf("[WIFI] Scan failed\n");
+        DEBUGER.printf("[WIFI] Scan failed\n");
     }
 
     if (code == MESSAGE_NO_NETWORKS) {
-        Serial.printf("[WIFI] No networks found\n");
+        DEBUGER.printf("[WIFI] No networks found\n");
     }
 
     if (code == MESSAGE_NO_KNOWN_NETWORKS) {
-        Serial.printf("[WIFI] No known networks found\n");
+        DEBUGER.printf("[WIFI] No known networks found\n");
     }
 
     if (code == MESSAGE_FOUND_NETWORK) {
-        Serial.printf("[WIFI] %s\n", parameter);
+        DEBUGER.printf("[WIFI] %s\n", parameter);
     }
 
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_CONNECTING) {
-        Serial.printf("[WIFI] Connecting to %s\n", parameter);
+        DEBUGER.printf("[WIFI] Connecting to %s\n", parameter);
     }
 
     if (code == MESSAGE_CONNECT_WAITING) {
@@ -326,7 +326,7 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_CONNECT_FAILED) {
-        Serial.printf("[WIFI] Could not connect to %s\n", parameter);
+        DEBUGER.printf("[WIFI] Could not connect to %s\n", parameter);
     }
 
     if (code == MESSAGE_CONNECTED) {
@@ -334,7 +334,7 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_DISCONNECTED) {
-        Serial.printf("[WIFI] Disconnected\n");
+        DEBUGER.printf("[WIFI] Disconnected\n");
     }
 
     // -------------------------------------------------------------------------
@@ -344,43 +344,43 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_ACCESSPOINT_DESTROYED) {
-        Serial.printf("[WIFI] Disconnecting access point\n");
+        DEBUGER.printf("[WIFI] Disconnecting access point\n");
     }
 
     if (code == MESSAGE_ACCESSPOINT_CREATING) {
-        Serial.printf("[WIFI] Creating access point\n");
+        DEBUGER.printf("[WIFI] Creating access point\n");
     }
 
     if (code == MESSAGE_ACCESSPOINT_FAILED) {
-        Serial.printf("[WIFI] Could not create access point\n");
+        DEBUGER.printf("[WIFI] Could not create access point\n");
     }
 
     // ------------------------------------------------------------------------
 
     if (code == MESSAGE_WPS_START) {
-        Serial.printf("[WIFI] WPS started\n");
+        DEBUGER.printf("[WIFI] WPS started\n");
     }
 
     if (code == MESSAGE_WPS_SUCCESS) {
-        Serial.printf("[WIFI] WPS succeded!\n");
+        DEBUGER.printf("[WIFI] WPS succeded!\n");
     }
 
     if (code == MESSAGE_WPS_ERROR) {
-        Serial.printf("[WIFI] WPS failed\n");
+        DEBUGER.printf("[WIFI] WPS failed\n");
     }
 
     // ------------------------------------------------------------------------
 
     if (code == MESSAGE_SMARTCONFIG_START) {
-        Serial.printf("[WIFI] Smart Config started\n");
+        DEBUGER.printf("[WIFI] Smart Config started\n");
     }
 
     if (code == MESSAGE_SMARTCONFIG_SUCCESS) {
-        Serial.printf("[WIFI] Smart Config succeded!\n");
+        DEBUGER.printf("[WIFI] Smart Config succeded!\n");
     }
 
     if (code == MESSAGE_SMARTCONFIG_ERROR) {
-        Serial.printf("[WIFI] Smart Config failed\n");
+        DEBUGER.printf("[WIFI] Smart Config failed\n");
     }
 #endif    
 }
