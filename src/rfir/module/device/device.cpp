@@ -21,22 +21,6 @@ void rfir::module::device::Device::loop() {
     doRawChanged();
 }
 
-bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
-    pld->ReplaceAdd("id", Config.dev_id);
-    pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
-    pld->ReplaceAdd("mac", rfir::util::Util::GetMacAddress());
-    pld->ReplaceAdd("rssi", WiFi.RSSI());
-    pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
-    pld->ReplaceAdd("version", OTA_VERSION_NUMBER);
-    pld->ReplaceAdd("facturer", DEV_FACTURER);
-    pld->ReplaceAdd("model", DEV_MODEL);    
-    return true;
-};
-bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
-    onCmd_get(pld);
-    return getCommonProps(pld);
-};
-
 bool rfir::module::device::Device::onCmd_set(neb::CJsonObject* pld) {
     return 0;
 }
@@ -152,6 +136,44 @@ std::string rfir::module::device::Device::toHexString() {
     return rfir::util::Util::BytesToHexString(raw, count);
 }
 
+//************************* V2 ***********************
+
+bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
+    pld->ReplaceAdd("id", Config.dev_id);
+    pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
+    pld->ReplaceAdd("mac", rfir::util::Util::GetMacAddress());
+    pld->ReplaceAdd("rssi", WiFi.RSSI());
+    pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
+    pld->ReplaceAdd("version", OTA_VERSION_NUMBER);
+    pld->ReplaceAdd("facturer", DEV_FACTURER);
+    pld->ReplaceAdd("model", DEV_MODEL);    
+    return true;
+};
+bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
+    onSvc_get(pld);
+    return getCommonProps(pld);
+};
+
+
+// bool rfir::module::device::Device::doEvt_props_change(const char* reason){
+//     neb::CJsonObject pld;
+//     getProps(&pld);
+//     pld.ReplaceAdd("_reason", reason);
+//     events.onEvtPropsChange.emit(&pld);
+//     return 1;
+// };
+
+bool rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld){
+    return 0;
+}; 
+
+bool rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld){
+    return 0;
+}; 
+
+bool rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld){
+    return 0;
+};
 
 
 

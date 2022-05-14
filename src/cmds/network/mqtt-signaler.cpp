@@ -27,7 +27,7 @@ int cmds::network::MqttSignaler::write(cmds::cmd::CmdMqtt* cmd) {
             topic = cmd->expandTopic();
         }
         DEBUGER.println("cmds::network::MqttSignaler::write3");
-        return mqtt->publish(topic.c_str(), cmd->command.toString().c_str());
+        return mqtt->publish(topic.c_str(), cmd->command.toString().c_str(), cmd->command.head.retain, cmd->command.head.qos);
     }
 
     return 0;

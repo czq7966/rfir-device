@@ -40,6 +40,11 @@ namespace rfir {
                         virtual bool onCmd_get(neb::CJsonObject* pld) override; 
                         virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override;                         
                         void dump();
+                    public:
+                        virtual bool doEvt_penet();
+                        virtual bool onSvc_get(neb::CJsonObject* pld) override; 
+                        virtual bool onSvc_set(neb::CJsonObject* pld) override; 
+                        virtual bool onSvc_penet(neb::CJsonObject* pld) override;                    
                     };
                 }
             }

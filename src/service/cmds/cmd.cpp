@@ -5,7 +5,9 @@
 
 void service::cmds::Cmd::Start() {
     GCmdDispatcher.events.onCommand.add((void*)&OnCommand, OnCommand);
-    GDevice->events.onChange.add((void*)OnDeviceChange, OnDeviceChange );
+    // GDevice->events.onChange.add((void*)OnDeviceChange, OnDeviceChange );
+    GDevice->events.onEvtPropsChange.add((void*)OnEvt_props_change, OnEvt_props_change);
+    GDevice->events.onEvtPenet.add((void*)OnEvt_penet, OnEvt_penet);
 }
 
 // void service::cmds::Cmd::Loop() {
@@ -228,14 +230,14 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 };
 
 
-void* service::cmds::Cmd::OnDeviceChange(void* arg, void * p){
-    if (p) 
-        OnCmd_get(0, (const char*)p);
-    else 
-        OnCmd_get(0);
+// void* service::cmds::Cmd::OnDeviceChange(void* arg, void * p){
+//     if (p) 
+//         OnCmd_get(0, (const char*)p);
+//     else 
+//         OnCmd_get(0);
     
-    return 0;
-};
+//     return 0;
+// };
 
 bool  service::cmds::Cmd::OnCmd_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
     ::cmds::cmd::CmdMqtt cmd;
@@ -261,4 +263,70 @@ bool  service::cmds::Cmd::OnCmd_set(::cmds::cmd::CmdMqtt* cmd){
     auto result = GDevice->onCmd_set(&cmd->command.pld);
     GDevice->doTimerReport(true);
     return result;    
+};
+
+
+
+
+bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+    ::cmds::cmd::CmdMqtt cmd;
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+
+    GDevice->getProps(&pld);
+    pld.ReplaceAdd("_reason", reason);
+
+    if (reqCmd){
+        cmd.command.head = reqCmd->command.head;
+        cmd.command.head.from = reqCmd->command.head.to;
+        cmd.command.head.to = reqCmd->command.head.from;
+        cmd.command.head.stp = 1;
+    }
+
+    cmd.command.head.entry.type = "evt";
+    cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
+    return cmd.send();
+};
+
+bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* cmd){
+    auto result = GDevice->onSvc_set(&cmd->command.pld);
+    GDevice->doTimerReport(true);
+    return result;
+};
+
+bool  service::cmds::Cmd::OnSvc_penet(::cmds::cmd::CmdMqtt* cmd){
+    return  GDevice->onSvc_penet(&cmd->command.pld);
+};
+
+
+void*  service::cmds::Cmd::OnEvt_props_change(void* arg, void* p){
+    if (p)
+        OnSvc_get(0, (char*)p);
+    else
+        OnSvc_get(0);
+    // if (p) {
+    //     ::cmds::cmd::CmdMqtt cmd;
+    //     neb::CJsonObject& hd = cmd.command.hd;
+    //     neb::CJsonObject& pld = cmd.command.pld;
+    //     pld = *((neb::CJsonObject*)p);
+
+    //     cmd.command.head.entry.type = "evt";
+    //     cmd.command.head.entry.id = ::Config.mqtt_dev_svc_penet;
+    //     cmd.send();
+    // }
+    return 0;
+};
+
+void*  service::cmds::Cmd::OnEvt_penet(void* arg, void* p){
+    if (p) {
+        ::cmds::cmd::CmdMqtt cmd;
+        neb::CJsonObject& hd = cmd.command.hd;
+        neb::CJsonObject& pld = cmd.command.pld;
+        pld = *((neb::CJsonObject*)p);
+
+        cmd.command.head.entry.type = "evt";
+        cmd.command.head.entry.id = ::Config.mqtt_dev_svc_penet;
+        cmd.send();
+    }
+    return 0;
 };

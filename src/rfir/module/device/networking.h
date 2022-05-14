@@ -14,6 +14,7 @@ namespace rfir {
                 uint32_t  m_handshake_handler = 0;
                 int  m_handshake_failed_count = 0;
                 int  m_handshake_success_count = 0;
+                int  m_online_count = 0;
             public:
                 ~Networking();
                 virtual void start();
@@ -25,6 +26,7 @@ namespace rfir {
                 bool setWill();
                 void setOnline();
                 void subscribe();
+                void unsubscribe();
             public:
                 void* onConnect(void* arg, void* p);
                 void* onDisconnect(void* arg, void* p);
@@ -32,13 +34,13 @@ namespace rfir {
                 void* onConfigFixup(void* arg, void* p);
             public:
                 void* doLogin(void* arg, void* p);
-                void* onLoginReq(void* arg, void* p);
-                void* onLoginResp(void* arg, void* p);
-                void* onLoginTimeout(void* arg, void* p);
-                void* onHandshakeReq(void* arg, void* p);
-                void* onHandshakeResp(void* arg, void* p);                
-                void* onHandshakeTimeout(void* arg, void* p);
-                void* onEdgSatusChange(void* arg, void* p);
+                void* onDev_login_resp(void* arg, void* p);
+                void* onDev_login_timeout(void* arg, void* p);
+                void* onDev_handshake_resp(void* arg, void* p);                
+                void* onDev_handshake_timeout(void* arg, void* p);
+
+                void* onDsp_status_change(void* arg, void* p);
+                void* onEdg_status_change(void* arg, void* p);
             };
 
         }

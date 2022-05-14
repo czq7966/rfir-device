@@ -94,9 +94,12 @@ public:
 public:
     GlobalConfig();
     void fixup();
-    std::string getSvcTopic(std::string func);
-    std::string getEdgStatusTopic();
+    void fixupTopic();
+    // std::string getSvcTopic(std::string func);
+    // std::string getEdgStatusTopic();    
     void        getIds(neb::CJsonObject* pld);
+    std::string expandTopic(std::string topic);
+    
 public:
     //App
     std::string app_id = MQTT_APP;
@@ -131,20 +134,32 @@ public:
     std::string mqtt_password = MQTT_PASSWORD;
     int         mqtt_reset_timeout = MQTT_RESET_TIMEOUT;
 
+    //TOPIC
+
+    //DSP.pub
     std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
+    //DSP.sub
+    std::string mqtt_dsp_evt_status = MQTT_DSP_EVT_STATUS;
+
+    //EDG.pub
     std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
+    //EDG.sub
     std::string mqtt_edg_evt_status = MQTT_EDG_EVT_STATUS;
 
+
+    //DEV.pub
+    std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
+    std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
+    std::string mqtt_dev_evt_penet = MQTT_DEV_EVT_PENET;
+
+    //DEV.sub
     std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
     std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
     std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;
     std::string mqtt_dev_svc_set = MQTT_DEV_SVC_SET;
+    std::string mqtt_dev_svc_penet = MQTT_DEV_SVC_PENET;
 
-    // std::string mqtt_dev_evt_heartbeat = MQTT_DEV_EVT_HEARTBEAT;
-    // std::string mqtt_dev_evt_reboot = MQTT_DEV_EVT_REBOOT;
-    // std::string mqtt_dev_evt_reconnect = MQTT_DEV_EVT_RECONNECT;
-    std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
-    std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
+
 
     int         mqtt_resp_timeout = MQTT_RESP_TIMEOUT;
 };

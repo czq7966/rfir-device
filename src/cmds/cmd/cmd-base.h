@@ -22,6 +22,8 @@ namespace cmds {
 
                     uint32_t sid = 0;
                     uint32_t stp = 0;
+                    uint8_t  qos = 2;
+                    bool     retain = false;
                 };
 
 

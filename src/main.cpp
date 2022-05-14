@@ -146,7 +146,7 @@ void* OnConfigFixup(void* arg, void* p) {
 
     cmds::cmd::CmdBase::Command::DefaultRespTimeout = Config.mqtt_resp_timeout;
     cmds::cmd::CmdMqtt::topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
-    // doMqttSubscribe(GMqttSignaler.mqtt);
+
     return 0;
 }
 
@@ -196,7 +196,7 @@ void setup() {
     smc->configPinDelay = SMC_CONFIG_PIN_DELAY;
     smc->configPinInterval = SMC_CONFIG_PIN_INTERVAL;
     smc->configTimeout = SMC_CONFIG_TIMEOUT;
-    GSmartConfig.start(smc);
+    // GSmartConfig.start(smc);
     #endif   
 
     
@@ -264,7 +264,7 @@ void loop() {
     // network::service::wifi::Client::Loop();
     GWifiClient.loop();
     #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
-    GSmartConfig.loop();
+    // GSmartConfig.loop();
     #endif
 #endif
 

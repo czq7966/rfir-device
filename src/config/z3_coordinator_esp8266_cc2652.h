@@ -17,7 +17,6 @@
 //BUTTON
 #define BUTTON_PIN                  0
 
-
 //Serial
 #define SERIAL_BAUD                 115200
 #define SERIAL_CONFIG               SERIAL_8N1
@@ -78,19 +77,31 @@
 #define MQTT_APP                    "ndiot"
 #define MQTT_DOMAIN                 "nd"
 
+//DSP.pub
 #define MQTT_DSP_SVC_LOGIN          "login"
+//DSP.sub
+#define MQTT_DSP_EVT_STATUS         "{app}/{dom}/dsp/{dsp}/0/0/evt/status"
+
+//EDG.pub
 #define MQTT_EDG_SVC_HANDSHAKE      "handshake"
-#define MQTT_EDG_EVT_STATUS         "status"
+//EDG.sub
+#define MQTT_EDG_EVT_STATUS         "{app}/{dom}/edg/{edg}/0/0/evt/status"
 
-#define MQTT_DEV_SVC_LOGIN          "login"
-#define MQTT_DEV_SVC_HANDSHAKE      "handshake"
-#define MQTT_DEV_SVC_GET            "get"
-#define MQTT_DEV_SVC_SET            "set"
-
+//DEV.pub
 #define MQTT_DEV_EVT_REPORT         "report"
 #define MQTT_DEV_EVT_STATUS         "status"
+#define MQTT_DEV_EVT_PENET          "penet"
+//DEV.sub
+#define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/dsp/{dsp}/dev/{dev}/svc/login"
+#define MQTT_DEV_SVC_HANDSHAKE      "{app}/{dom}/edg/{edg}/dev/{dev}/svc/handshake"
+#define MQTT_DEV_SVC_GET            "{app}/{dom}/edg/{edg}/dev/{dev}/svc/get"
+#define MQTT_DEV_SVC_SET            "{app}/{dom}/edg/{edg}/dev/{dev}/svc/set"
+#define MQTT_DEV_SVC_PENET          "{app}/{dom}/edg/{edg}/dev/{dev}/svc/penet"
+
+
 
 #define MQTT_RESP_TIMEOUT           10*1000 //毫秒
-
+//Timer Report 
+#define TIMER_REPORT_TIMEOUT        60*1000   
 
 #endif //

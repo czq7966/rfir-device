@@ -18,6 +18,8 @@ namespace rfir {
                 struct Events
                 {
                     rfir::util::Event onChange;
+                    rfir::util::Event onEvtPenet;
+                    rfir::util::Event onEvtPropsChange;
                 };
                 
                 typedef std::function<void(void* device, const char* reason)> OnChange;
@@ -47,11 +49,20 @@ namespace rfir {
                 virtual bool setRaw(uint8_t* raw);
                 virtual uint8_t* getRaw(int& count);                
                 virtual uint16_t* getEncodeRaw(int& count);
-                virtual bool getCommonProps(neb::CJsonObject* pld);
-                virtual bool getProps(neb::CJsonObject* pld);
+
                 virtual bool onCmd_set(neb::CJsonObject* pld); 
                 virtual bool onCmd_get(neb::CJsonObject* pld); 
                 virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) ; 
+            //V2
+            public:
+                virtual bool getCommonProps(neb::CJsonObject* pld);
+                virtual bool getProps(neb::CJsonObject* pld);
+            // public:
+            //     virtual bool doEvt_props_change(const char* reason);
+            public:
+                virtual bool onSvc_get(neb::CJsonObject* pld); 
+                virtual bool onSvc_set(neb::CJsonObject* pld); 
+                virtual bool onSvc_penet(neb::CJsonObject* pld);
             };
 
             // class Networking {

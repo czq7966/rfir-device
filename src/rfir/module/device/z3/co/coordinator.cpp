@@ -75,9 +75,7 @@ void rfir::module::device::z3::co::Coordinator::start(void * p) {
 }
 
 void rfir::module::device::z3::co::Coordinator::loop() {
-    if (COSerial.available()) {
-        emitChange("");
-    }
+    doEvt_penet();
 }
 
 int rfir::module::device::z3::co::Coordinator::coRead(char buffer[]) {
@@ -134,7 +132,7 @@ uint16_t* rfir::module::device::z3::co::Coordinator::getEncodeRaw(int& count) {
 
 bool rfir::module::device::z3::co::Coordinator::onCmd_set(neb::CJsonObject* pld) {
     std::string code;
-    if (pld && pld->Get("code", code) ) {
+    if (pld && pld->Get("raw", code) ) {
         return coWriteBase64((char*)code.c_str(), code.length());
     }    
 
@@ -165,3 +163,30 @@ void  rfir::module::device::z3::co::Coordinator::dump() {
 void rfir::module::device::z3::co::Coordinator::doTimerReport(bool reset) {
     return;
 }
+
+
+bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
+    if (COSerial.available()) {
+        neb::CJsonObject pld;
+        std::string code = coReadBase64(coBuffer);
+        if (code.length() > 0) {
+            pld.Add("raw", code);
+            events.onEvtPenet.emit(&pld);
+            return 1;
+        } 
+    }
+    return 0;
+};
+
+bool rfir::module::device::z3::co::Coordinator::onSvc_get(neb::CJsonObject* pld){
+    return 0;
+}; 
+
+bool rfir::module::device::z3::co::Coordinator::onSvc_set(neb::CJsonObject* pld){
+    return 0;
+}; 
+
+bool rfir::module::device::z3::co::Coordinator::onSvc_penet(neb::CJsonObject* pld){
+    return 0;
+};
+
