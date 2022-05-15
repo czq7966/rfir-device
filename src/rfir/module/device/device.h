@@ -55,10 +55,13 @@ namespace rfir {
                 virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) ; 
             //V2
             public:
+                uint32_t m_timer_report_handler = 0;
+            public:
                 virtual bool getCommonProps(neb::CJsonObject* pld);
                 virtual bool getProps(neb::CJsonObject* pld);
-            // public:
-            //     virtual bool doEvt_props_change(const char* reason);
+            public:
+                virtual bool doEvtTimerReport(uint32_t timeout = DEVICE_TIMER_REPORT_TIMEOUT);
+                virtual void* onEvt_timer_report(void* arg, void* p);
             public:
                 virtual bool onSvc_get(neb::CJsonObject* pld); 
                 virtual bool onSvc_set(neb::CJsonObject* pld); 

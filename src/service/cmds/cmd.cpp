@@ -213,22 +213,6 @@ void service::cmds::Cmd::Start() {
 //     return false;
 // }
 
-void* service::cmds::Cmd::OnCommand(void* arg, void * p){
-    auto cmd = (::cmds::cmd::CmdMqtt*)p;
-    if (cmd->command.head.entry.type == "svc" && cmd->command.head.stp == 0) {
-        if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_get) {
-            return (void*)OnCmd_get(cmd);
-
-        }
-
-        if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_set) {
-            return (void*)OnCmd_set(cmd);
-        }
-    }
-
-    return 0;
-};
-
 
 // void* service::cmds::Cmd::OnDeviceChange(void* arg, void * p){
 //     if (p) 
@@ -239,33 +223,61 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 //     return 0;
 // };
 
-bool  service::cmds::Cmd::OnCmd_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
-    ::cmds::cmd::CmdMqtt cmd;
-    neb::CJsonObject& hd = cmd.command.hd;
-    neb::CJsonObject& pld = cmd.command.pld;
+// bool  service::cmds::Cmd::OnCmd_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+//     ::cmds::cmd::CmdMqtt cmd;
+//     neb::CJsonObject& hd = cmd.command.hd;
+//     neb::CJsonObject& pld = cmd.command.pld;
 
-    GDevice->onCmd_get(&pld);
-    hd.ReplaceAdd("reason", reason);
+//     GDevice->onCmd_get(&pld);
+//     hd.ReplaceAdd("reason", reason);
 
-    if (reqCmd){
-        cmd.command.head = reqCmd->command.head;
-        cmd.command.head.from = reqCmd->command.head.to;
-        cmd.command.head.to = reqCmd->command.head.from;
-        cmd.command.head.stp = 1;
+//     if (reqCmd){
+//         cmd.command.head = reqCmd->command.head;
+//         cmd.command.head.from = reqCmd->command.head.to;
+//         cmd.command.head.to = reqCmd->command.head.from;
+//         cmd.command.head.stp = 1;
+//     }
+
+//     cmd.command.head.entry.type = "evt";
+//     cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
+//     return cmd.send();
+// };
+
+// bool  service::cmds::Cmd::OnCmd_set(::cmds::cmd::CmdMqtt* cmd){
+//     auto result = GDevice->onCmd_set(&cmd->command.pld);
+//     GDevice->doTimerReport(true);
+//     return result;    
+// };
+
+
+void* service::cmds::Cmd::OnCommand(void* arg, void * p){
+    auto cmd = (::cmds::cmd::CmdMqtt*)p;
+    if (cmd->command.head.entry.type == "svc") {
+        //服务请求
+        if (cmd->command.head.stp == 0) {
+            if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_get) {
+                return (void*)OnSvc_get(cmd);
+            }
+
+            if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_set) {
+                return (void*)OnSvc_set(cmd);
+            }
+
+            if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_penet) {
+                return (void*)OnSvc_penet(cmd);
+            }
+        }
+
+        //服务响应
+        if (cmd->command.head.stp == 1) {
+            if (cmd->command.head.entry.id == ::Config.mqtt_edg_svc_handshake) {
+                return (void*)OnSvc_handshake_resp(cmd);
+            }
+        }
     }
 
-    cmd.command.head.entry.type = "evt";
-    cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
-    return cmd.send();
+    return 0;
 };
-
-bool  service::cmds::Cmd::OnCmd_set(::cmds::cmd::CmdMqtt* cmd){
-    auto result = GDevice->onCmd_set(&cmd->command.pld);
-    GDevice->doTimerReport(true);
-    return result;    
-};
-
-
 
 
 bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
@@ -285,7 +297,9 @@ bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
 
     cmd.command.head.entry.type = "evt";
     cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
-    return cmd.send();
+    auto result = cmd.send();
+    GDevice->doEvtTimerReport();
+    return result;
 };
 
 bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* cmd){
@@ -298,22 +312,15 @@ bool  service::cmds::Cmd::OnSvc_penet(::cmds::cmd::CmdMqtt* cmd){
     return  GDevice->onSvc_penet(&cmd->command.pld);
 };
 
+bool  service::cmds::Cmd::OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd){
+    return  GDevice->doEvtTimerReport(1000);
+};
 
 void*  service::cmds::Cmd::OnEvt_props_change(void* arg, void* p){
     if (p)
         OnSvc_get(0, (char*)p);
     else
         OnSvc_get(0);
-    // if (p) {
-    //     ::cmds::cmd::CmdMqtt cmd;
-    //     neb::CJsonObject& hd = cmd.command.hd;
-    //     neb::CJsonObject& pld = cmd.command.pld;
-    //     pld = *((neb::CJsonObject*)p);
-
-    //     cmd.command.head.entry.type = "evt";
-    //     cmd.command.head.entry.id = ::Config.mqtt_dev_svc_penet;
-    //     cmd.send();
-    // }
     return 0;
 };
 
@@ -325,7 +332,7 @@ void*  service::cmds::Cmd::OnEvt_penet(void* arg, void* p){
         pld = *((neb::CJsonObject*)p);
 
         cmd.command.head.entry.type = "evt";
-        cmd.command.head.entry.id = ::Config.mqtt_dev_svc_penet;
+        cmd.command.head.entry.id = ::Config.mqtt_dev_evt_penet;
         cmd.send();
     }
     return 0;

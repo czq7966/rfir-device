@@ -48,8 +48,7 @@ void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
             GEventTimer.remove(sid);
             this->wait_resp_queue.remove(sid, events);
             if (events.onResp.callback) {
-                events.onResp.callback(events.onResp.cbArg, p);
-                return (void*)1;
+                return events.onResp.callback(events.onResp.cbArg, p);
             }
         }
     }
@@ -83,25 +82,10 @@ void* cmds::cmd::CmdDispatcher::onRespTimeout(void* arg, void* p) {
     cmds::cmd::CmdBase::Events events;
     this->wait_resp_queue.remove(sid, events);
     if (events.onTimeout.callback) {
-        DEBUGER.println(String((int)events.onTimeout.cbArg).c_str());
-        events.onTimeout.callback(events.onTimeout.cbArg, p);
+        return events.onTimeout.callback(events.onTimeout.cbArg, p);
     }
   
     return 0;
-
-    // DEBUGER.println("cmds::cmd::CmdDispatcher::OnRespTimeout");
-    // auto sid = (uint32_t)p;
-    // auto dispatcher = (CmdDispatcher*)arg;
-    // cmds::cmd::CmdBase::Events* events = 0;
-    // dispatcher->wait_resp_queue.remove(sid, events);
-    // if (events && events->onTimeout.callback) {
-    //     DEBUGER.println(String((int)events->onTimeout.cbArg).c_str());
-    //     events->onTimeout.callback(events->onTimeout.cbArg, p);
-    // }
-
-    // delete events;
-    
-    // return 0;
 }
 
 bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){    
@@ -148,21 +132,6 @@ void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
     }
      
     return this->events.onCommand.emit(&cmd); 
-
-    // DEBUGER.print("cmds::cmd::MqttDispatcher::OnMqttMessage: ");
-    // auto msg = (::network::module::mqtt::Client::Message*)p;
-    // DEBUGER.println(msg->topic);
-    
-    // auto dispatcher = (CmdDispatcher*)arg;   
-    // cmds::cmd::CmdMqtt cmd;    
-    // cmd.topic = msg->topic;
-    // if (msg->bytes)
-    //     cmd.command.fromString(msg->bytes);
-    // if (cmd.command.isRespCmd() && OnResp(arg, &cmd) ) {
-    //     return 0;
-    // }
-     
-    // return dispatcher->events.onCommand.emit(&cmd); 
 }; 
 
 

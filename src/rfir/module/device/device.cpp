@@ -13,12 +13,12 @@ void rfir::module::device::Device::emitChange(const char* reason) {
 }
 
 void rfir::module::device::Device::start(void *) {
-    loadRaw();   
+    // loadRaw();   
 }
 
 void rfir::module::device::Device::loop() {
-    doTimerReport();
-    doRawChanged();
+    // doTimerReport();
+    // doRawChanged();
 }
 
 bool rfir::module::device::Device::onCmd_set(neb::CJsonObject* pld) {
@@ -152,6 +152,19 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
 bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
     onSvc_get(pld);
     return getCommonProps(pld);
+};
+
+bool rfir::module::device::Device::doEvtTimerReport(uint32_t timeout){
+    GEventTimer.remove(m_timer_report_handler);
+    m_timer_report_handler =  GEventTimer.delay(timeout, std::bind(&Device::onEvt_timer_report, this, std::placeholders::_1, std::placeholders::_2));
+    return 1;
+};
+
+void* rfir::module::device::Device::onEvt_timer_report(void* arg, void* p){    
+    std::string str = "Timer Report";
+    events.onEvtPropsChange.emit((void*) str.c_str());
+    doEvtTimerReport();
+    return 0;
 };
 
 

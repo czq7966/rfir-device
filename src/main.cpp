@@ -87,12 +87,12 @@ void onRfirSended(rfir::module::ttl::Sender* sender, const uint16_t* data, const
     
 }
 
-void* onDeviceChange(void* arg, void* p) {
-    auto reason = (const char*)p;
-    DEBUGER.printf("onDeviceChange: %s\n", reason);
-    service::cmds::Cmd::OnCmd_get((::cmds::cmd::CmdMqtt*)0, reason);
-    return 0;
-}
+// void* onDeviceChange(void* arg, void* p) {
+//     auto reason = (const char*)p;
+//     DEBUGER.printf("onDeviceChange: %s\n", reason);
+//     service::cmds::Cmd::OnCmd_get((::cmds::cmd::CmdMqtt*)0, reason);
+//     return 0;
+// }
 
 void onRfirStart(void* data) {
     DEBUGER.println("onRfirStart");
@@ -103,10 +103,10 @@ void onRfirStart(void* data) {
     rfir::service::cmds::Cmd::onCmd_send(d);
 }
 
-std::string getMqttSvcTopic(std::string func) {
-    return Config.app_id + "/" + Config.dom_id + "/+/+/dev/" + Config.dev_id + "/svc/" + func;
+// std::string getMqttSvcTopic(std::string func) {
+//     return Config.app_id + "/" + Config.dom_id + "/+/+/dev/" + Config.dev_id + "/svc/" + func;
 
-}
+// }
 
 
 

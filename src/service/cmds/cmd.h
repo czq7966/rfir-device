@@ -49,16 +49,19 @@ namespace service {
         // public:
         //     static bool OnCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data);
         public:
-            static void* OnCommand(void* arg, void * p);
+
             // static void* OnDeviceChange(void* arg, void * p);
 
-            static bool  OnCmd_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
-            static bool  OnCmd_set(::cmds::cmd::CmdMqtt* cmd);
-
+            // static bool  OnCmd_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
+            // static bool  OnCmd_set(::cmds::cmd::CmdMqtt* cmd);
+            
+            static void* OnCommand(void* arg, void * p);
         public:
             static bool  OnSvc_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
             static bool  OnSvc_set(::cmds::cmd::CmdMqtt* cmd);
             static bool  OnSvc_penet(::cmds::cmd::CmdMqtt* cmd);
+            static bool  OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd);
+            
         public:
             static void*  OnEvt_props_change(void* arg, void* p);
             static void*  OnEvt_penet(void* arg, void* p);

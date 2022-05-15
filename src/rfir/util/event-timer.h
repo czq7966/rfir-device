@@ -22,17 +22,17 @@ namespace rfir {
                 }
             };
 
-            int generateHandler();
+            uint32_t generateHandler();
             void addHandler(uint32_t handler, unsigned long outtime, EventEmitter::Callback cb, void* cbArg = NULL);
             void removeHandler(uint32_t handler, bool sorted = true);
             void sortHandlers();
             void emitHandler(uint32_t handler);
             bool checkAndEmitTimeout();
 
-            int delay(int timeout_ms, EventEmitter::Callback cb, void* cbArg = NULL , uint32_t handler = 0);
+            uint32_t delay(int timeout_ms, EventEmitter::Callback cb, void* cbArg = NULL , uint32_t handler = 0);
             void remove(uint32_t handler);
             void clear();
-            int newHandler();
+            uint32_t newHandler();
             int getCount();
 
         };        

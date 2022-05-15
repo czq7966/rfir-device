@@ -15,7 +15,7 @@ void rfir::util::EventTimer::sortHandlers() {
     std::sort(m_handlersVec.begin(), m_handlersVec.end(), CompByValue());
 };
 
-int  rfir::util::EventTimer::generateHandler(){
+uint32_t  rfir::util::EventTimer::generateHandler(){
     HandlerIndex++;
     return  HandlerIndex;    
 };
@@ -55,7 +55,7 @@ bool rfir::util::EventTimer::checkAndEmitTimeout(){
     return count > 0;
 };
 
-int  rfir::util::EventTimer::delay(int timeout_ms, EventEmitter::Callback cb, void* cbArg , uint32_t handler){
+uint32_t  rfir::util::EventTimer::delay(int timeout_ms, EventEmitter::Callback cb, void* cbArg , uint32_t handler){
     unsigned long outtime = millis() + timeout_ms;    
     handler = handler != 0 ? handler : generateHandler();
     addHandler(handler, outtime, cb, cbArg);    
@@ -68,7 +68,7 @@ void rfir::util::EventTimer::clear(){
     m_handlers.clear();
     m_handlersVec.clear();
 };
-int  rfir::util::EventTimer::newHandler(){
+uint32_t  rfir::util::EventTimer::newHandler(){
     return generateHandler();
 };
 int  rfir::util::EventTimer::getCount(){

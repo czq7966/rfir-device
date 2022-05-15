@@ -102,6 +102,6 @@
 
 #define MQTT_RESP_TIMEOUT           10*1000 //毫秒
 //Timer Report 
-#define TIMER_REPORT_TIMEOUT        60*1000   
+#define DEVICE_TIMER_REPORT_TIMEOUT        60*1000   
 
 #endif //
