@@ -13,4 +13,8 @@ void rfir::module::device::z3::co::ESP8266_CC2652::start(void * p) {
     int pin = 15;
     pinMode(pin, OUTPUT);
     digitalWrite(pin, 1);
+
+    pin = 5;
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, 1);
 }

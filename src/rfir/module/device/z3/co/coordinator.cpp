@@ -1,5 +1,6 @@
 #include "coordinator.h"
 #include "rfir/util/base64.h"
+#include "../../networking.h"
 
 
 rfir::module::ttl::Config::Device* rfir::module::device::z3::co::Coordinator::init() {
@@ -71,7 +72,7 @@ rfir::module::device::z3::co::Coordinator::~Coordinator() {
 }
 
 void rfir::module::device::z3::co::Coordinator::start(void * p) {
-
+    Device::start(p);
 }
 
 void rfir::module::device::z3::co::Coordinator::loop() {
@@ -131,21 +132,21 @@ uint16_t* rfir::module::device::z3::co::Coordinator::getEncodeRaw(int& count) {
 }
 
 bool rfir::module::device::z3::co::Coordinator::onCmd_set(neb::CJsonObject* pld) {
-    std::string code;
-    if (pld && pld->Get("raw", code) ) {
-        return coWriteBase64((char*)code.c_str(), code.length());
-    }    
+    // std::string code;
+    // if (pld && pld->Get("raw", code) ) {
+    //     return coWriteBase64((char*)code.c_str(), code.length());
+    // }    
 
     return 0;
 }
 
 
 bool rfir::module::device::z3::co::Coordinator::onCmd_get(neb::CJsonObject* pld) {
-    std::string code = coReadBase64(coBuffer);
-    if (code.length() > 0) {
-        pld->Add("code", code);
-        return 1;
-    } 
+    // std::string code = coReadBase64(coBuffer);
+    // if (code.length() > 0) {
+    //     pld->Add("code", code);
+    //     return 1;
+    // } 
 
     return 0;
 }
@@ -166,7 +167,7 @@ void rfir::module::device::z3::co::Coordinator::doTimerReport(bool reset) {
 
 
 bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
-    if (COSerial.available()) {
+    if (COSerial.available() && GNetworking.status.connected && GNetworking.status.handshaked) {
         neb::CJsonObject pld;
         std::string code = coReadBase64(coBuffer);
         if (code.length() > 0) {
@@ -186,7 +187,13 @@ bool rfir::module::device::z3::co::Coordinator::onSvc_set(neb::CJsonObject* pld)
     return 0;
 }; 
 
-bool rfir::module::device::z3::co::Coordinator::onSvc_penet(neb::CJsonObject* pld){
+bool rfir::module::device::z3::co::Coordinator::onSvc_penet(neb::CJsonObject* pld){    
+    DEBUGER.printf("rfir::module::device::z3::co::Coordinator::onSvc_penet  \r\n");
+    std::string code;
+    if (pld && pld->Get("raw", code) ) {
+        return coWriteBase64((char*)code.c_str(), code.length());
+    }    
+
     return 0;
 };
 

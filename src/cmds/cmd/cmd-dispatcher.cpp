@@ -115,14 +115,14 @@ void cmds::cmd::MqttDispatcher::setSignaler(cmds::network::Signaler* p){
     events.onMessage.add((void*)&MqttDispatcher::onMqttMessage, std::bind(&MqttDispatcher::onMqttMessage, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 }
 void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
-    DEBUGER.print("cmds::cmd::MqttDispatcher::OnMqttMessage: ");
     auto msg = (::network::module::mqtt::AClient::Message*)p;
-    DEBUGER.println(msg->topic);
-    if(msg->total > msg->len) {
-        DEBUGER.println("Mqtt message max length: 1460");
+    DEBUGER.printf("cmds::cmd::MqttDispatcher::OnMqttMessage: topic: %s, total: %d \r\n", msg->topic, msg->total);
+    
+    if(msg->total > msg->len || msg->total == 0) {
+        DEBUGER.printf("Mqtt message max length 1460, min length 1. actual total: %d, actual len: %d\r\n", msg->total, msg->len);
         return 0;
     }
-    
+
     cmds::cmd::CmdMqtt cmd;    
     cmd.topic = msg->topic;
     if (msg->payload)

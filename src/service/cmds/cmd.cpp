@@ -250,31 +250,35 @@ void service::cmds::Cmd::Start() {
 // };
 
 
-void* service::cmds::Cmd::OnCommand(void* arg, void * p){
+void* service::cmds::Cmd::OnCommand(void* arg, void * p){    
     auto cmd = (::cmds::cmd::CmdMqtt*)p;
-    if (cmd->command.head.entry.type == "svc") {
-        //服务请求
-        if (cmd->command.head.stp == 0) {
-            if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_get) {
-                return (void*)OnSvc_get(cmd);
-            }
+    DEBUGER.printf("service::cmds::Cmd::OnCommand: %s %s %s \r\n", cmd->topic.c_str(), cmd->command.head.entry.type.c_str(), cmd->command.head.entry.id.c_str() );
 
-            if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_set) {
-                return (void*)OnSvc_set(cmd);
-            }
 
-            if (cmd->command.head.entry.id == ::Config.mqtt_dev_svc_penet) {
-                return (void*)OnSvc_penet(cmd);
-            }
+    //服务请求
+    if (cmd->command.head.stp == 0) {
+        if (cmd->topic == ::Config.mqtt_dev_svc_get) {
+            return (void*)OnSvc_get(cmd);
         }
 
-        //服务响应
-        if (cmd->command.head.stp == 1) {
-            if (cmd->command.head.entry.id == ::Config.mqtt_edg_svc_handshake) {
-                return (void*)OnSvc_handshake_resp(cmd);
-            }
+        if (cmd->topic == ::Config.mqtt_dev_svc_set) {
+            return (void*)OnSvc_set(cmd);
+        }
+
+        if (cmd->topic == ::Config.mqtt_dev_svc_penet) {
+            return (void*)OnSvc_penet(cmd);
         }
     }
+
+
+
+    //服务响应
+    if (cmd->command.head.stp == 1) {
+        if (cmd->topic == ::Config.mqtt_edg_svc_handshake) {
+            return (void*)OnSvc_handshake_resp(cmd);
+        }
+    }
+
 
     return 0;
 };

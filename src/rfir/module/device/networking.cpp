@@ -59,6 +59,12 @@ void rfir::module::device::Networking::delayLogin(int delay_ms) {
     GEventTimer.delay(delay_ms, std::bind(&Networking::doLogin, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
+//事件登入
+void* rfir::module::device::Networking::doLogin(void* arg, void* p) {
+    this->login();
+    return 0;
+};
+
 //握手
 bool rfir::module::device::Networking::handshake(){
     if (Config.edg_id == "") {
@@ -90,6 +96,18 @@ bool rfir::module::device::Networking::handshake(){
     hd.ReplaceAdd("handshake_count", m_handshake_success_count);
 
     return cmd.send(); 
+};
+
+//延时握手
+void rfir::module::device::Networking::delayHandshake(int delay_ms){
+    DEBUGER.printf("rfir::module::device::Networking::delayHandshake %d \r\n", delay_ms);
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doLogin, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+};
+
+//事件登入
+void* rfir::module::device::Networking::doHandshake(void* arg, void* p) {
+    this->handshake();
+    return 0;
 };
 
 
@@ -171,11 +189,12 @@ void rfir::module::device::Networking::unsubscribe() {
 //MQTT连接事件
 void* rfir::module::device::Networking::onConnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onConnect \r\n");
+    status.connected = true;
     subscribe();
     m_online_count++;
     setOnline();
-    if (!this->m_logined) {
-        this->m_logined = true;
+    if (!status.logined) {
+        status.logined = true;
         this->login();
     }   
     return 0;
@@ -185,22 +204,22 @@ void* rfir::module::device::Networking::onConnect(void* arg, void* p){
 //MQTT断线事件
 void* rfir::module::device::Networking::onDisconnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onDisconnect \r\n");
+    status.connected = false;
     return 0;
 };
 
 //事件指令
 void* rfir::module::device::Networking::onCommand(void* arg, void* p){
     auto cmd = (cmds::cmd::CmdMqtt*)p;
-    DEBUGER.printf("rfir::module::device::Networking::onCommand: %s , %s \r\n", cmd->topic.c_str());
+    DEBUGER.printf("rfir::module::device::Networking::onCommand: %s \r\n", cmd->topic.c_str());
     if (cmd->topic == Config.mqtt_dsp_evt_status) {
         return onDsp_status_change(arg, p);
     } 
     
     if (cmd->topic == Config.mqtt_edg_evt_status) {
         return onEdg_status_change(arg, p);
-    } else {
-        DEBUGER.printf("rfir::module::device::Networking::onCommand: no equl");
-    }
+    } 
+    
     return 0;
 };
 
@@ -210,11 +229,6 @@ void* rfir::module::device::Networking::onConfigFixup(void* arg, void* p) {
     return 0;
 };
 
-//事件登入
-void* rfir::module::device::Networking::doLogin(void* arg, void* p) {
-    this->login();
-    return 0;
-};
 
 //调度登入响应
 void* rfir::module::device::Networking::onDev_login_resp(void* arg, void* p){
@@ -230,9 +244,9 @@ void* rfir::module::device::Networking::onDev_login_resp(void* arg, void* p){
     cmd->command.pld.Get("edg", edg_id);
     
     
-    m_logined = app_id != "" && dom_id != "" && dsp_id !="" && edg_id != "";
+    status.logined = app_id != "" && dom_id != "" && dsp_id !="" && edg_id != "";
 
-    if (m_logined) {
+    if (status.logined) {
         if (app_id != Config.app_id || dom_id != Config.dom_id || dsp_id != Config.dsp_id || edg_id != Config.edg_id){
             Config.app_id = app_id;
             Config.dom_id = dom_id;
@@ -253,9 +267,9 @@ void* rfir::module::device::Networking::onDev_login_resp(void* arg, void* p){
 //调度登入超时
 void* rfir::module::device::Networking::onDev_login_timeout(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::onDev_login_timeout");
-    m_logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
+    status.logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
 
-    if (m_logined) {
+    if (status.logined) {
         handshake();        
     } else {
         login();
@@ -266,6 +280,7 @@ void* rfir::module::device::Networking::onDev_login_timeout(void* arg, void* p){
 
 //边缘握手响应
 void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p){
+    status.handshaked = true;
     setOnline();
     m_handshake_success_count++;
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
@@ -275,6 +290,7 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
 
 //边缘握手超时
 void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void* p){
+    status.handshaked = false;
     m_handshake_failed_count++;
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
     login();

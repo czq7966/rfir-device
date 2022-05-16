@@ -9,7 +9,14 @@ namespace rfir {
         namespace device {
             class Networking {
             public:
-                bool m_logined = false;
+                struct Status {
+                    bool logined = false;
+                    bool handshaked = false;
+                    bool connected = false;
+                };
+            public:
+                Status status;
+
                 uint32_t m_login_handler = 0;
                 uint32_t  m_handshake_handler = 0;
                 int  m_handshake_failed_count = 0;
@@ -22,7 +29,11 @@ namespace rfir {
             public:
                 bool login();
                 void delayLogin(int delay_ms = 3000);
+                void* doLogin(void* arg, void* p);
                 bool handshake();
+                void delayHandshake(int delay_ms = 1000);
+                void* doHandshake(void* arg, void* p);
+                
                 bool setWill();
                 void setOnline();
                 void subscribe();
@@ -33,7 +44,6 @@ namespace rfir {
                 void* onCommand(void* arg, void* p);
                 void* onConfigFixup(void* arg, void* p);
             public:
-                void* doLogin(void* arg, void* p);
                 void* onDev_login_resp(void* arg, void* p);
                 void* onDev_login_timeout(void* arg, void* p);
                 void* onDev_handshake_resp(void* arg, void* p);                
