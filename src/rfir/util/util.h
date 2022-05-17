@@ -16,8 +16,8 @@ namespace rfir {
             static std::string BytesToHexString(uint8_t bytes[], uint16_t nbytes, bool revert = false, char separater = ' ');
             static int  StringToBytes(const char* data, int nbits, uint8_t* bytes);
             static int  StringToBits(const char* data, int nbits, uint64_t& result);
-            static int  StringToBytes(std::string data, uint8_t* bytes);            
-
+            static int  StringToBytes(std::string data, uint8_t* bytes);   
+            static void Reset();
         };
     }
 }

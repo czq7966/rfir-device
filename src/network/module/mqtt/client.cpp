@@ -69,11 +69,7 @@ void network::module::mqtt::Client::connect() {
             if (millis() - Mqtt_client_connect_time > MQTT_RESET_TIMEOUT * 1000 )  {
                 DEBUGER.println("MQTT connect time out. ESP reset!\n");
                 delay(1000);
-#ifdef ESP8266                   
-                ESP.reset();
-#else
-                ESP.restart();
-#endif   
+                rfir::util::Util::Reset();
             }
         }        
     }

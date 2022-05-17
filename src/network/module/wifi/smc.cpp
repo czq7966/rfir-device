@@ -3,6 +3,7 @@
 #include "config.h"     
 #include "rfir/util/cjson/CJsonObject.hpp"
 #include "rfir/util/file.h"
+#include "rfir/util/util.h"
 
 
 network::module::wifi::SmcButton::SmcButton(uint8_t pin, uint8_t defaultReleasedState,  uint8_t id)
@@ -82,7 +83,7 @@ void network::module::wifi::SMC::checkCallback() {
     if (SmcLastMessage == MESSAGE_SMARTCONFIG_ERROR) {
         this->params->configTimeout--;
         if (this->params->configTimeout <= 0) {
-            ESP.reset();
+            rfir::util::Util::Reset();
         } else {
             jw.startSmartConfig();
         }
@@ -97,7 +98,7 @@ void network::module::wifi::SMC::checkCallback() {
         this->params->wifiPass = WiFi.psk().c_str();
         saveConfig();
         delay(1000);
-        ESP.reset();
+        rfir::util::Util::Reset();
     }    
 
 
@@ -160,11 +161,7 @@ void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button
     }
 
     if (this->params->smcIng) {
-#ifdef ESP8266                   
-            ESP.reset();
-#else
-            ESP.restart();
-#endif         
+        rfir::util::Util::Reset();        
     } else {
         static uint8_t Button_Num = 0;
         static unsigned long Button_Event_Time = 0;

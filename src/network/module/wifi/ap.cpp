@@ -1,5 +1,6 @@
 #include "ap.h"   
 #include "config.h"        
+#include "rfir/util/util.h"
 
 void network::module::wifi::AP::start(Params p) {
     this->params = p;
@@ -53,11 +54,7 @@ void network::module::wifi::AP::checkOrReset() {
         {
             DEBUGER.println("WiFi connect time out. ESP rest!\n");
             delay(1000);
-#ifdef ESP8266                   
-            ESP.reset();
-#else
-            ESP.restart();
-#endif                
+            rfir::util::Util::Reset();                
             return;
         }
         
@@ -121,11 +118,7 @@ void network::module::wifi::AP::checkConfigPin() {
                 ConfigPinChangeTime = 0;
                 DEBUGER.println("ConfigPin pushed, timeout, ESP will reset");
                 delay(500);
-                #ifdef ESP8266            
-                    ESP.reset();
-                #else
-                    ESP.restart();
-                #endif           
+                rfir::util::Util::Reset();          
             }
         } else {
             ConfigPinChangeTime_High =  millis();            
@@ -134,11 +127,7 @@ void network::module::wifi::AP::checkConfigPin() {
                 if (this->iotWebConf->getState() == iotwebconf::NetworkState::NotConfigured) {
                     DEBUGER.println("ConfigPin pushed, NotConfigured, ESP will reset");
                     delay(500);                
-                    #ifdef ESP8266            
-                        ESP.reset();
-                    #else
-                        ESP.restart();
-                    #endif 
+                    rfir::util::Util::Reset();
                 }
             }
 

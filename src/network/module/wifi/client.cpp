@@ -1,6 +1,7 @@
 #include "client.h"
 #include "config.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/util/util.h"
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -59,11 +60,7 @@ void network::module::wifi::Client::multiCheckOrReset() {
         if (WiFi.status() != WL_CONNECTED) {
             DEBUGER.println("WiFi connect time out. ESP rest!\n");
             delay(1000);
-#ifdef ESP8266                   
-            ESP.reset();
-#else
-            ESP.restart();
-#endif                
+            rfir::util::Util::Reset();                
             return;           
         }
         
@@ -134,11 +131,7 @@ void network::module::wifi::Client::multiCheckOrReset2() {
             if (WiFi.status() != WL_CONNECTED) {
                 DEBUGER.println("WiFi connect time out. ESP rest!\n");
                 DEBUGER.flush();
-#ifdef ESP8266                   
-                ESP.reset();
-#else
-                ESP.restart();
-#endif                
+                rfir::util::Util::Reset();                
                 return;           
             }                    
 #endif
@@ -315,11 +308,8 @@ void network::module::wifi::Client::onWifiDisconnect(const WiFiEventStationModeD
         }
 
         if (millis() - connect_start_time >= timeout ) {
-            #ifdef ESP8266                   
-                ESP.reset();
-            #else
-                ESP.restart();
-            #endif              
+            rfir::util::Util::Reset();
+            
         }        
 
         connect_ssid_index = 0;

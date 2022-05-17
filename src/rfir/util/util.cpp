@@ -151,3 +151,15 @@ int  rfir::util::Util::StringToBytes(std::string str, uint8_t* bytes) {
 
   return nbits;
 }
+
+void rfir::util::Util::Reset(){
+  #ifdef RESET_PIN
+    pinMode(RESET_PIN, OUTPUT);
+    digitalWrite(RESET_PIN, 0);
+  #endif
+  #ifdef ESP8266                   
+      ESP.reset();
+  #else
+      ESP.restart();
+  #endif  
+};

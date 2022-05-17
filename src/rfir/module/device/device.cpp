@@ -140,13 +140,18 @@ std::string rfir::module::device::Device::toHexString() {
 
 bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     pld->ReplaceAdd("id", Config.dev_id);
-    pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
     pld->ReplaceAdd("mac", rfir::util::Util::GetMacAddress());
     pld->ReplaceAdd("rssi", WiFi.RSSI());
-    pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
+    pld->ReplaceAdd("ip", "");
+    pld->ReplaceAdd("ssid", "");
     pld->ReplaceAdd("version", OTA_VERSION_NUMBER);
     pld->ReplaceAdd("facturer", DEV_FACTURER);
     pld->ReplaceAdd("model", DEV_MODEL);    
+
+    if (WiFi.isConnected()) {
+        pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
+        pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
+    }
     return true;
 };
 bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
