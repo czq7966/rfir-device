@@ -220,6 +220,14 @@ void* rfir::module::device::Networking::onCommand(void* arg, void* p){
         return onEdg_status_change(arg, p);
     } 
     
+    if (cmd->command.head.stp == 0) {
+        //握手请求
+        if (cmd->topic == Config.mqtt_dev_svc_handshake) {
+            handshake();
+            return 0;            
+        }
+    }
+
     return 0;
 };
 
