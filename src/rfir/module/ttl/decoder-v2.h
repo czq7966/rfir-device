@@ -1,9 +1,5 @@
-//
-// Created by Administrator on 2020/12/10.
-//
-
-#ifndef __RFIR_MODULE_TTL_DECODER_H__
-#define __RFIR_MODULE_TTL_DECODER_H__
+#ifndef __RFIR_MODULE_TTL_DECODER_V2_H__
+#define __RFIR_MODULE_TTL_DECODER_V2_H__
 
 #include "rfir/util/platform.h"
 #include "rfir/util/util.h"
@@ -28,6 +24,7 @@ namespace rfir {
                     uint8_t             bytes[TTL_DECODER_MAX_BYTES];
                     uint64_t            bits = 0;
                     uint16_t            nbits = 0;
+                    bool                use_bits = 0;
                     std::string         toBitString();
                     std::string         toHexString();
                 };

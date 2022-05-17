@@ -22,6 +22,7 @@ int  rfir::module::ttl::DecoderV2::_decode(uint16_t* data, int size) {
       if (matched) {
         matchCount += matched;
         r.nbits = p.nbits;
+        r.use_bits = p.use_bits;
         decodeResults.push_back(r);
       }
       else {        
@@ -399,7 +400,7 @@ uint16_t rfir::module::ttl::DecoderV2::matchGeneric(volatile uint16_t *data_ptr,
 std::string  rfir::module::ttl::DecoderV2::DecodeResult::toBitString() {
     String result;
     if (this->nbits > 0) {
-      if (!this->bytes) {
+      if (use_bits) {
         uint64_t bits = this->bits;
         for (size_t j = 0; j < this->nbits; j++)
         {
@@ -430,7 +431,7 @@ std::string  rfir::module::ttl::DecoderV2::DecodeResult::toBitString() {
 std::string  rfir::module::ttl::DecoderV2::DecodeResult::toHexString() {
     String result;
     if (this->nbits > 0) {
-      if (this->bytes) {
+      if (!use_bits) {
         for (size_t j = 0; j < this->nbits / 8; j++)
         {
             char c[3];
