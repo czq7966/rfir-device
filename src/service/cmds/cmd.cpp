@@ -257,12 +257,14 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 
     //服务请求
     if (cmd->command.head.stp == 0) {
-        if (cmd->topic == ::Config.mqtt_dev_svc_get) {
-            return (void*)OnSvc_get(cmd);
-        }
+        if (cmd->command.head.entry.type == "svc") {
+            if (cmd->command.head.entry.id == "get") {
+                return (void*)OnSvc_get(cmd);
+            }
 
-        if (cmd->topic == ::Config.mqtt_dev_svc_set) {
-            return (void*)OnSvc_set(cmd);
+            if (cmd->command.head.entry.id == "set") {
+                return (void*)OnSvc_set(cmd);
+            }
         }
 
         if (cmd->topic == ::Config.mqtt_dev_svc_penet) {

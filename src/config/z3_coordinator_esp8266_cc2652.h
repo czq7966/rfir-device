@@ -94,8 +94,8 @@
 //DEV.sub
 #define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/dsp/{dsp}/dev/{dev}/svc/login"
 #define MQTT_DEV_SVC_HANDSHAKE      "{app}/{dom}/edg/{edg}/dev/{dev}/svc/handshake"
-#define MQTT_DEV_SVC_GET            "{app}/{dom}/edg/{edg}/dev/{dev}/svc/get"
-#define MQTT_DEV_SVC_SET            "{app}/{dom}/edg/{edg}/dev/{dev}/svc/set"
+#define MQTT_DEV_SVC_GET            "{app}/{dom}/+/+/dev/{dev}/svc/get"
+#define MQTT_DEV_SVC_SET            "{app}/{dom}/+/+/dev/{dev}/svc/set"
 #define MQTT_DEV_SVC_PENET          "{app}/{dom}/edg/{edg}/dev/{dev}/svc/penet"
 
 

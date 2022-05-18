@@ -63,11 +63,11 @@ void  GlobalConfig::getIds(neb::CJsonObject* pld){
 
 std::string GlobalConfig::expandTopic(std::string topic){
     String tpc = topic.c_str();
-    tpc.replace("{app}", app_id.c_str());
-    tpc.replace("{dom}", dom_id.c_str());
-    tpc.replace("{dsp}", dsp_id.c_str());
-    tpc.replace("{edg}", edg_id.c_str());
-    tpc.replace("{dev}", dev_id.c_str());
+    tpc.replace("{app}", app_id == "" ? "0" : app_id.c_str());
+    tpc.replace("{dom}", dom_id == "" ? "0" : dom_id.c_str());
+    tpc.replace("{dsp}", dsp_id == "" ? "0" : dsp_id.c_str());
+    tpc.replace("{edg}", edg_id == "" ? "0" : edg_id.c_str());
+    tpc.replace("{dev}", dev_id == "" ? "0" : dev_id.c_str());
     return tpc.c_str();
 };
 
