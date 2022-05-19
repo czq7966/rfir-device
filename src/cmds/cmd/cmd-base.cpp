@@ -15,8 +15,15 @@ cmds::cmd::CmdBase::Command::Command(){
     head.to.id = DefaultTo->id;    
 };
 
-uint32_t cmds::cmd::CmdBase::Command::getSid(){
+std::string cmds::cmd::CmdBase::Command::getSid(){
     return head.sid;
+};
+uint32_t cmds::cmd::CmdBase::Command::getIntSid(){
+    return atoi(getSid().c_str());
+};
+bool cmds::cmd::CmdBase::Command::setSid(std::string value){
+    head.sid = value;
+    return 1;
 };
 bool cmds::cmd::CmdBase::Command::setSid(uint32_t value){
     head.sid = value;
@@ -38,7 +45,7 @@ bool cmds::cmd::CmdBase::Command::setRespCmd(){
 };
 
 bool cmds::cmd::CmdBase::Command::isNeedResp(){
-    return isReqCmd() && getSid() > 0;
+    return isReqCmd() && (getIntSid() > 0 || getSid() != "");
 };
 bool cmds::cmd::CmdBase::Command::setNeedResp(bool value){
     if (value) {

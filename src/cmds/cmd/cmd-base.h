@@ -20,7 +20,7 @@ namespace cmds {
                     Address to;
                     Address entry;
 
-                    uint32_t sid = 0;
+                    std::string sid = "";
                     uint32_t stp = 0;
                     uint8_t  qos = 2;
                     bool     retain = false;
@@ -36,7 +36,9 @@ namespace cmds {
                 neb::CJsonObject pld;
 
                 Command();
-                uint32_t getSid();
+                std::string getSid();                
+                uint32_t getIntSid();
+                bool setSid(std::string value);                
                 bool setSid(uint32_t value);
                 bool isReqCmd();
                 bool isRespCmd();

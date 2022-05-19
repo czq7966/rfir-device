@@ -41,7 +41,7 @@ void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
     DEBUGER.print("cmds::cmd::CmdDispatcher::OnResp: ");    
     auto cmd = (cmds::cmd::CmdBase*)p;
     if (cmd->command.isRespCmd()) {
-        auto sid = cmd->command.getSid();
+        auto sid = cmd->command.getIntSid();
         DEBUGER.println(String(sid));
         if (sid > 0) {
             cmds::cmd::CmdBase::Events events;
@@ -96,8 +96,9 @@ bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){
     auto result = this->signaler->write((void*)cmd);
     if (cmd->command.isNeedResp()) {
         auto events = cmd->events;
-        wait_resp_queue.add(cmd->command.getSid(), events);
-        GEventTimer.delay(cmd->respTimeout, std::bind(&CmdDispatcher::onRespTimeout, this, std::placeholders::_1, std::placeholders::_2), (void*)this, cmd->command.getSid());
+        auto sid = cmd->command.getIntSid();
+        wait_resp_queue.add(sid, events);
+        GEventTimer.delay(cmd->respTimeout, std::bind(&CmdDispatcher::onRespTimeout, this, std::placeholders::_1, std::placeholders::_2), (void*)this, sid);
     } 
     return result;
 };

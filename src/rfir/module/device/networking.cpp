@@ -33,7 +33,7 @@ bool rfir::module::device::Networking::login(){
 
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
-    m_login_handler = cmd.command.getSid();
+    m_login_handler = cmd.command.getIntSid();
     cmd.command.head.to.type = "dsp";
     cmd.command.head.to.id = Config.dsp_id;
     cmd.command.head.entry.type = "svc";
@@ -78,7 +78,7 @@ bool rfir::module::device::Networking::handshake(){
     DEBUGER.println("rfir::module::device::Networking::handshake");
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
-    m_handshake_handler = cmd.command.getSid();
+    m_handshake_handler = cmd.command.getIntSid();
     cmd.command.head.to.type = "edg";
     cmd.command.head.to.id = Config.edg_id;
     cmd.command.head.entry.type = "svc";

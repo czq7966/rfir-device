@@ -155,8 +155,9 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     return true;
 };
 bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
-    onSvc_get(pld);
-    return getCommonProps(pld);
+    auto result = onSvc_get(pld);
+    getCommonProps(pld);
+    return result;
 };
 
 bool rfir::module::device::Device::doEvtTimerReport(uint32_t timeout){

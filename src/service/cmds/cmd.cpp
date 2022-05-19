@@ -291,8 +291,9 @@ bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
 
-    GDevice->getProps(&pld);
-    pld.ReplaceAdd("_reason", reason);
+    auto result = GDevice->getProps(&pld);
+    pld.ReplaceAdd("_extra", reason);
+    pld.ReplaceAdd("_success", result);
 
     if (reqCmd){
         cmd.command.head = reqCmd->command.head;
@@ -301,16 +302,32 @@ bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
         cmd.command.head.stp = 1;
     }
 
-    cmd.command.head.entry.type = "evt";
-    cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
-    auto result = cmd.send();
-    GDevice->doEvtTimerReport();
+    result = cmd.send();
+    GDevice->doEvtTimerReport(1000);
     return result;
 };
 
-bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* cmd){
-    auto result = GDevice->onSvc_set(&cmd->command.pld);
-    GDevice->doTimerReport(true);
+bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+    auto result = GDevice->onSvc_set(&reqCmd->command.pld);
+
+    ::cmds::cmd::CmdMqtt cmd;
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+
+    GDevice->getProps(&pld);
+    pld.ReplaceAdd("_extra", reason);
+    pld.ReplaceAdd("_success", result);
+
+    if (reqCmd){
+        cmd.command.head = reqCmd->command.head;
+        cmd.command.head.from = reqCmd->command.head.to;
+        cmd.command.head.to = reqCmd->command.head.from;
+        cmd.command.head.stp = 1;
+    }
+
+
+    result = cmd.send();
+    GDevice->doEvtTimerReport(1000);
     return result;
 };
 
