@@ -3,7 +3,7 @@
 
 std::string cmds::cmd::CmdMqtt::topicPrefix = "";
 
-std::string cmds::cmd::CmdMqtt::zeroTopic(std::string topic){
+std::string cmds::cmd::CmdMqtt::ZeroTopic(std::string topic){
     if (topic.length() == 0)
         return "0";
     return topic;
@@ -11,12 +11,12 @@ std::string cmds::cmd::CmdMqtt::zeroTopic(std::string topic){
 
 std::string cmds::cmd::CmdMqtt::expandTopic(){
     return  topicPrefix +
-            zeroTopic(command.head.from.type) + "/" + 
-            zeroTopic(command.head.from.id) + "/" + 
-            zeroTopic(command.head.to.type) + "/" + 
-            zeroTopic(command.head.to.id) + "/" + 
-            zeroTopic(command.head.entry.type) + "/" + 
-            zeroTopic(command.head.entry.id);
+            ZeroTopic(command.head.from.type) + "/" + 
+            ZeroTopic(command.head.from.id) + "/" + 
+            ZeroTopic(command.head.to.type) + "/" + 
+            ZeroTopic(command.head.to.id) + "/" + 
+            ZeroTopic(command.head.entry.type) + "/" + 
+            ZeroTopic(command.head.entry.id);
 };
 
 bool cmds::cmd::CmdMqtt::send(const void* p) {

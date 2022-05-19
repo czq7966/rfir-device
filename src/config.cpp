@@ -53,12 +53,18 @@ void GlobalConfig::fixupTopic() {
 
 
 
-void  GlobalConfig::getIds(neb::CJsonObject* pld){
-    pld->ReplaceAdd("app_id", app_id);
-    pld->ReplaceAdd("dom_id", dom_id);
-    pld->ReplaceAdd("dsp_id", dsp_id);
-    pld->ReplaceAdd("edg_id", edg_id);
-    pld->ReplaceAdd("dev_id", dev_id);
+void  GlobalConfig::getIds(neb::CJsonObject* pld, std::string key){
+    neb::CJsonObject ids;
+    neb::CJsonObject* pids;
+    if (key != "")  pids = &ids; else pids = pld;
+    pids->ReplaceAdd("app_id", app_id);
+    pids->ReplaceAdd("dom_id", dom_id);
+    pids->ReplaceAdd("dsp_id", dsp_id);
+    pids->ReplaceAdd("edg_id", edg_id);
+    pids->ReplaceAdd("dev_id", dev_id);
+
+    if (key != "") pld->ReplaceAdd(key, ids);
+
 };
 
 std::string GlobalConfig::expandTopic(std::string topic){

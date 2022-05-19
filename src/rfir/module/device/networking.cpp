@@ -47,7 +47,7 @@ bool rfir::module::device::Networking::login(){
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
 
-    Config.getIds(&pld);  
+    Config.getIds(&hd);  
     GDevice->getCommonProps(&pld);
 
     return cmd.send();
@@ -91,7 +91,7 @@ bool rfir::module::device::Networking::handshake(){
 
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    Config.getIds(&pld);
+    Config.getIds(&hd);
     GDevice->getCommonProps(&pld);
     pld.ReplaceAdd("handshake_count", m_handshake_success_count);
 
@@ -119,8 +119,9 @@ bool rfir::module::device::Networking::setWill(){
     cmd.command.head.entry.type ="evt";
     cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
     cmd.command.head.retain = true;
+    neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    Config.getIds(&pld);
+    Config.getIds(&hd);
     GDevice->getCommonProps(&pld);
     pld.Add("online", 0);
     pld.Add("online_count", m_online_count + 1);
@@ -137,8 +138,9 @@ void rfir::module::device::Networking::setOnline(){
     cmd.command.head.entry.type ="evt";
     cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
     cmd.command.head.retain = true;
+    neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
-    Config.getIds(&pld);
+    Config.getIds(&hd);
     GDevice->getCommonProps(&pld);
     pld.Add("online", 1);
     pld.Add("online_count", m_online_count);

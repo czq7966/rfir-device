@@ -5,15 +5,15 @@
 
 namespace cmds {
     namespace cmd {
-        class CmdMqtt: public CmdBase {
-        private:
-            std::string zeroTopic(std::string topic);
+        class CmdMqtt: public CmdBase {        
         public:
             static std::string topicPrefix;
             std::string topic;
             std::string expandTopic();
         public:
             virtual bool send(const void* p = 0) override; 
+        public:
+            static std::string ZeroTopic(std::string topic);
         };
     }
 }

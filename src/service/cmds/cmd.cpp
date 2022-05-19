@@ -296,11 +296,16 @@ bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
     pld.ReplaceAdd("_success", result);
 
     if (reqCmd){
+        hd = reqCmd->command.hd;
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;
         cmd.command.head.stp = 1;
+    } else {
+        cmd.command.head.entry.type = "evt";
+        cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
     }
+    Config.getIds(&hd);
 
     result = cmd.send();
     GDevice->doEvtTimerReport(1000);

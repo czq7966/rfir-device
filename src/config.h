@@ -97,7 +97,7 @@ public:
     void fixupTopic();
     // std::string getSvcTopic(std::string func);
     // std::string getEdgStatusTopic();    
-    void        getIds(neb::CJsonObject* pld);
+    void        getIds(neb::CJsonObject* pld, std::string key = "ids");
     std::string expandTopic(std::string topic);
     
 public:

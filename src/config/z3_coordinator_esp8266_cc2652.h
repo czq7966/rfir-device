@@ -75,7 +75,7 @@
 
 //MQTT Topic
 #define MQTT_APP                    "ndiot"
-#define MQTT_DOMAIN                 "nd"
+#define MQTT_DOMAIN                 ""
 
 //DSP.pub
 #define MQTT_DSP_SVC_LOGIN          "login"

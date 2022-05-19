@@ -145,7 +145,7 @@ void* OnConfigFixup(void* arg, void* p) {
     }
 
     cmds::cmd::CmdBase::Command::DefaultRespTimeout = Config.mqtt_resp_timeout;
-    cmds::cmd::CmdMqtt::topicPrefix = Config.app_id + "/" + Config.dom_id + "/";
+    cmds::cmd::CmdMqtt::topicPrefix = cmds::cmd::CmdMqtt::ZeroTopic(Config.app_id) + "/" + cmds::cmd::CmdMqtt::ZeroTopic(Config.dom_id) + "/";
 
     return 0;
 }
