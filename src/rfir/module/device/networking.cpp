@@ -93,7 +93,7 @@ bool rfir::module::device::Networking::handshake(){
     neb::CJsonObject& pld = cmd.command.pld;
     Config.getIds(&pld);
     GDevice->getCommonProps(&pld);
-    hd.ReplaceAdd("handshake_count", m_handshake_success_count);
+    pld.ReplaceAdd("handshake_count", m_handshake_success_count);
 
     return cmd.send(); 
 };

@@ -26,8 +26,7 @@ bool cmds::cmd::CmdBase::Command::setSid(std::string value){
     return 1;
 };
 bool cmds::cmd::CmdBase::Command::setSid(uint32_t value){
-    head.sid = value;
-    return 1;
+    return setSid(String(value).c_str());
 };
 bool cmds::cmd::CmdBase::Command::isReqCmd(){
     return head.stp == 0;
