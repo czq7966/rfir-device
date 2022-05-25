@@ -13,7 +13,7 @@ extern JLed                         GJLed;
 
 // #define DEBUG_RFIR
 
-// #define DEBUGER RFIRDebuger
+#define DEBUGER RFIRDebuger
 #define COSerial Serial
 
 //LED
