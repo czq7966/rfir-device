@@ -26,6 +26,7 @@ void* cmds::cmd::CmdDispatcher::onConnect(void* arg, void* p){
     // return 0;
 };
 void* cmds::cmd::CmdDispatcher::onDisconnect(void* arg, void* p){
+    DEBUGER.println("cmds::cmd::CmdDispatcher::onDisconnect");
     return this->events.onDisconnect.emit(p);
     // auto dispatcher = (CmdDispatcher*)arg;
     // return dispatcher->events.onConnect.emit(p);    
@@ -119,8 +120,8 @@ void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
     auto msg = (::network::module::mqtt::AClient::Message*)p;
     DEBUGER.printf("cmds::cmd::MqttDispatcher::OnMqttMessage: topic: %s, total: %d \r\n", msg->topic, msg->total);
     
-    if(msg->total > msg->len || msg->total == 0) {
-        DEBUGER.printf("Mqtt message max length 1460, min length 1. actual total: %d, actual len: %d\r\n", msg->total, msg->len);
+    if (msg->total == 0) {
+        DEBUGER.printf("Mqtt message min length 1. actual total: %d, actual len: %d\r\n", msg->total, msg->len);
         return 0;
     }
 

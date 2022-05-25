@@ -5,6 +5,7 @@
 void cmds::network::MqttSignaler::setMqtt(::network::module::mqtt::AClient* p){
     if (mqtt) {
         mqtt->events.onMqttConnect.remove((void*)this);
+        mqtt->events.onMqttDisconnect.remove((void*)this);
         mqtt->events.onMqttMessage.remove((void*)this);    
     }
 
@@ -12,6 +13,7 @@ void cmds::network::MqttSignaler::setMqtt(::network::module::mqtt::AClient* p){
 
     if (mqtt) {
         mqtt->events.onMqttConnect.add((void*)this, std::bind(&MqttSignaler::onConnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+        mqtt->events.onMqttDisconnect.add((void*)this, std::bind(&MqttSignaler::onDisconnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
         mqtt->events.onMqttMessage.add((void*)this, std::bind(&MqttSignaler::onMessage, this, std::placeholders::_1, std::placeholders::_2), (void*)this);            
     }
 

@@ -31,3 +31,4 @@ bool Global::IsPowerHardReset() {
         return _IsPowerHardReset;
 }
 
+JLed    GJLed = JLed(LED_PIN);

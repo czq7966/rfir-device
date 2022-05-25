@@ -265,6 +265,10 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
             if (cmd->command.head.entry.id == "set") {
                 return (void*)OnSvc_set(cmd);
             }
+
+            if (cmd->command.head.entry.id == "reboot") {
+                return (void*)OnSvc_reboot(cmd);
+            }
         }
 
         if (cmd->topic == ::Config.mqtt_dev_svc_penet) {
@@ -276,7 +280,7 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 
     //服务响应
     if (cmd->command.head.stp == 1) {
-        if (cmd->topic == ::Config.mqtt_edg_svc_handshake) {
+        if (cmd->topic == ::Config.mqtt_dev_svc_handshake) {
             return (void*)OnSvc_handshake_resp(cmd);
         }
     }
@@ -303,7 +307,7 @@ bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
         cmd.command.head.stp = 1;
     } else {
         cmd.command.head.entry.type = "evt";
-        cmd.command.head.entry.id = ::Config.mqtt_dev_evt_report;
+        cmd.command.head.entry.id = "report";
     }
     Config.getIds(&hd);
 
@@ -336,6 +340,23 @@ bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string re
     return result;
 };
 
+bool  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* cmd){
+    auto result = GDevice->onSvc_reboot(&cmd->command.pld);
+
+    neb::CJsonObject& hd = cmd->command.hd;
+    neb::CJsonObject& pld = cmd->command.pld;
+
+    GDevice->getProps(&pld);
+    pld.ReplaceAdd("_success", result);
+    auto temp = cmd->command.head.from;
+    cmd->command.head.from = cmd->command.head.to;
+    cmd->command.head.to = temp;
+    cmd->command.head.stp = 1;
+
+    result = cmd->send();
+    return result;
+};
+
 bool  service::cmds::Cmd::OnSvc_penet(::cmds::cmd::CmdMqtt* cmd){
     return  GDevice->onSvc_penet(&cmd->command.pld);
 };
@@ -360,7 +381,7 @@ void*  service::cmds::Cmd::OnEvt_penet(void* arg, void* p){
         pld = *((neb::CJsonObject*)p);
 
         cmd.command.head.entry.type = "evt";
-        cmd.command.head.entry.id = ::Config.mqtt_dev_evt_penet;
+        cmd.command.head.entry.id = "penet";
         cmd.send();
     }
     return 0;

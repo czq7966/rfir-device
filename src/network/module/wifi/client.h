@@ -16,7 +16,8 @@ namespace network {
                     bool                smcMode= false;
                     std::vector<std::string>    ssid;
                     std::vector<std::string>    pass;                   
-                    std::vector<int>            timeout;
+                    // std::vector<int>            timeout;
+                    uint32_t                    timeout;
                     AP::Params          ap;
                     SMC::Params         smc;
                     bool                assign(Params& p);
@@ -34,9 +35,9 @@ namespace network {
 
             //V2
             public:
-                int connect_ssid_index = 0;
-                unsigned long connect_start_time = 0;            
-                JLed led = WIFI_CONNECT_JLED;
+                int m_connect_ssid_index = 0;
+                uint32_t m_connect_timeout_handler = 0;
+                JLed* led = 0; // = WIFI_CONNECT_JLED;
                 WiFiEventHandler wifiConnectHandler;
                 WiFiEventHandler wifiDisconnectHandler;
 
@@ -50,6 +51,7 @@ namespace network {
             public:
                 void onWifiConnect(const WiFiEventStationModeGotIP& event);
                 void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+                void* onWifiConnectTimeout(void* arg, void* p);
 
             };
         }

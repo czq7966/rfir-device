@@ -162,26 +162,27 @@ void setup() {
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)
     //启动wifi或热点
     network::module::wifi::Client::Params np;    
-    np.ssid = WIFI_SSID;                               
-    np.pass = WIFI_PASSWORD;            
-    np.timeout = WIFI_RESET_TIMEOUT;    
+    np.ssid = Config.wifi_ssid;
+    np.pass = Config.wifi_password;
+    np.timeout = Config.wifi_reset_timeout;
     //AP
     #ifdef AP_MODE
-    np.apMode = AP_MODE; 
-    np.ap.apSsid = AP_SSID == "" ? ChipID : AP_SSID;    
-    np.ap.apPass = AP_PASSWORD;         
-    np.ap.resetTimeout = AP_RESET_TIMEOUT;
-    np.ap.configVersion = AP_CONFIG_VERSION;            
-    np.ap.configPin = AP_CONFIG_PIN;    
-    np.ap.configPinTimeout = AP_CONFIG_PIN_TIMEOUT;
+    np.apMode = Config.ap_mode;
+    np.ap.apSsid = Config.ap_ssid == "" ? ChipID : Config.ap_ssid;
+    np.ap.apPass = Config.ap_password;
+    np.ap.resetTimeout = Config.ap_reset_timeout;
+    np.ap.configVersion = Config.ap_config_version;
+    np.ap.configPin = Config.ap_config_pin;
+    np.ap.configPinTimeout = Config.ap_config_pin_timeout;
     #endif
 
-    // network::service::wifi::Client::Start(np);
+    for(auto it = Config.wifi_ssid_dev.begin(); it != Config.wifi_ssid_dev.end(); it++) {
+        np.ssid.push_back(*it);
+    }
 
-    #ifdef WIFI_SSID_DEV
-    np.ssid.push_back(WIFI_SSID_DEV);
-    np.pass.push_back(WIFI_PASSWORD_DEV);    
-    #endif
+    for(auto it = Config.wifi_password_dev.begin(); it != Config.wifi_password_dev.end(); it++) {
+        np.pass.push_back(*it);
+    }
 
     GWifiClient.start(np);
 
@@ -217,6 +218,7 @@ void setup() {
     network::module::mqtt::AClient::Params mp;
     mp.ip = MQTT_IP;
     mp.port = MQTT_PORT;
+    mp.timeout = MQTT_RESET_TIMEOUT;
     mp.user = MQTT_USER;
     mp.pass = MQTT_PASSWORD;
     mp.id = ChipID;

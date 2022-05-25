@@ -27,9 +27,13 @@ namespace rfir {
                 virtual void start();
                 virtual void loop();
             public:
-                bool login();
-                void delayLogin(int delay_ms = 3000);
-                void* doLogin(void* arg, void* p);
+                bool loginDsp();
+                void delayLoginDsp(int delay_ms = 3000);
+                void* doLoginDsp(void* arg, void* p);
+                bool loginDio();
+                void delayLoginDio(int delay_ms = 3000);
+                void* doLoginDio(void* arg, void* p);                
+
                 bool handshake();
                 void delayHandshake(int delay_ms = 1000);
                 void* doHandshake(void* arg, void* p);
@@ -44,8 +48,10 @@ namespace rfir {
                 void* onCommand(void* arg, void* p);
                 void* onConfigFixup(void* arg, void* p);
             public:
-                void* onDev_login_resp(void* arg, void* p);
-                void* onDev_login_timeout(void* arg, void* p);
+                void* onDev_login_dsp_resp(void* arg, void* p);
+                void* onDev_login_dsp_timeout(void* arg, void* p);
+                void* onDev_login_dio_resp(void* arg, void* p);
+                void* onDev_login_dio_timeout(void* arg, void* p);                
                 void* onDev_handshake_resp(void* arg, void* p);                
                 void* onDev_handshake_timeout(void* arg, void* p);
 

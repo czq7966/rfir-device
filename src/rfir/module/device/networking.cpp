@@ -26,8 +26,14 @@ void rfir::module::device::Networking::loop(){
 }
 
 //登入调度
-bool rfir::module::device::Networking::login(){
-    DEBUGER.println("rfir::module::device::Networking::login");
+bool rfir::module::device::Networking::loginDsp(){
+    DEBUGER.println("rfir::module::device::Networking::loginDsp");
+    if (Config.dsp_id == "") {
+        //没有边缘服务，3秒后重新登入
+        delayLoginDio();
+        return false;
+    } 
+    
 
     GCmdDispatcher.removeWaitResp(m_login_handler);
 
@@ -37,11 +43,11 @@ bool rfir::module::device::Networking::login(){
     cmd.command.head.to.type = "dsp";
     cmd.command.head.to.id = Config.dsp_id;
     cmd.command.head.entry.type = "svc";
-    cmd.command.head.entry.id = Config.mqtt_dsp_svc_login;
+    cmd.command.head.entry.id = "login";
 
-    cmd.events.onResp.callback = std::bind(&Networking::onDev_login_resp, this, std::placeholders::_1, std::placeholders::_2);
+    cmd.events.onResp.callback = std::bind(&Networking::onDev_login_dsp_resp, this, std::placeholders::_1, std::placeholders::_2);
     cmd.events.onResp.cbArg = (void*)this;   
-    cmd.events.onTimeout.callback = std::bind(&Networking::onDev_login_timeout, this, std::placeholders::_1, std::placeholders::_2);
+    cmd.events.onTimeout.callback = std::bind(&Networking::onDev_login_dsp_timeout, this, std::placeholders::_1, std::placeholders::_2);
     cmd.events.onTimeout.cbArg = (void*)this;
 
     neb::CJsonObject& hd = cmd.command.hd;
@@ -54,22 +60,65 @@ bool rfir::module::device::Networking::login(){
 };
 
 //延时登入
-void rfir::module::device::Networking::delayLogin(int delay_ms) {
-    DEBUGER.printf("rfir::module::device::Networking::delayLogin %d \r\n", delay_ms);
-    GEventTimer.delay(delay_ms, std::bind(&Networking::doLogin, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+void rfir::module::device::Networking::delayLoginDsp(int delay_ms) {
+    DEBUGER.printf("rfir::module::device::Networking::delayLoginDsp %d \r\n", delay_ms);
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doLoginDsp, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
 //事件登入
-void* rfir::module::device::Networking::doLogin(void* arg, void* p) {
-    this->login();
+void* rfir::module::device::Networking::doLoginDsp(void* arg, void* p) {
+    this->loginDsp();
     return 0;
 };
+
+
+//登入数据服务
+bool rfir::module::device::Networking::loginDio() {
+    DEBUGER.println("rfir::module::device::Networking::loginDIO");
+
+    GCmdDispatcher.removeWaitResp(m_login_handler);
+
+    cmds::cmd::CmdMqtt cmd;
+    cmd.command.setNeedResp();
+    m_login_handler = cmd.command.getIntSid();
+    cmd.command.head.to.type = "0";
+    cmd.command.head.to.id = "0";
+    cmd.command.head.entry.type = "svc";
+    cmd.command.head.entry.id = "login";
+
+    cmd.events.onResp.callback = std::bind(&Networking::onDev_login_dio_resp, this, std::placeholders::_1, std::placeholders::_2);
+    cmd.events.onResp.cbArg = (void*)this;   
+    cmd.events.onTimeout.callback = std::bind(&Networking::onDev_login_dio_timeout, this, std::placeholders::_1, std::placeholders::_2);
+    cmd.events.onTimeout.cbArg = (void*)this;
+
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+
+    Config.getIds(&hd);  
+    GDevice->getCommonProps(&pld);
+
+    return cmd.send();
+};
+
+
+//延时登入数据服务
+void rfir::module::device::Networking::delayLoginDio(int delay_ms) {
+    DEBUGER.printf("rfir::module::device::Networking::delayLoginDio %d \r\n", delay_ms);
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doLoginDio, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+};
+
+//事件登入数据服务
+void* rfir::module::device::Networking::doLoginDio(void* arg, void* p) {
+    this->loginDio();
+    return 0;
+};
+
 
 //握手
 bool rfir::module::device::Networking::handshake(){
     if (Config.edg_id == "") {
         //没有边缘服务，3秒后重新登入
-        delayLogin();
+        delayLoginDio();
         return false;
     } 
 
@@ -82,7 +131,7 @@ bool rfir::module::device::Networking::handshake(){
     cmd.command.head.to.type = "edg";
     cmd.command.head.to.id = Config.edg_id;
     cmd.command.head.entry.type = "svc";
-    cmd.command.head.entry.id = Config.mqtt_edg_svc_handshake;
+    cmd.command.head.entry.id = "handshake";
 
     cmd.events.onResp.callback = std::bind(&Networking::onDev_handshake_resp, this, std::placeholders::_1, std::placeholders::_2);
     cmd.events.onResp.cbArg = (void*)this;   
@@ -101,7 +150,7 @@ bool rfir::module::device::Networking::handshake(){
 //延时握手
 void rfir::module::device::Networking::delayHandshake(int delay_ms){
     DEBUGER.printf("rfir::module::device::Networking::delayHandshake %d \r\n", delay_ms);
-    GEventTimer.delay(delay_ms, std::bind(&Networking::doLogin, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doHandshake, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
 //事件登入
@@ -117,7 +166,7 @@ bool rfir::module::device::Networking::setWill(){
     cmd.command.head.to.type ="0";
     cmd.command.head.to.id = "0";
     cmd.command.head.entry.type ="evt";
-    cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
+    cmd.command.head.entry.id = "status";
     cmd.command.head.retain = true;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
@@ -136,7 +185,7 @@ void rfir::module::device::Networking::setOnline(){
     cmd.command.head.to.type ="0";
     cmd.command.head.to.id = "0";
     cmd.command.head.entry.type ="evt";
-    cmd.command.head.entry.id = Config.mqtt_dev_evt_status;
+    cmd.command.head.entry.id = "status";
     cmd.command.head.retain = true;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
@@ -166,6 +215,7 @@ void rfir::module::device::Networking::subscribe() {
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_handshake.c_str(), 2);
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_get.c_str(), 2);
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_set.c_str(), 2);
+    GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_reboot.c_str(), 2);
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_penet.c_str(), 2);
 }
 
@@ -185,6 +235,7 @@ void rfir::module::device::Networking::unsubscribe() {
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_handshake.c_str());
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_get.c_str());
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_set.c_str());
+    GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_reboot.c_str());
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_penet.c_str());
 }
 
@@ -195,9 +246,8 @@ void* rfir::module::device::Networking::onConnect(void* arg, void* p){
     subscribe();
     m_online_count++;
     setOnline();
-    if (!status.logined) {
-        status.logined = true;
-        this->login();
+    if (!status.logined) {        
+        this->loginDsp();
     }   
     return 0;
 
@@ -241,17 +291,17 @@ void* rfir::module::device::Networking::onConfigFixup(void* arg, void* p) {
 
 
 //调度登入响应
-void* rfir::module::device::Networking::onDev_login_resp(void* arg, void* p){
+void* rfir::module::device::Networking::onDev_login_dsp_resp(void* arg, void* p){
     auto cmd = (cmds::cmd::CmdMqtt*)p;
 
-    DEBUGER.printf("rfir::module::device::Networking::onDev_login_resp: %s \r\n", cmd->command.pld.ToString().c_str());  
+    DEBUGER.printf("rfir::module::device::Networking::onDev_login_dsp_resp: %s \r\n", cmd->command.pld.ToString().c_str());  
     
     std::string app_id, dom_id, dsp_id, edg_id;
 
-    cmd->command.pld.Get("app", app_id);
-    cmd->command.pld.Get("dom", dom_id);
-    cmd->command.pld.Get("dsp", dsp_id);
-    cmd->command.pld.Get("edg", edg_id);
+    cmd->command.pld.Get("app_id", app_id);
+    cmd->command.pld.Get("dom_id", dom_id);
+    cmd->command.pld.Get("dsp_id", dsp_id);
+    cmd->command.pld.Get("edg_id", edg_id);
     
     
     status.logined = app_id != "" && dom_id != "" && dsp_id !="" && edg_id != "";
@@ -268,28 +318,82 @@ void* rfir::module::device::Networking::onDev_login_resp(void* arg, void* p){
         
         handshake();
     } else {
-        delayLogin();
+        delayLoginDio();
     }
 
     return 0;
 };
 
 //调度登入超时
-void* rfir::module::device::Networking::onDev_login_timeout(void* arg, void* p){
-    DEBUGER.println("rfir::module::device::Networking::onDev_login_timeout");
+void* rfir::module::device::Networking::onDev_login_dsp_timeout(void* arg, void* p){
+    DEBUGER.println("rfir::module::device::Networking::onDev_login_dsp_timeout");
     status.logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
 
     if (status.logined) {
         handshake();        
     } else {
-        login();
+        loginDio();
     }
 
     return 0;
 };
 
+
+
+//数据登入响应
+void* rfir::module::device::Networking::onDev_login_dio_resp(void* arg, void* p){
+    auto cmd = (cmds::cmd::CmdMqtt*)p;
+
+    DEBUGER.printf("rfir::module::device::Networking::onDev_login_dio_resp: %s \r\n", cmd->command.pld.ToString().c_str());  
+    
+    std::string app_id, dom_id, dsp_id, edg_id;
+
+    cmd->command.pld.Get("app_id", app_id);
+    cmd->command.pld.Get("dom_id", dom_id);
+    cmd->command.pld.Get("dsp_id", dsp_id);
+    if (cmd->command.pld.Get("edg_id", edg_id));
+        Config.edg_id = edg_id;
+        
+
+    if (app_id != Config.app_id || dom_id != Config.dom_id || dsp_id != Config.dsp_id){
+        Config.app_id = app_id;
+        Config.dom_id = dom_id;
+        Config.dsp_id = dsp_id;        
+
+        Config.fixup();
+        // subscribe();
+        status.logined = false;
+        GMqttClient.delayDisconnectToMqtt(100);
+        return (void*)1;
+    }   
+
+    // loginDsp();
+
+    return 0;
+};
+
+//数据登入超时
+void* rfir::module::device::Networking::onDev_login_dio_timeout(void* arg, void* p){
+    DEBUGER.println("rfir::module::device::Networking::onDev_login_dio_timeout");
+    loginDsp();
+
+    // status.logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
+
+    // if (status.logined) {
+    //     handshake();        
+    // } else {
+    //     login();
+    // }
+
+    return 0;
+};
+
+
+
+
 //边缘握手响应
 void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p){
+    status.logined = true;
     status.handshaked = true;
     setOnline();
     m_handshake_success_count++;
@@ -303,7 +407,7 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
     status.handshaked = false;
     m_handshake_failed_count++;
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
-    login();
+    loginDio();
     return 0;
 };
 

@@ -1,5 +1,6 @@
 #include "async-client.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/util/util.h"
 
 void network::module::mqtt::AClient::init(Params p){
     DEBUGER.println(" network::module::mqtt::AClient::init");
@@ -27,9 +28,13 @@ void network::module::mqtt::AClient::start(Params p){
     init(p);
 };
 void network::module::mqtt::AClient::loop(){
-    // if (!mqtt.connected()){
-    //     connectToMqtt();
-    // }
+    checkLed();
+};
+
+void network::module::mqtt::AClient::checkLed() {
+    if (led != nullptr && led->IsRunning()) {
+        led->Update();
+    }
 };
 
 void network::module::mqtt::AClient::setWill(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length){
@@ -46,9 +51,24 @@ uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* 
 void network::module::mqtt::AClient::connectToMqtt() {
     if (WiFi.isConnected() && !mqtt.connected()) {
         DEBUGER.println("Connecting to MQTT...");
+        if (m_connect_timeout_handler == 0) {        
+            m_connect_timeout_handler = GEventTimer.delay(params.timeout * 1000, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
+        }
+        if (led == nullptr) {
+            led = &(MQTT_CONNECT_JLED);
+        }
+
         mqtt.connect();
     }
 }
+
+void network::module::mqtt::AClient::disconnectToMqtt(bool force) {
+    if (mqtt.connected()) {
+        DEBUGER.println("Disconnecting to MQTT...");
+        mqtt.disconnect(force);
+    }
+}
+
 
 void network::module::mqtt::AClient::onWifiConnect(const WiFiEventStationModeGotIP& event) {
     DEBUGER.println("Connected to Wi-Fi.");
@@ -62,6 +82,10 @@ void network::module::mqtt::AClient::onWifiDisconnect(const WiFiEventStationMode
 
 void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
     DEBUGER.println("Connected to MQTT.");
+    GEventTimer.remove(m_connect_timeout_handler);
+    m_connect_timeout_handler = 0;
+    led->Stop();
+    led = nullptr;
     events.onMqttConnect.emit((void*)(int)sessionPresent);
 }
 
@@ -70,65 +94,86 @@ void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectR
     events.onMqttDisconnect.emit((void*)(int)reason);
     if (WiFi.isConnected())
         GEventTimer.delay(1000, std::bind(&AClient::doConnectToMqtt, this, std::placeholders::_1, std::placeholders::_2) );
+
 }
 
 void network::module::mqtt::AClient::onMqttSubscribe(uint16_t packetId, uint8_t qos) {    
-    DEBUGER.println("Subscribe acknowledged.");
-    DEBUGER.print("  packetId: ");
-    DEBUGER.println(packetId);
-    DEBUGER.print("  qos: ");
-    DEBUGER.println(qos);
+    // DEBUGER.println("Subscribe acknowledged.");
+    // DEBUGER.print("  packetId: ");
+    // DEBUGER.println(packetId);
+    // DEBUGER.print("  qos: ");
+    // DEBUGER.println(qos);
 
     events.onMqttSubscribe.emit((void*)(int)packetId);
 }
 
 void network::module::mqtt::AClient::onMqttUnsubscribe(uint16_t packetId) {
-    DEBUGER.println("Unsubscribe acknowledged.");
-    DEBUGER.print("  packetId: ");
-    DEBUGER.println(packetId);
+    // DEBUGER.println("Unsubscribe acknowledged.");
+    // DEBUGER.print("  packetId: ");
+    // DEBUGER.println(packetId);
 
     events.onMqttUnsubscribe.emit((void*)(int)packetId);
 }
 
 void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-    DEBUGER.println("Publish received.");
-    DEBUGER.print("  topic: ");
-    DEBUGER.println(topic);
-    DEBUGER.print("  qos: ");
-    DEBUGER.println(properties.qos);
-    DEBUGER.print("  dup: ");
-    DEBUGER.println(properties.dup);
-    DEBUGER.print("  retain: ");
-    DEBUGER.println(properties.retain);
-    DEBUGER.print("  len: ");
-    DEBUGER.println(len);
-    DEBUGER.print("  index: ");
-    DEBUGER.println(index);
-    DEBUGER.print("  total: ");
-    DEBUGER.println(total);
+    // DEBUGER.println("Publish received.");
+    // DEBUGER.print("  topic: ");
+    // DEBUGER.println(topic);
+    // DEBUGER.print("  qos: ");
+    // DEBUGER.println(properties.qos);
+    // DEBUGER.print("  dup: ");
+    // DEBUGER.println(properties.dup);
+    // DEBUGER.print("  retain: ");
+    // DEBUGER.println(properties.retain);
+    // DEBUGER.print("  len: ");
+    // DEBUGER.println(len);
+    // DEBUGER.print("  index: ");
+    // DEBUGER.println(index);
+    // DEBUGER.print("  total: ");
+    // DEBUGER.println(total);
+    if (total > MsgBufSize) {
+        DEBUGER.printf("Mqtt message max length %d, min length 1. actual total: %d\r\n", MsgBufSize, total);
+        return ;
+    }
 
-    Message msg;
-    msg.client = (void*)this;
-    msg.topic = topic;
-    msg.payload = payload;
-    msg.props = &properties;
-    msg.len = len;
-    msg.index = index;
-    msg.total = total;
-    events.onMqttMessage.emit((void*)&msg);
+    memcpy(msgBuf + index, payload, len);
+    if (index + len == total) {
+        Message msg;
+        msg.client = (void*)this;
+        msg.topic = topic;
+        msg.payload = msgBuf;
+        msg.props = &properties;
+        msg.len = len;
+        msg.index = index;
+        msg.total = total;
+        events.onMqttMessage.emit((void*)&msg);
+    }
 }
 
 void network::module::mqtt::AClient::onMqttPublish(uint16_t packetId) {
-    DEBUGER.println("Publish acknowledged.");
-    DEBUGER.print("  packetId: ");
-    DEBUGER.println(packetId);
+    // DEBUGER.println("Publish acknowledged.");
+    // DEBUGER.print("  packetId: ");
+    // DEBUGER.println(packetId);
     events.onMqttPublish.emit((void*)packetId);
 }
 
+void network::module::mqtt::AClient::delayDisconnectToMqtt(int timeout_ms) {
+    GEventTimer.delay(timeout_ms, std::bind(&AClient::doDisconnectToMqtt, this, std::placeholders::_1, std::placeholders::_2));
+};
 
 void*  network::module::mqtt::AClient::doConnectToMqtt(void* arg, void* p) {
     this->connectToMqtt();
     return 0;
 }
+
+void*  network::module::mqtt::AClient::doDisconnectToMqtt(void* arg, void* p) {
+    this->disconnectToMqtt(true);
+    return 0;
+}
+
+void* network::module::mqtt::AClient::onConnectToMqttTimeout(void* arg, void* p){
+    rfir::util::Util::Reset();
+    return 0;
+};
 
 network::module::mqtt::AClient GMqttClient;

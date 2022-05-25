@@ -173,6 +173,11 @@ void* rfir::module::device::Device::onEvt_timer_report(void* arg, void* p){
     return 0;
 };
 
+void* rfir::module::device::Device::doSvc_reboot(void* arg, void* p){    
+    rfir::util::Util::Reset();
+    return 0;
+};
+
 
 // bool rfir::module::device::Device::doEvt_props_change(const char* reason){
 //     neb::CJsonObject pld;
@@ -188,6 +193,15 @@ bool rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld){
 
 bool rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld){
     return 0;
+}; 
+
+bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld){
+    int delay = 0;
+    pld->Get("delay", delay);
+    delay = std::max(100, delay);
+
+    GEventTimer.delay(delay, std::bind(&Device::doSvc_reboot , this, std::placeholders::_1, std::placeholders::_2));
+    return 1;
 }; 
 
 bool rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld){

@@ -9,19 +9,25 @@
 #include <WiFi.h>
 #endif
 #include "AsyncMqttClient.h"
-
+#include <jled.h>
 #include "rfir/util/event-emitter.h"
 
 namespace network {
     namespace module {
         namespace mqtt {
             class AClient {
+            #ifdef MQTT_BUFFER_SIZE
+                static const int MsgBufSize = MQTT_BUFFER_SIZE;
+            #else
+                static const int MsgBufSize = 2048;
+            #endif            
            
             public:
                 struct Params {
                     std::string ip;
                     int         port = 1883;
                     int         keepalive = 15;
+                    int         timeout = 60;
                     std::string user;
                     std::string pass;
                     std::string id;
@@ -52,10 +58,13 @@ namespace network {
                 
                 Events events;
             public:
+                char msgBuf[MsgBufSize];
                 AsyncMqttClient mqtt;
                 Params params;
+                uint32_t        m_connect_timeout_handler = 0;
                 WiFiEventHandler wifiConnectHandler;
                 WiFiEventHandler wifiDisconnectHandler;
+                JLed* led = 0;// = MQTT_CONNECT_JLED;
             public:
 
                 void init(Params p);
@@ -64,11 +73,14 @@ namespace network {
                 void start(Params p);
                 void loop();
 
+                void  checkLed();
+
                 void setWill(const char* topic, const char* payload = nullptr, bool retain = true, uint8_t qos = 2, size_t length = 0);
                 uint16_t publish(const char* topic, const char* payload = nullptr, bool retain = false, uint8_t qos = 2, size_t length = 0, bool dup = false, uint16_t message_id = 0);
   
             public:            
                 void connectToMqtt();
+                void disconnectToMqtt(bool force = false);
                 void onWifiConnect(const WiFiEventStationModeGotIP& event);
                 void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
                 void onMqttConnect(bool sessionPresent);
@@ -78,7 +90,11 @@ namespace network {
                 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
                 void onMqttPublish(uint16_t packetId);
             public:
+                void  delayDisconnectToMqtt(int timeout_ms = 1000);
                 void* doConnectToMqtt(void* arg, void* p);
+                void* doDisconnectToMqtt(void* arg, void* p);
+
+                void* onConnectToMqttTimeout(void* arg, void* p);
             };
 
         }

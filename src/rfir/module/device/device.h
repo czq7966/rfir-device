@@ -63,8 +63,11 @@ namespace rfir {
                 virtual bool doEvtTimerReport(uint32_t timeout = DEVICE_TIMER_REPORT_TIMEOUT);
                 virtual void* onEvt_timer_report(void* arg, void* p);
             public:
+                virtual void* doSvc_reboot(void* arg, void* p);
+            public:
                 virtual bool onSvc_get(neb::CJsonObject* pld); 
                 virtual bool onSvc_set(neb::CJsonObject* pld); 
+                virtual bool onSvc_reboot(neb::CJsonObject* pld);
                 virtual bool onSvc_penet(neb::CJsonObject* pld);
             };
 

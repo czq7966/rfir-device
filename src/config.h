@@ -102,9 +102,9 @@ public:
     
 public:
     //App
-    std::string app_id = MQTT_APP;
-    std::string dom_id = MQTT_DOMAIN;
-    std::string dsp_id = MQTT_DOMAIN;
+    std::string app_id;
+    std::string dom_id;
+    std::string dsp_id;
     std::string edg_id;
 
     //Device
@@ -125,7 +125,17 @@ public:
     std::vector<std::string>  wifi_password_dev = WIFI_PASSWORD_DEV;
     std::vector<std::string>  wifi_ssid = WIFI_SSID;
     std::vector<std::string>  wifi_password = WIFI_PASSWORD;
-    std::vector<int>          wifi_reset_timeout = WIFI_RESET_TIMEOUT;
+    uint32_t                  wifi_reset_timeout = WIFI_RESET_TIMEOUT;
+
+    //AP
+    bool                        ap_mode = AP_MODE;
+    std::string                 ap_ssid = AP_SSID;
+    std::string                 ap_password = AP_PASSWORD;
+    int                         ap_reset_timeout = AP_RESET_TIMEOUT;
+    std::string                 ap_config_version = AP_CONFIG_VERSION;
+    int                         ap_config_pin = AP_CONFIG_PIN;
+    int                         ap_config_pin_timeout = AP_CONFIG_PIN_TIMEOUT;
+ 
 
     //MQTT
     std::string mqtt_ip = MQTT_IP;
@@ -136,27 +146,28 @@ public:
 
     //TOPIC
 
-    //DSP.pub
-    std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
+    // //DSP.pub
+    // std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
     //DSP.sub
     std::string mqtt_dsp_evt_status = MQTT_DSP_EVT_STATUS;
 
     //EDG.pub
-    std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
+    // std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
     //EDG.sub
     std::string mqtt_edg_evt_status = MQTT_EDG_EVT_STATUS;
 
 
     //DEV.pub
-    std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
-    std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
-    std::string mqtt_dev_evt_penet = MQTT_DEV_EVT_PENET;
+    // std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
+    // std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
+    // std::string mqtt_dev_evt_penet = MQTT_DEV_EVT_PENET;
 
     //DEV.sub
     std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
     std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
     std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;
     std::string mqtt_dev_svc_set = MQTT_DEV_SVC_SET;
+    std::string mqtt_dev_svc_reboot = MQTT_DEV_SVC_REBOOT;
     std::string mqtt_dev_svc_penet = MQTT_DEV_SVC_PENET;
 
 
