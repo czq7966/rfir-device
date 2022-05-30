@@ -19,6 +19,7 @@ namespace rfir {
 
                 uint32_t m_login_handler = 0;
                 uint32_t  m_handshake_handler = 0;
+                uint32_t  m_handshake_heartbeat_handler = 0;
                 int  m_handshake_failed_count = 0;
                 int  m_handshake_success_count = 0;
                 int  m_online_count = 0;
@@ -28,10 +29,10 @@ namespace rfir {
                 virtual void loop();
             public:
                 bool loginDsp();
-                void delayLoginDsp(int delay_ms = 3000);
+                void delayLoginDsp(int delay_ms = 5000);
                 void* doLoginDsp(void* arg, void* p);
                 bool loginDio();
-                void delayLoginDio(int delay_ms = 3000);
+                void delayLoginDio(int delay_ms = 5000);
                 void* doLoginDio(void* arg, void* p);                
 
                 bool handshake();
@@ -42,6 +43,7 @@ namespace rfir {
                 void setOnline();
                 void subscribe();
                 void unsubscribe();
+                void reset();
             public:
                 void* onConnect(void* arg, void* p);
                 void* onDisconnect(void* arg, void* p);

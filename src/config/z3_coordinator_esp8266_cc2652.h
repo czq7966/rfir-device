@@ -8,7 +8,7 @@
 extern JLed                         GJLed;
 
 //Device
-#define DEV_FACTURER                "ND"
+#define DEV_VENDOR                "ND"
 #define DEV_MODEL                   "Z3CO2652ESP8266"
 
 // #define DEBUG_RFIR
@@ -83,33 +83,26 @@ extern JLed                         GJLed;
 //MQTT Topic
 
 
-// //DSP.pub
-// #define MQTT_DSP_SVC_LOGIN          "login"
 //DSP.sub
 #define MQTT_DSP_EVT_STATUS         "{app}/{dom}/dsp/{dsp}/0/0/evt/status"
 
-//EDG.pub
-// #define MQTT_EDG_SVC_HANDSHAKE      "handshake"
 //EDG.sub
 #define MQTT_EDG_EVT_STATUS         "{app}/{dom}/edg/{edg}/0/0/evt/status"
 
-// //DEV.pub
-// #define MQTT_DEV_EVT_REPORT         "report"
-// #define MQTT_DEV_EVT_STATUS         "status"
-// #define MQTT_DEV_EVT_PENET          "penet"
 //DEV.sub
 #define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/+/+/dev/{dev}/svc/login"
 #define MQTT_DEV_SVC_HANDSHAKE      "{app}/{dom}/edg/{edg}/dev/{dev}/svc/handshake"
+#define MQTT_DEV_SVC_PENET          "{app}/{dom}/edg/{edg}/dev/{dev}/svc/penet"
 #define MQTT_DEV_SVC_GET            "{app}/{dom}/+/+/dev/{dev}/svc/get"
 #define MQTT_DEV_SVC_SET            "{app}/{dom}/+/+/dev/{dev}/svc/set"
 #define MQTT_DEV_SVC_REBOOT         "{app}/{dom}/+/+/dev/{dev}/svc/reboot"
-#define MQTT_DEV_SVC_PENET          "{app}/{dom}/edg/{edg}/dev/{dev}/svc/penet"
 
 
 
 #define MQTT_RESP_TIMEOUT           10*1000 //毫秒
 #define MQTT_BUFFER_SIZE            2048
 //Timer Report 
-#define DEVICE_TIMER_REPORT_TIMEOUT        60*1000   
+#define DEVICE_TIMER_REPORT_TIMEOUT        60*1000   //1分钟上报一次
+#define DEVICE_RE_HANDSHAKE_TIMEOUT        60*1000*5 //5分钟握一次手 
 
 #endif //

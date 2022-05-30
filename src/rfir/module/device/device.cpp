@@ -145,7 +145,7 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     pld->ReplaceAdd("ip", "");
     pld->ReplaceAdd("ssid", "");
     pld->ReplaceAdd("version", OTA_VERSION_NUMBER);
-    pld->ReplaceAdd("facturer", DEV_FACTURER);
+    pld->ReplaceAdd("vendor", DEV_VENDOR);
     pld->ReplaceAdd("model", DEV_MODEL);    
 
     if (WiFi.isConnected()) {

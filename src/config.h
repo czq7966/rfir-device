@@ -95,8 +95,7 @@ public:
     GlobalConfig();
     void fixup();
     void fixupTopic();
-    // std::string getSvcTopic(std::string func);
-    // std::string getEdgStatusTopic();    
+    void reset();
     void        getIds(neb::CJsonObject* pld, std::string key = "ids");
     std::string expandTopic(std::string topic);
     
@@ -106,10 +105,11 @@ public:
     std::string dom_id;
     std::string dsp_id;
     std::string edg_id;
+    std::string dio_id;
 
     //Device
     std::string dev_id;
-    std::string dev_facturer = DEV_FACTURER;
+    std::string dev_vendor = DEV_VENDOR;
     std::string dev_model = DEV_MODEL;
 
     //Serial

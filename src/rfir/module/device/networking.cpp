@@ -75,6 +75,7 @@ void* rfir::module::device::Networking::doLoginDsp(void* arg, void* p) {
 //登入数据服务
 bool rfir::module::device::Networking::loginDio() {
     DEBUGER.println("rfir::module::device::Networking::loginDIO");
+    reset();
 
     GCmdDispatcher.removeWaitResp(m_login_handler);
 
@@ -122,7 +123,13 @@ bool rfir::module::device::Networking::handshake(){
         return false;
     } 
 
+    if (m_handshake_handler)
+        return 1;
+
     GCmdDispatcher.removeWaitResp(m_handshake_handler);
+    GEventTimer.remove(m_handshake_heartbeat_handler);
+    m_handshake_handler = 0;
+    m_handshake_heartbeat_handler = 0;
 
     DEBUGER.println("rfir::module::device::Networking::handshake");
     cmds::cmd::CmdMqtt cmd;
@@ -150,7 +157,8 @@ bool rfir::module::device::Networking::handshake(){
 //延时握手
 void rfir::module::device::Networking::delayHandshake(int delay_ms){
     DEBUGER.printf("rfir::module::device::Networking::delayHandshake %d \r\n", delay_ms);
-    GEventTimer.delay(delay_ms, std::bind(&Networking::doHandshake, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    GEventTimer.remove(m_handshake_heartbeat_handler);
+    m_handshake_heartbeat_handler = GEventTimer.delay(delay_ms, std::bind(&Networking::doHandshake, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
 //事件登入
@@ -201,8 +209,6 @@ void rfir::module::device::Networking::subscribe() {
     if (!GMqttClient.mqtt.connected())
         return;
 
-    unsubscribe();
-
     DEBUGER.printf("rfir::module::device::Networking::subscribe \r\n");
     //dsp
     GMqttClient.mqtt.subscribe(Config.mqtt_dsp_evt_status.c_str(), 2);
@@ -239,10 +245,19 @@ void rfir::module::device::Networking::unsubscribe() {
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_penet.c_str());
 }
 
+//重置至登入前
+void rfir::module::device::Networking::reset() {
+    unsubscribe();
+    Config.reset();
+    Config.fixup();
+    subscribe();
+
+};
 //MQTT连接事件
 void* rfir::module::device::Networking::onConnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onConnect \r\n");
     status.connected = true;
+    unsubscribe();
     subscribe();
     m_online_count++;
     setOnline();
@@ -298,24 +313,19 @@ void* rfir::module::device::Networking::onDev_login_dsp_resp(void* arg, void* p)
     
     std::string app_id, dom_id, dsp_id, edg_id;
 
-    cmd->command.pld.Get("app_id", app_id);
-    cmd->command.pld.Get("dom_id", dom_id);
-    cmd->command.pld.Get("dsp_id", dsp_id);
-    cmd->command.pld.Get("edg_id", edg_id);
+    cmd->command.pld.Get("app_id", Config.app_id);
+    cmd->command.pld.Get("dom_id", Config.dom_id);
+    cmd->command.pld.Get("dsp_id", Config.dsp_id);
+    cmd->command.pld.Get("edg_id", Config.edg_id);
+    cmd->command.pld.Get("dio_id", Config.dio_id);
     
     
-    status.logined = app_id != "" && dom_id != "" && dsp_id !="" && edg_id != "";
+    status.logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
 
     if (status.logined) {
-        if (app_id != Config.app_id || dom_id != Config.dom_id || dsp_id != Config.dsp_id || edg_id != Config.edg_id){
-            Config.app_id = app_id;
-            Config.dom_id = dom_id;
-            Config.dsp_id = dsp_id;
-            Config.edg_id = edg_id;
-            Config.fixup();
-            subscribe();
-        }   
-        
+        unsubscribe();
+        Config.fixup();
+        subscribe();
         handshake();
     } else {
         delayLoginDio();
@@ -346,45 +356,26 @@ void* rfir::module::device::Networking::onDev_login_dio_resp(void* arg, void* p)
 
     DEBUGER.printf("rfir::module::device::Networking::onDev_login_dio_resp: %s \r\n", cmd->command.pld.ToString().c_str());  
     
-    std::string app_id, dom_id, dsp_id, edg_id;
+    std::string app_id, dom_id, dsp_id, edg_id, dio_id;
 
-    cmd->command.pld.Get("app_id", app_id);
-    cmd->command.pld.Get("dom_id", dom_id);
-    cmd->command.pld.Get("dsp_id", dsp_id);
-    if (cmd->command.pld.Get("edg_id", edg_id));
-        Config.edg_id = edg_id;
-        
+    cmd->command.pld.Get("app_id", Config.app_id);
+    cmd->command.pld.Get("dom_id", Config.dom_id);
+    cmd->command.pld.Get("dsp_id", Config.dsp_id);
+    cmd->command.pld.Get("dio_id", Config.dio_id);
+    cmd->command.pld.Get("edg_id", Config.edg_id);
 
-    if (app_id != Config.app_id || dom_id != Config.dom_id || dsp_id != Config.dsp_id){
-        Config.app_id = app_id;
-        Config.dom_id = dom_id;
-        Config.dsp_id = dsp_id;        
-
-        Config.fixup();
-        // subscribe();
-        status.logined = false;
-        GMqttClient.delayDisconnectToMqtt(100);
-        return (void*)1;
-    }   
-
-    // loginDsp();
-
-    return 0;
+    unsubscribe();   
+    Config.fixup();
+    subscribe();
+    status.logined = false;
+    GMqttClient.delayDisconnectToMqtt(100);
+    return (void*)1;    
 };
 
 //数据登入超时
 void* rfir::module::device::Networking::onDev_login_dio_timeout(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::onDev_login_dio_timeout");
-    loginDsp();
-
-    // status.logined = Config.app_id != "" && Config.dom_id != "" && Config.dsp_id !="" && Config.edg_id != "";
-
-    // if (status.logined) {
-    //     handshake();        
-    // } else {
-    //     login();
-    // }
-
+    loginDio();
     return 0;
 };
 
@@ -397,6 +388,8 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
     status.handshaked = true;
     setOnline();
     m_handshake_success_count++;
+    m_handshake_handler = 0;
+    delayHandshake(DEVICE_RE_HANDSHAKE_TIMEOUT);
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
     
     return 0;
@@ -406,6 +399,7 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
 void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void* p){
     status.handshaked = false;
     m_handshake_failed_count++;
+    m_handshake_handler = 0;
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
     loginDio();
     return 0;
