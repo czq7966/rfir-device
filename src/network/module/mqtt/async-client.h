@@ -27,7 +27,7 @@ namespace network {
                     std::string ip;
                     int         port = 1883;
                     int         keepalive = 15;
-                    int         timeout = 60;
+                    int         timeout = 1000 * 60;
                     std::string user;
                     std::string pass;
                     std::string id;

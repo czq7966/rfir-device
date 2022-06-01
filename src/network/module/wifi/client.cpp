@@ -276,7 +276,7 @@ void  network::module::wifi::Client::connectToWifi(){
 //         WiFi.setPhyMode(WIFI_PHY_MODE_11B);
 // #endif 
     if (m_connect_timeout_handler == 0) {        
-        m_connect_timeout_handler = GEventTimer.delay(params.timeout * 1000, std::bind(&Client::onWifiConnectTimeout, this, std::placeholders::_1, std::placeholders::_2));
+        m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&Client::onWifiConnectTimeout, this, std::placeholders::_1, std::placeholders::_2));
     }
 
     if (led == nullptr) {

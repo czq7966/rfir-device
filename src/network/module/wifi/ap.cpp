@@ -50,7 +50,7 @@ void network::module::wifi::AP::checkOrReset() {
     if (WiFi.status() != WL_CONNECTED) {
         if (reset_timeout_start == 0 )
             reset_timeout_start = millis();
-        if (millis() - reset_timeout_start > this->params.resetTimeout * 1000)
+        if (millis() - reset_timeout_start > this->params.resetTimeout)
         {
             DEBUGER.println("WiFi connect time out. ESP rest!\n");
             delay(1000);
@@ -114,7 +114,7 @@ void network::module::wifi::AP::checkConfigPin() {
         if (digitalRead(this->params.configPin) == LOW) {
             ConfigPinChangeTime_Low = ConfigPinChangeTime_Low == 0 ? millis() : ConfigPinChangeTime_Low;
 
-            if ( millis() - ConfigPinChangeTime >= this->params.configPinTimeout * 1000) {
+            if ( millis() - ConfigPinChangeTime >= this->params.configPinTimeout) {
                 ConfigPinChangeTime = 0;
                 DEBUGER.println("ConfigPin pushed, timeout, ESP will reset");
                 delay(500);
@@ -123,7 +123,7 @@ void network::module::wifi::AP::checkConfigPin() {
         } else {
             ConfigPinChangeTime_High =  millis();            
             auto relay = ConfigPinChangeTime_High - ConfigPinChangeTime_Low;
-            if ( ConfigPinChangeTime_Low > 0 && relay > 500 && relay < this->params.configPinTimeout * 1000) {
+            if ( ConfigPinChangeTime_Low > 0 && relay > 500 && relay < this->params.configPinTimeout) {
                 if (this->iotWebConf->getState() == iotwebconf::NetworkState::NotConfigured) {
                     DEBUGER.println("ConfigPin pushed, NotConfigured, ESP will reset");
                     delay(500);                

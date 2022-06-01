@@ -30,11 +30,12 @@ extern JLed                         GJLed;
 #define CO_SERIAL_CONFIG            SERIAL_8N1
 
 //OTA
-#define DISABLE_OTA                 TRUE
+// #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE                  true
 #define OTA_VERSION_NUMBER          1
 #define OTA_VERSION_STRING          "1.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/z3_coordinator_esp8266_cc2652/cfg.txt"
+#define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
 
 //WIFI
@@ -43,7 +44,7 @@ extern JLed                         GJLed;
 #define WIFI_SSID                   {"MERCURY_95E8"}
 #define WIFI_PASSWORD               {"12345678"}
 // #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
-#define WIFI_RESET_TIMEOUT          60  //多少时间内WIFI未连接，重启，单位秒
+#define WIFI_RESET_TIMEOUT          1000 * 60  //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 
 
@@ -51,10 +52,10 @@ extern JLed                         GJLed;
 #define AP_MODE                     false //true时，支持热点配网
 #define AP_SSID                     ""  //为空时，取ChipID
 #define AP_PASSWORD                 "12345678"
-#define AP_RESET_TIMEOUT            60 * 5 //多少时间内WIFI未连接，重启，单位秒
+#define AP_RESET_TIMEOUT            1000 * 60 * 5 //多少时间内WIFI未连接，重启，单位毫秒
 #define AP_CONFIG_VERSION           "1" //该值若有修改，AP配置将被重置
 #define AP_CONFIG_PIN               -1  //配合AP_CONFIG_PIN_TIMEOUT，长按后进入AP配网模式
-#define AP_CONFIG_PIN_TIMEOUT       5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位秒
+#define AP_CONFIG_PIN_TIMEOUT       1000 * 5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位毫秒
 
 //SMC
 // #define DISABLE_SMC                  TRUE
@@ -77,7 +78,7 @@ extern JLed                         GJLed;
 #define MQTT_USER                   "ioe"
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              15  //单位秒
-#define MQTT_RESET_TIMEOUT          60  //MQTT连接失败超时后，自动重启硬件, 单位秒
+#define MQTT_RESET_TIMEOUT          1000 * 60  //MQTT连接失败超时后，自动重启硬件, 单位毫秒
 #define MQTT_CONNECT_JLED           GJLed.Stop().LowActive().Blink(1500, 1500).Forever().Reset()
 
 //MQTT Topic
@@ -99,10 +100,10 @@ extern JLed                         GJLed;
 
 
 
-#define MQTT_RESP_TIMEOUT           10*1000 //毫秒
+#define MQTT_RESP_TIMEOUT           1000 * 10 //毫秒
 #define MQTT_BUFFER_SIZE            2048
 //Timer Report 
-#define DEVICE_TIMER_REPORT_TIMEOUT        60*1000   //1分钟上报一次
-#define DEVICE_RE_HANDSHAKE_TIMEOUT        60*1000*5 //5分钟握一次手 
+#define DEVICE_TIMER_REPORT_TIMEOUT        1000 * 60   //1分钟上报一次
+#define DEVICE_RE_HANDSHAKE_TIMEOUT        1000 * 60 * 5 //5分钟握一次手 
 
 #endif //

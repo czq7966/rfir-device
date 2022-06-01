@@ -52,7 +52,7 @@ void network::module::mqtt::AClient::connectToMqtt() {
     if (WiFi.isConnected() && !mqtt.connected()) {
         DEBUGER.println("Connecting to MQTT...");
         if (m_connect_timeout_handler == 0) {        
-            m_connect_timeout_handler = GEventTimer.delay(params.timeout * 1000, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
+            m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
         }
         if (led == nullptr) {
             led = &(MQTT_CONNECT_JLED);
