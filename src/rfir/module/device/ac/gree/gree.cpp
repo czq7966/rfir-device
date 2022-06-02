@@ -3,67 +3,65 @@
 
 
 rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
-    this->name = "gree";
-    auto ds = &rfir::RFIR::Config->devices;
-    //创建设备
-    auto d = ds->newDevice(name);
-    if (!d) return 0;
-
-    //采码参数
-    auto sp = &d->packet.sniff.params;
-    sp->minCount = 50;
-    sp->minDelta = 150;
-    sp->maxDelta = 65535;
-    sp->inverted = true;
-    sp->mode = INPUT;
-
-    //发码参数
-    d->packet.send.params.inverted = false;
-    d->packet.send.params.repeat = 0;    
-    d->packet.send.params.modulation = true;        
-
-    //解码参数
-    d->packet.decode.create(3);    
-    auto dp = d->packet.decode.params;
-
-    dp[0].tolerance = 20;
-    dp[0].excess = 0;
-    dp[0].atleast = true;                              
-    dp[0].MSBfirst = false;
-    dp[0].step = 2;
-    dp[0].use_bits = false;
+    this->name = "Gree";
+      
+    decoder->decodeParams.push_back({});
+    decoder->decodeParams.push_back({});
+    decoder->decodeParams.push_back({});
     
-    dp[0].nbits = 32;
-    dp[0].headermark = GreeAC::KGreeHdrMark;
-    dp[0].headerspace = GreeAC::KGreeHdrSpace;
-    dp[0].onemark = GreeAC::KGreeBitMark;
-    dp[0].onespace = GreeAC::KGreeOneSpace;
-    dp[0].zeromark = GreeAC::KGreeBitMark;
-    dp[0].zerospace = GreeAC::KGreeZeroSpace;
-    dp[0].footermark = 0;
-    dp[0].footerspace = 0;
-    dp[0].lastspace = 0;
-
-    dp[1] = dp[0];
-    dp[1].use_bits = true;
-    dp[1].nbits = 3;
-    dp[1].headermark = 0;
-    dp[1].headerspace = 0;
-    dp[1].footermark = GreeAC::KGreeBitMark;
-    dp[1].footerspace = GreeAC::KGreeMsgSpace;
-
-    dp[2] = dp[0];
-    dp[2].nbits = 32;
-    dp[2].headermark = 0;
-    dp[2].headerspace = 0;
-    dp[2].footermark = GreeAC::KGreeBitMark;
-    dp[2].footerspace = GreeAC::KGreeMsgSpace;    
-
-    //编码参数
-    d->packet.encode.clone(&d->packet.decode);
-
+    auto dp0 = decoder->decodeParams[0];
+    dp0.tolerance = 20;
+    dp0.excess = 0;
+    dp0.atleast = true;                              
+    dp0.MSBfirst = false;
+    dp0.step = 2;
+    dp0.use_bits = false;
     
-    return d;
+    dp0.nbits = 32;
+    dp0.headermark = GreeAC::KGreeHdrMark;
+    dp0.headerspace = GreeAC::KGreeHdrSpace;
+    dp0.onemark = GreeAC::KGreeBitMark;
+    dp0.onespace = GreeAC::KGreeOneSpace;
+    dp0.zeromark = GreeAC::KGreeBitMark;
+    dp0.zerospace = GreeAC::KGreeZeroSpace;
+    dp0.footermark = 0;
+    dp0.footerspace = 0;
+    dp0.lastspace = 0;
+    decoder->decodeParams[0] = dp0;
+
+    auto dp1 = dp0;
+    dp1.use_bits = true;
+    dp1.nbits = 3;
+    dp1.headermark = 0;
+    dp1.headerspace = 0;
+    dp1.footermark = GreeAC::KGreeBitMark;
+    dp1.footerspace = GreeAC::KGreeMsgSpace;
+    decoder->decodeParams[1] = dp1;
+
+    auto dp2 = dp0;
+    dp2.nbits = 32;
+    dp2.headermark = 0;
+    dp2.headerspace = 0;
+    dp2.footermark = GreeAC::KGreeBitMark;
+    dp2.footerspace = GreeAC::KGreeMsgSpace;  
+    decoder->decodeParams[2] = dp2;
+
+    encoder->encodeParams.push_back({});
+    encoder->encodeParams.push_back({});
+    encoder->encodeParams.push_back({});
+    auto ep0 = encoder->encodeParams[0];
+    ep0.clone(&dp0);
+    encoder->encodeParams[0] = ep0;
+
+    auto ep1 = encoder->encodeParams[1];
+    ep1.clone(&dp1);
+    encoder->encodeParams[1] = ep1;
+
+    auto ep2 = encoder->encodeParams[2];
+    ep2.clone(&dp2);
+    encoder->encodeParams[2] = ep2;
+
+    return 0;
 }
 
 

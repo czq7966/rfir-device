@@ -2,7 +2,7 @@
 #define __RFIR_MODULE_DEVICE_AC_GREE_H__
 
 
-#include "../../device.h"
+#include "../../rfir-device.h"
 #include "rfir/rfir.h"
 #include "gree-ac.h"
 
@@ -12,7 +12,7 @@ namespace rfir {
     namespace module {
         namespace device {
             namespace ac {
-                class Gree: public Device {
+                class Gree: public RFIRDevice {
                 protected:
                     GreeAC ac;
                 public:                     

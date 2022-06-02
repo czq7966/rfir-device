@@ -41,13 +41,13 @@ namespace rfir {
                 Events                  events;
 
 
-
-                int encodeBits(Params p, uint64_t bits, int nbits, std::list<uint16_t>& result);
+                int encodeBits(Params p, uint64_t bits, int nbits, bool hdrAndFtr, std::list<uint16_t>& result);
                 int encodeBytes(Params p, std::list<uint8_t>& bytes, std::list<uint16_t>& result);
-                int encode(std::vector<std::string> data, std::list<uint16_t>& result);
+                int encodeBytes(Params p, uint8_t* bytes, int size, std::list<uint16_t>& result);
+                int encode(std::vector<std::string>& data, std::list<uint16_t>& result);
 
 
-                const char*  toString();
+                std::string toString(std::list<uint16_t>& result);
 
                 int  parseBits(const char* data, int nbits, uint64_t& result);
                 int  parseBytes(const char* data, int nbits, std::list<uint8_t>& result);
@@ -62,6 +62,7 @@ namespace rfir {
     }
 }
 
+extern rfir::module::ttl::EncoderV2 GTTLEncoder;
 
 #endif //__RFIR_MODULE_TTL_ENCODER_H__
 

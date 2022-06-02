@@ -45,7 +45,7 @@ namespace rfir {
                 virtual std::string toHexString();
 
             public: // subclass need implement below
-                virtual rfir::module::ttl::Config::Device* init();            
+                virtual rfir::module::ttl::Config::Device* init() ;            
                 virtual bool setRaw(uint8_t* raw);
                 virtual uint8_t* getRaw(int& count);                
                 virtual uint16_t* getEncodeRaw(int& count);

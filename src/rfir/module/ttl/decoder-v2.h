@@ -156,5 +156,6 @@ namespace rfir {
     }
 }
 
+extern rfir::module::ttl::DecoderV2 GTTLDecoder;
 
 #endif //__RFIR_MODULE_GPIO_TTL_SNIFFER_H__

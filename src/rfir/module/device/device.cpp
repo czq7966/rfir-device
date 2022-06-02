@@ -5,7 +5,7 @@
 
 
 rfir::module::ttl::Config::Device* rfir::module::device::Device::init() {
-    return 0;
+    return 0;    
 }
 
 void rfir::module::device::Device::emitChange(const char* reason) {
@@ -13,7 +13,7 @@ void rfir::module::device::Device::emitChange(const char* reason) {
 }
 
 void rfir::module::device::Device::start(void *) {
-    // loadRaw();   
+    loadRaw();   
 }
 
 void rfir::module::device::Device::loop() {

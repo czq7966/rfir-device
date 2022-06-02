@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "rfir/util/interrupt.h"
 
 #ifdef ESP8266
     #include "EOTAUpdate.h"
@@ -58,12 +59,16 @@ bool EOTAUpdate::CheckAndUpdate(bool force)
     _lastUpdateMs = millis();
     String binURL;
     String binMD5;
+    bool result = false;
+    GInterrupt.stop();
     if (GetUpdateFWURL(binURL, binMD5))
     {
         DEBUGER.println("Update found. Performing update");
-        return PerformOTA(binURL, binMD5);
+        result = PerformOTA(binURL, binMD5);
     }
-    return false;
+    GInterrupt.start();
+
+    return result;
 }
 
 bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5)

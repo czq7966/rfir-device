@@ -6,27 +6,19 @@
 bool rfir::module::device::ac::FZ_PMZ_F2_Gree::PowerPinChanged = false;
 
 rfir::module::ttl::Config::Device* rfir::module::device::ac::FZ_PMZ_F2_Gree::init() {
-    auto d = Gree::init();
-    if (!d) return 0;
+    Gree::init();
+
 #ifdef ESP8266
-    //采码参数
-    d->packet.sniff.params.pin = 14;
-    //发码参数 
-    d->packet.send.params.pin = 4;
+    sniffer->params.pin = 14;
+    sender->params.pin = 4;
 #else     
-    //采码参数
-    d->packet.sniff.params.pin = 15;
-    // 发码参数 
-    d->packet.send.params.pin = 23;  
-#endif    
-    d->packet.sniff.params.bufSize = 150;
-    d->packet.send.params.repeat = 1;
-
-    // if (this->ac.ac)
-    //     delete this->ac.ac;
-    // this->ac.ac = new IRGreeAC(d->packet.send.params.pin);
-
-    return d;
+    sniffer->params.pin = 15;
+    sender->params.pin = 23;
+#endif  
+    sniffer->name = this->name;
+    sniffer->params.maxCount = 140;
+    sender->params.repeat = 1;
+    return 0;
 }
 
 

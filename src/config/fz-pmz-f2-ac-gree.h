@@ -25,8 +25,8 @@ extern JLed                         GJLed;
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          1
-#define OTA_VERSION_STRING          "1.0"
+#define OTA_VERSION_NUMBER          2
+#define OTA_VERSION_STRING          "2.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 

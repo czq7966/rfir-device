@@ -17,6 +17,7 @@ namespace rfir {
                     TimeTTL                 last_ttl;
                     std::list<TimeTTL>      ttls;
                     std::list<uint16_t>     deltas;
+                    std::string toString();
                 };
 
                 struct Params {
@@ -52,9 +53,10 @@ namespace rfir {
             public:
                 void pushTTL(bool ttl);
                 void sniffDelta();
+                void _sniffDelta(TimeTTL ttl);
                 std::string  toString();
             public:
-                static IRAM_ATTR void OnGpio_interrupt(void* arg);
+                void* onPinInterrupt(void* arg, void* p);
             };
         }
     }

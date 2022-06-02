@@ -449,4 +449,4 @@ std::string  rfir::module::ttl::DecoderV2::DecodeResult::toHexString() {
     return std::string(result.c_str());
 }
 
-
+rfir::module::ttl::DecoderV2 GTTLDecoder;
