@@ -1,10 +1,9 @@
 #include "esp8266_cc2652.h"
 
 
-rfir::module::ttl::Config::Device* rfir::module::device::z3::co::ESP8266_CC2652::init() {
-    auto d = Coordinator::init();
+void rfir::module::device::z3::co::ESP8266_CC2652::init() {
+    Coordinator::init();
     this->name = "Co_ESP8266_CC2652";
-    return d;
 }
 
 

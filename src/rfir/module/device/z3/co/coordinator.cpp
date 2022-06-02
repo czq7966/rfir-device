@@ -3,55 +3,8 @@
 #include "../../networking.h"
 
 
-rfir::module::ttl::Config::Device* rfir::module::device::z3::co::Coordinator::init() {
+void rfir::module::device::z3::co::Coordinator::init() {
     this->name = "Z3Coordinator";
-    auto ds = &rfir::RFIR::Config->devices;
-    //创建设备
-    auto d = ds->newDevice(name);
-    if (!d) return 0;
-
-    //采码参数
-    auto sp = &d->packet.sniff.params;
-    sp->minCount = 50;
-    sp->minDelta = 150;
-    sp->maxDelta = 65535;
-    sp->inverted = true;
-    sp->mode = INPUT;
-    sp->bufSize = 1;
-
-    //发码参数
-    d->packet.send.params.inverted = false;
-    d->packet.send.params.repeat = 0;    
-    d->packet.send.params.modulation = true;        
-
-    //解码参数
-    d->packet.decode.create(1);    
-    auto dp = d->packet.decode.params;
-
-    dp[0].tolerance = 20;
-    dp[0].excess = 0;
-    dp[0].atleast = true;                              
-    dp[0].MSBfirst = false;
-    dp[0].step = 2;
-    dp[0].use_bits = false;
-    
-    dp[0].nbits = 8;
-    dp[0].headermark = 0;
-    dp[0].headerspace = 0;
-    dp[0].onemark = 0;
-    dp[0].onespace = 0;
-    dp[0].zeromark = 0;
-    dp[0].zerospace = 0;
-    dp[0].footermark = 0;
-    dp[0].footerspace = 0;
-    dp[0].lastspace = 0;
-
-
-    //编码参数
-    d->packet.encode.clone(&d->packet.decode);
-
-    
-    return d;
 }
 
 
@@ -117,54 +70,6 @@ bool rfir::module::device::z3::co::Coordinator::coWriteBase64(char data[], size_
 	Base64.decode(decoded, (char*)data, size);
     return coWrite(decoded, len);
 }
-
-bool rfir::module::device::z3::co::Coordinator::setRaw(uint8_t* raw) {
-    return 0;
-}
-
-uint8_t* rfir::module::device::z3::co::Coordinator::getRaw(int& count) {
-    return 0;
-}
-
-uint16_t* rfir::module::device::z3::co::Coordinator::getEncodeRaw(int& count) {
-    return 0;
-
-}
-
-bool rfir::module::device::z3::co::Coordinator::onCmd_set(neb::CJsonObject* pld) {
-    // std::string code;
-    // if (pld && pld->Get("raw", code) ) {
-    //     return coWriteBase64((char*)code.c_str(), code.length());
-    // }    
-
-    return 0;
-}
-
-
-bool rfir::module::device::z3::co::Coordinator::onCmd_get(neb::CJsonObject* pld) {
-    // std::string code = coReadBase64(coBuffer);
-    // if (code.length() > 0) {
-    //     pld->Add("code", code);
-    //     return 1;
-    // } 
-
-    return 0;
-}
-
-bool rfir::module::device::z3::co::Coordinator::onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
-    return 0;
-
-}
-
-void  rfir::module::device::z3::co::Coordinator::dump() {
-    return;
-}
-
-
-void rfir::module::device::z3::co::Coordinator::doTimerReport(bool reset) {
-    return;
-}
-
 
 bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
     if (COSerial.available() && GNetworking.status.connected && GNetworking.status.handshaked) {

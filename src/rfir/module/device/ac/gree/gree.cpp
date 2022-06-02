@@ -2,7 +2,7 @@
 #include "gree-ac.h"
 
 
-rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
+void rfir::module::device::ac::Gree::init() {
     this->name = "Gree";
       
     decoder->decodeParams.push_back({});
@@ -60,26 +60,11 @@ rfir::module::ttl::Config::Device* rfir::module::device::ac::Gree::init() {
     auto ep2 = encoder->encodeParams[2];
     ep2.clone(&dp2);
     encoder->encodeParams[2] = ep2;
-
-    return 0;
-}
-
-
-
-rfir::module::device::ac::Gree::Gree() {
-
-}
-
-rfir::module::device::ac::Gree::~Gree() {
-
 }
 
 
 bool rfir::module::device::ac::Gree::setRaw(uint8_t* raw) {
     this->ac.ac->setRaw(raw);
-    dump();
-
-    // this->onSetRaw();
     return 1;
 }
 
@@ -88,31 +73,22 @@ uint8_t* rfir::module::device::ac::Gree::getRaw(int& count) {
     return this->ac.ac->getRaw();
 }
 
-uint16_t* rfir::module::device::ac::Gree::getEncodeRaw(int& count) {
-    int length = 0;
-    auto raw = getRaw(length);
+bool rfir::module::device::ac::Gree::getEncodeRaw(std::list<uint16_t>& result) {   
+    int count = 0;
+    auto raw = getRaw(count);
     auto str1 = rfir::util::Util::BytesToString(raw, 4);
     uint8_t bits[1] = {0b010};
     auto str2 = rfir::util::Util::BitsToString(bits, 3);
     auto str3 = rfir::util::Util::BytesToString(raw + 4, 4);
 
-    String str = "[{'data': '%data1%'}, {'data': '%data2%'}, {'data': '%data3%'}]";
-    str.replace("'", "\"");
-    str.replace("%data1%", str1.c_str());
-    str.replace("%data2%", str2.c_str());
-    str.replace("%data3%", str3.c_str());
-    
-    neb::CJsonObject blocks;
-    blocks.Parse(str.c_str());
-    auto rfir = rfir::GetRfir(this->name);
-    rfir->encoder->encode(&blocks);
-    auto encode = rfir->encoder->getEncodeResult();    
-    count = encode->count;
-
-    return encode->result;    
+    std::vector<std::string> data;
+    data.push_back(str1);
+    data.push_back(str2);
+    data.push_back(str3);
+    return encoder->encode(data, result);
 }
 
-bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
+bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld) {
     if (!pld) return 0;
     
 
@@ -169,12 +145,13 @@ bool rfir::module::device::ac::Gree::onCmd_set(neb::CJsonObject* pld) {
     ac.ac->setTemp(temp);
     ac.ac->setPower(power);
 
-    this->setRaw(ac.ac->getRaw());
+    saveConfig();
+    sendRaw();
     return true;
 }
 
 
-bool rfir::module::device::ac::Gree::onCmd_get(neb::CJsonObject* pld) {
+bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld) {
     //Power
     pld->Add("power", ac.ac->getPower() ? "on" : "off");
 
@@ -209,30 +186,19 @@ bool rfir::module::device::ac::Gree::onCmd_get(neb::CJsonObject* pld) {
     return true;
 }
 
-bool rfir::module::device::ac::Gree::onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
-    if (data->count == 3) {
+bool rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* data) {
+    bool result = false;
+    if (data->size() == 3) {
         int count = 0;
         auto raw = getRaw(count);
-        memcpy(raw, data->result[0].bytes, 4);
-        memcpy(raw + 4, data->result[2].bytes, 4);
-        return setRaw(raw);
+        uint8_t bytes[count];
+        
+        memcpy(bytes, (*data)[0].bytes, 4);
+        memcpy(bytes + 4, (*data)[2].bytes, 4);
+        setRaw(bytes);
+        saveConfig();
     }
-    return false;
+    return result;
 }
 
-void  rfir::module::device::ac::Gree::dump() {
-    int length = 0;
-    auto raw = getRaw(length);
-    auto str1 = rfir::util::Util::BytesToHexString(raw, 4);
-    uint8_t bits[1] = {0b010};
-    auto str2 = rfir::util::Util::BitsToString(bits, 3);
-    auto str3 = rfir::util::Util::BytesToHexString(raw + 4, 4);
-
-    String str = "[{'data': '%data1%'}, {'data': '%data2%'}, {'data': '%data3%'}]";
-    str.replace("'", "\"");
-    str.replace("%data1%", str1.c_str());
-    str.replace("%data2%", str2.c_str());
-    str.replace("%data3%", str3.c_str());
-    DEBUGER.println(str);
-}
 

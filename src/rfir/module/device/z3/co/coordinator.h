@@ -30,16 +30,16 @@ namespace rfir {
                     public:
                         virtual void start(void *) override;
                         virtual void loop() override;   
-                        virtual void doTimerReport(bool reset = false) override;                    
+                        // virtual void doTimerReport(bool reset = false) override;                    
                     public:
-                        virtual rfir::module::ttl::Config::Device* init() override;            
-                        virtual bool setRaw(uint8_t* raw) override;
-                        virtual uint8_t* getRaw(int& count) override;       
-                        virtual uint16_t* getEncodeRaw(int& count);         
-                        virtual bool onCmd_set(neb::CJsonObject* pld) override; 
-                        virtual bool onCmd_get(neb::CJsonObject* pld) override; 
-                        virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override;                         
-                        void dump();
+                        virtual void init() override;            
+                        // virtual bool setRaw(uint8_t* raw) override;
+                        // virtual uint8_t* getRaw(int& count) override;       
+                        // virtual uint16_t* getEncodeRaw(int& count);         
+                        // virtual bool onCmd_set(neb::CJsonObject* pld) override; 
+                        // virtual bool onCmd_get(neb::CJsonObject* pld) override; 
+                        // virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override;                         
+                        // void dump();
                     public:
                         virtual bool doEvt_penet();
                         virtual bool onSvc_get(neb::CJsonObject* pld) override; 

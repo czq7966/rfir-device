@@ -15,18 +15,15 @@ namespace rfir {
                 class Gree: public RFIRDevice {
                 protected:
                     GreeAC ac;
-                public:                     
-                    Gree();
-                    ~Gree();
                 public:
-                    virtual rfir::module::ttl::Config::Device* init() override;            
+                    virtual void init() override;            
                     virtual bool setRaw(uint8_t* raw) override;
                     virtual uint8_t* getRaw(int& count) override;       
-                    virtual uint16_t* getEncodeRaw(int& count);         
-                    virtual bool onCmd_set(neb::CJsonObject* pld) override; 
-                    virtual bool onCmd_get(neb::CJsonObject* pld) override; 
-                    virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) override; 
-                    void dump();
+                    virtual bool getEncodeRaw(std::list<uint16_t>& result) override;       
+                    virtual bool onSvc_set(neb::CJsonObject* pld) override; 
+                    virtual bool onSvc_get(neb::CJsonObject* pld) override; 
+                    virtual bool onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p) override; 
+                    // void dump();
                 };
             }
         }

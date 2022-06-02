@@ -10,18 +10,13 @@ namespace rfir {
             namespace ac {
                 class FZ_PMZ_F2_Gree: public Gree {    
                 public:
-                    rfir::module::ttl::Gpio    gpioPower; 
-                    bool doPowerPinChange(); 
-                public:
                     virtual void start(void *) override;
                     virtual void loop() override;                                       
-                    virtual rfir::module::ttl::Config::Device* init() override;
-                    virtual bool onCmd_get(neb::CJsonObject* pld) override; 
-                    virtual bool onCmd_set(neb::CJsonObject* pld) override; 
+                    virtual void init() override;
+                    virtual bool onSvc_get(neb::CJsonObject* pld) override; 
+                    virtual bool onSvc_set(neb::CJsonObject* pld) override; 
                 public:
-                    static const uint8_t PIN_POWER  = 13;  
-                    static bool PowerPinChanged;
-                    static void OnPowerPinChange(rfir::module::ttl::Gpio* gpio, int value);                               
+                    static const uint8_t PIN_POWER  = 13;                              
                 };
             }
         }

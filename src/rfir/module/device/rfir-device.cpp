@@ -21,6 +21,24 @@ rfir::module::device::RFIRDevice::~RFIRDevice() {
     sender->events.onSended.remove(this);
 };
 
+bool rfir::module::device::RFIRDevice::setConfig(const char* context){
+    std::string rawStr;
+    neb::CJsonObject json;
+    if (json.Parse(context) && json.Get("raw", rawStr)) {
+        setRaw(rawStr.c_str());
+    }
+    return false;
+};
+
+bool rfir::module::device::RFIRDevice::getConfig(std::string& context){
+    auto rawStr = getRaw();
+    neb::CJsonObject json;
+    json.ReplaceAdd("raw", rawStr);
+    context = json.ToString();
+    return true;
+}; 
+
+
 void rfir::module::device::RFIRDevice::start(void * p) {
     Device::start(p);    
     init();
@@ -57,7 +75,7 @@ void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
     }
 
     DEBUGER.printf("rfir::module::device::RFIRDevice::onDecoded: %s  %s \r\n", bitStr.c_str(), hexStr.c_str());  
-    onDecoded(decodeResults);    
+    onSvc_decoded(decodeResults);    
     return 0;
 };
 
@@ -75,39 +93,36 @@ void* rfir::module::device::RFIRDevice::onSended(void* arg, void* p){
     return 0;
 };
 
-
-bool rfir::module::device::RFIRDevice::loadRaw(){
-    neb::CJsonObject json;
-    std::string fn = "/"+ this->name + "-raw.json";
-    rfir::util::TxtFile file(fn.c_str());
-    std::string context;
-    file.readString(context);
-    if (context.length() > 0) {
-        json.Parse(context);
-        std::string rawStr;
-        if (json.Get("raw", rawStr)) {            
-            return setRaw(rawStr.c_str());
-        }
-    }  
-    return false;
-};      
-bool rfir::module::device::RFIRDevice::saveRaw() {
-    return 0;
-};   
-
+std::string rfir::module::device::RFIRDevice::getRaw(){
+    int count = 0;
+    auto raw = getRaw(count);
+    return "0x" + rfir::util::Util::BytesToHexString(raw, count);
+};                 
 bool rfir::module::device::RFIRDevice::setRaw(const char* rawStr){
     int count = 0;
     auto raw = getRaw(count);
     uint8_t bytes[count];
+    memcpy(bytes, raw, count);
     rfir::util::Util::StringToBytes(rawStr, bytes);
     return setRaw(bytes);
-}; 
+};
+
 bool rfir::module::device::RFIRDevice::setRaw(uint8_t* raw){
     return 0;
 };
 uint8_t* rfir::module::device::RFIRDevice::getRaw(int& count){
     return 0;
-};                
+};     
+
+bool rfir::module::device::RFIRDevice::sendRaw() {
+    std::list<uint16_t> encodeRaw;
+    if (getEncodeRaw(encodeRaw)) {
+        sender->sendRaw(encodeRaw);
+    }
+    return false;
+
+};
+
 bool rfir::module::device::RFIRDevice::getEncodeRaw(std::list<uint16_t>& result){
     return 0;
 };
@@ -123,7 +138,7 @@ bool rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld) {
     return false;
 };
 
-bool rfir::module::device::RFIRDevice::onDecoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p) {
+bool rfir::module::device::RFIRDevice::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p) {
 
     return false;
 };

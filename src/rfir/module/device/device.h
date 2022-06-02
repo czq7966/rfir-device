@@ -22,37 +22,40 @@ namespace rfir {
                     rfir::util::Event onEvtPropsChange;
                 };
                 
-                typedef std::function<void(void* device, const char* reason)> OnChange;
+                // typedef std::function<void(void* device, const char* reason)> OnChange;
                 std::string name;
                 Events events;
-                void emitChange(const char* reason);
+            //     void emitChange(const char* reason);
+            // public:
+            //     int timerReport_LastTime = 0;
+            //     int timerReport_Interval = 60 * 1000;      
+            //     bool rawChanged = false;    
+            //     unsigned long  rawChanged_time = 0; 
+            //     unsigned long  rawChanged_timeout = 2000; 
             public:
-                int timerReport_LastTime = 0;
-                int timerReport_Interval = 60 * 1000;      
-                bool rawChanged = false;    
-                unsigned long  rawChanged_time = 0; 
-                unsigned long  rawChanged_timeout = 2000; 
-            public:
+                virtual void init(); 
                 virtual void start(void *);
                 virtual void loop();
-                virtual void onSetRaw();
-                virtual bool loadRaw();      
-                virtual bool saveRaw();      
-                virtual void doTimerReport(bool reset = false);    
-                virtual void reinitTimerReport(bool reset = false);
-                virtual void doRawChanged();    
-                virtual std::string toBitString();
-                virtual std::string toHexString();
+
+                virtual bool loadConfig();      
+                virtual bool saveConfig();     
+                virtual bool setConfig(const char* context);
+                virtual bool getConfig(std::string& context);   
+
+                // virtual void onSetRaw();
+                // virtual void doTimerReport(bool reset = false);    
+                // virtual void reinitTimerReport(bool reset = false);
+                // virtual void doRawChanged();    
+                // virtual std::string toBitString();
+                // virtual std::string toHexString();
 
             public: // subclass need implement below
-                virtual rfir::module::ttl::Config::Device* init() ;            
-                virtual bool setRaw(uint8_t* raw);
-                virtual uint8_t* getRaw(int& count);                
-                virtual uint16_t* getEncodeRaw(int& count);
+                          
+      
 
-                virtual bool onCmd_set(neb::CJsonObject* pld); 
-                virtual bool onCmd_get(neb::CJsonObject* pld); 
-                virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) ; 
+                // virtual bool onCmd_set(neb::CJsonObject* pld); 
+                // virtual bool onCmd_get(neb::CJsonObject* pld); 
+                // virtual bool onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) ; 
             //V2
             public:
                 uint32_t m_timer_report_handler = 0;

@@ -15,7 +15,7 @@ namespace rfir {
                     class ESP8266_CC2652: public Coordinator {
                     public:
                         virtual void start(void *) override;
-                        virtual rfir::module::ttl::Config::Device* init() override;                                
+                        virtual void init() override;                                
                     };
 
                 }

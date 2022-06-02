@@ -29,18 +29,28 @@ namespace rfir {
                 RFIRDevice();
                 ~RFIRDevice();
             public:
-                virtual bool loadRaw();      
-                virtual bool saveRaw();    
-                virtual bool setRaw(const char* rawStr);         
-                virtual bool getEncodeRaw(std::list<uint16_t>& result);  
-                virtual bool onDecoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p);                              
+                std::string getRaw();                 
+                bool setRaw(const char* raw); 
+            public:
+                virtual bool setConfig(const char* context) override;
+                virtual bool getConfig(std::string& context) override; 
+
+
+                // virtual bool loadRaw();      
+                // virtual bool saveRaw();    
+                // bool setRaw(const char* rawStr);         
+                virtual bool getEncodeRaw(std::list<uint16_t>& result);                 
+                                           
             public:
                 virtual void start(void *) override;
                 virtual void loop() override;   
+                virtual uint8_t* getRaw(int& count); 
                 virtual bool setRaw(uint8_t* raw);
-                virtual uint8_t* getRaw(int& count);     
+                virtual bool sendRaw(); 
+
                 virtual bool onSvc_get(neb::CJsonObject* pld) override; 
                 virtual bool onSvc_set(neb::CJsonObject* pld) override;
+                virtual bool onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p);   
 
             };
         }
