@@ -10,7 +10,7 @@ std::string cmds::cmd::CmdMqtt::ZeroTopic(std::string topic){
 };
 
 std::string cmds::cmd::CmdMqtt::expandTopic(){
-    return  topicPrefix +
+    return  (prefix == "" ? topicPrefix : prefix) +
             ZeroTopic(command.head.from.type) + "/" + 
             ZeroTopic(command.head.from.id) + "/" + 
             ZeroTopic(command.head.to.type) + "/" + 

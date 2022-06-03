@@ -50,7 +50,7 @@ namespace rfir {
 
                 virtual bool onSvc_get(neb::CJsonObject* pld) override; 
                 virtual bool onSvc_set(neb::CJsonObject* pld) override;
-                virtual bool onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p);   
+                virtual bool onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& p);   
 
             };
         }

@@ -1,10 +1,9 @@
-#ifndef __RFIR_MODULE_DEVICE_AC_GREE_H__
-#define __RFIR_MODULE_DEVICE_AC_GREE_H__
+#ifndef __RFIR_MODULE_DEVICE_AC_MIDEA_H__
+#define __RFIR_MODULE_DEVICE_AC_MIDEA_H__
 
 
 #include "../../rfir-device.h"
-#include "rfir/rfir.h"
-#include "gree-ac.h"
+#include "midea-ac.h"
 
 
 
@@ -12,9 +11,9 @@ namespace rfir {
     namespace module {
         namespace device {
             namespace ac {
-                class Gree: public RFIRDevice {
-                protected:
-                    GreeAC ac;
+                class Midea: public RFIRDevice {
+                public:
+                    ac:: MideaAC ac;
                 public:
                     virtual void init() override;            
                     virtual bool setRaw(uint8_t* raw) override;

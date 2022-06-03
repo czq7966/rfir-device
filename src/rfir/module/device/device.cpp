@@ -289,11 +289,23 @@ rfir::module::device::Device* GDevice = new rfir::module::device::test::Sniffer_
 rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_PMZ_F2_Gree();
 #endif
 
-//福州飘渺庄2楼食堂格力空调
-#ifdef DEVICE_FZ_DM3_AC_MEDIA
-#include "rfir/module/device/ac/midea/fz-dm3-midea.h"
-rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_DM3_Midea();
+//福州亚太格力空调
+#ifdef DEVICE_FZ_YT_AC_GREE
+#include "rfir/module/device/ac/gree/fz-yt-gree.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Gree();
 #endif
+
+//福州东门美的空调
+#ifdef DEVICE_FZ_DM_AC_MEDIA
+#include "rfir/module/device/ac/midea/fz-dm-midea.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_DM_Midea();
+#endif
+
+// //福州亚太美的空调
+// #ifdef DEVICE_FZ_DM_AC_MEDIA
+// #include "rfir/module/device/ac/midea/fz-yt-midea.h"
+// rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Midea();
+// #endif
 
 //Z3 协调器 ESP8266 + CC2652 
 #ifdef DEVICE_Z3_COORDINATOR_ESP8266_CC2652

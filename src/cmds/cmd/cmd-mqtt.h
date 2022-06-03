@@ -8,6 +8,7 @@ namespace cmds {
         class CmdMqtt: public CmdBase {        
         public:
             static std::string topicPrefix;
+            std::string prefix;
             std::string topic;
             std::string expandTopic();
         public:

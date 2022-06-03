@@ -16,9 +16,9 @@
 #include "config/fz-dm4-tearoom-ac-gree.h"
 #endif
 
-//福州东门3楼Media空调
-#ifdef DEVICE_FZ_DM3_AC_MEDIA
-#include "config/fz-dm3-ac-media.h"
+//福州东门Media空调
+#ifdef DEVICE_FZ_DM_AC_MEDIA
+#include "config/fz-dm-ac-media.h"
 #endif
 
 // 福州飘渺庄2楼食堂格力空调

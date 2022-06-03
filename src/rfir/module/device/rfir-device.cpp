@@ -75,7 +75,7 @@ void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
     }
 
     DEBUGER.printf("rfir::module::device::RFIRDevice::onDecoded: %s  %s \r\n", bitStr.c_str(), hexStr.c_str());  
-    onSvc_decoded(decodeResults);    
+    onSvc_decoded(*decodeResults);    
     return 0;
 };
 
@@ -138,7 +138,7 @@ bool rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld) {
     return false;
 };
 
-bool rfir::module::device::RFIRDevice::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* p) {
+bool rfir::module::device::RFIRDevice::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& p) {
 
     return false;
 };

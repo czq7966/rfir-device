@@ -1,5 +1,5 @@
-#ifndef __MODULE_AC_GREE_AC_H__
-#define __MODULE_AC_GREE_AC_H__
+#ifndef __RFIR_MODULE_DEVICE_AC_GREEAC_H__
+#define __RFIR_MODULE_DEVICE_AC_GREEAC_H__
 
 
 #include <Arduino.h>

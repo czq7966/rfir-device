@@ -171,6 +171,7 @@ void* rfir::module::device::Networking::doHandshake(void* arg, void* p) {
 //遗嘱发布
 bool rfir::module::device::Networking::setWill(){
     cmds::cmd::CmdMqtt cmd;
+    cmd.prefix = "/0/0/";
     cmd.command.head.to.type ="0";
     cmd.command.head.to.id = "0";
     cmd.command.head.entry.type ="evt";
@@ -190,11 +191,50 @@ bool rfir::module::device::Networking::setWill(){
 //上线发布
 void rfir::module::device::Networking::setOnline(){
     cmds::cmd::CmdMqtt cmd;
+    cmd.prefix = "/0/0/";
     cmd.command.head.to.type ="0";
     cmd.command.head.to.id = "0";
     cmd.command.head.entry.type ="evt";
     cmd.command.head.entry.id = "status";
     cmd.command.head.retain = true;
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+    Config.getIds(&hd);
+    GDevice->getCommonProps(&pld);
+    pld.Add("online", 1);
+    pld.Add("online_count", m_online_count);
+    cmd.send();
+};
+
+//上线发布->DSP
+void rfir::module::device::Networking::setOnlineToDsp(){
+    if (Config.dsp_id == "")
+        return;
+
+    cmds::cmd::CmdMqtt cmd;
+    cmd.command.head.to.type ="dsp";
+    cmd.command.head.to.id = Config.dsp_id;
+    cmd.command.head.entry.type ="evt";
+    cmd.command.head.entry.id = "status";
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+    Config.getIds(&hd);
+    GDevice->getCommonProps(&pld);
+    pld.Add("online", 1);
+    pld.Add("online_count", m_online_count);
+    cmd.send();
+};
+
+//上线发布->EDG
+void rfir::module::device::Networking::setOnlineToEdg(){
+    if (Config.edg_id == "")
+        return;
+
+    cmds::cmd::CmdMqtt cmd;
+    cmd.command.head.to.type ="edg";
+    cmd.command.head.to.id = Config.edg_id;
+    cmd.command.head.entry.type ="evt";
+    cmd.command.head.entry.id = "status";
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
     Config.getIds(&hd);
@@ -368,7 +408,8 @@ void* rfir::module::device::Networking::onDev_login_dio_resp(void* arg, void* p)
     Config.fixup();
     subscribe();
     status.logined = false;
-    GMqttClient.delayDisconnectToMqtt(100);
+    // GMqttClient.delayDisconnectToMqtt(100);
+    this->loginDsp();
     return (void*)1;    
 };
 
@@ -386,7 +427,7 @@ void* rfir::module::device::Networking::onDev_login_dio_timeout(void* arg, void*
 void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p){
     status.logined = true;
     status.handshaked = true;
-    setOnline();
+    setOnlineToEdg();
     m_handshake_success_count++;
     m_handshake_handler = 0;
     delayHandshake(DEVICE_RE_HANDSHAKE_TIMEOUT);
@@ -409,6 +450,7 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
 
 //调度服务状态通知
 void* rfir::module::device::Networking::onDsp_status_change(void* arg, void* p){
+    setOnlineToDsp();
     setOnline();
     return 0;
 };
@@ -416,6 +458,7 @@ void* rfir::module::device::Networking::onDsp_status_change(void* arg, void* p){
 //边缘服务状态通知
 void* rfir::module::device::Networking::onEdg_status_change(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::onEdg_status_change");
+    setOnlineToEdg();
     //握手边缘
     handshake();
     return 0;

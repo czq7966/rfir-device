@@ -41,6 +41,8 @@ namespace rfir {
                 
                 bool setWill();
                 void setOnline();
+                void setOnlineToDsp();
+                void setOnlineToEdg();
                 void subscribe();
                 void unsubscribe();
                 void reset();

@@ -186,15 +186,15 @@ bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld) {
     return true;
 }
 
-bool rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>* data) {
+bool rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
     bool result = false;
-    if (data->size() == 3) {
+    if (data.size() == 3) {
         int count = 0;
         auto raw = getRaw(count);
         uint8_t bytes[count];
         
-        memcpy(bytes, (*data)[0].bytes, 4);
-        memcpy(bytes + 4, (*data)[2].bytes, 4);
+        memcpy(bytes, data[0].bytes, 4);
+        memcpy(bytes + 4, data[2].bytes, 4);
         setRaw(bytes);
         saveConfig();
     }
