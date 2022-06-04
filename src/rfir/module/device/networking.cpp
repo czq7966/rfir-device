@@ -171,7 +171,7 @@ void* rfir::module::device::Networking::doHandshake(void* arg, void* p) {
 //遗嘱发布
 bool rfir::module::device::Networking::setWill(){
     cmds::cmd::CmdMqtt cmd;
-    cmd.prefix = "/0/0/";
+    cmd.prefix = "0/0/";
     cmd.command.head.to.type ="0";
     cmd.command.head.to.id = "0";
     cmd.command.head.entry.type ="evt";
@@ -191,7 +191,7 @@ bool rfir::module::device::Networking::setWill(){
 //上线发布
 void rfir::module::device::Networking::setOnline(){
     cmds::cmd::CmdMqtt cmd;
-    cmd.prefix = "/0/0/";
+    cmd.prefix = "0/0/";
     cmd.command.head.to.type ="0";
     cmd.command.head.to.id = "0";
     cmd.command.head.entry.type ="evt";
@@ -249,7 +249,7 @@ void rfir::module::device::Networking::subscribe() {
     if (!GMqttClient.mqtt.connected())
         return;
 
-    DEBUGER.printf("rfir::module::device::Networking::subscribe \r\n");
+    DEBUGER.printf("rfir::module::device::Networking::subscribe %s, %s \r\n",Config.mqtt_dsp_evt_status.c_str(), Config.mqtt_edg_evt_status.c_str());
     //dsp
     GMqttClient.mqtt.subscribe(Config.mqtt_dsp_evt_status.c_str(), 2);
 

@@ -85,10 +85,10 @@ extern JLed                         GJLed;
 
 
 //DSP.sub
-#define MQTT_DSP_EVT_STATUS         "{app}/{dom}/dsp/{dsp}/0/0/evt/status"
+#define MQTT_DSP_EVT_STATUS         "0/0/dsp/{dsp}/0/0/evt/status"
 
 //EDG.sub
-#define MQTT_EDG_EVT_STATUS         "{app}/{dom}/edg/{edg}/0/0/evt/status"
+#define MQTT_EDG_EVT_STATUS         "0/0/edg/{edg}/0/0/evt/status"
 
 //DEV.sub
 #define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/+/+/dev/{dev}/svc/login"
