@@ -104,7 +104,7 @@ void setup() {
     op.id = ChipID;
     op.version = OTA_VERSION_NUMBER;
     op.interval = OTA_UPDATE_INTERVAL;
-    network::service::ota::Updater::Start(op);
+    GOTAUpdater.start(op);
 #endif
 
 #if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
@@ -155,34 +155,30 @@ void setup() {
 
 
 void loop() {
-#if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)    
-    //wifi循环
-    // network::service::wifi::Client::Loop();
-    GWifiClient.loop();
-    #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
-    // GSmartConfig.loop();
-    #endif
-#endif
+// #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)    
+//     //wifi循环
+//     // network::service::wifi::Client::Loop();
+//     GWifiClient.loop();
+//     #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
+//     // GSmartConfig.loop();
+//     #endif
+// #endif
 
-#if !(defined(DISABLE_OTA) && DISABLE_OTA == TRUE)
-    //OTA循环
-    network::service::ota::Updater::Loop();
-#endif
 
-#if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
-    //mqtt循环
-    // network::service::mqtt::AClient::Loop();
-    GMqttClient.loop();
-#endif    
+// #if !(defined(DISABLE_MQTT) && DISABLE_MQTT == TRUE)
+//     //mqtt循环
+//     // network::service::mqtt::AClient::Loop();
+//     GMqttClient.loop();
+// #endif    
 
-    //组网组件循环
-    GNetworking.loop();
+    // //组网组件循环
+    // GNetworking.loop();
 
     // //收发器循环
     // rfir::Loop();  
 
-    //设备循环
-    GDevice->loop();
+    // //设备循环
+    // GDevice->loop();
     //业务循环
     // service::cmds::Cmd::Loop();
 
