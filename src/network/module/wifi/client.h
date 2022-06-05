@@ -37,14 +37,12 @@ namespace network {
             public:
                 int m_connect_ssid_index = 0;
                 uint32_t m_connect_timeout_handler = 0;
-                JLed* led = 0; // = WIFI_CONNECT_JLED;
                 WiFiEventHandler wifiConnectHandler;
                 WiFiEventHandler wifiDisconnectHandler;
 
                 void  startV2();
                 void  loopV2();
 
-                void  checkLed();
                 void  connectToWifi();
                 void  delayConnectToWifi();
                 void* doConnectToWifi(void* arg, void* p);

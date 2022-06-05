@@ -64,7 +64,6 @@ namespace network {
                 uint32_t        m_connect_timeout_handler = 0;
                 WiFiEventHandler wifiConnectHandler;
                 WiFiEventHandler wifiDisconnectHandler;
-                JLed* led = 0;// = MQTT_CONNECT_JLED;
             public:
 
                 void init(Params p);
@@ -72,8 +71,6 @@ namespace network {
 
                 void start(Params p);
                 void loop();
-
-                void  checkLed();
 
                 void setWill(const char* topic, const char* payload = nullptr, bool retain = true, uint8_t qos = 2, size_t length = 0);
                 uint16_t publish(const char* topic, const char* payload = nullptr, bool retain = false, uint8_t qos = 2, size_t length = 0, bool dup = false, uint16_t message_id = 0);
@@ -90,6 +87,7 @@ namespace network {
                 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
                 void onMqttPublish(uint16_t packetId);
             public:
+                void  delayConnectToMqtt(int timeout_ms = 100);
                 void  delayDisconnectToMqtt(int timeout_ms = 1000);
                 void* doConnectToMqtt(void* arg, void* p);
                 void* doDisconnectToMqtt(void* arg, void* p);

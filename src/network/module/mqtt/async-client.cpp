@@ -1,6 +1,7 @@
 #include "async-client.h"
 #include "rfir/util/event-timer.h"
 #include "rfir/util/util.h"
+#include "rfir/util/led.h"
 
 void network::module::mqtt::AClient::init(Params p){
     DEBUGER.println(" network::module::mqtt::AClient::init");
@@ -28,13 +29,7 @@ void network::module::mqtt::AClient::start(Params p){
     init(p);
 };
 void network::module::mqtt::AClient::loop(){
-    checkLed();
-};
 
-void network::module::mqtt::AClient::checkLed() {
-    if (led != nullptr && led->IsRunning()) {
-        led->Update();
-    }
 };
 
 void network::module::mqtt::AClient::setWill(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length){
@@ -54,9 +49,8 @@ void network::module::mqtt::AClient::connectToMqtt() {
         if (m_connect_timeout_handler == 0) {        
             m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
         }
-        if (led == nullptr) {
-            led = &(MQTT_CONNECT_JLED);
-        }
+        if (GLed.idle())
+            GLed.start(&(MQTT_CONNECT_JLED));
 
         mqtt.connect();
     }
@@ -72,7 +66,7 @@ void network::module::mqtt::AClient::disconnectToMqtt(bool force) {
 
 void network::module::mqtt::AClient::onWifiConnect(const WiFiEventStationModeGotIP& event) {
     DEBUGER.println("Connected to Wi-Fi.");
-    connectToMqtt();
+    delayConnectToMqtt();
 }
 
 void network::module::mqtt::AClient::onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
@@ -84,14 +78,14 @@ void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
     DEBUGER.println("Connected to MQTT.");
     GEventTimer.remove(m_connect_timeout_handler);
     m_connect_timeout_handler = 0;
-    led->Stop();
-    led = nullptr;
+    GLed.stop();
     events.onMqttConnect.emit((void*)(int)sessionPresent);
 }
 
 void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
     DEBUGER.printf("Disconnected from MQTT. %d \r\n", reason);
     events.onMqttDisconnect.emit((void*)(int)reason);
+    GLed.stop();
     if (WiFi.isConnected())
         GEventTimer.delay(1000, std::bind(&AClient::doConnectToMqtt, this, std::placeholders::_1, std::placeholders::_2) );
 
@@ -156,6 +150,10 @@ void network::module::mqtt::AClient::onMqttPublish(uint16_t packetId) {
     // DEBUGER.println(packetId);
     events.onMqttPublish.emit((void*)packetId);
 }
+
+void network::module::mqtt::AClient::delayConnectToMqtt(int timeout_ms){
+    GEventTimer.delay(timeout_ms, std::bind(&AClient::doConnectToMqtt, this, std::placeholders::_1, std::placeholders::_2));  
+};
 
 void network::module::mqtt::AClient::delayDisconnectToMqtt(int timeout_ms) {
     GEventTimer.delay(timeout_ms, std::bind(&AClient::doDisconnectToMqtt, this, std::placeholders::_1, std::placeholders::_2));

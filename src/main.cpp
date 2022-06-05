@@ -16,7 +16,7 @@
 #include "rfir/service/cmds/cmd.h"
 
 #include "rfir/util/event-timer.h"
-#include "rfir/rfir.h"
+#include "rfir/util/led.h"
 
 #include "cmds/cmd/cmd-base.h"
 #include "cmds/cmd/cmd-dispatcher.h"
@@ -103,6 +103,7 @@ void setup() {
     op.url = OTA_UPDATE_URL;
     op.id = ChipID;
     op.version = OTA_VERSION_NUMBER;
+    op.interval = OTA_UPDATE_INTERVAL;
     network::service::ota::Updater::Start(op);
 #endif
 
@@ -187,6 +188,8 @@ void loop() {
 
     //定时器
     GEventTimer.loop();
+    //LED
+    GLed.loop();
 }
 
 

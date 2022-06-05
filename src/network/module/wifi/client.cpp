@@ -2,6 +2,7 @@
 #include "config.h"
 #include "rfir/util/event-timer.h"
 #include "rfir/util/util.h"
+#include "rfir/util/led.h"
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -259,13 +260,6 @@ void  network::module::wifi::Client::startV2(){
     delayConnectToWifi();
 };
 void  network::module::wifi::Client::loopV2(){
-    checkLed();
-};
-
-void  network::module::wifi::Client::checkLed() {
-    if (led != nullptr && led->IsRunning()) {
-        led->Update();
-    }
 };
 
 void  network::module::wifi::Client::connectToWifi(){
@@ -279,10 +273,7 @@ void  network::module::wifi::Client::connectToWifi(){
         m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&Client::onWifiConnectTimeout, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    if (led == nullptr) {
-        led = &(WIFI_CONNECT_JLED);
-    }
-
+    if (GLed.idle()) GLed.start(&(WIFI_CONNECT_JLED));
    
     if (m_connect_ssid_index < params.ssid.size()) {
         std::string ssid_ssid = this->params.ssid[m_connect_ssid_index];
@@ -305,8 +296,7 @@ void network::module::wifi::Client::onWifiConnect(const WiFiEventStationModeGotI
     DEBUGER.printf("Wifi connected to : %s \r\n", WiFi.SSID().c_str());
     GEventTimer.remove(m_connect_timeout_handler);
     m_connect_timeout_handler = 0;
-    led->Stop();
-    led = nullptr;
+    GLed.stop();
 };
 
 void network::module::wifi::Client::onWifiDisconnect(const WiFiEventStationModeDisconnected& event){
@@ -314,7 +304,7 @@ void network::module::wifi::Client::onWifiDisconnect(const WiFiEventStationModeD
     if (m_connect_ssid_index >= params.ssid.size()) {
         m_connect_ssid_index = 0;
     }
-
+    GLed.stop();
     delayConnectToWifi();
 };
 

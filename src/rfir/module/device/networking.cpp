@@ -2,6 +2,7 @@
 #include "device.h"
 #include "cmds/cmd/cmd-dispatcher.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/util/led.h"
 
 
 //Networking
@@ -15,8 +16,8 @@ rfir::module::device::Networking::~Networking(){
 //事件注册
 void rfir::module::device::Networking::start(){
     Config.events.onFixup.add((void*)this, std::bind(&Networking::onConfigFixup, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
-    GCmdDispatcher.events.onConnect.add((void*)this, std::bind(&Networking::onConnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
-    GCmdDispatcher.events.onDisconnect.add((void*)this, std::bind(&Networking::onDisconnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    GCmdDispatcher.events.onConnect.add((void*)this, std::bind(&Networking::onMqttConnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    GCmdDispatcher.events.onDisconnect.add((void*)this, std::bind(&Networking::onMqttDisconnect, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
     GCmdDispatcher.events.onCommand.add((void*)this, std::bind(&Networking::onCommand, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
@@ -24,6 +25,22 @@ void rfir::module::device::Networking::start(){
 void rfir::module::device::Networking::loop(){
 
 }
+
+void rfir::module::device::Networking::delayNetworking(int delay_ms){
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doNetworking, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+};
+
+//
+void* rfir::module::device::Networking::doNetworking(void* arg, void* p){    
+    unsubscribe();
+    subscribe();
+    m_online_count++;
+    setOnline();
+    if (!status.logined) {        
+        this->loginDsp();
+    }   
+    return 0;
+};
 
 //登入调度
 bool rfir::module::device::Networking::loginDsp(){
@@ -74,9 +91,11 @@ void* rfir::module::device::Networking::doLoginDsp(void* arg, void* p) {
 
 //登入数据服务
 bool rfir::module::device::Networking::loginDio() {
+    if (!status.connected) return 0;
+    
     DEBUGER.println("rfir::module::device::Networking::loginDIO");
+    if (GLed.idle()) GLed.start(&(NETWORKING_LOGIN_JLED));
     reset();
-
     GCmdDispatcher.removeWaitResp(m_login_handler);
 
     cmds::cmd::CmdMqtt cmd;
@@ -294,24 +313,19 @@ void rfir::module::device::Networking::reset() {
 
 };
 //MQTT连接事件
-void* rfir::module::device::Networking::onConnect(void* arg, void* p){
+void* rfir::module::device::Networking::onMqttConnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onConnect \r\n");
     status.connected = true;
-    unsubscribe();
-    subscribe();
-    m_online_count++;
-    setOnline();
-    if (!status.logined) {        
-        this->loginDsp();
-    }   
+    delayNetworking();
     return 0;
 
 };
 
 //MQTT断线事件
-void* rfir::module::device::Networking::onDisconnect(void* arg, void* p){
+void* rfir::module::device::Networking::onMqttDisconnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onDisconnect \r\n");
     status.connected = false;
+    GLed.stop();
     return 0;
 };
 
@@ -425,6 +439,7 @@ void* rfir::module::device::Networking::onDev_login_dio_timeout(void* arg, void*
 
 //边缘握手响应
 void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p){
+    GLed.stop();
     status.logined = true;
     status.handshaked = true;
     setOnlineToEdg();
@@ -432,7 +447,6 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
     m_handshake_handler = 0;
     delayHandshake(DEVICE_RE_HANDSHAKE_TIMEOUT);
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
-    
     return 0;
 };               
 

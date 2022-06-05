@@ -32,7 +32,7 @@ void network::module::ota::Updater::checkAndUpdate(){
 
 void* network::module::ota::Updater::doCheckAndUpdate(void* arg, void* p){
     checkAndUpdate();
-    m_update_handler = GEventTimer.delay(params.interval * 1000, std::bind(&Updater::doCheckAndUpdate, this, std::placeholders::_1, std::placeholders::_2));
+    m_update_handler = GEventTimer.delay(params.interval, std::bind(&Updater::doCheckAndUpdate, this, std::placeholders::_1, std::placeholders::_2));
     return 0;
 };
 

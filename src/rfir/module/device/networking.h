@@ -3,6 +3,7 @@
 
 
 #include <Arduino.h>
+#include <jled.h>
 
 namespace rfir {
     namespace module {
@@ -28,6 +29,8 @@ namespace rfir {
                 virtual void start();
                 virtual void loop();
             public:
+                void delayNetworking(int delay_ms = 100);
+                void* doNetworking(void* arg, void* p);
                 bool loginDsp();
                 void delayLoginDsp(int delay_ms = 5000);
                 void* doLoginDsp(void* arg, void* p);
@@ -47,8 +50,8 @@ namespace rfir {
                 void unsubscribe();
                 void reset();
             public:
-                void* onConnect(void* arg, void* p);
-                void* onDisconnect(void* arg, void* p);
+                void* onMqttConnect(void* arg, void* p);
+                void* onMqttDisconnect(void* arg, void* p);
                 void* onCommand(void* arg, void* p);
                 void* onConfigFixup(void* arg, void* p);
             public:
