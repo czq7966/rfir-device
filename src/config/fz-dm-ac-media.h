@@ -9,9 +9,9 @@ extern JLed                         GJLed;
 
 //Device
 #define DEV_VENDOR                  "ND"
-#define DEV_MODEL                   "FZPMACMIDEA"
+#define DEV_MODEL                   "FZDMACMIDEA"
 
-// #define DEBUGER                     RFIRDebuger
+// #define DEBUGER RFIRDebuger
 
 //LED
 #define LED_PIN                     BUILTIN_LED
@@ -96,6 +96,5 @@ extern JLed                         GJLed;
 //Timer Report 
 #define DEVICE_TIMER_REPORT_TIMEOUT        1000 * 60   //1分钟上报一次
 #define DEVICE_RE_HANDSHAKE_TIMEOUT        1000 * 60 * 5 //5分钟握一次手 
-
-
+#define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 #endif //
