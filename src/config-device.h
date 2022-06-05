@@ -28,7 +28,7 @@
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
 
 // 福州飘渺庄2楼食堂格力空调
-// #define DEVICE_FZ_PMZ_F2_AC_GREE
+#define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门美的空调
 // #define DEVICE_FZ_DM_AC_MEDIA
@@ -36,6 +36,6 @@
 // #define DEVICE_FZ_YT_AC_MEDIA
 
 // Z3 协调器 ESP8266 + CC2652 
-#define DEVICE_Z3_COORDINATOR_ESP8266_CC2652
+// #define DEVICE_Z3_COORDINATOR_ESP8266_CC2652
 
 #endif

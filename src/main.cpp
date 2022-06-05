@@ -177,8 +177,8 @@ void loop() {
     // //收发器循环
     // rfir::Loop();  
 
-    // //设备循环
-    // GDevice->loop();
+    //设备循环
+    GDevice->loop();
     //业务循环
     // service::cmds::Cmd::Loop();
 

@@ -38,7 +38,9 @@ namespace rfir {
                 virtual void loop();
 
                 virtual bool loadConfig();      
-                virtual bool saveConfig();     
+                virtual bool saveConfig();  
+                virtual void delaySaveConfig(int timeout_ms = 1000); 
+                virtual void* doSaveConfig(void* , void*);  
                 virtual bool setConfig(const char* context);
                 virtual bool getConfig(std::string& context);   
 

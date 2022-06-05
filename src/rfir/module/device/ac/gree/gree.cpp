@@ -187,17 +187,20 @@ bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld) {
 }
 
 bool rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
+    static unsigned long last_decoded_time = 0;
     bool result = false;
-    if (data.size() == 3) {
+    if (data.size() == 3 && (millis() - last_decoded_time > 200)) {
         int count = 0;
         auto raw = getRaw(count);
         uint8_t bytes[count];
         
         memcpy(bytes, data[0].bytes, 4);
         memcpy(bytes + 4, data[2].bytes, 4);
-        setRaw(bytes);
-        saveConfig();
+        result = setRaw(bytes);
+        delaySaveConfig();  
     }
+    if (result) 
+        last_decoded_time = millis();
     return result;
 }
 

@@ -137,8 +137,9 @@ bool rfir::module::device::ac::Midea::onSvc_get(neb::CJsonObject* pld) {
 bool rfir::module::device::ac::Midea::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
     DEBUGER.println("rfir::module::device::ac::Midea::onSvc_decoded");    
     
-    return setRaw(data[0].bytes);
-
+    auto result = setRaw(data[0].bytes);
+    delaySaveConfig();
+    return result;
 }
 
 

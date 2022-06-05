@@ -11,7 +11,7 @@ extern JLed                         GJLed;
 #define DEV_VENDOR                  "ND"
 #define DEV_MODEL                   "FZPMZF2ACGREE"
 
-// #define DEBUGER                     RFIRDebuger
+// #define DEBUGER RFIRDebuger
 
 //LED
 #define LED_PIN                     BUILTIN_LED
@@ -76,10 +76,10 @@ extern JLed                         GJLed;
 
 
 //DSP.sub
-#define MQTT_DSP_EVT_STATUS         "{app}/{dom}/dsp/{dsp}/0/0/evt/status"
+#define MQTT_DSP_EVT_STATUS         "0/0/dsp/{dsp}/0/0/evt/status"
 
 //EDG.sub
-#define MQTT_EDG_EVT_STATUS         "{app}/{dom}/edg/{edg}/0/0/evt/status"
+#define MQTT_EDG_EVT_STATUS         "0/0/edg/{edg}/0/0/evt/status"
 
 //DEV.sub
 #define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/+/+/dev/{dev}/svc/login"
@@ -96,6 +96,6 @@ extern JLed                         GJLed;
 //Timer Report 
 #define DEVICE_TIMER_REPORT_TIMEOUT        1000 * 60   //1分钟上报一次
 #define DEVICE_RE_HANDSHAKE_TIMEOUT        1000 * 60 * 5 //5分钟握一次手 
-
+#define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 
 #endif //

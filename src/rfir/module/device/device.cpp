@@ -75,6 +75,7 @@ bool rfir::module::device::Device::loadConfig() {
 
 bool rfir::module::device::Device::saveConfig() {
     GInterrupt.stop();
+    DEBUGER.println("rfir::module::device::Device::saveConfig");
 
     bool result = false;
     std::string context;    
@@ -88,19 +89,17 @@ bool rfir::module::device::Device::saveConfig() {
     GInterrupt.start();
     
     return result;
-
-
-
-    // std::string context;
-    // file.readString(context);
-    // if (context.length() > 0) {
-    //     json.Parse(context);
-    // }
-
-    // json.ReplaceAdd("raw", "0x" + toHexString());
-    // context = json.ToString();
     
 }
+
+void rfir::module::device::Device::delaySaveConfig(int timeout_ms ){
+     GEventTimer.delay(timeout_ms, std::bind(&Device::doSaveConfig, this, std::placeholders::_1, std::placeholders::_2));
+}; 
+
+void* rfir::module::device::Device::doSaveConfig(void* , void*){
+    saveConfig();
+    return 0;
+};  
 
 bool rfir::module::device::Device::setConfig(const char* context){
     return false;

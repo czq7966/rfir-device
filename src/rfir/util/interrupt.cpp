@@ -9,12 +9,12 @@ void rfir::util::Interrupt::start(int pin){
     for (auto  it = values.begin(); it != values.end(); it++)
     {
         auto pinEvent = *it;
-        bool started =  pin == pinEvent->pin || (pin == -1 && pinEvent->started);
+        bool started =  (pin == pinEvent->pin || (pin == -1 && pinEvent->started));
         
         if (started) {
             pinEvent->started = started;
             attachInterruptArg(pinEvent->pin, OnPinInterrupt, (void*)pinEvent, CHANGE);
-            DEBUGER.printf("start interrupt pin: %d  \r\n", pin);            
+            DEBUGER.printf("start interrupt pin: %d  \r\n", pinEvent->pin);            
         }
     }
 
@@ -28,8 +28,8 @@ void rfir::util::Interrupt::stop(int pin){
         auto pinEvent = *it;        
         if (pin == -1 || pin == pinEvent->pin) {
             detachInterrupt(pinEvent->pin);
-            pinEvent->started = pin == pinEvent->pin ? false : pinEvent->started;
-            DEBUGER.printf("stop interrupt pin: %d  \r\n", pin);
+            pinEvent->started = (pin == pinEvent->pin ? false : pinEvent->started);
+            DEBUGER.printf("stop interrupt pin: %d  \r\n", pinEvent->pin);
         }
     }
     
