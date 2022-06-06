@@ -1,5 +1,6 @@
 #include "updater.h"
 #include "rfir/util/event-timer.h"
+#include "../wifi/client.h"
 
 void network::module::ota::Updater::start(Params p) {
     params = p;
@@ -7,22 +8,23 @@ void network::module::ota::Updater::start(Params p) {
         eOtaUpdater = new EOTAUpdate(String(p.url.c_str()),  String(p.id.c_str()), p.version);    
     }
 
-    wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&Updater::onWifiConnect, this, std::placeholders::_1));
-    wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&Updater::onWifiDisconnect, this, std::placeholders::_1));    
+    GWifiClient.events.onWifiConnect.add(this, std::bind(&Updater::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));
+    GWifiClient.events.onWifiDisconnect.add(this, std::bind(&Updater::onWifiDisconnect, this, std::placeholders::_1, std::placeholders::_2));    
 }
 
 void network::module::ota::Updater::loop() {
  
 }
 
-void network::module::ota::Updater::onWifiConnect(const WiFiEventStationModeGotIP& event) {
+void* network::module::ota::Updater::onWifiConnect(void* arg, void* p) {
     if (m_update_handler == 0) {
         m_update_handler = GEventTimer.delay(1000, std::bind(&Updater::doCheckAndUpdate, this, std::placeholders::_1, std::placeholders::_2));
     }
+    return 0;
 }
 
-void network::module::ota::Updater::onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {    
-
+void* network::module::ota::Updater::onWifiDisconnect(void* arg, void* p) {    
+    return 0;
 }
 
 void network::module::ota::Updater::checkAndUpdate(){

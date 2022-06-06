@@ -216,9 +216,10 @@ bool rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld){
 }; 
 
 bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld){
+    DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
     int delay = 0;
     pld->Get("delay", delay);
-    delay = std::max(100, delay);
+    delay = std::max(1000, delay);
 
     GEventTimer.delay(delay, std::bind(&Device::doSvc_reboot , this, std::placeholders::_1, std::placeholders::_2));
     return 1;

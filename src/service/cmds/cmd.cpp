@@ -94,27 +94,31 @@ bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string re
         cmd.command.head.to = reqCmd->command.head.from;
         cmd.command.head.stp = 1;
     }
-
+    Config.getIds(&hd);
 
     result = cmd.send();
     GDevice->doEvtTimerReport(1000);
     return result;
 };
 
-bool  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* cmd){
-    auto result = GDevice->onSvc_reboot(&cmd->command.pld);
+bool  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
+    auto result = GDevice->onSvc_reboot(&reqCmd->command.pld);
 
-    neb::CJsonObject& hd = cmd->command.hd;
-    neb::CJsonObject& pld = cmd->command.pld;
+    ::cmds::cmd::CmdMqtt cmd;
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
 
     GDevice->getProps(&pld);
     pld.ReplaceAdd("_success", result);
-    auto temp = cmd->command.head.from;
-    cmd->command.head.from = cmd->command.head.to;
-    cmd->command.head.to = temp;
-    cmd->command.head.stp = 1;
+    if (reqCmd){
+        cmd.command.head = reqCmd->command.head;
+        cmd.command.head.from = reqCmd->command.head.to;
+        cmd.command.head.to = reqCmd->command.head.from;
+        cmd.command.head.stp = 1;
+    }
+    Config.getIds(&hd);
 
-    result = cmd->send();
+    result = cmd.send();
     return result;
 };
 

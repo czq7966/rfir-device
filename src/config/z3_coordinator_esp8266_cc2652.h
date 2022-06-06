@@ -20,6 +20,8 @@ extern JLed                         GJLed;
 #define LED_PIN                     BUILTIN_LED
 //BUTTON
 #define BUTTON_PIN                  0
+//RESET
+#define RESET_PIN                   12
 
 //Serial
 #define SERIAL_BAUD                 115200

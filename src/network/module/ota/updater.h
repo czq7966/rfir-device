@@ -16,8 +16,6 @@ namespace network {
             class Updater {
             private:
                 EOTAUpdate* eOtaUpdater = 0;                
-                WiFiEventHandler wifiConnectHandler;
-                WiFiEventHandler wifiDisconnectHandler;
                 uint32_t m_update_handler = 0;
             public:
                 struct Params {
@@ -31,8 +29,8 @@ namespace network {
                 void start(Params p);
                 void loop();
             public:
-                void onWifiConnect(const WiFiEventStationModeGotIP& event);
-                void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);    
+                void* onWifiConnect(void* arg, void* p);
+                void* onWifiDisconnect(void* arg, void* p); 
             public:
                 void  checkAndUpdate();
                 void* doCheckAndUpdate(void* arg, void* p);

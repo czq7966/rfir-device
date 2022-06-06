@@ -1,6 +1,7 @@
 #include "sender-v2.h"
 #include "rfir/util/timer.h"
 #include "ir-send.h"
+#include "rfir/util/platform.h"
 
 
 std::string rfir::module::ttl::SenderV2::Params::toString(){
@@ -19,12 +20,12 @@ void rfir::module::ttl::SenderV2::sendRaw(const char* data, const int size){
         if (c != ',' ) 
             str += c;
         else  {    
-            deltas.push_back(atoi(str.c_str()));
+            deltas.push_back(std::atoi(str.c_str()));
             str = "";
         }
     }
     if (str != "")
-        deltas.push_back(atoi(str.c_str()));
+        deltas.push_back(std::atoi(str.c_str()));
 
     sendRaw(deltas);
 };

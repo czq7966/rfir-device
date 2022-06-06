@@ -6,11 +6,21 @@
 #include "ap.h"
 #include "smc.h"
 
+#ifdef ESP8266
+#include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
+#endif
+
 namespace network {
     namespace module {
         namespace wifi {
             class Client {
             public:
+                struct Events {
+                    rfir::util::Event onWifiConnect;
+                    rfir::util::Event onWifiDisconnect;
+                };
                 struct Params {
                     bool                apMode = false;
                     bool                smcMode= false;
@@ -23,6 +33,7 @@ namespace network {
                     bool                assign(Params& p);
                 };
             public:
+                Events  events;
                 Params  params;
             public:
                 void start(Params& p);
@@ -37,9 +48,6 @@ namespace network {
             public:
                 int m_connect_ssid_index = 0;
                 uint32_t m_connect_timeout_handler = 0;
-                WiFiEventHandler wifiConnectHandler;
-                WiFiEventHandler wifiDisconnectHandler;
-
                 void  startV2();
                 void  loopV2();
 
@@ -47,8 +55,17 @@ namespace network {
                 void  delayConnectToWifi();
                 void* doConnectToWifi(void* arg, void* p);
             public:
-                void onWifiConnect(const WiFiEventStationModeGotIP& event);
-                void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+#ifdef ESP8266               
+                WiFiEventHandler wifiConnectHandler;
+                WiFiEventHandler wifiDisconnectHandler;
+
+                void _onWifiConnect(const WiFiEventStationModeGotIP& event);
+                void _onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+#else
+                void WiFiEvent(WiFiEvent_t event);
+#endif                
+                void* onWifiConnect(void* arg, void* p);
+                void* onWifiDisconnect(void* arg, void* p);
                 void* onWifiConnectTimeout(void* arg, void* p);
 
             };

@@ -17,6 +17,8 @@ extern JLed                         GJLed;
 #define LED_PIN                     BUILTIN_LED
 //BUTTON
 #define BUTTON_PIN                  0
+//RESET
+#define RESET_PIN                   12
 
 //Serial
 #define SERIAL_BAUD                 115200
@@ -25,16 +27,16 @@ extern JLed                         GJLed;
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          1
-#define OTA_VERSION_STRING          "1.0"
+#define OTA_VERSION_NUMBER          6
+#define OTA_VERSION_STRING          "6.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-dm-ac-midea/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
 //WIFI
 #define WIFI_SSID_DEV               {"MERCURY_95E8"}
 #define WIFI_PASSWORD_DEV           {"12345678"}
-#define WIFI_SSID                   {"MERCURY_95E8"}
-#define WIFI_PASSWORD               {"12345678"}
+#define WIFI_SSID                   {"ND-MAC"}
+#define WIFI_PASSWORD               {"wanglong"}
 // #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
 #define WIFI_RESET_TIMEOUT          1000 * 60  //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()

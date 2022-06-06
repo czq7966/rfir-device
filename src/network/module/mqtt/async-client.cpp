@@ -2,12 +2,15 @@
 #include "rfir/util/event-timer.h"
 #include "rfir/util/util.h"
 #include "rfir/util/led.h"
+#include "../wifi/client.h"
 
 void network::module::mqtt::AClient::init(Params p){
     DEBUGER.println(" network::module::mqtt::AClient::init");
     this->params = p;
-    wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&AClient::onWifiConnect, this, std::placeholders::_1));
-    wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1));
+    // wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&AClient::onWifiConnect, this, std::placeholders::_1));
+    // wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1));
+    GWifiClient.events.onWifiConnect.add(this, std::bind(&AClient::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));
+    GWifiClient.events.onWifiDisconnect.add(this, std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1, std::placeholders::_2));
 
     mqtt.onConnect(std::bind(&AClient::onMqttConnect, this, std::placeholders::_1));
     mqtt.onDisconnect(std::bind(&AClient::onMqttDisconnect, this, std::placeholders::_1));
@@ -64,14 +67,15 @@ void network::module::mqtt::AClient::disconnectToMqtt(bool force) {
 }
 
 
-void network::module::mqtt::AClient::onWifiConnect(const WiFiEventStationModeGotIP& event) {
+void* network::module::mqtt::AClient::onWifiConnect(void* arg, void* p) {
     DEBUGER.println("Connected to Wi-Fi.");
     delayConnectToMqtt();
+    return 0;
 }
 
-void network::module::mqtt::AClient::onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
+void* network::module::mqtt::AClient::onWifiDisconnect(void* arg, void* p) {
     DEBUGER.println("Disconnected from Wi-Fi.");
-
+    return 0;
 }
 
 void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
@@ -141,6 +145,7 @@ void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, A
         msg.index = index;
         msg.total = total;
         events.onMqttMessage.emit((void*)&msg);
+        memset(msgBuf, 0, sizeof(msgBuf));
     }
 }
 

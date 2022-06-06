@@ -464,17 +464,24 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
 
 //调度服务状态通知
 void* rfir::module::device::Networking::onDsp_status_change(void* arg, void* p){
-    setOnlineToDsp();
-    setOnline();
+    DEBUGER.println("rfir::module::device::Networking::onDsp_status_change");
+    auto cmd = (cmds::cmd::CmdMqtt*)p;
+    if (cmd->command.head.stp == 0) {
+        setOnlineToDsp();
+        setOnline();
+    }
     return 0;
 };
 
 //边缘服务状态通知
 void* rfir::module::device::Networking::onEdg_status_change(void* arg, void* p){
     DEBUGER.println("rfir::module::device::Networking::onEdg_status_change");
-    setOnlineToEdg();
-    //握手边缘
-    handshake();
+    auto cmd = (cmds::cmd::CmdMqtt*)p;
+    if (cmd->command.head.stp == 0) {
+        setOnlineToEdg();
+        //握手边缘
+        handshake();
+    }
     return 0;
 };
 

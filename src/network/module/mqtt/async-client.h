@@ -62,8 +62,6 @@ namespace network {
                 AsyncMqttClient mqtt;
                 Params params;
                 uint32_t        m_connect_timeout_handler = 0;
-                WiFiEventHandler wifiConnectHandler;
-                WiFiEventHandler wifiDisconnectHandler;
             public:
 
                 void init(Params p);
@@ -78,8 +76,10 @@ namespace network {
             public:            
                 void connectToMqtt();
                 void disconnectToMqtt(bool force = false);
-                void onWifiConnect(const WiFiEventStationModeGotIP& event);
-                void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+                
+                void* onWifiConnect(void* arg, void* p);
+                void* onWifiDisconnect(void* arg, void* p);
+
                 void onMqttConnect(bool sessionPresent);
                 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
                 void onMqttSubscribe(uint16_t packetId, uint8_t qos);

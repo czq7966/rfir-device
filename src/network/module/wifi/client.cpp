@@ -4,11 +4,6 @@
 #include "rfir/util/util.h"
 #include "rfir/util/led.h"
 
-#ifdef ESP8266
-#include <ESP8266WiFi.h>
-#else
-#include <WiFi.h>
-#endif
 
 bool network::module::wifi::Client::Params::assign(Params& p) {
     this->apMode = p.apMode;
@@ -255,8 +250,14 @@ int  network::module::wifi::Client::connectWifi() {
 //V2
 
 void  network::module::wifi::Client::startV2(){
-    wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&Client::onWifiConnect,this, std::placeholders::_1));
-    wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&Client::onWifiDisconnect,this, std::placeholders::_1));
+#ifdef ESP8266    
+    wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&Client::_onWifiConnect,this, std::placeholders::_1));
+    wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&Client::_onWifiDisconnect,this, std::placeholders::_1));
+#else
+    WiFi.onEvent(std::bind(&Client::WiFiEvent, this, std::placeholders::_1));
+#endif    
+    events.onWifiConnect.add(this, std::bind(&Client::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));
+    events.onWifiDisconnect.add(this, std::bind(&Client::onWifiDisconnect, this, std::placeholders::_1, std::placeholders::_2));
     delayConnectToWifi();
 };
 void  network::module::wifi::Client::loopV2(){
@@ -292,22 +293,45 @@ void* network::module::wifi::Client::doConnectToWifi(void* arg, void* p) {
     return 0;
 }
 
-void network::module::wifi::Client::onWifiConnect(const WiFiEventStationModeGotIP& event) {
+#ifdef ESP8266
+void network::module::wifi::Client::_onWifiConnect(const WiFiEventStationModeGotIP& event) {
+    this->events.onWifiConnect.emit(0);
+};
+
+void network::module::wifi::Client::_onWifiDisconnect(const WiFiEventStationModeDisconnected& event){
+    this->events.onWifiDisconnect.emit(0);
+};
+
+#else
+void network::module::wifi::Client::WiFiEvent(WiFiEvent_t event) {
+    switch(event) {
+    case SYSTEM_EVENT_STA_GOT_IP:
+        this->events.onWifiConnect.emit(0);
+        break;
+    case SYSTEM_EVENT_STA_DISCONNECTED:
+        this->events.onWifiDisconnect.emit(0);
+        break;
+    }
+}
+#endif
+
+
+void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     DEBUGER.printf("Wifi connected to : %s \r\n", WiFi.SSID().c_str());
     GEventTimer.remove(m_connect_timeout_handler);
     m_connect_timeout_handler = 0;
-    GLed.stop();
+    GLed.stop();    
+    return 0;
 };
-
-void network::module::wifi::Client::onWifiDisconnect(const WiFiEventStationModeDisconnected& event){
+void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
     m_connect_ssid_index++;
     if (m_connect_ssid_index >= params.ssid.size()) {
         m_connect_ssid_index = 0;
     }
     GLed.stop();
-    delayConnectToWifi();
+    delayConnectToWifi();    
+    return 0;
 };
-
 void* network::module::wifi::Client::onWifiConnectTimeout(void* arg, void* p){
     rfir::util::Util::Reset();
     return 0;
