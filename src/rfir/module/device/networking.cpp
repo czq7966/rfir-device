@@ -97,6 +97,9 @@ bool rfir::module::device::Networking::loginDio() {
     if (GLed.idle()) GLed.start(&(NETWORKING_LOGIN_JLED));
     reset();
     GCmdDispatcher.removeWaitResp(m_login_handler);
+    if (m_login_reset_handler == 0) {
+        m_login_reset_handler = GEventTimer.delay(NETWORKING_RESET_TIMEOUT, std::bind(&Networking::onNetworkingTimeout, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+    }
 
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
@@ -329,6 +332,12 @@ void* rfir::module::device::Networking::onMqttDisconnect(void* arg, void* p){
     return 0;
 };
 
+//组网超时
+void* rfir::module::device::Networking::onNetworkingTimeout(void* arg, void* p) {
+    rfir::util::Util::Reset();
+    return 0;
+};
+
 //事件指令
 void* rfir::module::device::Networking::onCommand(void* arg, void* p){
     auto cmd = (cmds::cmd::CmdMqtt*)p;
@@ -406,6 +415,8 @@ void* rfir::module::device::Networking::onDev_login_dsp_timeout(void* arg, void*
 
 //数据登入响应
 void* rfir::module::device::Networking::onDev_login_dio_resp(void* arg, void* p){
+    GEventTimer.remove(m_login_reset_handler);
+    m_login_reset_handler = 0;
     auto cmd = (cmds::cmd::CmdMqtt*)p;
 
     DEBUGER.printf("rfir::module::device::Networking::onDev_login_dio_resp: %s \r\n", cmd->command.pld.ToString().c_str());  
@@ -445,7 +456,7 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
     setOnlineToEdg();
     m_handshake_success_count++;
     m_handshake_handler = 0;
-    delayHandshake(DEVICE_RE_HANDSHAKE_TIMEOUT);
+    delayHandshake(NETWORKING_RE_HANDSHAKE_TIMEOUT);
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
     return 0;
 };               

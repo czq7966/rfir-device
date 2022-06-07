@@ -267,9 +267,9 @@ void  network::module::wifi::Client::connectToWifi(){
     if (WiFi.isConnected()) 
         return;
 
-// #ifdef ESP8266     
-//         WiFi.setPhyMode(WIFI_PHY_MODE_11B);
-// #endif 
+#ifdef ESP8266     
+        WiFi.setPhyMode(WIFI_PHY_MODE_11B);
+#endif 
     if (m_connect_timeout_handler == 0) {        
         m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&Client::onWifiConnectTimeout, this, std::placeholders::_1, std::placeholders::_2));
     }
@@ -318,9 +318,11 @@ void network::module::wifi::Client::WiFiEvent(WiFiEvent_t event) {
 
 void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     DEBUGER.printf("Wifi connected to : %s \r\n", WiFi.SSID().c_str());
-    GEventTimer.remove(m_connect_timeout_handler);
+    GEventTimer.remove(m_connect_timeout_handler);    
     m_connect_timeout_handler = 0;
-    GLed.stop();    
+
+    onWifiCheckTimeout(0, 0);
+    GLed.stop();        
     return 0;
 };
 void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
@@ -332,8 +334,19 @@ void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
     delayConnectToWifi();    
     return 0;
 };
+
 void* network::module::wifi::Client::onWifiConnectTimeout(void* arg, void* p){
     rfir::util::Util::Reset();
+    return 0;
+};
+
+void* network::module::wifi::Client::onWifiCheckTimeout(void* arg, void* p){
+    if (!WiFi.isConnected() && m_connect_timeout_handler == 0) {
+        rfir::util::Util::Reset();
+    }
+
+    GEventTimer.remove(m_check_timeout_handler);
+    m_check_timeout_handler = GEventTimer.delay(params.interval, std::bind(&Client::onWifiCheckTimeout, this, std::placeholders::_1, std::placeholders::_2));
     return 0;
 };
 

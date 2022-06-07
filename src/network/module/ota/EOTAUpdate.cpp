@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "rfir/util/interrupt.h"
+#include "rfir/util/util.h"
 
 #ifdef ESP8266
     #include "EOTAUpdate.h"
@@ -296,6 +297,7 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     }
 
     DEBUGER.println("Update completed. Rebooting");
-    ESP.restart();
+    rfir::util::Util::Reset();
+    // ESP.restart();
     return true;
 }

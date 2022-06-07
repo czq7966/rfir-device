@@ -45,6 +45,7 @@ namespace rfir {
                 int encodeBytes(Params p, std::list<uint8_t>& bytes, std::list<uint16_t>& result);
                 int encodeBytes(Params p, uint8_t* bytes, int size, std::list<uint16_t>& result);
                 int encode(std::vector<std::string>& data, std::list<uint16_t>& result);
+                int encode(std::string data, std::list<uint16_t>& result);
 
 
                 std::string toString(std::list<uint16_t>& result);

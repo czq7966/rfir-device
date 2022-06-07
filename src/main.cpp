@@ -10,6 +10,8 @@
 
 #include "rfir/module/device/networking.h"
 #include "rfir/module/device/device.h"
+#include "rfir/module/device/ac/midea/fz-dm-midea.h"
+#include "rfir/module/ttl/sender-v2.h"
 
 #include "rfir/service/serial/receiver.h"
 #include "rfir/service/serial/sender.h"
@@ -79,19 +81,19 @@ void setup() {
 
     GWifiClient.start(np);
 
-    //SMC
-    #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
-    auto smc = &GWifiClient.params.smc;
-    smc->configVersion = SMC_CONFIG_VERSION;
-    smc->configFile = SMC_CONFIG_FILE; 
-    smc->configPin = SMC_CONFIG_PIN;  
-    smc->configPinType = SMC_CONFIG_PIN_TYPE;
-    smc->configPinNum = SMC_CONFIG_PIN_NUM;
-    smc->configPinDelay = SMC_CONFIG_PIN_DELAY;
-    smc->configPinInterval = SMC_CONFIG_PIN_INTERVAL;
-    smc->configTimeout = SMC_CONFIG_TIMEOUT;
-    // GSmartConfig.start(smc);
-    #endif   
+    // //SMC
+    // #if !(defined(DISABLE_SMC) && DISABLE_SMC == TRUE)
+    // auto smc = &GWifiClient.params.smc;
+    // smc->configVersion = SMC_CONFIG_VERSION;
+    // smc->configFile = SMC_CONFIG_FILE; 
+    // smc->configPin = SMC_CONFIG_PIN;  
+    // smc->configPinType = SMC_CONFIG_PIN_TYPE;
+    // smc->configPinNum = SMC_CONFIG_PIN_NUM;
+    // smc->configPinDelay = SMC_CONFIG_PIN_DELAY;
+    // smc->configPinInterval = SMC_CONFIG_PIN_INTERVAL;
+    // smc->configTimeout = SMC_CONFIG_TIMEOUT;
+    // // GSmartConfig.start(smc);
+    // #endif   
 
     
 

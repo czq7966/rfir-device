@@ -26,8 +26,8 @@ namespace network {
                     bool                smcMode= false;
                     std::vector<std::string>    ssid;
                     std::vector<std::string>    pass;                   
-                    // std::vector<int>            timeout;
                     uint32_t                    timeout;
+                    uint32_t                    interval = 30 * 1000;
                     AP::Params          ap;
                     SMC::Params         smc;
                     bool                assign(Params& p);
@@ -48,6 +48,8 @@ namespace network {
             public:
                 int m_connect_ssid_index = 0;
                 uint32_t m_connect_timeout_handler = 0;
+                uint32_t m_check_timeout_handler = 0;
+
                 void  startV2();
                 void  loopV2();
 
@@ -67,6 +69,8 @@ namespace network {
                 void* onWifiConnect(void* arg, void* p);
                 void* onWifiDisconnect(void* arg, void* p);
                 void* onWifiConnectTimeout(void* arg, void* p);
+                void* onWifiCheckTimeout(void* arg, void* p);
+
 
             };
         }

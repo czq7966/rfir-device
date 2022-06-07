@@ -149,6 +149,12 @@ int rfir::module::ttl::EncoderV2::encode(std::vector<std::string>& data, std::li
     return count;
 };
 
+int rfir::module::ttl::EncoderV2::encode(std::string dataStr, std::list<uint16_t>& result){
+    std::vector<std::string> data;
+    data.push_back(dataStr);
+    return encode(data, result);
+};
+
 int  rfir::module::ttl::EncoderV2::parseBits(const char* data, int nbits, uint64_t& result){
     for (size_t i = 0; i < nbits; i++)
     {

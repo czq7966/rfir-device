@@ -47,15 +47,17 @@ uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* 
 
 
 void network::module::mqtt::AClient::connectToMqtt() {
-    if (WiFi.isConnected() && !mqtt.connected()) {
-        DEBUGER.println("Connecting to MQTT...");
-        if (m_connect_timeout_handler == 0) {        
-            m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
-        }
-        if (GLed.idle())
-            GLed.start(&(MQTT_CONNECT_JLED));
+    if (WiFi.isConnected()) {
+        if (!mqtt.connected()) {
+            DEBUGER.println("Connecting to MQTT...");
+            if (m_connect_timeout_handler == 0) {        
+                m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            if (GLed.idle())
+                GLed.start(&(MQTT_CONNECT_JLED));
 
-        mqtt.connect();
+            mqtt.connect();
+        }
     }
 }
 
@@ -82,6 +84,7 @@ void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
     DEBUGER.println("Connected to MQTT.");
     GEventTimer.remove(m_connect_timeout_handler);
     m_connect_timeout_handler = 0;
+    onCheckToMqttTimeout(0, 0);
     GLed.stop();
     events.onMqttConnect.emit((void*)(int)sessionPresent);
 }
@@ -176,6 +179,16 @@ void*  network::module::mqtt::AClient::doDisconnectToMqtt(void* arg, void* p) {
 
 void* network::module::mqtt::AClient::onConnectToMqttTimeout(void* arg, void* p){
     rfir::util::Util::Reset();
+    return 0;
+};
+
+void* network::module::mqtt::AClient::onCheckToMqttTimeout(void* arg, void* p){
+    if (!mqtt.connected() && m_connect_timeout_handler == 0) {
+        connectToMqtt();
+    }
+
+    GEventTimer.remove(m_check_timeout_handler);
+    m_check_timeout_handler = GEventTimer.delay(params.interval, std::bind(&AClient::onCheckToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
     return 0;
 };
 

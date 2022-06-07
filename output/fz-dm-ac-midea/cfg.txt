@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-dm-ac-midea/firmware_v6.bin
-6
-ef4cf56576639bd57d899604f2a9dc45
-6.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-dm-ac-midea/firmware_v8.bin
+8
+85294be491e0db0ab9098baa9adfb6fc
+8.0
 1
-ESP8266x00c22bf6,ESP8266x00c20638,
+ESP8266x00c22bf6,ESP8266x00c20638,ESP8266x0098b1f8,

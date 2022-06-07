@@ -19,6 +19,7 @@ namespace rfir {
                 Status status;
 
                 uint32_t m_login_handler = 0;
+                uint32_t m_login_reset_handler = 0;
                 uint32_t  m_handshake_handler = 0;
                 uint32_t  m_handshake_heartbeat_handler = 0;
                 int  m_handshake_failed_count = 0;
@@ -52,6 +53,7 @@ namespace rfir {
             public:
                 void* onMqttConnect(void* arg, void* p);
                 void* onMqttDisconnect(void* arg, void* p);
+                void* onNetworkingTimeout(void* arg, void* p);
                 void* onCommand(void* arg, void* p);
                 void* onConfigFixup(void* arg, void* p);
             public:

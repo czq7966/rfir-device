@@ -156,6 +156,8 @@ void rfir::util::Util::Reset(){
   #ifdef RESET_PIN
     pinMode(RESET_PIN, OUTPUT);
     digitalWrite(RESET_PIN, 0);
+    delay(200);
+    digitalWrite(RESET_PIN, 1);
   #endif
   #ifdef ESP8266                   
       ESP.reset();

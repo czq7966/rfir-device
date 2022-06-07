@@ -42,15 +42,18 @@ void rfir::module::ttl::SenderV2::sendRaw(std::list<uint16_t>& deltas){
     irsend.begin();
     irsend.enableIROut(params.frequency);
 
-    uint16_t i = 0;
-    for (auto it = deltas.begin(); it != deltas.end(); it++)
+    for (size_t r = 0; r <= params.repeat; r++)
     {
-        if (i & 1) { 
-            irsend.space(*it);
-        } else {  
-            irsend.mark(*it);
+        uint16_t i = 0;
+        for (auto it = deltas.begin(); it != deltas.end(); it++)
+        {
+            if (i & 1) { 
+                irsend.space(*it);
+            } else {  
+                irsend.mark(*it);
+            }
+            i++;
         }
-        i++;
     }
     
     irsend.space(0);  

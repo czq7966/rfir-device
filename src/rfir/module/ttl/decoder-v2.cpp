@@ -76,8 +76,30 @@ int  rfir::module::ttl::DecoderV2::decode(uint16_t* data, int size, int maxTimes
     return offset;
 }
 
+int rfir::module::ttl::DecoderV2::decode(const char* data, int size){
+  std::list<uint16_t> deltas;
+  parseRaw(data, size, deltas);
+  return decode(deltas);
+};
 
+int  rfir::module::ttl::DecoderV2::parseRaw(const char* data, int size, std::list<uint16_t>& result){
+  int offset = result.size();
+  std::string str;
+  for (size_t i = 0; i < size; i++)
+  {    
+      char c = data[i];
+      if (c != ',' ) 
+          str += c;
+      else  {    
+          result.push_back(std::atoi(str.c_str()));
+          str = "";
+      }
+  }
+  if (str != "")
+      result.push_back(std::atoi(str.c_str()));  
 
+  return result.size() - offset;
+};
 
 
 uint32_t rfir::module::ttl::DecoderV2::ticksLow(const uint32_t usecs, const uint8_t tolerance, const uint16_t delta) {

@@ -28,6 +28,7 @@ namespace network {
                     int         port = 1883;
                     int         keepalive = 15;
                     int         timeout = 1000 * 60;
+                    int         interval = 1000 * 30;
                     std::string user;
                     std::string pass;
                     std::string id;
@@ -62,6 +63,7 @@ namespace network {
                 AsyncMqttClient mqtt;
                 Params params;
                 uint32_t        m_connect_timeout_handler = 0;
+                uint32_t        m_check_timeout_handler = 0;
             public:
 
                 void init(Params p);
@@ -93,6 +95,7 @@ namespace network {
                 void* doDisconnectToMqtt(void* arg, void* p);
 
                 void* onConnectToMqttTimeout(void* arg, void* p);
+                void* onCheckToMqttTimeout(void* arg, void* p);
             };
 
         }

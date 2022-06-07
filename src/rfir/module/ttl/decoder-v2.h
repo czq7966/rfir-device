@@ -63,8 +63,9 @@ namespace rfir {
 
                 int     decode(std::list<uint16_t>& data);
                 int     decode(uint16_t* data, int size, int maxTimes = INT_MAX);
+                int     decode(const char* data, int size);
                 int     decode();
-                String  toString();
+                int     parseRaw(const char* data, int size, std::list<uint16_t>& result);
             public:
                 bool     match(uint32_t measured, uint32_t desired, uint8_t tolerance, uint16_t delta = 0);
                 bool     matchMark(uint32_t measured, uint32_t desired, uint8_t tolerance, int16_t excess);
