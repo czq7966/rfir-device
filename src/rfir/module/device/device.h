@@ -63,17 +63,17 @@ namespace rfir {
                 uint32_t m_timer_report_handler = 0;
             public:
                 virtual bool getCommonProps(neb::CJsonObject* pld);
-                virtual bool getProps(neb::CJsonObject* pld);
+                virtual bool getProps(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
             public:
                 virtual bool doEvtTimerReport(uint32_t timeout = DEVICE_TIMER_REPORT_TIMEOUT);
                 virtual void* onEvt_timer_report(void* arg, void* p);
             public:
                 virtual void* doSvc_reboot(void* arg, void* p);
             public:
-                virtual bool onSvc_get(neb::CJsonObject* pld); 
-                virtual bool onSvc_set(neb::CJsonObject* pld); 
-                virtual bool onSvc_reboot(neb::CJsonObject* pld);
-                virtual bool onSvc_penet(neb::CJsonObject* pld);
+                virtual bool onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual bool onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual bool onSvc_reboot(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
+                virtual bool onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
             };
 
         }

@@ -129,11 +129,11 @@ bool rfir::module::device::RFIRDevice::getEncodeRaw(std::list<uint16_t>& result)
 
 
 
-bool rfir::module::device::RFIRDevice::onSvc_get(neb::CJsonObject* pld) {
+bool rfir::module::device::RFIRDevice::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     return false;
 
 }; 
-bool rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld) {
+bool rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     
     return false;
 };

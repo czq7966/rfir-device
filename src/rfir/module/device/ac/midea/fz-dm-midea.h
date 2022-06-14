@@ -13,7 +13,7 @@ namespace rfir {
                     virtual void start(void *) override;
                             
                     virtual void init() override;
-                    virtual bool onSvc_get(neb::CJsonObject* pld) override; 
+                    virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
                 public:
                     static const uint8_t PIN_POWER  = 13;  
                 };

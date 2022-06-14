@@ -2,10 +2,6 @@
 #define RFIR_UTIL_DEBUGER_H
 
 #include "Arduino.h"
-#ifndef SerialConfig
-#define SerialConfig uint32_t
-#endif
-
 #include "Print.h"
 
 namespace rfir {
@@ -14,7 +10,11 @@ namespace rfir {
         {
         public:
             void begin(unsigned long baud);
+#ifdef ESP8266
             void begin(unsigned long baud, SerialConfig config);
+#else
+            void begin(unsigned long baud, uint32_t config);
+#endif
 
             // void print(const char* bytes);
             // void println(const char* bytes);

@@ -42,9 +42,9 @@ namespace rfir {
                         // void dump();
                     public:
                         virtual bool doEvt_penet();
-                        virtual bool onSvc_get(neb::CJsonObject* pld) override; 
-                        virtual bool onSvc_set(neb::CJsonObject* pld) override; 
-                        virtual bool onSvc_penet(neb::CJsonObject* pld) override;                    
+                        virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                        virtual bool onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                        virtual bool onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;                    
                     };
                 }
             }

@@ -88,7 +88,7 @@ bool rfir::module::device::ac::Gree::getEncodeRaw(std::list<uint16_t>& result) {
     return encoder->encode(data, result);
 }
 
-bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld) {
+bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     if (!pld) return 0;
     
 
@@ -151,7 +151,7 @@ bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld) {
 }
 
 
-bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld) {
+bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     //Power
     pld->Add("power", ac.ac->getPower() ? "on" : "off");
 

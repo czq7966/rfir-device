@@ -2,7 +2,11 @@
 
 
 void rfir::util::Debuger::begin(unsigned long baud) {};
+#ifdef ESP8266
 void rfir::util::Debuger::begin(unsigned long baud, SerialConfig config){};
+#else
+void rfir::util::Debuger::begin(unsigned long baud, uint32_t config){};
+#endif
 // void rfir::util::Debuger::print(const char* bytes){};
 // void rfir::util::Debuger::println(const char* bytes){};
 // void rfir::util::Debuger::println(String bytes){};

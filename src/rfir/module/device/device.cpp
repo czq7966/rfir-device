@@ -9,49 +9,13 @@ void rfir::module::device::Device::init() {
   
 }
 
-// void rfir::module::device::Device::emitChange(const char* reason) {
-//     events.onChange.emit((void*)reason);
-// }
-
 void rfir::module::device::Device::start(void *) {
     loadConfig();   
 }
 
 void rfir::module::device::Device::loop() {
-    // doTimerReport();
-    // doRawChanged();
+
 }
-
-// bool rfir::module::device::Device::onCmd_set(neb::CJsonObject* pld) {
-//     return 0;
-// }
-
-// bool rfir::module::device::Device::onCmd_get(neb::CJsonObject* pld) {
-//     return 0;
-// }
-
-// bool rfir::module::device::Device::onCmd_decoded(rfir::module::ttl::Decoder::DecodeResults* data) {
-//     return 0;
-// }
-
-// bool rfir::module::device::Device::setRaw(uint8_t* raw) {
-//     return 0;
-// }
-
-// uint8_t* rfir::module::device::Device::getRaw(int& count) {
-//     return 0;
-// }
-
-// uint16_t* rfir::module::device::Device::getEncodeRaw(int& count) {
-//     return 0;
-// }
-
-// void rfir::module::device::Device::onSetRaw() {
-//     // saveRaw();
-//     rawChanged = true;
-//     rawChanged_time = millis();
-// }
-
 
 
 bool rfir::module::device::Device::loadConfig() {
@@ -109,53 +73,6 @@ bool rfir::module::device::Device::getConfig(std::string& context){
     return false;
 };  
 
-// void rfir::module::device::Device::doTimerReport(bool reset) {
-//     if (reset) {
-//         reinitTimerReport(reset);
-//     }
-
-
-//     if (millis() - timerReport_LastTime > timerReport_Interval) {
-//         this->events.onChange.emit((void*)"Timer Report");
-
-//         if (timerReport_Interval == 1 * 1000) 
-//             timerReport_Interval = 2 * 1000;
-//         else 
-//             timerReport_Interval = 60 * 1000;
-        
-//         timerReport_LastTime = millis();
-//     }
-// }
-
-// void rfir::module::device::Device::reinitTimerReport(bool reset) {
-//     if (reset) {
-//         timerReport_Interval = 1 * 1000;
-//     } else {
-//         timerReport_Interval = 60 * 1000;
-//     }    
-
-//     timerReport_LastTime =  millis();    
-// }
-
-// void rfir::module::device::Device::doRawChanged() {
-//     if (rawChanged && millis() - rawChanged_time > rawChanged_timeout) {
-//         rawChanged = false;
-//         saveRaw();
-//     }
-// }
-
-// std::string rfir::module::device::Device::toBitString() {
-//     int count = 0;
-//     auto raw = getRaw(count);
-//     return rfir::util::Util::BytesToString(raw, count);
-// }
-
-// std::string rfir::module::device::Device::toHexString() {
-//     int count = 0;
-//     auto raw = getRaw(count);
-//     return rfir::util::Util::BytesToHexString(raw, count);
-// }
-
 //************************* V2 ***********************
 
 bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
@@ -174,8 +91,8 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     }
     return true;
 };
-bool rfir::module::device::Device::getProps(neb::CJsonObject* pld){
-    auto result = onSvc_get(pld);
+bool rfir::module::device::Device::getProps(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+    auto result = onSvc_get(pld, cmd);
     getCommonProps(pld);
     return result;
 };
@@ -199,23 +116,15 @@ void* rfir::module::device::Device::doSvc_reboot(void* arg, void* p){
 };
 
 
-// bool rfir::module::device::Device::doEvt_props_change(const char* reason){
-//     neb::CJsonObject pld;
-//     getProps(&pld);
-//     pld.ReplaceAdd("_reason", reason);
-//     events.onEvtPropsChange.emit(&pld);
-//     return 1;
-// };
-
-bool rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld){
+bool rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld){
+bool rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld){
+bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
     int delay = 0;
     pld->Get("delay", delay);
@@ -225,7 +134,7 @@ bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld){
     return 1;
 }; 
 
-bool rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld){
+bool rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 };
 

@@ -1,4 +1,5 @@
 #include "crc.h"
+#include "rfir/util/util.h"
 
 
 uint16_t rfir::util::Crc::CRC16_Tab[] = {
@@ -34,3 +35,15 @@ uint16_t rfir::util::Crc::Get_CRC16(uint8_t *pBuff, uint16_t len, uint8_t& crc16
     crc16_high = ((uint8_t*)&crc16)[1];    
     return crc16;
 }
+
+std::string rfir::util::Crc::Get_CRC16_Str(std::string hexStr) {
+    std::string result = hexStr;
+    uint8_t bytes[hexStr.length()];
+    int nbytes = rfir::util::Util::StringToBytes(hexStr, bytes) / 8;
+    if (nbytes > 0) {
+        auto crc16 = rfir::util::Crc::Get_CRC16(bytes, nbytes);
+        result = hexStr + " " + rfir::util::Util::BytesToHexString((uint8_t*)&crc16, 2);
+    }
+
+    return result;
+};
