@@ -58,12 +58,16 @@ bool cmds::cmd::CmdBase::Command::setNeedResp(bool value){
 
 void cmds::cmd::CmdBase::Command::fixUp(){
     neb::CJsonObject from, to, entry;
-    from.Add("type", head.from.type);
-    from.Add("id", head.from.id);
-    to.Add("type", head.to.type);
-    to.Add("id", head.to.id);
-    entry.Add("type", head.entry.type);
-    entry.Add("id", head.entry.id);
+    hd.Get("from", from);
+    hd.Get("to", to);
+    hd.Get("entry", entry);
+
+    from.ReplaceAdd("type", head.from.type);
+    from.ReplaceAdd("id", head.from.id);
+    to.ReplaceAdd("type", head.to.type);
+    to.ReplaceAdd("id", head.to.id);
+    entry.ReplaceAdd("type", head.entry.type);
+    entry.ReplaceAdd("id", head.entry.id);
 
     hd.ReplaceAdd("from", from);
     hd.ReplaceAdd("to", to);

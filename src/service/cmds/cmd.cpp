@@ -89,6 +89,7 @@ bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string re
     pld.ReplaceAdd("_success", result);
 
     if (reqCmd){
+        hd = reqCmd->command.hd;
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;
@@ -111,6 +112,7 @@ bool  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
     GDevice->getProps(&pld, reqCmd);
     pld.ReplaceAdd("_success", result);
     if (reqCmd){
+        hd = reqCmd->command.hd;
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;
