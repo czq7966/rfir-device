@@ -47,7 +47,7 @@ void* OnConfigFixup(void* arg, void* p) {
 
 void setup() {
 #ifdef SERIAL_BAUD
-    DEBUGER.begin(SERIAL_BAUD, SERIAL_CONFIG);
+    Serial.begin(SERIAL_BAUD, SERIAL_CONFIG);
 #else 
    DEBUGER.begin(115200);
 #endif

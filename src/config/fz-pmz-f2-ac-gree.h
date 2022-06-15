@@ -25,8 +25,8 @@ extern JLed                         GJLed;
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          2
-#define OTA_VERSION_STRING          "2.0"
+#define OTA_VERSION_NUMBER          3
+#define OTA_VERSION_STRING          "3.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
@@ -95,7 +95,8 @@ extern JLed                         GJLed;
 #define MQTT_BUFFER_SIZE            2048
 //Timer Report 
 #define DEVICE_TIMER_REPORT_TIMEOUT        1000 * 60   //1分钟上报一次
-#define DEVICE_RE_HANDSHAKE_TIMEOUT        1000 * 60 * 5 //5分钟握一次手 
+#define NETWORKING_RE_HANDSHAKE_TIMEOUT    1000 * 60 * 5 //5分钟握一次手 
+#define NETWORKING_RESET_TIMEOUT    1000 * 60 * 2 //2分钟组网超时
 #define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 
 #endif //

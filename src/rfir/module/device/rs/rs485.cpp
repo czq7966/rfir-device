@@ -4,7 +4,11 @@
 
 void rfir::module::device::RS::RS485::start(void * p) {
     Device::start(p);
+#ifdef COSerial    
     this->hwSerial = &COSerial;
+#else 
+    this->hwSerial = &Serial;   
+#endif
     this->dePin = 5;
     this->rePin = 5;
     init();
@@ -12,11 +16,12 @@ void rfir::module::device::RS::RS485::start(void * p) {
 
 
 void rfir::module::device::RS::RS485::init() {
+#ifdef COSerial       
     neb::CJsonObject pld;
     pld.Add("baudRate", CO_SERIAL_BAUD);
     pld.Add("serialConfig", CO_SERIAL_CONFIG);
     onSvc_setBandRate(&pld);
-
+#endif
     pinMode(dePin, OUTPUT);
     pinMode(rePin, OUTPUT);   
     readMode();    
