@@ -14,6 +14,16 @@ namespace rfir {
                     virtual void init() override;
                     virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
                     virtual bool onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                public:                    
+                    virtual bool onSvc_set_open(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_close(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd);  
+                    virtual bool onSvc_set_stop(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_pos(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_dir(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_up_travel(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_down_travel(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_del_travel(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
+                    virtual bool onSvc_set_power_on_prompt(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd); 
                 };
             }
         }
