@@ -225,6 +225,8 @@ void rfir::module::device::Networking::setOnline(){
     GDevice->getCommonProps(&pld);
     pld.Add("online", 1);
     pld.Add("online_count", m_online_count);
+    pld.Add("reboot", m_reboot);
+    m_reboot = 0;
     cmd.send();
 };
 

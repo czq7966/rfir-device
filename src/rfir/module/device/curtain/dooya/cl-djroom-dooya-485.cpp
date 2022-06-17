@@ -28,7 +28,8 @@ bool rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_get(neb::CJsonObj
             pld->ReplaceAdd("travelState", bytes[14]);
             pld->ReplaceAdd("jogMode", bytes[15]);
             pld->ReplaceAdd("powerOnPrompt", bytes[17]);
-        }
+            return 1;
+        }        
     }
     return 0;
 }
