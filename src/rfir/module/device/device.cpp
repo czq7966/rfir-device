@@ -182,9 +182,16 @@ rfir::module::device::Device* GDevice = new rfir::module::device::ac::CL_VRHALL_
 rfir::module::device::Device* GDevice = new rfir::module::device::ac::CL_VRHALL_F2_Coolix();
 #endif
 
+//长乐禅修院山水音箱
 #ifdef DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 #include "rfir/module/device/speaker/sansui/cl-cxy-sansui-p300.h"
 rfir::module::device::Device* GDevice = new rfir::module::device::speaker::CL_CXY_SANSUI_P300();
+#endif
+
+//长乐小镇美术馆格力空调485
+#ifdef DEVICE_CL_XZ_MSG_AC_GREE_485
+#include "rfir/module/device/ac/gree/cl-xz-msg-gree-485.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::ac::CL_XZ_MSG_GREE_485();
 #endif
 
 #ifdef DEVICE_TEST_SNIFFER_ESP32_WROOM

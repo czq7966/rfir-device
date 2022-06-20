@@ -24,11 +24,14 @@
 //长乐禅修院山水音箱
 // #define DEVICE_CL_CXY_SPEAKER_SANSUI_P300
 
+//长乐小镇美术馆格力空调485
+#define DEVICE_CL_XZ_MSG_AC_GREE_485
+
 // ESP32_WROOM 采集器
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
 
 // 福州飘渺庄2楼食堂格力空调
-#define DEVICE_FZ_PMZ_F2_AC_GREE
+// #define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门美的空调
 // #define DEVICE_FZ_DM_AC_MEDIA

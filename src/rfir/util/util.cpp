@@ -165,3 +165,21 @@ void rfir::util::Util::Reset(){
       ESP.restart();
   #endif  
 };
+
+std::string rfir::util::Util::ToLower(const char* data){
+  std::string s = data;
+  int len = s.size();
+  for(int i = 0; i < len; i++){
+    s[i] = tolower(s[i]); 
+  }
+  return s;
+};
+
+std::string rfir::util::Util::ToUpper(const char* data){
+  std::string s = data;
+  int len = s.size();
+  for(int i=0; i < len; i++){
+    s[i] = toupper(s[i]);
+  }
+  return s;
+};
