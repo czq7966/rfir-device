@@ -48,6 +48,7 @@ namespace rfir {
                 void setOnline();
                 void setOnlineToDsp();
                 void setOnlineToEdg();
+                void setReboot();
                 void subscribe();
                 void unsubscribe();
                 void reset();

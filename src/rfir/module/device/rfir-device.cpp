@@ -1,4 +1,6 @@
 #include "rfir-device.h"
+#include "rfir/util/interrupt.h"
+#include "service/cmds/cmd.h"
 
 
 
@@ -24,9 +26,7 @@ rfir::module::device::RFIRDevice::~RFIRDevice() {
 bool rfir::module::device::RFIRDevice::setConfig(const char* context){
     std::string rawStr;
     neb::CJsonObject json;
-    DEBUGER.printf("rfir::module::device::RFIRDevice::setConfig: %s\r\n", context);
     if (json.Parse(context) && json.Get("raw", rawStr)) {
-        DEBUGER.printf("rfir::module::device::RFIRDevice::getConfig1: %s\r\n", context);
         setRaw(rawStr.c_str());
     }
     return false;
@@ -37,7 +37,6 @@ bool rfir::module::device::RFIRDevice::getConfig(std::string& context){
     neb::CJsonObject json;
     json.ReplaceAdd("raw", rawStr);
     context = json.ToString();
-    DEBUGER.printf("rfir::module::device::RFIRDevice::getConfig: %s\r\n", context.c_str());
     return true;
 }; 
 
@@ -77,7 +76,9 @@ void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
     }
 
     DEBUGER.printf("rfir::module::device::RFIRDevice::onDecoded: %s  %s \r\n", bitStr.c_str(), hexStr.c_str());  
-    onSvc_decoded(*decodeResults);    
+    if (onSvc_decoded(*decodeResults)) {
+        ::service::cmds::Cmd::OnSvc_get(0, "IR Change");
+    };
     return 0;
 };
 
@@ -119,7 +120,9 @@ uint8_t* rfir::module::device::RFIRDevice::getRaw(int& count){
 bool rfir::module::device::RFIRDevice::sendRaw() {
     std::list<uint16_t> encodeRaw;
     if (getEncodeRaw(encodeRaw)) {
+        GInterrupt.stop();        
         sender->sendRaw(encodeRaw);
+        GInterrupt.start();
     }
     return false;
 
@@ -131,11 +134,11 @@ bool rfir::module::device::RFIRDevice::getEncodeRaw(std::list<uint16_t>& result)
 
 
 
-bool rfir::module::device::RFIRDevice::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+bool rfir::module::device::RFIRDevice::onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) {
     return false;
 
 }; 
-bool rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+bool rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) {
     
     return false;
 };

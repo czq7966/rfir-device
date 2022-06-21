@@ -48,8 +48,8 @@ namespace rfir {
                 virtual bool setRaw(uint8_t* raw);
                 virtual bool sendRaw(); 
 
-                virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
-                virtual bool onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;
+                virtual bool onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) override; 
+                virtual bool onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) override;
                 virtual bool onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& p);   
 
             };
