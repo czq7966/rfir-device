@@ -6,10 +6,11 @@
 
 
 void rfir::module::device::Device::init() {
-  
+    this->name = "device";  
 }
 
 void rfir::module::device::Device::start(void *) {
+    init();
     loadConfig();   
 }
 
@@ -17,13 +18,16 @@ void rfir::module::device::Device::loop() {
 
 }
 
+std::string rfir::module::device::Device::getConfigFilename() {
+    return "/"+ this->name + "-config.json";
+};
 
 bool rfir::module::device::Device::loadConfig() {
     GInterrupt.stop();
 
     bool result = false;
     neb::CJsonObject json;
-    std::string fn = "/"+ this->name + "-config.json";
+    std::string fn = getConfigFilename();
     rfir::util::TxtFile file(fn.c_str());
     std::string context;
     file.readString(context);    
@@ -32,27 +36,23 @@ bool rfir::module::device::Device::loadConfig() {
     GInterrupt.start();
 
     return result;
-
-
-
 }
 
 bool rfir::module::device::Device::saveConfig() {
     GInterrupt.stop();
-    DEBUGER.println("rfir::module::device::Device::saveConfig");
 
-    bool result = false;
+    int result = 0;
     std::string context;    
     if (getConfig(context)) {
         neb::CJsonObject json;
-        std::string fn = "/"+ this->name + "-raw.json";
+        std::string fn = getConfigFilename();
         rfir::util::TxtFile file(fn.c_str());
         result =  file.writeString(context);
     }
 
     GInterrupt.start();
     
-    return result;
+    return result != -1;
     
 }
 

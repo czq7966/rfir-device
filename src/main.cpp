@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "config.h"
-#include "global.h"
 #include <IotWebConf.h>
 #include "network/module/wifi/client.h"
 #include "network/module/ota/updater.h"
@@ -29,6 +28,7 @@
 
 
 std::string ChipID = rfir::util::Util::GetChipId(CHIP_ID_PREFIX);
+JLed    GJLed = JLed(LED_PIN);
 
 void* OnConfigFixup(void* arg, void* p) {
     DEBUGER.println("OnConfigFixup");
@@ -52,7 +52,6 @@ void setup() {
    DEBUGER.begin(115200);
 #endif
     DEBUGER.println("begin chid id: " + String(ChipID.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
-    Global::Init();
 
 #if !(defined(DISABLE_WIFI) && DISABLE_WIFI == TRUE)
     //启动wifi或热点

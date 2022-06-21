@@ -33,22 +33,22 @@ bool rfir::util::TxtFile::begin() {
 }
 
 int rfir::util::TxtFile::readString(std::string& str) {
+    int result = 0;
     if (begin()) {
         fs::File file;
         if (FileFS.exists(this->fn.c_str())) {
             file = FileFS.open(this->fn.c_str(), "r");
-        } else return 0;
+        } else return -1;
 
         while (file.available())
         {
             str += (char)file.read();
+            result++;
         }
         file.close();
-
-        return 1;        
     }
 
-    return 0;
+    return result;
     
 //     fs::File file;
 //     if (FileFS.exists(this->fn.c_str()))

@@ -24,7 +24,9 @@ rfir::module::device::RFIRDevice::~RFIRDevice() {
 bool rfir::module::device::RFIRDevice::setConfig(const char* context){
     std::string rawStr;
     neb::CJsonObject json;
+    DEBUGER.printf("rfir::module::device::RFIRDevice::setConfig: %s\r\n", context);
     if (json.Parse(context) && json.Get("raw", rawStr)) {
+        DEBUGER.printf("rfir::module::device::RFIRDevice::getConfig1: %s\r\n", context);
         setRaw(rawStr.c_str());
     }
     return false;
@@ -35,14 +37,14 @@ bool rfir::module::device::RFIRDevice::getConfig(std::string& context){
     neb::CJsonObject json;
     json.ReplaceAdd("raw", rawStr);
     context = json.ToString();
+    DEBUGER.printf("rfir::module::device::RFIRDevice::getConfig: %s\r\n", context.c_str());
     return true;
 }; 
 
 
 void rfir::module::device::RFIRDevice::start(void * p) {
-    Device::start(p);    
     init();
-
+    loadConfig();
     sniffer->start();
     sniffer->startSniff();    
 };
