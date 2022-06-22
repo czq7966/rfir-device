@@ -147,6 +147,7 @@ bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd:
 
     saveConfig();
     sendRaw();
+    delay(500);
     return true;
 }
 
