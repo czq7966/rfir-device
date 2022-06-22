@@ -37,6 +37,7 @@ bool rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_get(neb::CJsonObject* pld, 
 
 bool rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     ac.ac->setLight(true);
-    auto r = Gree::onSvc_set(pld, cmd);
+    auto r = Gree::onSvc_set(pld, cmd);    
+    delay(1000);
     return r;
 }
