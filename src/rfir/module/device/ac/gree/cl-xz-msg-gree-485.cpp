@@ -33,11 +33,11 @@ bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get_power(neb::CJsonObj
     //Power
     bool result = 0;
     std::string code;
-    neb::CJsonObject* pld;
+    neb::CJsonObject pld;
     code = "0x" + m_addr + " 01 00 02 00 01";
     code = rfir::util::Crc::Get_CRC16_Str(code);
-    pld->ReplaceAdd("code", code);
-    if (RS485::onSvc_get(pld, cmd) && pld->Get("code", code)) {
+    pld.ReplaceAdd("code", code);
+    if (RS485::onSvc_get(&pld, cmd) && pld.Get("code", code)) {
         uint8_t bytes[code.length()];
         rfir::util::Util::StringToBytes("0x" + code, bytes);
         if (bytes[1] == 0x01 && bytes[2] == 1) {
@@ -53,16 +53,16 @@ bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get_mode(neb::CJsonObje
     //Mode
     bool result = 0;
     std::string code;
-    neb::CJsonObject* pld;
+    neb::CJsonObject pld;
     code = "0x" + m_addr + " 03 13 8B 00 01";
     code = rfir::util::Crc::Get_CRC16_Str(code);
-    pld->ReplaceAdd("code", code);
-    if (RS485::onSvc_get(pld, cmd) && pld->Get("code", code)) {
+    pld.ReplaceAdd("code", code);
+    if (RS485::onSvc_get(&pld, cmd) && pld.Get("code", code)) {
         uint8_t bytes[code.length()];
         rfir::util::Util::StringToBytes("0x" + code, bytes);
         if (bytes[1] == 0x03 && bytes[2] == 0x0001 * 2) {
             int mode = bytes[1 + 3];
-            pld->ReplaceAdd("mode", mode == 1 ? "cool" : mode == 2 ? "head": "fan");
+            p_pld->ReplaceAdd("mode", mode == 1 ? "cool" : mode == 2 ? "head": "fan");
             result = 1;
         }        
     }
@@ -73,11 +73,11 @@ bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get_temp(neb::CJsonObje
     //Mode
     bool result = 0;
     std::string code;
-    neb::CJsonObject* pld;
+    neb::CJsonObject pld;
     code = "0x" + m_addr + " 03 00 0A 00 01";
     code = rfir::util::Crc::Get_CRC16_Str(code);
-    pld->ReplaceAdd("code", code);
-    if (RS485::onSvc_get(pld, cmd) && pld->Get("code", code)) {
+    pld.ReplaceAdd("code", code);
+    if (RS485::onSvc_get(&pld, cmd) && pld.Get("code", code)) {
         uint8_t bytes[code.length()];
         rfir::util::Util::StringToBytes("0x" + code, bytes);        
         if (bytes[1] == 0x03 && bytes[2] == 0x0001 * 2) {

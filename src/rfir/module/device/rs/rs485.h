@@ -24,8 +24,6 @@ namespace rfir {
                     void readMode();
                     void writeMode();                
                 public:
-                    virtual void start(void *) override;  
-                public:
                     virtual bool sendCode(uint8_t* tx_buf, uint8_t len);
                     virtual bool recvCode(uint8_t* rx_buf, uint8_t& len, unsigned long timeout_ms = 200);
                     virtual bool sendCodeAndRecv(uint8_t* tx_buf, uint8_t tx_len, uint8_t* rx_buf, uint8_t& rx_len, unsigned long timeout_ms = 200);
