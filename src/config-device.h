@@ -7,7 +7,7 @@
 // #define DEVICE_CL_DJROOM_AC_MCQUAY
 
 // 长乐DJ会议室杜亚485窗帘
-// #define DEVICE_CL_DJROOM_CURTAIN_DOOYA_485
+#define DEVICE_CL_DJROOM_CURTAIN_DOOYA_485
 
 //长乐VR体验馆党建一楼柯耐弗空调风盘
 // #define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
@@ -31,7 +31,7 @@
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
 
 // 福州飘渺庄2楼食堂格力空调
-#define DEVICE_FZ_PMZ_F2_AC_GREE
+// #define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门美的空调
 // #define DEVICE_FZ_DM_AC_MEDIA

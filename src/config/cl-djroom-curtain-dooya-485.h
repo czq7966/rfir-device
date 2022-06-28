@@ -43,8 +43,8 @@ extern JLed                         GJLed;
 //WIFI
 #define WIFI_SSID_DEV               {"MERCURY_95E8"}
 #define WIFI_PASSWORD_DEV           {"12345678"}
-#define WIFI_SSID                   {"MERCURY_95E8"}
-#define WIFI_PASSWORD               {"12345678"}
+#define WIFI_SSID                   {"djoffice-internal",   "HUAWEI-House_2.4G"}
+#define WIFI_PASSWORD               {"like91.nd",           "like91.nd"}
 // #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
 #define WIFI_RESET_TIMEOUT          1000 * 60  //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
