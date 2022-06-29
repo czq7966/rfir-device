@@ -23,13 +23,13 @@ extern JLed                         GJLed;
 #define RESET_PIN                   12
 
 //Serial
-#define SERIAL_BAUD                 19200
-#define SERIAL_CONFIG               SERIAL_8O1
+#define SERIAL_BAUD                 2400
+#define SERIAL_CONFIG               SERIAL_8N1
 
 //COSerial
 #define COSerial Serial
-#define CO_SERIAL_BAUD              19200
-#define CO_SERIAL_CONFIG            SERIAL_8O1
+#define CO_SERIAL_BAUD              2400
+#define CO_SERIAL_CONFIG            SERIAL_8N1
 
 //OTA
 // #define DISABLE_OTA                 TRUE

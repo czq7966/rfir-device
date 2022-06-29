@@ -13,6 +13,8 @@ namespace rfir {
                 public:
                     std::string m_addr = "01";
                 public:
+                    virtual bool checkSumRecvCode(uint8_t* rx_buf, uint8_t len) override; 
+                public:
                     virtual void init() override;
                     virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
                     virtual bool onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 

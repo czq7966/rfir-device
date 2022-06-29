@@ -7,27 +7,62 @@ void rfir::module::device::ac::CL_XZ_MSG_GREE_485::init() {
     this->name = "CL_XZ_MSG_GREE_485";
 }
 
+bool checkSumRecvCode(uint8_t* rx_buf, uint8_t len) {
+    return true;
+}; 
+
+// bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+//     bool result = 0;
+//     std::string code;
+//     if (!pld->Get("code", code) && code.length() != 0) {
+//         return RS485::onSvc_get(pld, cmd);
+//     }
+
+//     result = onSvc_get_power(pld, cmd) && onSvc_get_mode(pld, cmd) && onSvc_get_temp(pld, cmd); 
+
+//     return result;
+// }
+
 bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     bool result = 0;
     std::string code;
-    if (!pld->Get("code", code) && code.length() != 0) {
-        return RS485::onSvc_get(pld, cmd);
+    if (!pld->Get("code", code) || code.length() == 0) {
+        code = "0xA0 01 00 00 00 00 00 04";        
     }
 
-    result = onSvc_get_power(pld, cmd) && onSvc_get_mode(pld, cmd) && onSvc_get_temp(pld, cmd); 
-
-    return result;
+    return RS485::onSvc_get(pld, cmd);
 }
+
+
+// bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+//     bool result = false;
+//     result = onSvc_set_power(pld, cmd) || result;
+//     result = onSvc_set_mode(pld, cmd) || result;
+//     result = onSvc_set_temp(pld, cmd) || result;
+
+//     return result;
+
+// }
+
 
 bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
-    bool result = false;
-    result = onSvc_set_power(pld, cmd) || result;
-    result = onSvc_set_mode(pld, cmd) || result;
-    result = onSvc_set_temp(pld, cmd) || result;
+    //Power
+    bool result = 0;    
+    std::string codeOpen = "0xA1 01 00 10 00 14 00 99";
+    std::string codeClose = "0xA1 01 00 00 00 14 00 19";
+    std::string code;
+    std::string powerStr;
+    
+    if (pld->Get("power", powerStr)) {
+        code =  powerStr == "on" ?  codeOpen: 
+                powerStr == "off" ? codeClose : "";
+        pld->ReplaceAdd("code", code);
+        result = RS::RS485::onSvc_set(pld, cmd);         
+    }
 
     return result;
-
 }
+
 
 bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get_power(neb::CJsonObject* p_pld, cmds::cmd::CmdBase* cmd) {
     //Power

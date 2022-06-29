@@ -108,7 +108,7 @@ bool rfir::module::device::RS::RS485::sendCode(uint8_t* tx_buf, uint8_t len) {
 }
 
 bool rfir::module::device::RS::RS485::recvCode(uint8_t* rx_buf, uint8_t& len, unsigned long timeout_ms) {
-    bool result = false;
+    // bool result = false;
     readMode();
 
     static unsigned long Start_Recv_Code_time = 0;
@@ -127,15 +127,17 @@ bool rfir::module::device::RS::RS485::recvCode(uint8_t* rx_buf, uint8_t& len, un
         }
     }
     len = idx;
-    
-    if (len > 2) {
-        uint8_t crcLow;
-        uint8_t crcHigh;
-        rfir::util::Crc::Get_CRC16(rx_buf, len - 2, crcLow, crcHigh);
-        result = (rx_buf[len - 1] == crcHigh && rx_buf[len - 2] == crcLow);
-    }    
 
-    return result;
+    return checkSumRecvCode(rx_buf, len);
+    
+    // if (len > 2) {
+    //     uint8_t crcLow;
+    //     uint8_t crcHigh;
+    //     rfir::util::Crc::Get_CRC16(rx_buf, len - 2, crcLow, crcHigh);
+    //     result = (rx_buf[len - 1] == crcHigh && rx_buf[len - 2] == crcLow);
+    // }    
+
+    // return result;
 
 }
 
@@ -147,3 +149,16 @@ bool rfir::module::device::RS::RS485::sendCodeAndRecv(uint8_t* tx_buf, uint8_t t
 
     return 0;
 }
+
+
+ bool rfir::module::device::RS::RS485::checkSumRecvCode(uint8_t* rx_buf, uint8_t len) {
+    bool result = false;
+    if (len > 2) {
+        uint8_t crcLow;
+        uint8_t crcHigh;
+        rfir::util::Crc::Get_CRC16(rx_buf, len - 2, crcLow, crcHigh);
+        result = (rx_buf[len - 1] == crcHigh && rx_buf[len - 2] == crcLow);
+    }  
+
+    return result;
+ };

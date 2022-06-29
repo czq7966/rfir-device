@@ -27,6 +27,7 @@ namespace rfir {
                     virtual bool sendCode(uint8_t* tx_buf, uint8_t len);
                     virtual bool recvCode(uint8_t* rx_buf, uint8_t& len, unsigned long timeout_ms = 200);
                     virtual bool sendCodeAndRecv(uint8_t* tx_buf, uint8_t tx_len, uint8_t* rx_buf, uint8_t& rx_len, unsigned long timeout_ms = 200);
+                    virtual bool checkSumRecvCode(uint8_t* rx_buf, uint8_t len);
 
                 public:
                     virtual void init() override;            
