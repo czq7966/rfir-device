@@ -19,6 +19,14 @@ void rfir::module::device::RS::RS485::init() {
     readMode();    
 }
 
+
+void rfir::module::device::RS::RS485::loop() {
+    if (this->hwSerial->available()) {
+        std::string reason = "Prop Change";
+        this->events.onEvtPropsChange.emit((void*)reason.c_str());
+    }
+};
+
 void rfir::module::device::RS::RS485::readMode(){
     digitalWrite(dePin, 0);
     digitalWrite(rePin, 0);
@@ -39,7 +47,7 @@ bool rfir::module::device::RS::RS485::onSvc_set(neb::CJsonObject* pld, cmds::cmd
     
     if (nbytes > 0) {
         uint8_t len = 0;
-        return sendCodeAndRecv(this->txBuf, nbytes, this->rxBuf, len);
+        return sendCodeAndRecv(this->txBuf, nbytes, this->rxBuf, len, this->recvTimeoutMS);
     }
     
     return 0;
@@ -76,7 +84,7 @@ bool rfir::module::device::RS::RS485::onSvc_get(neb::CJsonObject* pld, cmds::cmd
     auto nbytes = rfir::util::Util::StringToBytes(code, this->txBuf) / 8;
     if (nbytes > 0) {
         uint8_t len = 0;
-        if(sendCodeAndRecv(this->txBuf, nbytes, this->rxBuf, len)) {
+        if(sendCodeAndRecv(this->txBuf, nbytes, this->rxBuf, len, this->recvTimeoutMS)) {
             code = rfir::util::Util::BytesToHexString(this->rxBuf, len);
             pld->ReplaceAdd("code", code);
             return 1;
@@ -108,37 +116,30 @@ bool rfir::module::device::RS::RS485::sendCode(uint8_t* tx_buf, uint8_t len) {
 }
 
 bool rfir::module::device::RS::RS485::recvCode(uint8_t* rx_buf, uint8_t& len, unsigned long timeout_ms) {
-    // bool result = false;
+    bool result = false;
     readMode();
-
-    static unsigned long Start_Recv_Code_time = 0;
 
     int c = -1;
     uint8_t idx = 0;
-    Start_Recv_Code_time = millis();
-    while ((millis() - Start_Recv_Code_time <= timeout_ms)) {
+    unsigned long startTime = millis();
+    unsigned long entTime = startTime;
+
+    while (this->hwSerial->available() || (entTime - startTime <= timeout_ms)) {
         if (this->hwSerial->available()) {
             c = this->hwSerial->read();
             if (c >=0) {
                 rx_buf[idx] = (char)c;
                 idx++;
-                Start_Recv_Code_time = millis();
+                startTime = millis();
             }
         }
+        entTime = millis();
     }
+
     len = idx;
+    result = (len > 0) && checkSumCode(rx_buf, len);
 
-    return checkSumRecvCode(rx_buf, len);
-    
-    // if (len > 2) {
-    //     uint8_t crcLow;
-    //     uint8_t crcHigh;
-    //     rfir::util::Crc::Get_CRC16(rx_buf, len - 2, crcLow, crcHigh);
-    //     result = (rx_buf[len - 1] == crcHigh && rx_buf[len - 2] == crcLow);
-    // }    
-
-    // return result;
-
+    return result;
 }
 
 
@@ -151,14 +152,6 @@ bool rfir::module::device::RS::RS485::sendCodeAndRecv(uint8_t* tx_buf, uint8_t t
 }
 
 
- bool rfir::module::device::RS::RS485::checkSumRecvCode(uint8_t* rx_buf, uint8_t len) {
-    bool result = false;
-    if (len > 2) {
-        uint8_t crcLow;
-        uint8_t crcHigh;
-        rfir::util::Crc::Get_CRC16(rx_buf, len - 2, crcLow, crcHigh);
-        result = (rx_buf[len - 1] == crcHigh && rx_buf[len - 2] == crcLow);
-    }  
-
-    return result;
+ bool rfir::module::device::RS::RS485::checkSumCode(uint8_t* buf, uint8_t len) {
+    return true;
  };

@@ -9,7 +9,7 @@ extern JLed                         GJLed;
 
 //Device
 #define DEV_VENDOR                "ND"
-#define DEV_MODEL                 "CZXZMSGACGREE485"
+#define DEV_MODEL                 "CLXZMSGACGREE485"
 
 // #define DEBUG_RFIR
 

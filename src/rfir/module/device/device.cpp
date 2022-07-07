@@ -194,6 +194,12 @@ rfir::module::device::Device* GDevice = new rfir::module::device::speaker::CL_CX
 rfir::module::device::Device* GDevice = new rfir::module::device::ac::CL_XZ_MSG_GREE_485();
 #endif
 
+//长乐小镇美术馆格力空调485透传
+#ifdef DEVICE_CL_XZ_MSG_AC_GREE_PENET
+#include "rfir/module/device/ac/gree/cl-xz-msg-gree-penet.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::ac::CL_XZ_MSG_GREE_PENET();
+#endif
+
 #ifdef DEVICE_TEST_SNIFFER_ESP32_WROOM
 #include "rfir/module/device/test/sniffer/esp32_wroom.h"
 rfir::module::device::Device* GDevice = new rfir::module::device::test::Sniffer_esp32_wroom();

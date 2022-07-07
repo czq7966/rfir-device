@@ -7,7 +7,7 @@
 // #define DEVICE_CL_DJROOM_AC_MCQUAY
 
 // 长乐DJ会议室杜亚485窗帘
-#define DEVICE_CL_DJROOM_CURTAIN_DOOYA_485
+// #define DEVICE_CL_DJROOM_CURTAIN_DOOYA_485
 
 //长乐VR体验馆党建一楼柯耐弗空调风盘
 // #define DEVICE_CL_VRHALL_FIRST_FLOOR_AC_OKONOFF
@@ -26,6 +26,9 @@
 
 //长乐小镇美术馆格力空调485
 // #define DEVICE_CL_XZ_MSG_AC_GREE_485
+
+//长乐小镇美术馆格力空调485透传模块
+#define DEVICE_CL_XZ_MSG_AC_GREE_PENET
 
 // ESP32_WROOM 采集器
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM

@@ -1,5 +1,5 @@
-#ifndef __CONFIG_CONFIG_Z3_COORDINATOR_ESP8266_CC2652_H__
-#define __CONFIG_CONFIG_Z3_COORDINATOR_ESP8266_CC2652_H__
+#ifndef __CONFIG_CONFIG_CL_XZ_MSG_AC_GREE_485_H__
+#define __CONFIG_CONFIG_CL_XZ_MSG_AC_GREE_485_H__
 
 #include "rfir/util/debuger.h"
 #include "jled.h"
@@ -9,12 +9,11 @@ extern JLed                         GJLed;
 
 //Device
 #define DEV_VENDOR                "ND"
-#define DEV_MODEL                   "Z3CO2652ESP8266"
+#define DEV_MODEL                 "CLXZMSGACGREEPENET"
 
 // #define DEBUG_RFIR
 
 #define DEBUGER RFIRDebuger
-#define COSerial Serial
 
 //LED
 #define LED_PIN                     BUILTIN_LED
@@ -24,19 +23,20 @@ extern JLed                         GJLed;
 #define RESET_PIN                   12
 
 //Serial
-#define SERIAL_BAUD                 115200
+#define SERIAL_BAUD                 2400
 #define SERIAL_CONFIG               SERIAL_8N1
 
 //COSerial
-#define CO_SERIAL_BAUD              115200
+#define COSerial Serial
+#define CO_SERIAL_BAUD              2400
 #define CO_SERIAL_CONFIG            SERIAL_8N1
 
 //OTA
 // #define DISABLE_OTA                 TRUE
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          3
-#define OTA_VERSION_STRING          "3.0"
-#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/z3_coordinator_esp8266_cc2652/cfg.txt"
+#define OTA_VERSION_NUMBER          1
+#define OTA_VERSION_STRING          "1.0"
+#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/cl-xz-msg-ac-gree-penet/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
 

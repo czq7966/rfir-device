@@ -67,6 +67,11 @@
 #include "config/cl-xz-msg-ac-gree-485.h"
 #endif
 
+//长乐小镇美术馆格力空调485透传模块
+#ifdef DEVICE_CL_XZ_MSG_AC_GREE_PENET
+#include "config/cl-xz-msg-ac-gree-penet.h"
+#endif
+
 //ESP32_WROOM射频采集器
 #ifdef DEVICE_TEST_SNIFFER_ESP32_WROOM
 #include "config/test-sniffer-esp32-wroom.h"

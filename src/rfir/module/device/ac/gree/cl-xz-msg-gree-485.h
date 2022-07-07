@@ -2,18 +2,17 @@
 #define __RFIR_MODULE_DEVICE_AC_CL_XZ_MSG_GREE_485_H__
 
 
-#include "../../rs/rs485.h"
+#include "../../rs/rs485-modbus.h"
 
 
 namespace rfir {
     namespace module {
         namespace device {
             namespace ac {
-                class CL_XZ_MSG_GREE_485: public RS::RS485 {
+                class CL_XZ_MSG_GREE_485: public RS::RS485_MODBUS {
                 public:
-                    std::string m_addr = "01";
-                public:
-                    virtual bool checkSumRecvCode(uint8_t* rx_buf, uint8_t len) override; 
+                    uint8_t m_addr = 1;
+                    std::string getAddrHex();
                 public:
                     virtual void init() override;
                     virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
