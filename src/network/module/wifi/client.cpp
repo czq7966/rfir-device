@@ -339,7 +339,7 @@ void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
         if (m_connect_ssid_index >= params.ssid.size()) {
             m_connect_ssid_index = 0;
         }
-        GLed.stop();
+        // GLed.stop();
         delayConnectToWifi();    
     }
     return 0;
