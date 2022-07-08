@@ -1,5 +1,5 @@
-#ifndef __RFIR_MODULE_DEVICE_AC_FZ_YT_MIDEA_H__
-#define __RFIR_MODULE_DEVICE_AC_FZ_YT_MIDEA_H__
+#ifndef __RFIR_MODULE_DEVICE_AC_FZ_DM_MIDEA_H__
+#define __RFIR_MODULE_DEVICE_AC_FZ_DM_MIDEA_H__
 
 #include "midea.h"
 

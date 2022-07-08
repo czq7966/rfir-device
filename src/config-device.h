@@ -28,7 +28,7 @@
 // #define DEVICE_CL_XZ_MSG_AC_GREE_485
 
 //长乐小镇美术馆格力空调485透传模块
-#define DEVICE_CL_XZ_MSG_AC_GREE_PENET
+// #define DEVICE_CL_XZ_MSG_AC_GREE_PENET
 
 // ESP32_WROOM 采集器
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
@@ -39,7 +39,7 @@
 // 福州东门美的空调
 // #define DEVICE_FZ_DM_AC_MEDIA
 // 福州亚太美的空调
-// #define DEVICE_FZ_YT_AC_MEDIA
+#define DEVICE_FZ_YT_AC_MEDIA
 
 // Z3 协调器 ESP8266 + CC2652 
 // #define DEVICE_Z3_COORDINATOR_ESP8266_CC2652

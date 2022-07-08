@@ -223,11 +223,11 @@ rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Gree
 rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_DM_Midea();
 #endif
 
-// //福州亚太美的空调
-// #ifdef DEVICE_FZ_DM_AC_MEDIA
-// #include "rfir/module/device/ac/midea/fz-yt-midea.h"
-// rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Midea();
-// #endif
+//福州亚太美的空调
+#ifdef DEVICE_FZ_YT_AC_MEDIA
+#include "rfir/module/device/ac/midea/fz-yt-midea.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Midea();
+#endif
 
 //Z3 协调器 ESP8266 + CC2652 
 #ifdef DEVICE_Z3_COORDINATOR_ESP8266_CC2652

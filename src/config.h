@@ -21,6 +21,11 @@
 #include "config/fz-dm-ac-media.h"
 #endif
 
+//福州亚太Media空调
+#ifdef DEVICE_FZ_YT_AC_MEDIA
+#include "config/fz-yt-ac-media.h"
+#endif
+
 // 福州飘渺庄2楼食堂格力空调
 #ifdef DEVICE_FZ_PMZ_F2_AC_GREE
 #include "config/fz-pmz-f2-ac-gree.h"
