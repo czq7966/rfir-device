@@ -49,12 +49,13 @@ namespace network {
                 int m_connect_ssid_index = 0;
                 uint32_t m_connect_timeout_handler = 0;
                 uint32_t m_check_timeout_handler = 0;
+                uint32_t m_delay_connect_handler = 0;
 
                 void  startV2();
                 void  loopV2();
 
                 void  connectToWifi();
-                void  delayConnectToWifi();
+                void  delayConnectToWifi(int timeoutms = 6000);
                 void* doConnectToWifi(void* arg, void* p);
             public:
 #ifdef ESP8266               

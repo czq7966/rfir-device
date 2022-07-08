@@ -70,13 +70,13 @@ void network::module::mqtt::AClient::disconnectToMqtt(bool force) {
 
 
 void* network::module::mqtt::AClient::onWifiConnect(void* arg, void* p) {
-    DEBUGER.println("Connected to Wi-Fi.");
+    DEBUGER.println("mqtt Connected to Wi-Fi.");
     delayConnectToMqtt();
     return 0;
 }
 
 void* network::module::mqtt::AClient::onWifiDisconnect(void* arg, void* p) {
-    DEBUGER.println("Disconnected from Wi-Fi.");
+    DEBUGER.println("mqtt Disconnected from Wi-Fi.");
     return 0;
 }
 

@@ -258,12 +258,15 @@ void  network::module::wifi::Client::startV2(){
 #endif    
     events.onWifiConnect.add(this, std::bind(&Client::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));
     events.onWifiDisconnect.add(this, std::bind(&Client::onWifiDisconnect, this, std::placeholders::_1, std::placeholders::_2));
-    delayConnectToWifi();
+    delayConnectToWifi(500);
 };
 void  network::module::wifi::Client::loopV2(){
 };
 
 void  network::module::wifi::Client::connectToWifi(){
+    GEventTimer.remove(m_delay_connect_handler);
+    m_delay_connect_handler = 0;
+
     if (WiFi.isConnected()) 
         return;
 
@@ -284,8 +287,9 @@ void  network::module::wifi::Client::connectToWifi(){
     }    
 };
 
-void  network::module::wifi::Client::delayConnectToWifi(){
-    GEventTimer.delay(500, std::bind(&Client::doConnectToWifi, this, std::placeholders::_1, std::placeholders::_2));
+void  network::module::wifi::Client::delayConnectToWifi(int timeoutms){
+    if (m_delay_connect_handler == 0)
+        m_delay_connect_handler = GEventTimer.delay(timeoutms, std::bind(&Client::doConnectToWifi, this, std::placeholders::_1, std::placeholders::_2));
 };
 
 void* network::module::wifi::Client::doConnectToWifi(void* arg, void* p) {
@@ -321,17 +325,23 @@ void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     GEventTimer.remove(m_connect_timeout_handler);    
     m_connect_timeout_handler = 0;
 
+    GEventTimer.remove(m_delay_connect_handler);
+    m_delay_connect_handler = 0;
+
     onWifiCheckTimeout(0, 0);
     GLed.stop();        
     return 0;
 };
 void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
-    m_connect_ssid_index++;
-    if (m_connect_ssid_index >= params.ssid.size()) {
-        m_connect_ssid_index = 0;
+    DEBUGER.printf("Wifi disconnect from : %s \r\n", WiFi.SSID().c_str());
+    if (m_delay_connect_handler == 0) {
+        m_connect_ssid_index++;
+        if (m_connect_ssid_index >= params.ssid.size()) {
+            m_connect_ssid_index = 0;
+        }
+        GLed.stop();
+        delayConnectToWifi();    
     }
-    GLed.stop();
-    delayConnectToWifi();    
     return 0;
 };
 
