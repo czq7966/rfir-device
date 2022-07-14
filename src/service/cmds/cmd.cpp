@@ -51,7 +51,7 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 };
 
 
-bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+int  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
     ::cmds::cmd::CmdMqtt cmd;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
@@ -77,7 +77,7 @@ bool  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string re
     return result;
 };
 
-bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+int  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
     auto result = GDevice->onSvc_set(&reqCmd->command.pld, reqCmd);
 
     ::cmds::cmd::CmdMqtt cmd;
@@ -102,7 +102,7 @@ bool  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string re
     return result;
 };
 
-bool  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
+int  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
     auto result = GDevice->onSvc_reboot(&reqCmd->command.pld, reqCmd);
 
     ::cmds::cmd::CmdMqtt cmd;
@@ -124,11 +124,11 @@ bool  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
     return result;
 };
 
-bool  service::cmds::Cmd::OnSvc_penet(::cmds::cmd::CmdMqtt* cmd){
+int  service::cmds::Cmd::OnSvc_penet(::cmds::cmd::CmdMqtt* cmd){
     return  GDevice->onSvc_penet(&cmd->command.pld, cmd);
 };
 
-bool  service::cmds::Cmd::OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd){
+int  service::cmds::Cmd::OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd){
     return  GDevice->doEvtTimerReport(1000);
 };
 

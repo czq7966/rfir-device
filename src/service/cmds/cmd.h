@@ -57,11 +57,11 @@ namespace service {
             
             static void* OnCommand(void* arg, void * p);
         public:
-            static bool  OnSvc_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
-            static bool  OnSvc_set(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Set");
-            static bool  OnSvc_reboot(::cmds::cmd::CmdMqtt* cmd);
-            static bool  OnSvc_penet(::cmds::cmd::CmdMqtt* cmd);
-            static bool  OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd);
+            static int  OnSvc_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
+            static int  OnSvc_set(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Set");
+            static int  OnSvc_reboot(::cmds::cmd::CmdMqtt* cmd);
+            static int  OnSvc_penet(::cmds::cmd::CmdMqtt* cmd);
+            static int  OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd);
             
         public:
             static void*  OnEvt_props_change(void* arg, void* p);

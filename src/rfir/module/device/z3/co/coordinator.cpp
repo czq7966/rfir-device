@@ -84,15 +84,15 @@ bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
     return 0;
 };
 
-bool rfir::module::device::z3::co::Coordinator::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::z3::co::Coordinator::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::z3::co::Coordinator::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::z3::co::Coordinator::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::z3::co::Coordinator::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
+int rfir::module::device::z3::co::Coordinator::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
     DEBUGER.printf("rfir::module::device::z3::co::Coordinator::onSvc_penet  \r\n");
     std::string code;
     if (pld && pld->Get("raw", code) ) {

@@ -25,7 +25,7 @@ bool rfir::module::device::RS::RS485_MODBUS::checkSumCode(uint8_t* rx_buf, uint8
 }; 
 
 
-bool rfir::module::device::RS::RS485_MODBUS::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RS::RS485_MODBUS::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     bool result = true;
     std::string key;
     neb::CJsonObject jError;
@@ -67,7 +67,7 @@ bool rfir::module::device::RS::RS485_MODBUS::onSvc_get(neb::CJsonObject* pld, cm
     return result;    
 }
 
-bool rfir::module::device::RS::RS485_MODBUS::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RS::RS485_MODBUS::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     bool result = true;
     std::string key;
     neb::CJsonObject jError;

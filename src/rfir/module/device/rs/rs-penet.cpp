@@ -81,15 +81,15 @@ bool rfir::module::device::RS::RSPenet::doEvt_penet(){
     return 0;
 };
 
-bool rfir::module::device::RS::RSPenet::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::RS::RSPenet::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::RS::RSPenet::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::RS::RSPenet::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::RS::RSPenet::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
+int rfir::module::device::RS::RSPenet::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
     DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet  \r\n");
     std::string code;
     if (pld && pld->Get("raw", code) ) {

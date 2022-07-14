@@ -8,7 +8,7 @@ void rfir::module::device::curtain::CL_DJROOM_Dooya_485::init() {
 }
 
 
-bool rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     std::string innerCode = "0x55 FE FE 01 00 10 44 2E";
     std::string code;
     if (!pld->Get("code", code) || code.length() == 0) {
@@ -34,7 +34,7 @@ bool rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_get(neb::CJsonObj
     return 0;
 }
 
-bool rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     bool result = false;
     std::string name, code;
     neb::CJsonObject entry;

@@ -20,8 +20,8 @@ namespace rfir {
                     virtual void init() override;
                     virtual void loop() override;
                 public:
-                    virtual bool onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;                     
-                    virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;     
+                    virtual int onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;                     
+                    virtual int onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;     
                 public:
                     virtual bool splitRegAddr(uint32_t regAddr, int8_t& func, uint16_t& addr, int writeOffset = -1);
                     virtual bool getRegOne(uint8_t modAddr, uint32_t regAddr, uint32_t& value, uint32_t& error);

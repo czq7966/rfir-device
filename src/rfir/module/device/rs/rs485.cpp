@@ -38,7 +38,7 @@ void rfir::module::device::RS::RS485::writeMode(){
 };
 
 
-bool rfir::module::device::RS::RS485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RS::RS485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     onSvc_setBandRate(pld);
 
     std::string code;
@@ -77,7 +77,7 @@ bool rfir::module::device::RS::RS485::onSvc_setBandRate(neb::CJsonObject* pld) {
     return 0;
 }; 
 
-bool rfir::module::device::RS::RS485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RS::RS485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     std::string code;
     pld->Get("code", code);
 

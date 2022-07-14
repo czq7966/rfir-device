@@ -15,8 +15,8 @@ namespace rfir {
                     std::string getAddrHex();
                 public:
                     virtual void init() override;
-                    virtual bool onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
-                    virtual bool onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
                 public:
                     virtual bool onSvc_get_power(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) ; 
                     virtual bool onSvc_get_mode(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) ; 

@@ -55,7 +55,7 @@ bool rfir::module::device::ac::Midea::getEncodeRaw(std::list<uint16_t>& result) 
     return encoder->encode(data, result);
 }
 
-bool rfir::module::device::ac::Midea::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::Midea::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
      if (!pld) return 0;
     
 
@@ -105,7 +105,7 @@ bool rfir::module::device::ac::Midea::onSvc_set(neb::CJsonObject* pld, cmds::cmd
 }
 
 
-bool rfir::module::device::ac::Midea::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::Midea::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     //Power
     pld->Add("power", ac.getPower() ? "on" : "off");
 
@@ -134,7 +134,7 @@ bool rfir::module::device::ac::Midea::onSvc_get(neb::CJsonObject* pld, cmds::cmd
     return true;
 }
 
-bool rfir::module::device::ac::Midea::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
+int rfir::module::device::ac::Midea::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
     DEBUGER.println("rfir::module::device::ac::Midea::onSvc_decoded");    
     
     auto result = setRaw(data[0].bytes);

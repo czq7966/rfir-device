@@ -12,7 +12,7 @@ namespace rfir {
                 public:
                     virtual void init() override;         
                     virtual bool checkSumCode(uint8_t* buf, uint8_t len) override;        
-                    virtual bool onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;                    
+                    virtual int onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;                    
                 };
             }
         }

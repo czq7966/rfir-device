@@ -116,15 +116,15 @@ void* rfir::module::device::Device::doSvc_reboot(void* arg, void* p){
 };
 
 
-bool rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
     int delay = 0;
     pld->Get("delay", delay);
@@ -134,7 +134,7 @@ bool rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd
     return 1;
 }; 
 
-bool rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 };
 

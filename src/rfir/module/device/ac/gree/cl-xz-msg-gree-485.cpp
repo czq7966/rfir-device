@@ -11,7 +11,7 @@ std::string rfir::module::device::ac::CL_XZ_MSG_GREE_485::getAddrHex() {
     return rfir::util::Util::BytesToHexString(&m_addr, 1);
 }
 
-bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     bool result = 0;
     std::string code;
     if (!pld->Get("code", code) && code.length() != 0) {
@@ -24,7 +24,7 @@ bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_get(neb::CJsonObject* p
 }
 
 
-bool rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::CL_XZ_MSG_GREE_485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     bool result = false;
     result = onSvc_set_power(pld, cmd) || result;
     result = onSvc_set_mode(pld, cmd) || result;

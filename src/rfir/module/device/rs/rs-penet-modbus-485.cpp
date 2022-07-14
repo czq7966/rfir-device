@@ -20,7 +20,7 @@ bool rfir::module::device::RS::RSPenetModbus485::checkSumCode(uint8_t* rx_buf, u
     return result;
 }; 
 
-bool rfir::module::device::RS::RSPenetModbus485::onSvc_penet(neb::CJsonObject* p_pld, cmds::cmd::CmdBase* reqCmd) {
+int rfir::module::device::RS::RSPenetModbus485::onSvc_penet(neb::CJsonObject* p_pld, cmds::cmd::CmdBase* reqCmd) {
     auto result = RS::RSPenet::onSvc_penet(p_pld, reqCmd);
     ::cmds::cmd::CmdMqtt cmd;
     neb::CJsonObject& hd = cmd.command.hd;

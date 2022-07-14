@@ -88,7 +88,7 @@ bool rfir::module::device::ac::Gree::getEncodeRaw(std::list<uint16_t>& result) {
     return encoder->encode(data, result);
 }
 
-bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     if (!pld) return 0;
     
 
@@ -151,7 +151,7 @@ bool rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd:
 }
 
 
-bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     //Power
     pld->Add("power", ac.ac->getPower() ? "on" : "off");
 
@@ -186,7 +186,7 @@ bool rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd:
     return true;
 }
 
-bool rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
+int rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
     static unsigned long last_decoded_time = 0;
     bool result = false;
     if (data.size() == 3 && (millis() - last_decoded_time > 200)) {

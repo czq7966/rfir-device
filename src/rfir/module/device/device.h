@@ -71,10 +71,10 @@ namespace rfir {
             public:
                 virtual void* doSvc_reboot(void* arg, void* p);
             public:
-                virtual bool onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
-                virtual bool onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
-                virtual bool onSvc_reboot(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
-                virtual bool onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
+                virtual int onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual int onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual int onSvc_reboot(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
+                virtual int onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
             };
 
         }
