@@ -264,8 +264,7 @@ void  network::module::wifi::Client::loopV2(){
 };
 
 void  network::module::wifi::Client::connectToWifi(){
-    GEventTimer.remove(m_delay_connect_handler);
-    m_delay_connect_handler = 0;
+    removeDelayConnectHandler();
 
     if (WiFi.isConnected()) 
         return;
@@ -285,15 +284,48 @@ void  network::module::wifi::Client::connectToWifi(){
         DEBUGER.printf("Wifi connecting... %s %s \r\n", ssid_ssid.c_str(), ssid_pass.c_str());
         WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());        
     }    
+
+    delayConnectToNextWifi();
 };
+
+void  network::module::wifi::Client::connectToNextWifi() {
+    m_connect_ssid_index++;
+    if (m_connect_ssid_index < 0 || m_connect_ssid_index >= params.ssid.size()) {
+        m_connect_ssid_index = 0;
+    }
+    connectToWifi();
+}
+
+void  network::module::wifi::Client::removeDelayConnectHandler() {
+    GEventTimer.remove(m_delay_connect_handler);
+    m_delay_connect_handler = 0;    
+};
+
+void  network::module::wifi::Client::removeConnectTimeoutHandler() {
+    GEventTimer.remove(m_connect_timeout_handler);    
+    m_connect_timeout_handler = 0;  
+};
+
+
+
 
 void  network::module::wifi::Client::delayConnectToWifi(int timeoutms){
     if (m_delay_connect_handler == 0)
         m_delay_connect_handler = GEventTimer.delay(timeoutms, std::bind(&Client::doConnectToWifi, this, std::placeholders::_1, std::placeholders::_2));
 };
 
+void  network::module::wifi::Client::delayConnectToNextWifi(int timeoutms){
+    if (m_delay_connect_handler == 0)
+        m_delay_connect_handler = GEventTimer.delay(timeoutms, std::bind(&Client::doConnectToNextWifi, this, std::placeholders::_1, std::placeholders::_2));
+};
+
 void* network::module::wifi::Client::doConnectToWifi(void* arg, void* p) {
     connectToWifi();
+    return 0;
+}
+
+void* network::module::wifi::Client::doConnectToNextWifi(void* arg, void* p) {
+    connectToNextWifi();
     return 0;
 }
 
@@ -322,11 +354,8 @@ void network::module::wifi::Client::WiFiEvent(WiFiEvent_t event) {
 
 void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     DEBUGER.printf("Wifi connected to : %s \r\n", WiFi.SSID().c_str());
-    GEventTimer.remove(m_connect_timeout_handler);    
-    m_connect_timeout_handler = 0;
-
-    GEventTimer.remove(m_delay_connect_handler);
-    m_delay_connect_handler = 0;
+    removeConnectTimeoutHandler();
+    removeDelayConnectHandler();
 
     onWifiCheckTimeout(0, 0);
     GLed.stop();        
@@ -335,10 +364,10 @@ void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
 void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
     DEBUGER.printf("Wifi disconnect from : %s \r\n", WiFi.SSID().c_str());
     if (m_delay_connect_handler == 0) {
-        m_connect_ssid_index++;
-        if (m_connect_ssid_index >= params.ssid.size()) {
-            m_connect_ssid_index = 0;
-        }
+        // m_connect_ssid_index++;
+        // if (m_connect_ssid_index >= params.ssid.size()) {
+        //     m_connect_ssid_index = 0;
+        // }
         // GLed.stop();
         delayConnectToWifi();    
     }

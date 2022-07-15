@@ -2,6 +2,15 @@
 #include "rfir/util/crc.h"
 
 
+rfir::module::device::RS::RS485_MODBUS::Cmd_Read_Coils::Cmd_Read_Coils() {
+    func = 0x01;
+}
+
+void rfir::module::device::RS::RS485_MODBUS::Cmd_Read_Coils::fixUp() {
+    
+}
+
+
 void rfir::module::device::RS::RS485_MODBUS::init() {
     this->recvTimeoutMS = 200;
     this->name = "RS485_MODBUS";

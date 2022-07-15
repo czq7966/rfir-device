@@ -55,8 +55,13 @@ namespace network {
                 void  loopV2();
 
                 void  connectToWifi();
-                void  delayConnectToWifi(int timeoutms = 6000);
+                void  connectToNextWifi();
+                void  removeDelayConnectHandler();
+                void  removeConnectTimeoutHandler();
+                void  delayConnectToWifi(int timeoutms = 15000);
+                void  delayConnectToNextWifi(int timeoutms = 15000);
                 void* doConnectToWifi(void* arg, void* p);
+                void* doConnectToNextWifi(void* arg, void* p);
             public:
 #ifdef ESP8266               
                 WiFiEventHandler wifiConnectHandler;

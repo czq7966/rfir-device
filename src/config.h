@@ -92,6 +92,11 @@
 #include "config/z3_coordinator_esp8266_cc2652.h"
 #endif
 
+// DEVICE_RS485_MODBUS
+#ifdef DEVICE_RS485_MODBUS
+#include "config/rs485-modbus.h"
+#endif
+
 #ifndef DEBUGER
 #define DEBUGER Serial
 #endif

@@ -235,3 +235,8 @@ rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Mide
 rfir::module::device::Device* GDevice = new rfir::module::device::z3::co::ESP8266_CC2652();
 #endif
 
+//RS485-MODBUS
+#ifdef DEVICE_RS485_MODBUS
+#include "rfir/module/device/rs/rs485-modbus.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::RS::RS485_MODBUS();
+#endif
