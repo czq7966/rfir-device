@@ -23,6 +23,11 @@ void GlobalConfig::fixupTopic() {
     mqtt_dev_svc_set = expandTopic(MQTT_DEV_SVC_SET);
     mqtt_dev_svc_reboot = expandTopic(MQTT_DEV_SVC_REBOOT);    
 
+    //NETWORKING V3
+    mqtt_dev_sub = expandTopic(MQTT_DEV_SUB);
+    mqtt_dev_pub = expandTopic(MQTT_DEV_PUB);
+    mqtt_dev_status = expandTopic(MQTT_DEV_STATUS);     
+
 }
 
 void GlobalConfig::reset() {

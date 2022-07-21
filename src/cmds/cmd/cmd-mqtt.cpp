@@ -10,6 +10,9 @@ std::string cmds::cmd::CmdMqtt::ZeroTopic(std::string topic){
 };
 
 std::string cmds::cmd::CmdMqtt::expandTopic(){
+#ifdef NETWORKING_V3   
+    return Config.mqtt_dev_pub;
+#else
     return  (prefix == "" ? topicPrefix : prefix) +
             ZeroTopic(command.head.from.type) + "/" + 
             ZeroTopic(command.head.from.id) + "/" + 
@@ -17,6 +20,7 @@ std::string cmds::cmd::CmdMqtt::expandTopic(){
             ZeroTopic(command.head.to.id) + "/" + 
             ZeroTopic(command.head.entry.type) + "/" + 
             ZeroTopic(command.head.entry.id);
+#endif
 };
 
 bool cmds::cmd::CmdMqtt::send(const void* p) {

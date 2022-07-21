@@ -68,6 +68,11 @@ namespace rfir {
 
                 void* onDsp_status_change(void* arg, void* p);
                 void* onEdg_status_change(void* arg, void* p);
+            //V3
+            public:
+                void delayNetworkingV3(int delay_ms = 100);
+                void* doNetworkingV3(void* arg, void* p);
+
             };
 
         }

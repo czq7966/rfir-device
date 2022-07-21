@@ -110,4 +110,12 @@ extern JLed                         GJLed;
 #define NETWORKING_RESET_TIMEOUT    1000 * 60 * 2 //2分钟组网超时
 #define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 
+
+#define NETWORKING_V3
+#define MQTT_DEV_SUB                "+/+/+/+/dev/{dev}/+/+"
+#define MQTT_DEV_PUB                "0/0/dev/{dev}/0/0/0/0"
+#define MQTT_DEV_STATUS             "0/0/dev/{dev}/0/0/evt/status"
+
+
+
 #endif //

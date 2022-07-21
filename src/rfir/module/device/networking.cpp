@@ -139,11 +139,14 @@ void* rfir::module::device::Networking::doLoginDio(void* arg, void* p) {
 
 //握手
 bool rfir::module::device::Networking::handshake(){
+#ifdef NETWORKING_V3
+#else
     if (Config.edg_id == "") {
         //没有边缘服务，3秒后重新登入
         delayLoginDio();
         return false;
     } 
+#endif
 
     if (m_handshake_handler)
         return 1;
@@ -205,8 +208,13 @@ bool rfir::module::device::Networking::setWill(){
     GDevice->getCommonProps(&pld);
     pld.Add("online", 0);
     pld.Add("online_count", m_online_count + 1);
-    
-    GMqttClient.setWill(cmd.expandTopic().c_str(), cmd.command.toString().c_str());
+
+    std::string topic = cmd.expandTopic();    
+#ifdef NETWORKING_V3
+    topic = Config.mqtt_dev_status;
+#endif
+    GMqttClient.setWill(topic.c_str(), cmd.command.toString().c_str());
+
     return 1;
 };
 
@@ -227,6 +235,9 @@ void rfir::module::device::Networking::setOnline(){
     pld.Add("online_count", m_online_count);
     pld.Add("reboot", m_reboot);
     m_reboot = 0;
+#ifdef NETWORKING_V3
+    cmd.topic = Config.mqtt_dev_status;
+#endif
     cmd.send();
 };
 
@@ -274,6 +285,9 @@ void rfir::module::device::Networking::subscribe() {
         return;
 
     DEBUGER.printf("rfir::module::device::Networking::subscribe %s, %s \r\n",Config.mqtt_dsp_evt_status.c_str(), Config.mqtt_edg_evt_status.c_str());
+#ifdef NETWORKING_V3
+    GMqttClient.mqtt.subscribe(Config.mqtt_dev_sub.c_str(), 2);
+#else
     //dsp
     GMqttClient.mqtt.subscribe(Config.mqtt_dsp_evt_status.c_str(), 2);
 
@@ -287,6 +301,7 @@ void rfir::module::device::Networking::subscribe() {
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_set.c_str(), 2);
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_reboot.c_str(), 2);
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_svc_penet.c_str(), 2);
+#endif
 }
 
 //取消订阅
@@ -294,6 +309,9 @@ void rfir::module::device::Networking::unsubscribe() {
     if (!GMqttClient.mqtt.connected())
         return;
     DEBUGER.printf("rfir::module::device::Networking::unsubscribe \r\n");
+#ifdef NETWORKING_V3
+    GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_sub.c_str());
+#else
     //dsp
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dsp_evt_status.c_str());
 
@@ -307,6 +325,7 @@ void rfir::module::device::Networking::unsubscribe() {
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_set.c_str());
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_reboot.c_str());
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_svc_penet.c_str());
+#endif
 }
 
 //重置至登入前
@@ -321,7 +340,11 @@ void rfir::module::device::Networking::reset() {
 void* rfir::module::device::Networking::onMqttConnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onConnect \r\n");
     status.connected = true;
+#ifdef NETWORKING_V3   
+    delayNetworkingV3();
+#else
     delayNetworking();
+#endif
     return 0;
 
 };
@@ -354,9 +377,11 @@ void* rfir::module::device::Networking::onCommand(void* arg, void* p){
     
     if (cmd->command.head.stp == 0) {
         //握手请求
-        if (cmd->topic == Config.mqtt_dev_svc_handshake) {
-            handshake();
-            return 0;            
+        if (cmd->command.head.entry.type == "svc") {
+            if (cmd->command.head.entry.id == "handshake") {
+                handshake();
+                return 0;
+            }
         }
     }
 
@@ -455,12 +480,16 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
     GLed.stop();
     status.logined = true;
     status.handshaked = true;
+#ifdef NETWORKING_V3
+#else
     setOnlineToEdg();
+#endif
     m_handshake_success_count++;
     m_handshake_handler = 0;
     delayHandshake(NETWORKING_RE_HANDSHAKE_TIMEOUT);
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
     return 0;
+
 };               
 
 //边缘握手超时
@@ -469,7 +498,12 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
     m_handshake_failed_count++;
     m_handshake_handler = 0;
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
+#ifdef NETWORKING_V3
+    delayHandshake(NETWORKING_RE_HANDSHAKE_TIMEOUT);
+#else
     loginDio();
+#endif
+    
     return 0;
 };
 
@@ -495,6 +529,21 @@ void* rfir::module::device::Networking::onEdg_status_change(void* arg, void* p){
         //握手边缘
         handshake();
     }
+    return 0;
+};
+
+
+
+void rfir::module::device::Networking::delayNetworkingV3(int delay_ms){
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doNetworkingV3, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+};
+
+void* rfir::module::device::Networking::doNetworkingV3(void* arg, void* p){    
+    unsubscribe();
+    subscribe();
+    m_online_count++;
+    setOnline();
+ 
     return 0;
 };
 

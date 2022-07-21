@@ -194,6 +194,10 @@ public:
     std::string mqtt_dev_svc_reboot = MQTT_DEV_SVC_REBOOT;
     std::string mqtt_dev_svc_penet = MQTT_DEV_SVC_PENET;
 
+    std::string mqtt_dev_sub = MQTT_DEV_SUB;
+    std::string mqtt_dev_pub = MQTT_DEV_PUB;
+    std::string mqtt_dev_status = MQTT_DEV_STATUS;
+
 
 
     int         mqtt_resp_timeout = MQTT_RESP_TIMEOUT;

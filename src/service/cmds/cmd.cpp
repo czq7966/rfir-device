@@ -30,19 +30,25 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
             if (cmd->command.head.entry.id == "reboot") {
                 return (void*)OnSvc_reboot(cmd);
             }
+
+            if (cmd->command.head.entry.id == "penet") {
+                return (void*)OnSvc_penet(cmd);
+            }
         }
 
-        if (cmd->topic == ::Config.mqtt_dev_svc_penet) {
-            return (void*)OnSvc_penet(cmd);
-        }
+        // if (cmd->topic == ::Config.mqtt_dev_svc_penet) {
+        //     return (void*)OnSvc_penet(cmd);
+        // }
     }
 
 
 
     //服务响应
     if (cmd->command.head.stp == 1) {
-        if (cmd->topic == ::Config.mqtt_dev_svc_handshake) {
-            return (void*)OnSvc_handshake_resp(cmd);
+        if (cmd->command.head.entry.type == "svc") {
+            if (cmd->command.head.entry.id == "handshake") {
+                return (void*)OnSvc_handshake_resp(cmd);
+            }
         }
     }
 
