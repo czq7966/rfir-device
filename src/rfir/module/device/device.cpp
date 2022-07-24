@@ -236,7 +236,7 @@ rfir::module::device::Device* GDevice = new rfir::module::device::z3::co::ESP826
 #endif
 
 //RS485-MODBUS
-#ifdef DEVICE_RS485_MODBUS
-#include "rfir/module/device/rs/rs485-modbus.h"
-rfir::module::device::Device* GDevice = new rfir::module::device::RS::RS485_MODBUS();
+#ifdef DEVICE_RS485_PENET
+#include "rfir/module/device/rs/rs-penet-485.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::RS::RSPenet485();
 #endif

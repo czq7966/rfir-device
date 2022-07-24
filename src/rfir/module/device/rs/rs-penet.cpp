@@ -41,12 +41,12 @@ int rfir::module::device::RS::RSPenet::rsRead(char buffer[], int offset) {
 }
 
 bool rfir::module::device::RS::RSPenet::rsWrite(char buffer[], size_t length, int offset) {
-    size_t s = 0;
-    while (s < length) {
-        s = s + hwSerial->write(buffer + offset, length);
-    }
+    for(int i = 0; i < length; i++)
+	{
+        this->hwSerial->write(buffer[i + offset]);		
+	}    
 
-    return s == length;
+    return true;
 }
 
 
@@ -69,7 +69,7 @@ bool rfir::module::device::RS::RSPenet::rsWriteBase64(char data[], size_t size) 
 }
 
 bool rfir::module::device::RS::RSPenet::doEvt_penet(){
-    if (hwSerial->available() && GNetworking.status.connected && GNetworking.status.handshaked) {
+    if (hwSerial->available() && GNetworking.status.connected) {
         neb::CJsonObject pld;
         std::string code = rsReadBase64(rsBuffer);
         if (code.length() > 0) {
@@ -86,13 +86,14 @@ int rfir::module::device::RS::RSPenet::onSvc_get(neb::CJsonObject* pld, cmds::cm
 }; 
 
 int rfir::module::device::RS::RSPenet::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
-    return 0;
+    onSvc_penet(pld, cmd);
+    return -1;
 }; 
 
 int rfir::module::device::RS::RSPenet::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
-    DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet  \r\n");
     std::string code;
     if (pld && pld->Get("raw", code) ) {
+        DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         return rsWriteBase64((char*)code.c_str(), code.length());
     }    
 

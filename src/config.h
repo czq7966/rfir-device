@@ -93,8 +93,8 @@
 #endif
 
 // DEVICE_RS485_MODBUS
-#ifdef DEVICE_RS485_MODBUS
-#include "config/rs485-modbus.h"
+#ifdef DEVICE_RS485_PENET
+#include "config/rs485-penet.h"
 #endif
 
 #ifndef DEBUGER

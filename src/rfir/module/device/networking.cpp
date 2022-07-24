@@ -284,10 +284,11 @@ void rfir::module::device::Networking::subscribe() {
     if (!GMqttClient.mqtt.connected())
         return;
 
-    DEBUGER.printf("rfir::module::device::Networking::subscribe %s, %s \r\n",Config.mqtt_dsp_evt_status.c_str(), Config.mqtt_edg_evt_status.c_str());
 #ifdef NETWORKING_V3
+    DEBUGER.printf("rfir::module::device::Networking::subscribe %s \r\n", Config.mqtt_dev_sub.c_str());
     GMqttClient.mqtt.subscribe(Config.mqtt_dev_sub.c_str(), 2);
 #else
+    DEBUGER.printf("rfir::module::device::Networking::subscribe %s, %s \r\n",Config.mqtt_dsp_evt_status.c_str(), Config.mqtt_edg_evt_status.c_str());
     //dsp
     GMqttClient.mqtt.subscribe(Config.mqtt_dsp_evt_status.c_str(), 2);
 
@@ -307,11 +308,12 @@ void rfir::module::device::Networking::subscribe() {
 //取消订阅
 void rfir::module::device::Networking::unsubscribe() {
     if (!GMqttClient.mqtt.connected())
-        return;
-    DEBUGER.printf("rfir::module::device::Networking::unsubscribe \r\n");
+        return;    
 #ifdef NETWORKING_V3
+    DEBUGER.printf("rfir::module::device::Networking::unsubscribe %s \r\n", Config.mqtt_dev_sub.c_str());
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dev_sub.c_str());
 #else
+    DEBUGER.printf("rfir::module::device::Networking::unsubscribe \r\n");
     //dsp
     GMqttClient.mqtt.unsubscribe(Config.mqtt_dsp_evt_status.c_str());
 
