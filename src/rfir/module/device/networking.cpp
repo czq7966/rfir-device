@@ -234,11 +234,18 @@ void rfir::module::device::Networking::setOnline(){
     pld.Add("online", 1);
     pld.Add("online_count", m_online_count);
     pld.Add("reboot", m_reboot);
-    m_reboot = 0;
+
 #ifdef NETWORKING_V3
     cmd.topic = Config.mqtt_dev_status;
 #endif
     cmd.send();
+#ifdef NETWORKING_V3
+    if (m_reboot) {
+        pld.Add("reboot", 0);
+        cmd.send();
+    }
+#endif
+    m_reboot = 0;
 };
 
 //上线发布->DSP
