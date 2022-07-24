@@ -75,7 +75,7 @@ extern JLed                         GJLed;
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
 #ifdef NETWORKING_V3
-    #define MQTT_USER                   "device"
+    #define MQTT_USER                   "south"
 #else
     #define MQTT_USER                   "ioe"
 #endif

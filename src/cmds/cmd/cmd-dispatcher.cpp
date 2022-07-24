@@ -127,8 +127,11 @@ void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
 
     cmds::cmd::CmdMqtt cmd;    
     cmd.topic = msg->topic;
-    if (msg->payload)
+    if (msg->payload) {
+        cmd.command.resetHead();
         cmd.command.fromString(msg->payload);
+        cmd.command.fixUpRecv();
+    }
     if (cmd.command.isRespCmd() && onResp(arg, &cmd) ) {
         return 0;
     }

@@ -77,7 +77,11 @@ extern JLed                         GJLed;
 // #define DISABLE_MQTT                TRUE
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
-#define MQTT_USER                   "ioe"
+#ifdef NETWORKING_V3
+    #define MQTT_USER                   "south"
+#else
+    #define MQTT_USER                   "ioe"
+#endif
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              15  //单位秒
 #define MQTT_RESET_TIMEOUT          1000 * 60  //MQTT连接失败超时后，自动重启硬件, 单位毫秒

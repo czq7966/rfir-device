@@ -37,7 +37,7 @@
 // #define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门美的空调
-// #define DEVICE_FZ_DM_AC_MEDIA
+#define DEVICE_FZ_DM_AC_MEDIA
 
 // 福州亚太美的空调
 // #define DEVICE_FZ_YT_AC_MEDIA
@@ -49,7 +49,7 @@
 // #define DEVICE_Z3_COORDINATOR_ESP8266_CC2652
 
 // RS485透传
-#define DEVICE_RS485_PENET
+// #define DEVICE_RS485_PENET
 
 
 #endif

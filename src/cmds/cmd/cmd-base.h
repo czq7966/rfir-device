@@ -40,6 +40,7 @@ namespace cmds {
                 uint32_t getIntSid();
                 bool setSid(std::string value);                
                 bool setSid(uint32_t value);
+                bool resetHead();
                 bool isReqCmd();
                 bool isRespCmd();
                 bool setReqCmd();
@@ -50,6 +51,7 @@ namespace cmds {
 
                 void fixUp();
                 void fixDown();
+                void fixUpRecv();
 
                 void cloneFrom(Command& cmd);
                 void cloneTo(Command& cmd);

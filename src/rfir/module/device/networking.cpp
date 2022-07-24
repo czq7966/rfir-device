@@ -231,9 +231,10 @@ void rfir::module::device::Networking::setOnline(){
     neb::CJsonObject& pld = cmd.command.pld;
     Config.getIds(&hd);
     GDevice->getCommonProps(&pld);
-    pld.Add("online", 1);
-    pld.Add("online_count", m_online_count);
-    pld.Add("reboot", m_reboot);
+    pld.ReplaceAdd("online", 1);
+    pld.ReplaceAdd("online_count", m_online_count);
+    pld.ReplaceAdd("timestamp", millis());
+    pld.ReplaceAdd("reboot", m_reboot);
 
 #ifdef NETWORKING_V3
     cmd.topic = Config.mqtt_dev_status;
@@ -241,7 +242,7 @@ void rfir::module::device::Networking::setOnline(){
     cmd.send();
 #ifdef NETWORKING_V3
     if (m_reboot) {
-        pld.Add("reboot", 0);
+        pld.ReplaceAdd("reboot", 0);
         cmd.send();
     }
 #endif

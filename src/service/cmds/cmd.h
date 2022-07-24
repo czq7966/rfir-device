@@ -55,6 +55,7 @@ namespace service {
             // static bool  OnCmd_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");
             // static bool  OnCmd_set(::cmds::cmd::CmdMqtt* cmd);
             
+            static void* OnConnect(void* arg, void * p);
             static void* OnCommand(void* arg, void * p);
         public:
             static int  OnSvc_get(::cmds::cmd::CmdMqtt* cmd, std::string reason = "User Get");

@@ -4,12 +4,16 @@
 
 
 void service::cmds::Cmd::Start() {
+    GCmdDispatcher.events.onConnect.add((void*)&OnConnect, OnConnect);
     GCmdDispatcher.events.onCommand.add((void*)&OnCommand, OnCommand);
     GDevice->events.onEvtPropsChange.add((void*)OnEvt_props_change, OnEvt_props_change);
     GDevice->events.onEvtPenet.add((void*)OnEvt_penet, OnEvt_penet);
 }
 
-
+void* service::cmds::Cmd::OnConnect(void* arg, void * p){
+    GDevice->doEvtTimerReport(1000);
+    return 0;
+};
 
 void* service::cmds::Cmd::OnCommand(void* arg, void * p){    
     auto cmd = (::cmds::cmd::CmdMqtt*)p;

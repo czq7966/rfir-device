@@ -28,6 +28,19 @@ bool cmds::cmd::CmdBase::Command::setSid(std::string value){
 bool cmds::cmd::CmdBase::Command::setSid(uint32_t value){
     return setSid(String(value).c_str());
 };
+
+bool  cmds::cmd::CmdBase::Command::resetHead() {
+    head.from.type = "";
+    head.from.id = "";
+    head.to.type = "";
+    head.to.id = "";
+    head.entry.type = "";
+    head.entry.id = "";
+    head.sid = "";
+    head.stp = 0;
+    return true;
+}
+
 bool cmds::cmd::CmdBase::Command::isReqCmd(){
     return head.stp == 0;
 };
@@ -94,6 +107,13 @@ void cmds::cmd::CmdBase::Command::fixDown(){
 
     hd.Get("sid", head.sid);
     hd.Get("stp", head.stp);    
+};
+
+void cmds::cmd::CmdBase::Command::fixUpRecv() {
+    if (head.to.id == "") {
+        head.to.type = cmds::cmd::CmdBase::Command::DefaultFrom->type;
+        head.to.id = cmds::cmd::CmdBase::Command::DefaultFrom->id;
+    }
 };
 
 void cmds::cmd::CmdBase::Command::cloneFrom(Command& cmd){
