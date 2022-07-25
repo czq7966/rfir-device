@@ -1,5 +1,6 @@
 #include "cmd.h"
 #include "rfir/module/device/device.h"
+#include "rfir/module/device/networking.h"
 #include "cmds/cmd/cmd-dispatcher.h"
 
 
@@ -11,6 +12,7 @@ void service::cmds::Cmd::Start() {
 }
 
 void* service::cmds::Cmd::OnConnect(void* arg, void * p){
+    GNetworking.delayHandshake(500);
     GDevice->doEvtTimerReport(1000);
     return 0;
 };

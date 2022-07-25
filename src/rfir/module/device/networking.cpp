@@ -175,6 +175,7 @@ bool rfir::module::device::Networking::handshake(){
     Config.getIds(&hd);
     GDevice->getCommonProps(&pld);
     pld.ReplaceAdd("handshake_count", m_handshake_success_count);
+    pld.ReplaceAdd("handshake_failed_count", m_handshake_failed_count);    
 
     return cmd.send(); 
 };
@@ -233,7 +234,7 @@ void rfir::module::device::Networking::setOnline(){
     GDevice->getCommonProps(&pld);
     pld.ReplaceAdd("online", 1);
     pld.ReplaceAdd("online_count", m_online_count);
-    pld.ReplaceAdd("timestamp", millis());
+    pld.ReplaceAdd("timestamp", (uint64_t)millis());
     pld.ReplaceAdd("reboot", m_reboot);
 
 #ifdef NETWORKING_V3
