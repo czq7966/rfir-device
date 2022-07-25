@@ -1,5 +1,5 @@
-#ifndef __CONFIG_CONFIG_FZ_DM_AC_MEDIA_H__
-#define __CONFIG_CONFIG_FZ_DM_AC_MEDIA_H__
+#ifndef __CONFIG_CONFIG_FZ_DM_AC_MIDEA_H__
+#define __CONFIG_CONFIG_FZ_DM_AC_MIDEA_H__
 
 #include "rfir/util/debuger.h"
 #include "jled.h"

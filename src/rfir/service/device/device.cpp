@@ -60,7 +60,7 @@
 // #endif
 
 // //福州飘渺庄2楼食堂格力空调
-// #ifdef DEVICE_FZ_DM3_AC_MEDIA
+// #ifdef DEVICE_FZ_DM3_AC_MIDEA
 // #include "rfir/module/device/ac/midea/fz-dm3-midea.h"
 // rfir::module::device::Device* rfir::service::device::Device::SDevice = new rfir::module::device::ac::FZ_DM3_Midea();
 // #endif

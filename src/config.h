@@ -16,14 +16,14 @@
 #include "config/fz-dm4-tearoom-ac-gree.h"
 #endif
 
-//福州东门Media空调
-#ifdef DEVICE_FZ_DM_AC_MEDIA
-#include "config/fz-dm-ac-media.h"
+//福州东门MIDEA空调
+#ifdef DEVICE_FZ_DM_AC_MIDEA
+#include "config/fz-dm-ac-MIDEA.h"
 #endif
 
-//福州亚太Media空调
-#ifdef DEVICE_FZ_YT_AC_MEDIA
-#include "config/fz-yt-ac-media.h"
+//福州亚太MIDEA空调
+#ifdef DEVICE_FZ_YT_AC_MIDEA
+#include "config/fz-yt-ac-midea.h"
 #endif
 
 //福州亚太格力空调

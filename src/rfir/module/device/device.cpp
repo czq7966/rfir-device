@@ -218,13 +218,13 @@ rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Gree
 #endif
 
 //福州东门美的空调
-#ifdef DEVICE_FZ_DM_AC_MEDIA
+#ifdef DEVICE_FZ_DM_AC_MIDEA
 #include "rfir/module/device/ac/midea/fz-dm-midea.h"
 rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_DM_Midea();
 #endif
 
 //福州亚太美的空调
-#ifdef DEVICE_FZ_YT_AC_MEDIA
+#ifdef DEVICE_FZ_YT_AC_MIDEA
 #include "rfir/module/device/ac/midea/fz-yt-midea.h"
 rfir::module::device::Device* GDevice = new rfir::module::device::ac::FZ_YT_Midea();
 #endif
