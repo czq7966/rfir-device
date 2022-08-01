@@ -12,7 +12,7 @@ extern JLed                         GJLed;
 #define DEV_MODEL                   "Z3CO2652ESP8266"
 
 // #define DEBUG_RFIR
-
+#define NETWORKING_V3
 #define DEBUGER RFIRDebuger
 #define COSerial Serial
 
@@ -115,7 +115,6 @@ extern JLed                         GJLed;
 #define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 
 
-#define NETWORKING_V3
 #define MQTT_DEV_SUB                "+/+/+/+/dev/{dev}/+/+"
 #define MQTT_DEV_PUB                "0/0/dev/{dev}/0/0/0/0"
 #define MQTT_DEV_STATUS             "0/0/dev/{dev}/0/0/evt/status"

@@ -72,7 +72,7 @@ bool rfir::module::device::z3::co::Coordinator::coWriteBase64(char data[], size_
 }
 
 bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
-    if (COSerial.available() && GNetworking.status.connected && GNetworking.status.handshaked) {
+    if (COSerial.available() && GNetworking.status.connected) {
         neb::CJsonObject pld;
         std::string code = coReadBase64(coBuffer);
         if (code.length() > 0) {
