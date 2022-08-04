@@ -14,9 +14,9 @@ void rfir::module::device::RS::RSPenet::initSerial() {
     this->hwSerial->end();
     delay(100);    
     #ifdef ESP8266                    
-        this->hwSerial->begin(CO_SERIAL_BAUD, SerialConfig(CO_SERIAL_CONFIG));
+        this->hwSerial->begin(Config.props.co_serial_baud, SerialConfig(Config.props.co_serial_config));
     #else
-        this->hwSerial->begin(CO_SERIAL_BAUD, CO_SERIAL_CONFIG);
+        this->hwSerial->begin(Config.props.co_serial_baud., Config.props.co_serial_config);
     #endif   
 #else 
     this->hwSerial = &Serial;      

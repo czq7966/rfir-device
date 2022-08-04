@@ -44,6 +44,7 @@ void* OnConfigFixup(void* arg, void* p) {
 
 void setup() {
     Serial.begin(Config.props.serial_baud, SerialConfig(Config.props.serial_config));
+    DEBUGER.println(String(Config.props.serial_baud)+ ":" + String(Config.props.serial_config));
     DEBUGER.println("begin chid id: " + String(Config.props.dev_id.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
 
     if (!Config.props.wifi_disable) {

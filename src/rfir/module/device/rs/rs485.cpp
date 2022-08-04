@@ -6,8 +6,8 @@ void rfir::module::device::RS::RS485::init() {
 #ifdef COSerial       
     this->hwSerial = &COSerial;
     neb::CJsonObject pld;
-    pld.Add("baudRate", CO_SERIAL_BAUD);
-    pld.Add("serialConfig", CO_SERIAL_CONFIG);
+    pld.Add("baudRate", Config.props.co_serial_baud);
+    pld.Add("serialConfig", Config.props.co_serial_config);
     onSvc_setBandRate(&pld);
 #else 
     this->hwSerial = &Serial;      
