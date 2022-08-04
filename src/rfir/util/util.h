@@ -7,6 +7,8 @@
 namespace rfir {
     namespace util {
         class Util {
+        protected:
+            static void* on_delay_reset(void* arg, void* p);
         public:
             static uint64_t reverseBits(uint64_t input, uint16_t nbits);
             static std::string GetChipId(std::string prefix = "");
@@ -18,6 +20,7 @@ namespace rfir {
             static int  StringToBits(const char* data, int nbits, uint64_t& result);
             static int  StringToBytes(std::string data, uint8_t* bytes);   
             static void Reset();
+            static void DelayReset(int timeout_ms);
             static std::string ToLower(const char* data);
             static std::string ToUpper(const char* data);
         };

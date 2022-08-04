@@ -11,13 +11,8 @@ void rfir::module::device::z3::co::Coordinator::init() {
 
 rfir::module::device::z3::co::Coordinator::Coordinator() {
     COSerial.end();
-#ifdef CO_SERIAL_BAUD
-    COSerial.begin(CO_SERIAL_BAUD, CO_SERIAL_CONFIG);
-#else
-    COSerial.begin(115200);
-#endif   
-
-    Serial.println(rfir::util::Util::GetChipId(CHIP_ID_PREFIX).c_str());
+    COSerial.begin(Config.props.co_serial_baud, SerialConfig(Config.props.co_serial_config));
+    Serial.println(Config.props.dev_id.c_str());
 }
 
 rfir::module::device::z3::co::Coordinator::~Coordinator() {

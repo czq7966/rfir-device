@@ -2,6 +2,7 @@
 #include "rfir/module/device/device.h"
 #include "rfir/module/device/networking.h"
 #include "cmds/cmd/cmd-dispatcher.h"
+#include "rfir/util/event-timer.h"
 
 
 void service::cmds::Cmd::Start() {
@@ -40,11 +41,12 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
             if (cmd->command.head.entry.id == "penet") {
                 return (void*)OnSvc_penet(cmd);
             }
+
+            if (cmd->command.head.entry.id == "config") {
+                return (void*)OnSvc_config(cmd);
+            }
         }
 
-        // if (cmd->topic == ::Config.mqtt_dev_svc_penet) {
-        //     return (void*)OnSvc_penet(cmd);
-        // }
     }
 
 
@@ -143,6 +145,44 @@ int  service::cmds::Cmd::OnSvc_penet(::cmds::cmd::CmdMqtt* cmd){
 
 int  service::cmds::Cmd::OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd){
     return  GDevice->doEvtTimerReport(1000);
+};
+
+int  service::cmds::Cmd::OnSvc_config(::cmds::cmd::CmdMqtt* reqCmd){
+    neb::CJsonObject* reqPld = &reqCmd->command.pld;
+    neb::CJsonObject config;
+    ::cmds::cmd::CmdMqtt cmd;
+    neb::CJsonObject& hd = cmd.command.hd;
+    neb::CJsonObject& pld = cmd.command.pld;
+    int result = 0;
+
+
+    if (reqPld->Get("config", config)) {
+        result = Config.saveToFile(config);
+        pld.ReplaceAdd("_extra", "Config Set");
+    } else {
+        pld.ReplaceAdd("_extra", "Config Get");        
+    }
+
+    result = Config.loadFromFile(config);
+    pld.ReplaceAdd("config", config);
+    pld.ReplaceAdd("_success", result);
+
+    if (reqCmd){
+        hd = reqCmd->command.hd;
+        cmd.command.head = reqCmd->command.head;
+        cmd.command.head.from = reqCmd->command.head.to;
+        cmd.command.head.to = reqCmd->command.head.from;
+        cmd.command.head.stp = 1;
+    }
+    
+    result = cmd.send();
+
+    int reboot = 0;
+    reqPld->Get("reboot", reboot);
+    if (reboot)
+        rfir::util::Util::DelayReset(3000);
+
+    return result;
 };
 
 void*  service::cmds::Cmd::OnEvt_props_change(void* arg, void* p){

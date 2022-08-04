@@ -76,7 +76,7 @@ bool rfir::module::device::Device::getConfig(std::string& context){
 //************************* V2 ***********************
 
 bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
-    pld->ReplaceAdd("id", Config.dev_id);
+    pld->ReplaceAdd("id", Config.props.dev_id);
     pld->ReplaceAdd("mac", rfir::util::Util::GetMacAddress());
     pld->ReplaceAdd("rssi", WiFi.RSSI());
     pld->ReplaceAdd("ip", "");

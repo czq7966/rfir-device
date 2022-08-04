@@ -13,7 +13,7 @@ extern JLed                         GJLed;
 
 // #define DEBUG_RFIR
 #define NETWORKING_V3
-#define DEBUGER RFIRDebuger
+// #define DEBUGER RFIRDebuger
 #define COSerial Serial
 
 //LED
@@ -32,7 +32,7 @@ extern JLed                         GJLed;
 #define CO_SERIAL_CONFIG            SERIAL_8N1
 
 //OTA
-// #define DISABLE_OTA                 TRUE
+#define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
 #define OTA_VERSION_NUMBER          4
 #define OTA_VERSION_STRING          "4.0"
@@ -41,6 +41,7 @@ extern JLed                         GJLed;
 
 
 //WIFI
+#define WIFI_DISABLE                false
 #define WIFI_SSID_DEV               {"MERCURY_95E8"}
 #define WIFI_PASSWORD_DEV           {"12345678"}
 #define WIFI_SSID                   {"NDSEC", "ND-MAC"}
@@ -60,7 +61,7 @@ extern JLed                         GJLed;
 #define AP_CONFIG_PIN_TIMEOUT       1000 * 5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位毫秒
 
 //SMC
-// #define DISABLE_SMC                  TRUE
+#define SMC_DISABLE                  false
 #define SMC_CONFIG_VERSION           "0" //该值若有修改，SMC配置将被重置
 #define SMC_CONFIG_FILE              "/config/smc.json"
 #define SMC_CONFIG_PIN               BUTTON_PIN  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
@@ -74,7 +75,7 @@ extern JLed                         GJLed;
 
 
 //MQTT
-// #define DISABLE_MQTT                TRUE
+#define MQTT_DISABLE                false
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
 #ifdef NETWORKING_V3

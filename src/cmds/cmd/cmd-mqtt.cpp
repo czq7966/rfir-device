@@ -11,7 +11,7 @@ std::string cmds::cmd::CmdMqtt::ZeroTopic(std::string topic){
 
 std::string cmds::cmd::CmdMqtt::expandTopic(){
 #ifdef NETWORKING_V3   
-    return Config.mqtt_dev_pub;
+    return Config.props.mqtt_dev_pub;
 #else
     return  (prefix == "" ? topicPrefix : prefix) +
             ZeroTopic(command.head.from.type) + "/" + 

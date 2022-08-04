@@ -1,4 +1,5 @@
 #include "util.h"
+#include "event-timer.h"
 
 uint64_t  rfir::util::Util::reverseBits(uint64_t input, uint16_t nbits) {
   if (nbits <= 1) return input;  // Reversing <= 1 bits makes no change at all.
@@ -165,6 +166,15 @@ void rfir::util::Util::Reset(){
       ESP.restart();
   #endif  
 };
+
+void rfir::util::Util::DelayReset(int timeout_ms) {
+  GEventTimer.delay(timeout_ms, on_delay_reset);
+};
+
+void* rfir::util::Util::on_delay_reset(void* arg, void* p) {
+  Reset();
+  return 0;
+}
 
 std::string rfir::util::Util::ToLower(const char* data){
   std::string s = data;
