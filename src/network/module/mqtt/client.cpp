@@ -66,7 +66,7 @@ void network::module::mqtt::Client::connect() {
             }
             this->events.onConnect.emit((void*)this);
         } else { //超时重启
-            if (millis() - Mqtt_client_connect_time > MQTT_RESET_TIMEOUT )  {
+            if (millis() - Mqtt_client_connect_time > Config.props.mqtt_reset_timeout)  {
                 DEBUGER.println("MQTT connect time out. ESP reset!\n");
                 delay(1000);
                 rfir::util::Util::Reset();

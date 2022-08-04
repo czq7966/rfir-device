@@ -81,9 +81,9 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     pld->ReplaceAdd("rssi", WiFi.RSSI());
     pld->ReplaceAdd("ip", "");
     pld->ReplaceAdd("ssid", "");
-    pld->ReplaceAdd("version", OTA_VERSION_NUMBER);
-    pld->ReplaceAdd("vendor", DEV_VENDOR);
-    pld->ReplaceAdd("model", DEV_MODEL);    
+    pld->ReplaceAdd("version", Config.props.ota_version_number);
+    pld->ReplaceAdd("vendor", Config.props.dev_vendor);
+    pld->ReplaceAdd("model", Config.props.dev_model);    
 
     if (WiFi.isConnected()) {
         pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());

@@ -98,7 +98,7 @@ bool rfir::module::device::Networking::loginDio() {
     reset();
     GCmdDispatcher.removeWaitResp(m_login_handler);
     if (m_login_reset_handler == 0) {
-        m_login_reset_handler = GEventTimer.delay(NETWORKING_RESET_TIMEOUT, std::bind(&Networking::onNetworkingTimeout, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+        m_login_reset_handler = GEventTimer.delay(Config.props.networking_reset_timeout, std::bind(&Networking::onNetworkingTimeout, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
     }
 
     cmds::cmd::CmdMqtt cmd;
@@ -497,7 +497,7 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
 #endif
     m_handshake_success_count++;
     m_handshake_handler = 0;
-    delayHandshake(NETWORKING_RE_HANDSHAKE_TIMEOUT);
+    delayHandshake(Config.props.networking_re_handshake_timeout);
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
     return 0;
 
@@ -510,7 +510,7 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
     m_handshake_handler = 0;
     DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
 #ifdef NETWORKING_V3
-    delayHandshake(NETWORKING_RE_HANDSHAKE_TIMEOUT);
+    delayHandshake(Config.props.networking_re_handshake_timeout);
 #else
     loginDio();
 #endif
