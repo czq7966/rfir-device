@@ -5,14 +5,15 @@
 
 void rfir::module::device::z3::co::Coordinator::init() {
     this->name = "Z3Coordinator";
+    COSerial.end();
+    COSerial.begin(Config.props.co_serial_baud, SerialConfig(Config.props.co_serial_config));
+    // Serial.println(Config.props.dev_id.c_str());    
 }
 
 
 
 rfir::module::device::z3::co::Coordinator::Coordinator() {
-    COSerial.end();
-    COSerial.begin(Config.props.co_serial_baud, SerialConfig(Config.props.co_serial_config));
-    Serial.println(Config.props.dev_id.c_str());
+
 }
 
 rfir::module::device::z3::co::Coordinator::~Coordinator() {

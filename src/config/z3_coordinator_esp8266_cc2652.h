@@ -13,7 +13,7 @@ extern JLed                         GJLed;
 
 // #define DEBUG_RFIR
 #define NETWORKING_V3
-// #define DEBUGER RFIRDebuger
+#define DEBUGER RFIRDebuger
 #define COSerial Serial
 
 //LED
@@ -34,8 +34,8 @@ extern JLed                         GJLed;
 //OTA
 #define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          4
-#define OTA_VERSION_STRING          "4.0"
+#define OTA_VERSION_NUMBER          5
+#define OTA_VERSION_STRING          "5.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/z3_coordinator_esp8266_cc2652/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
