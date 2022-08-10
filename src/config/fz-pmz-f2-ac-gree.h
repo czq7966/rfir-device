@@ -11,27 +11,35 @@ extern JLed                         GJLed;
 #define DEV_VENDOR                  "ND"
 #define DEV_MODEL                   "FZPMZF2ACGREE"
 
-// #define DEBUGER RFIRDebuger
 #define NETWORKING_V3
+// #define DEBUGER RFIRDebuger
+#define COSerial Serial
 
 //LED
 #define LED_PIN                     BUILTIN_LED
 //BUTTON
 #define BUTTON_PIN                  0
+//RESET
+#define RESET_PIN                   12
 
 //Serial
 #define SERIAL_BAUD                 115200
 #define SERIAL_CONFIG               SERIAL_8N1
 
+//COSerial
+#define CO_SERIAL_BAUD              115200
+#define CO_SERIAL_CONFIG            SERIAL_8N1
+
 //OTA
-// #define DISABLE_OTA                 TRUE
+#define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          17
-#define OTA_VERSION_STRING          "17.0"
+#define OTA_VERSION_NUMBER          18
+#define OTA_VERSION_STRING          "18.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
 //WIFI
+#define WIFI_DISABLE                false
 #define WIFI_SSID_DEV               {"MERCURY_95E8"}
 #define WIFI_PASSWORD_DEV           {"12345678"}
 #define WIFI_SSID                   {"ND-MAC"}
@@ -51,7 +59,7 @@ extern JLed                         GJLed;
 #define AP_CONFIG_PIN_TIMEOUT       1000 * 5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位毫秒
 
 //SMC
-// #define DISABLE_SMC                  TRUE
+#define SMC_DISABLE                  false
 #define SMC_CONFIG_VERSION           "0" //该值若有修改，SMC配置将被重置
 #define SMC_CONFIG_FILE              "/config/smc.json"
 #define SMC_CONFIG_PIN               BUTTON_PIN  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
@@ -64,7 +72,7 @@ extern JLed                         GJLed;
 #define SMC_CONFIG_TIMEOUT           5  //几分钟之内需完成配网，之外重启(分)
 
 //MQTT
-// #define DISABLE_MQTT                TRUE
+#define MQTT_DISABLE                false
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
 #ifdef NETWORKING_V3
@@ -104,7 +112,6 @@ extern JLed                         GJLed;
 #define NETWORKING_RESET_TIMEOUT    1000 * 60 * 2 //2分钟组网超时
 #define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 
-//NETWORKING V3
 #define MQTT_DEV_SUB                "+/+/+/+/dev/{dev}/+/+"
 #define MQTT_DEV_PUB                "0/0/dev/{dev}/0/0/0/0"
 #define MQTT_DEV_STATUS             "0/0/dev/{dev}/0/0/evt/status"

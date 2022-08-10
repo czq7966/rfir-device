@@ -58,6 +58,17 @@ int GlobalConfig::Props::init(neb::CJsonObject* config){
             if (str != "") this->wifi_password.push_back(str);     
         }           
     }
+
+    //确保wifi ssid和pass数量一致
+    if (this->wifi_ssid.size() != this->wifi_password.size()) {
+        while(this->wifi_ssid.size() > this->wifi_password.size()) {
+            this->wifi_password.push_back("");
+        }
+        while(this->wifi_ssid.size() < this->wifi_password.size()) {
+            this->wifi_password.pop_back();
+        }
+    }
+
     config->Get("wifi_reset_timeout", this->wifi_reset_timeout);
 
     //ap

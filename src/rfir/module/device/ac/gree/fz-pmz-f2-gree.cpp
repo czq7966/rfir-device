@@ -31,7 +31,7 @@ int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_get(neb::CJsonObject* pld, c
     auto r = Gree::onSvc_get(pld, cmd);
     auto running = digitalRead(PIN_POWER) ? "on" : "off";
     pld->ReplaceAdd("running", running);    
-    // pld->ReplaceAdd("power", running);    
+    pld->ReplaceAdd("power", running);    
     return r;
 };
 
