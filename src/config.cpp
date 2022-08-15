@@ -94,6 +94,7 @@ int GlobalConfig::Props::init(neb::CJsonObject* config){
     config->Get("mqtt_disable", this->mqtt_disable);
     config->Get("mqtt_ip", this->mqtt_ip);
     config->Get("mqtt_keepalive", this->mqtt_keepalive);
+    config->Get("mqtt_clean_session", this->mqtt_clean_session);    
     config->Get("mqtt_password", this->mqtt_password);
     config->Get("mqtt_port", this->mqtt_port);
     config->Get("mqtt_reset_timeout", this->mqtt_reset_timeout);

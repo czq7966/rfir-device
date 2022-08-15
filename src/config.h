@@ -182,6 +182,7 @@ public:
         std::string mqtt_user = MQTT_USER; 
         std::string mqtt_password = MQTT_PASSWORD; 
         int mqtt_keepalive = MQTT_KEEPALIVE; 
+        int mqtt_clean_session = MQTT_CLEAN_SESSION;        
         int mqtt_reset_timeout = MQTT_RESET_TIMEOUT; 
         int mqtt_resp_timeout = MQTT_RESP_TIMEOUT; 
         int mqtt_buffer_size = MQTT_BUFFER_SIZE; 

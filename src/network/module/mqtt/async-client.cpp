@@ -24,6 +24,7 @@ void network::module::mqtt::AClient::init(Params p){
     mqtt.setServer(params.ip.c_str(), params.port);
     mqtt.setClientId(params.id.c_str());
     mqtt.setKeepAlive(params.keepalive);
+    mqtt.setCleanSession(params.clean_session);
     mqtt.setCredentials(params.user.c_str(), params.pass.c_str());
 };
 void network::module::mqtt::AClient::uninit(){};

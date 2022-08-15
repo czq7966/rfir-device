@@ -82,6 +82,7 @@ extern JLed                         GJLed;
 #endif
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              15  //单位秒
+#define MQTT_CLEAN_SESSION          false
 #define MQTT_RESET_TIMEOUT          1000 * 60  //MQTT连接失败超时后，自动重启硬件, 单位毫秒
 #define MQTT_CONNECT_JLED           GJLed.Stop().LowActive().Blink(1500, 1500).Forever().Reset()
 

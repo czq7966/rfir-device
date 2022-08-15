@@ -110,6 +110,7 @@ void setup() {
         mp.pass = Config.props.mqtt_password; 
         mp.id = Config.props.dev_id; 
         mp.keepalive = Config.props.mqtt_keepalive;
+        mp.clean_session = Config.props.mqtt_clean_session;
 
         GCmdDispatcher.setSignaler(&GMqttSignaler);
         GMqttSignaler.setMqtt(&GMqttClient);
