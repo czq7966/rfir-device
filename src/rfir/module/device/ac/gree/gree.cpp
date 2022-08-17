@@ -64,7 +64,16 @@ void rfir::module::device::ac::Gree::init() {
 
 
 bool rfir::module::device::ac::Gree::setRaw(uint8_t* raw) {
-    this->ac.ac->setRaw(raw);
+    IRGreeAC ac(0);
+    ac.setRaw(raw);
+
+    this->ac.ac->setMode(ac.getMode());
+    this->ac.ac->setFan(ac.getFan());
+    // this->ac.ac->setSleep(ac.getSleep());
+    // this->ac.ac->setSwingVertical(ac.getSwingVerticalAuto(), kGreeSwingAuto);
+    this->ac.ac->setTemp(ac.getTemp());
+    this->ac.ac->setPower(ac.getPower());
+
     return 1;
 }
 
@@ -189,7 +198,7 @@ int rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::
 int rfir::module::device::ac::Gree::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
     static unsigned long last_decoded_time = 0;
     bool result = false;
-    if (data.size() == 3 && (millis() - last_decoded_time > 200)) {
+    if (data.size() == 3 && (millis() - last_decoded_time > 500)) {
         int count = 0;
         auto raw = getRaw(count);
         uint8_t bytes[count];
