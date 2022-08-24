@@ -25,15 +25,20 @@ extern JLed                         GJLed;
 #define SERIAL_BAUD                 115200
 #define SERIAL_CONFIG               SERIAL_8N1
 
+//COSerial
+#define CO_SERIAL_BAUD              115200
+#define CO_SERIAL_CONFIG            SERIAL_8N1
+
 //OTA
-// #define DISABLE_OTA                 TRUE
+#define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          3
-#define OTA_VERSION_STRING          "3.0"
+#define OTA_VERSION_NUMBER          5
+#define OTA_VERSION_STRING          "5.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-midea/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
 //WIFI
+#define WIFI_DISABLE                false
 #define WIFI_SSID_DEV               {"MERCURY_95E8"}
 #define WIFI_PASSWORD_DEV           {"12345678"}
 #define WIFI_SSID                   {"NDSEC", "ND-MAC"}
@@ -53,7 +58,7 @@ extern JLed                         GJLed;
 #define AP_CONFIG_PIN_TIMEOUT       1000 * 5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位毫秒
 
 //SMC
-// #define DISABLE_SMC                  TRUE
+#define SMC_DISABLE                  false
 #define SMC_CONFIG_VERSION           "0" //该值若有修改，SMC配置将被重置
 #define SMC_CONFIG_FILE              "/config/smc.json"
 #define SMC_CONFIG_PIN               BUTTON_PIN  //GPIO，配合SMC_CONFIG_SETTING，按键后进入智能配网模式
@@ -66,7 +71,7 @@ extern JLed                         GJLed;
 #define SMC_CONFIG_TIMEOUT           5  //几分钟之内需完成配网，之外重启(分)
 
 //MQTT
-// #define DISABLE_MQTT                TRUE
+#define MQTT_DISABLE                false
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
 #ifdef NETWORKING_V3
