@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/firmware_v19.bin
-19
-7298a3d4da582bc948180581099b8c20
-19.0
-0
-ESP8266x00c1ceca,
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-pmz-f2-ac-gree/firmware_v20.bin
+20
+d1eb24be1d85d6e07f1812f956297a03
+20.0
+1
+ESP8266x00c172c3,

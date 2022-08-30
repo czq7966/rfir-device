@@ -29,7 +29,21 @@ void rfir::module::device::ac::FZ_PMZ_F2_Gree::loop() {
 
 int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
     auto r = Gree::onSvc_get(pld, cmd);
-    auto running = digitalRead(PIN_POWER) ? "on" : "off";
+
+    int on = 0;
+    auto time = millis();
+    while (millis() - time < 300)
+    {
+        if (digitalRead(PIN_POWER)) {
+            on++;
+            break;;
+        }
+    }
+    
+    
+
+    // auto running = digitalRead(PIN_POWER) ? "on" : "off";
+    auto running = on ? "on" : "off";
     pld->ReplaceAdd("running", running);    
     pld->ReplaceAdd("power", running);    
     return r;
