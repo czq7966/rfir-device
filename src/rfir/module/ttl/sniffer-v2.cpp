@@ -15,6 +15,23 @@ std::string rfir::module::ttl::SnifferV2::Data::toString(){
     return str.c_str();
 };
 
+int rfir::module::ttl::SnifferV2::Data::toBuffer(uint16_t* buffer){
+    int count = 0;
+    if (deltas.size() > 0) {
+        buffer[count] = first_ttl.ttl;
+        count++;
+        for (auto it = deltas.begin(); it != deltas.end(); it++)
+        {        
+            buffer[count] = *it;
+            count++;
+        }
+    }
+
+    return count;
+};
+
+
+
 std::string rfir::module::ttl::SnifferV2::Params::toString(){
     char result[128] = {0};
     sprintf(result, "pin: %d, mode: %d, inverted: %d, minCount: %d, maxCount: %d, minDelta: %d, maxDelta: %d, bufSize: %d",
@@ -30,7 +47,7 @@ void rfir::module::ttl::SnifferV2::loop(){
 };
 
 void rfir::module::ttl::SnifferV2::startSniff() {
-    if (params.pin > 0) {
+    if (params.enabled && params.pin > 0) {
         stopSniff();
         GInterrupt.start(params.pin);
         m_started = true;

@@ -18,9 +18,11 @@ namespace rfir {
                     std::list<TimeTTL>      ttls;
                     std::list<uint16_t>     deltas;
                     std::string toString();
+                    int toBuffer(uint16_t* buffer);
                 };
 
                 struct Params {
+                    bool        enabled = true;
                     uint8_t     pin = 0;
                     uint8_t     mode = INPUT;
                     bool        inverted = false;

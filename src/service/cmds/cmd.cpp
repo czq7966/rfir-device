@@ -158,6 +158,7 @@ int  service::cmds::Cmd::OnSvc_config(::cmds::cmd::CmdMqtt* reqCmd){
 
     if (reqPld->Get("config", config)) {
         result = Config.saveToFile(config);
+        GDevice->onSvc_config(&reqCmd->command.pld, reqCmd);
         pld.ReplaceAdd("_extra", "Config Set");
     } else {
         pld.ReplaceAdd("_extra", "Config Get");        

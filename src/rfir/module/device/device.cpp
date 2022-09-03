@@ -124,6 +124,10 @@ int rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld, cmds::cmd::Cm
     return 0;
 }; 
 
+int rfir::module::device::Device::onSvc_config(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+    return 0;
+}; 
+
 int rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
     DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
     int delay = 0;

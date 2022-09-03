@@ -169,9 +169,10 @@ int GlobalConfig::saveToFile(neb::CJsonObject& config){
 };
 
 int GlobalConfig::initFromFile(){
-    neb::CJsonObject config;
+    neb::CJsonObject config, app;
     this->loadFromFile(config);
-    return this->props.init(&config);
+    config.Get("app", app);
+    return this->props.init(&app);
 };
 
 

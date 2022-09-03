@@ -30,8 +30,18 @@ void rfir::module::ttl::SenderV2::sendRaw(const char* data, const int size){
     sendRaw(deltas);
 };
 
+void rfir::module::ttl::SenderV2::sendRaw(const uint16_t* data, const int size){
+    std::list<uint16_t> deltas;
+    for (size_t i = 0; i < size; i++)
+    {   
+        deltas.push_back(data[i]);
+    }
+
+    sendRaw(deltas);
+};
+
 void rfir::module::ttl::SenderV2::sendRaw(std::list<uint16_t>& deltas){
-    if (deltas.size() == 0)
+    if (!params.enabled || deltas.size() == 0)
         return;
 
     bool inverted = params.inverted;

@@ -73,8 +73,10 @@ namespace rfir {
             public:
                 virtual int onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
                 virtual int onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual int onSvc_config(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
                 virtual int onSvc_reboot(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
                 virtual int onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
+
             };
 
         }
