@@ -92,10 +92,16 @@
 #include "config/z3_coordinator_esp8266_cc2652.h"
 #endif
 
-// DEVICE_RS485_MODBUS
+// RS485透传
 #ifdef DEVICE_RS485_PENET
 #include "config/rs485-penet.h"
 #endif
+
+// 8285红外接收发射透传
+#ifdef DEVICE_RFIR_PENET_IR_8285
+#include "config/rfir-penet-ir-8285.h"
+#endif
+
 
 #ifndef DEBUGER
 #define DEBUGER Serial

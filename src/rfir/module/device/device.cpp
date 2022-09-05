@@ -244,3 +244,9 @@ rfir::module::device::Device* GDevice = new rfir::module::device::z3::co::ESP826
 #include "rfir/module/device/rs/rs-penet-485.h"
 rfir::module::device::Device* GDevice = new rfir::module::device::RS::RSPenet485();
 #endif
+
+//8285红外接收发射透传
+#ifdef DEVICE_RFIR_PENET_IR_8285
+#include "rfir/module/device/rfir/rfir-penet-ir-8285.h"
+rfir::module::device::Device* GDevice = new rfir::module::device::rfir::RFIRPenetIR8285();
+#endif
