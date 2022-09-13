@@ -40,7 +40,7 @@
 // #define DEVICE_FZ_DM_AC_MIDEA
 
 // 福州亚太美的空调
-#define DEVICE_FZ_YT_AC_MIDEA
+// #define DEVICE_FZ_YT_AC_MIDEA
 
 // 福州亚太格力空调
 // #define DEVICE_FZ_YT_AC_GREE
@@ -49,7 +49,7 @@
 // #define DEVICE_Z3_COORDINATOR_ESP8266_CC2652
 
 // RS485透传
-// #define DEVICE_RS485_PENET
+#define DEVICE_RS485_PENET
 
 // 8285红外接收发射透传
 // #define DEVICE_RFIR_PENET_IR_8285

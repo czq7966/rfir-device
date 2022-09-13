@@ -106,8 +106,9 @@
 #ifndef DEBUGER
 #define DEBUGER Serial
 #endif
-
-
+#ifdef ESP32
+#define SerialConfig
+#endif
 
 #include <string>
 #include <vector>
