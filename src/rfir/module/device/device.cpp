@@ -85,6 +85,16 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     pld->ReplaceAdd("vendor", Config.props.dev_vendor);
     pld->ReplaceAdd("model", Config.props.dev_model);    
 
+    uint32_t heapFree;
+    uint16_t heapMax;
+    uint8_t heapFrag;    
+    ESP.getHeapStats(&heapFree, &heapMax, &heapFrag);
+    pld->ReplaceAdd("heapfree", heapFree);
+    pld->ReplaceAdd("heapmax", heapMax);
+    pld->ReplaceAdd("heapfrag", heapFrag);
+    pld->ReplaceAdd("freeheap", ESP.getFreeHeap());
+    pld->ReplaceAdd("freestack", ESP.getFreeContStack());
+
     if (WiFi.isConnected()) {
         pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
         pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
