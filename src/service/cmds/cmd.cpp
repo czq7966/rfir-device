@@ -66,6 +66,9 @@ void* service::cmds::Cmd::OnCommand(void* arg, void * p){
 
 
 int  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string reason){
+    ESP.resetFreeContStack();
+    ESP.resetHeap();    
+    
     ::cmds::cmd::CmdMqtt cmd;
     neb::CJsonObject& hd = cmd.command.hd;
     neb::CJsonObject& pld = cmd.command.pld;
