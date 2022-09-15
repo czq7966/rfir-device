@@ -89,9 +89,9 @@ bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
     uint16_t heapMax;
     uint8_t heapFrag;    
     ESP.getHeapStats(&heapFree, &heapMax, &heapFrag);
-    pld->ReplaceAdd("heapfree", heapFree);
-    pld->ReplaceAdd("heapmax", heapMax);
-    pld->ReplaceAdd("heapfrag", heapFrag);
+    // pld->ReplaceAdd("heapfree", heapFree);
+    // pld->ReplaceAdd("heapmax", heapMax);
+    // pld->ReplaceAdd("heapfrag", heapFrag);
     pld->ReplaceAdd("freeheap", ESP.getFreeHeap());
     pld->ReplaceAdd("freestack", ESP.getFreeContStack());
 
