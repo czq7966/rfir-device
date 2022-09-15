@@ -176,7 +176,8 @@ bool rfir::module::device::Networking::handshake(){
     GDevice->getCommonProps(&pld);
     pld.ReplaceAdd("handshake_count", m_handshake_success_count);
     pld.ReplaceAdd("handshake_failed_count", m_handshake_failed_count);    
-
+    pld.ReplaceAdd("freeheap", ESP.getFreeHeap());
+    pld.ReplaceAdd("freestack", ESP.getFreeContStack());
     return cmd.send(); 
 };
 
