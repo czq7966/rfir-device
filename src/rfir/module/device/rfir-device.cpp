@@ -62,6 +62,7 @@ void* rfir::module::device::RFIRDevice::onSniffed(void* arg, void* p){
 };
 
 void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
+    GInterrupt.stop();
     auto decodeResults = (std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>*)p;
 
     std::string bitStr, hexStr;
@@ -79,6 +80,7 @@ void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
     if (onSvc_decoded(*decodeResults)) {
         ::service::cmds::Cmd::OnSvc_get(0, "IR Change");
     };
+    GInterrupt.start();
     return 0;
 };
 
