@@ -48,13 +48,15 @@ bool rfir::module::device::RS::RSPenet485::recvCode(uint8_t* rx_buf, int& len, u
     unsigned long entTime = startTime;
 
     int offset = 0;
-    while (hwSerial->available() || (entTime - startTime <= timeout_ms)) {
-        int size = RS::RSPenet::rsRead((char*)rx_buf, offset); 
-        if (size > 0) {
-            startTime = millis();
-        }
+    while (hwSerial->available() || (entTime - startTime < timeout_ms)) {
+        if (hwSerial->available()) {
+            int size = RS::RSPenet::rsRead((char*)rx_buf, offset); 
+            if (size > 0) {
+                startTime = millis();
+            }
 
-        offset += size;
+            offset += size;
+        }
         entTime = millis();
     }
 

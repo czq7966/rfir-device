@@ -13,7 +13,7 @@ namespace rfir {
                 public:
                     uint8_t dePin = 5;
                     uint8_t rePin = 5;     
-                    int recvTimeout = 100;                           
+                    int recvTimeout = 1;                           
                 public:
                     virtual void readMode();
                     virtual void writeMode();                

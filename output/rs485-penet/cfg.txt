@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/rs485-penet/firmware_v2.bin
+2
+956445c960cccc80ea4d566e333f18a6
+2.0
+1
+ESP8266x00c1cd77,
