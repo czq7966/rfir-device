@@ -95,9 +95,6 @@ int rfir::module::device::RS::RSPenet::onSvc_penet(neb::CJsonObject* pld, cmds::
     if (pld && pld->Get("raw", code) ) {
         DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         auto result = rsWriteBase64((char*)code.c_str(), code.length());
-        int delayms = 0;
-        if (result && pld->Get("delay", delayms))
-            delay(delayms);
             
         return result;
     }    
