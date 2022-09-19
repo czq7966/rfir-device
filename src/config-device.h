@@ -34,13 +34,13 @@
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
 
 // 福州飘渺庄2楼食堂格力空调
-#define DEVICE_FZ_PMZ_F2_AC_GREE
+// #define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门美的空调
 // #define DEVICE_FZ_DM_AC_MIDEA
 
 // 福州亚太美的空调
-// #define DEVICE_FZ_YT_AC_MIDEA
+#define DEVICE_FZ_YT_AC_MIDEA
 
 // 福州亚太格力空调
 // #define DEVICE_FZ_YT_AC_GREE
