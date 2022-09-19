@@ -34,7 +34,7 @@
 // #define DEVICE_TEST_SNIFFER_ESP32_WROOM
 
 // 福州飘渺庄2楼食堂格力空调
-// #define DEVICE_FZ_PMZ_F2_AC_GREE
+#define DEVICE_FZ_PMZ_F2_AC_GREE
 
 // 福州东门美的空调
 // #define DEVICE_FZ_DM_AC_MIDEA
@@ -49,7 +49,7 @@
 // #define DEVICE_Z3_COORDINATOR_ESP8266_CC2652
 
 // RS485透传
-#define DEVICE_RS485_PENET
+// #define DEVICE_RS485_PENET
 
 // 8285红外接收发射透传
 // #define DEVICE_RFIR_PENET_IR_8285
