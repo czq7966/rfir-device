@@ -135,8 +135,16 @@ void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
     if (cmd.command.isRespCmd() && onResp(arg, &cmd) ) {
         return 0;
     }
-     
-    return this->events.onCommand.emit(&cmd); 
+
+    if (cmd.command.head.entry.id == "") {
+        cmd.command.head.entry.type = "evt";
+        cmd.command.head.entry.id = "error";
+        cmd.command.pld.ReplaceAdd("payload", msg->payload);
+        cmd.send();
+        return 0;
+    } else {     
+        return this->events.onCommand.emit(&cmd); 
+    }
 }; 
 
 
