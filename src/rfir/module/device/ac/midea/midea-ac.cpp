@@ -1,6 +1,5 @@
 #include "midea-ac.h"
 #include "rfir/util/util.h"
-#include "rfir/rfir.h"
 
 
 
@@ -29,49 +28,49 @@ std::string rfir::module::device::ac::MideaAC::toHexString() {
     return rfir::util::Util::BytesToHexString(raw, count);
 }
 
-uint16_t* rfir::module::device::ac::MideaAC::getEncodeRaw(int& count) {
-    uint16_t offset = 0;
+// uint16_t* rfir::module::device::ac::MideaAC::getEncodeRaw(int& count) {
+//     uint16_t offset = 0;
 
-    //Header
-    this->encodeRaw[offset++] = KHdrMark;
-    this->encodeRaw[offset++] = KHdrSpace;
+//     //Header
+//     this->encodeRaw[offset++] = KHdrMark;
+//     this->encodeRaw[offset++] = KHdrSpace;
 
-    auto raw = getRaw(count);
+//     auto raw = getRaw(count);
     
-    if (!getPower())
-        raw = (uint8_t*)&protocol_close.remote_state;    
-    auto rfir = rfir::GetRfir();
-    bool MSBfirst = rfir->encoder->getEncodeParams()->params[0].MSBfirst;
+//     if (!getPower())
+//         raw = (uint8_t*)&protocol_close.remote_state;    
+//     auto rfir = rfir::GetRfir();
+//     bool MSBfirst = rfir->encoder->getEncodeParams()->params[0].MSBfirst;
     
-    //Data
-    for(uint8_t i = 0; i < count; i++) {
-        auto byte = *(raw + i);        
-        for(uint8_t j = 0; j < 8; j++) {
-            int bit;
-            bit = MSBfirst ? (byte >> (7 - j) & 0x01) : (byte >> j & 0x01);
+//     //Data
+//     for(uint8_t i = 0; i < count; i++) {
+//         auto byte = *(raw + i);        
+//         for(uint8_t j = 0; j < 8; j++) {
+//             int bit;
+//             bit = MSBfirst ? (byte >> (7 - j) & 0x01) : (byte >> j & 0x01);
 
-            uint16_t mark = 0, space = 0;
+//             uint16_t mark = 0, space = 0;
 
-            if (bit == 0) {
-                mark = KZeroMark;
-                space = KZeroSpace;
-            } else {
-                mark = KOneMark;
-                space = KOneSpace;
-            }
+//             if (bit == 0) {
+//                 mark = KZeroMark;
+//                 space = KZeroSpace;
+//             } else {
+//                 mark = KOneMark;
+//                 space = KOneSpace;
+//             }
 
-            this->encodeRaw[offset++] = mark;
-            this->encodeRaw[offset++] = space;
-        }
-    }
+//             this->encodeRaw[offset++] = mark;
+//             this->encodeRaw[offset++] = space;
+//         }
+//     }
 
-    //Footer
-    this->encodeRaw[offset++] = KFtrMark;
-    this->encodeRaw[offset++] = KFtrSpace;
+//     //Footer
+//     this->encodeRaw[offset++] = KFtrMark;
+//     this->encodeRaw[offset++] = KFtrSpace;
 
-    count = KEncodeRawLength;
-    return this->encodeRaw;    
-}
+//     count = KEncodeRawLength;
+//     return this->encodeRaw;    
+// }
 
 // std::string rfir::module::device::ac::MideaAC::getEncodeString() {
 //     int count;

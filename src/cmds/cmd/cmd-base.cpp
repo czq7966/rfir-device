@@ -13,6 +13,14 @@ cmds::cmd::CmdBase::Command::Command(){
     head.from.id = DefaultFrom->id;
     head.to.type = DefaultTo->type;
     head.to.id = DefaultTo->id;    
+    doc = new DynamicJsonDocument(MQTT_BUFFER_SIZE);
+    root = doc->to<JsonObject>();
+    jhd = root.createNestedObject("hd");
+    jpld = root.createNestedObject("pld");
+};
+
+cmds::cmd::CmdBase::Command::~Command(){
+    delete doc;
 };
 
 std::string cmds::cmd::CmdBase::Command::getSid(){
@@ -70,43 +78,94 @@ bool cmds::cmd::CmdBase::Command::setNeedResp(bool value){
 };
 
 void cmds::cmd::CmdBase::Command::fixUp(){
-    neb::CJsonObject from, to, entry;
-    hd.Get("from", from);
-    hd.Get("to", to);
-    hd.Get("entry", entry);
+    root = doc->as<JsonObject>();
+    jhd = root.containsKey("hd") ? root["hd"] : root.createNestedObject("hd");
+    jpld = root.containsKey("pld") ? root["pld"] : root.createNestedObject("pld");
 
-    from.ReplaceAdd("type", head.from.type);
-    from.ReplaceAdd("id", head.from.id);
-    to.ReplaceAdd("type", head.to.type);
-    to.ReplaceAdd("id", head.to.id);
-    entry.ReplaceAdd("type", head.entry.type);
-    entry.ReplaceAdd("id", head.entry.id);
+    JsonObject from, to, entry;    
+    from = jhd.containsKey("from") ? jhd["from"] : jhd.createNestedObject("from");
+    to = jhd.containsKey("to") ? jhd["to"] : jhd.createNestedObject("to");
+    entry = jhd.containsKey("entry") ? jhd["entry"] : jhd.createNestedObject("entry");
+    from["type"] = head.from.type;
+    from["id"] = head.from.id;
+    to["type"] = head.to.type;
+    to["id"] = head.to.id;
+    entry["type"] = head.entry.type;
+    entry["id"] = head.entry.id;  
+    jhd["sid"] = head.sid;
+    jhd["stp"] = head.stp;
 
-    hd.ReplaceAdd("from", from);
-    hd.ReplaceAdd("to", to);
-    hd.ReplaceAdd("entry", entry);
-    hd.ReplaceAdd("sid", head.sid);
-    hd.ReplaceAdd("stp", head.stp);
+
+    // if (jhd.containsKey("from")) {
+    //     JsonObject from = jhd["from"];
+    //     head.from.type = from.containsKey("type") ? from["type"] : head.from.type;
+    //     head.from.id = from.containsKey("id") ? from["id"] : head.from.id;
+    // }
+
+
+    // neb::CJsonObject from, to, entry;
+    // hd.Get("from", from);
+    // hd.Get("to", to);
+    // hd.Get("entry", entry);
+
+    // from.ReplaceAdd("type", head.from.type);
+    // from.ReplaceAdd("id", head.from.id);
+    // to.ReplaceAdd("type", head.to.type);
+    // to.ReplaceAdd("id", head.to.id);
+    // entry.ReplaceAdd("type", head.entry.type);
+    // entry.ReplaceAdd("id", head.entry.id);
+
+    // hd.ReplaceAdd("from", from);
+    // hd.ReplaceAdd("to", to);
+    // hd.ReplaceAdd("entry", entry);
+    // hd.ReplaceAdd("sid", head.sid);
+    // hd.ReplaceAdd("stp", head.stp);
 };
 void cmds::cmd::CmdBase::Command::fixDown(){
-    neb::CJsonObject from, to, entry;
-    if (hd.Get("from", from)) {
-        from.Get("type", head.from.type);
-        from.Get("id", head.from.id);
+    root = doc->as<JsonObject>();
+    jhd = root.containsKey("hd") ? root["hd"] : root.createNestedObject("hd");
+    jpld = root.containsKey("pld") ? root["pld"] : root.createNestedObject("pld");
+
+    JsonObject from, to, entry;
+    if (jhd.containsKey("from")) {
+        from = jhd["from"];
+        head.from.type = from.containsKey("type") ? from["type"] : head.from.type;
+        head.from.id = from.containsKey("id") ? from["id"] : head.from.id;
     }
 
-    if (hd.Get("to", to)) {
-        to.Get("type", head.to.type);
-        to.Get("id", head.to.id);
+    if (jhd.containsKey("to")) {
+        to = jhd["to"];
+        head.to.type = to.containsKey("type") ? to["type"] : head.to.type;
+        head.to.id = to.containsKey("id") ? to["id"] : head.to.id;
     }
 
-    if (hd.Get("entry", entry)) {
-        entry.Get("type", head.entry.type);
-        entry.Get("id", head.entry.id);
+    if (jhd.containsKey("entry")) {
+        entry = jhd["entry"];
+        head.entry.type = entry.containsKey("type") ? entry["type"] : head.entry.type;
+        head.entry.id = entry.containsKey("id") ? entry["id"] : head.entry.id;
     }
 
-    hd.Get("sid", head.sid);
-    hd.Get("stp", head.stp);    
+    head.sid = jhd.containsKey("sid") ? jhd["sid"] : head.sid;
+    head.stp = jhd.containsKey("stp") ? jhd["stp"] : head.stp;
+
+    // neb::CJsonObject from, to, entry;
+    // if (hd.Get("from", from)) {
+    //     from.Get("type", head.from.type);
+    //     from.Get("id", head.from.id);
+    // }
+
+    // if (hd.Get("to", to)) {
+    //     to.Get("type", head.to.type);
+    //     to.Get("id", head.to.id);
+    // }
+
+    // if (hd.Get("entry", entry)) {
+    //     entry.Get("type", head.entry.type);
+    //     entry.Get("id", head.entry.id);
+    // }
+
+    // hd.Get("sid", head.sid);
+    // hd.Get("stp", head.stp);    
 };
 
 void cmds::cmd::CmdBase::Command::fixUpRecv() {
@@ -147,15 +206,42 @@ void cmds::cmd::CmdBase::Command::cloneTo(neb::CJsonObject& _hd, neb::CJsonObjec
 };
 
 std::string cmds::cmd::CmdBase::Command::toString(){
-    neb::CJsonObject cmd;
-    cloneTo(cmd);
-    return cmd.ToString();
+    fixUp();
+    std::string str;
+    serializeJson(root,  str);
+    return str;
+    // neb::CJsonObject cmd;
+    // cloneTo(cmd);
+    // return cmd.ToString();
 };
 
 void cmds::cmd::CmdBase::Command::fromString(const char* str) {
-    neb::CJsonObject cmd(str);
-    cloneFrom(cmd);
+    deserializeJson(*doc, str);
+    fixDown();
+
+    // neb::CJsonObject cmd(str);
+    // cloneFrom(cmd);
 }
+
+
+void cmds::cmd::CmdBase::Command::cloneFrom(JsonObject cmd){
+    cloneFrom(cmd["hd"], cmd["pld"]);
+};
+
+void cmds::cmd::CmdBase::Command::cloneTo(JsonObject cmd){
+    cloneTo(cmd["hd"], cmd["pld"]);
+};
+
+void cmds::cmd::CmdBase::Command::cloneFrom(JsonObject hd, JsonObject pld){
+    if (!hd.isNull()) jhd.set(hd);
+    if (!pld.isNull()) jpld.set(pld);
+    fixDown();
+};
+void cmds::cmd::CmdBase::Command::cloneTo(JsonObject hd, JsonObject pld){
+    fixUp();
+    if (!hd.isNull()) hd.set(jhd);
+    if (!pld.isNull()) pld.set(jpld);
+};
 
 // void cmds::cmd::CmdBase::Events::cloneFrom(Events& events){
 //     onResp = events.onResp;

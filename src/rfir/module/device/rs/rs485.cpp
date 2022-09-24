@@ -1,5 +1,6 @@
 #include "rs485.h"
-#include "../../../util/crc.h"
+#include "rfir/util/crc.h"
+#include "rfir/util/util.h"
 
 
 void rfir::module::device::RS::RS485::init() {

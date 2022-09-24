@@ -3,6 +3,7 @@
 #include "rfir/module/device/networking.h"
 #include "cmds/cmd/cmd-dispatcher.h"
 #include "rfir/util/event-timer.h"
+#include <ArduinoJson.h>
 
 
 void service::cmds::Cmd::Start() {
@@ -70,15 +71,15 @@ int  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string rea
     ESP.resetHeap();    
     
     ::cmds::cmd::CmdMqtt cmd;
-    neb::CJsonObject& hd = cmd.command.hd;
-    neb::CJsonObject& pld = cmd.command.pld;
+    JsonObject& hd = cmd.command.jhd;
+    JsonObject& pld = cmd.command.jpld;
 
-    auto result = GDevice->getProps(&pld, reqCmd);
-    pld.ReplaceAdd("_extra", reason);
-    pld.ReplaceAdd("_success", result);
+    auto result = GDevice->getProps(pld, reqCmd);
+    pld["_extra"] = reason;
+    pld["_success"] = result;
 
     if (reqCmd){
-        hd = reqCmd->command.hd;
+        hd.set(reqCmd->command.jhd);
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;
@@ -87,7 +88,7 @@ int  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string rea
         cmd.command.head.entry.type = "evt";
         cmd.command.head.entry.id = "report";
     }
-    Config.getIds(&hd);
+    Config.getIds(hd);
 
     result = cmd.send();
     GDevice->doEvtTimerReport(1000);

@@ -12,10 +12,6 @@
 #include "rfir/module/device/ac/midea/fz-dm-midea.h"
 #include "rfir/module/ttl/sender-v2.h"
 
-#include "rfir/service/serial/receiver.h"
-#include "rfir/service/serial/sender.h"
-#include "rfir/service/cmds/cmd.h"
-
 #include "rfir/util/event-timer.h"
 #include "rfir/util/led.h"
 

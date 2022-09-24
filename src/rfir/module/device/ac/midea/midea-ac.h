@@ -101,7 +101,7 @@ namespace rfir {
                     std::string toBitString();
                     std::string toHexString();
 
-                    uint16_t*   getEncodeRaw(int& count);      
+                    // uint16_t*   getEncodeRaw(int& count);      
                     // std::string getEncodeString();
 
                     uint8_t     getPower();

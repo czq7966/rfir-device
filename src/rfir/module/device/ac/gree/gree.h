@@ -3,7 +3,6 @@
 
 
 #include "../../rfir-device.h"
-#include "rfir/rfir.h"
 #include "gree-ac.h"
 
 

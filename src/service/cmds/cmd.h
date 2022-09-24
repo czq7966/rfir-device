@@ -6,9 +6,7 @@
 #include "config.h"
 #include "rfir/util/cjson/CJsonObject.hpp"
 #include "rfir/util/util.h"
-#include "rfir/service/cmds/cmd.h"
 #include "cmds/cmd/cmd-mqtt.h"
-// #include "network/service/mqtt/client.h"
 
 namespace service {
     namespace cmds {

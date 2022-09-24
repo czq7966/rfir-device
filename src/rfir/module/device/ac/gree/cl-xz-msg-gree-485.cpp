@@ -1,5 +1,6 @@
 #include "cl-xz-msg-gree-485.h"
 #include "rfir/util/crc.h"
+#include "rfir/util/util.h"
 
 
 void rfir::module::device::ac::CL_XZ_MSG_GREE_485::init() {

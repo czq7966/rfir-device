@@ -4,6 +4,7 @@
 #include <string>
 #include "rfir/util/event-emitter.h"
 #include "rfir/util/cjson/CJsonObject.hpp"
+#include <ArduinoJson.h>
 
 namespace cmds {
     namespace cmd {
@@ -35,7 +36,11 @@ namespace cmds {
                 neb::CJsonObject hd;
                 neb::CJsonObject pld;
 
+                DynamicJsonDocument* doc;
+                JsonObject root, jhd, jpld;
+
                 Command();
+                ~Command();
                 std::string getSid();                
                 uint32_t getIntSid();
                 bool setSid(std::string value);                
@@ -60,7 +65,10 @@ namespace cmds {
                 void cloneFrom(neb::CJsonObject& hd, neb::CJsonObject& pld);
                 void cloneTo(neb::CJsonObject& hd, neb::CJsonObject& pld);
 
-
+                void cloneFrom(JsonObject cmd);
+                void cloneTo(JsonObject cmd);
+                void cloneFrom(JsonObject hd, JsonObject pld);
+                void cloneTo(JsonObject hd, JsonObject pld);
 
                 std::string toString();
                 void        fromString(const char* str);

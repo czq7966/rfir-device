@@ -3,6 +3,7 @@
 #include "cmds/cmd/cmd-dispatcher.h"
 #include "rfir/util/event-timer.h"
 #include "rfir/util/led.h"
+#include "rfir/util/util.h"
 
 
 //Networking

@@ -1,8 +1,9 @@
 #include "device.h"
-#include "rfir/rfir.h"
 #include "cmds/cmd/cmd-dispatcher.h"
 #include "rfir/util/event-timer.h"
 #include "rfir/util/interrupt.h"
+#include "rfir/util/util.h"
+#include "rfir/util/file.h"
 
 
 void rfir::module::device::Device::init() {
@@ -107,6 +108,32 @@ bool rfir::module::device::Device::getProps(neb::CJsonObject* pld, cmds::cmd::Cm
     return result;
 };
 
+bool rfir::module::device::Device::getCommonProps(JsonObject pld){
+    pld["id"] = Config.props.dev_id;
+    pld["mac"] = rfir::util::Util::GetMacAddress();
+    pld["rssi"] = WiFi.RSSI();
+    pld["ip"] = "";
+    pld["ssid"] = "";
+    pld["version"] = Config.props.ota_version_number;
+    pld["vendor"] = Config.props.dev_vendor;
+    pld["model"] = Config.props.dev_model;    
+
+    pld["freeheap"] = ESP.getFreeHeap();
+    pld["freestack"] = ESP.getFreeContStack();
+
+    if (WiFi.isConnected()) {
+        pld["ip"] = WiFi.localIP().toString().c_str();
+        pld["ssid"] = WiFi.SSID().c_str();
+    }
+    return true;
+};
+bool rfir::module::device::Device::getProps(JsonObject pld, cmds::cmd::CmdBase* cmd){
+    auto result = onSvc_get(pld, cmd);
+    getCommonProps(pld);
+    return result;
+};
+
+
 bool rfir::module::device::Device::doEvtTimerReport(uint32_t timeout){
     GEventTimer.remove(m_timer_report_handler);
     m_timer_report_handler =  GEventTimer.delay(timeout, std::bind(&Device::onEvt_timer_report, this, std::placeholders::_1, std::placeholders::_2));
@@ -149,6 +176,31 @@ int rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd:
 }; 
 
 int rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+    return 0;
+};
+
+int rfir::module::device::Device::onSvc_get(JsonObject pld, cmds::cmd::CmdBase* cmd){
+    return 0;
+}; 
+
+int rfir::module::device::Device::onSvc_set(JsonObject pld, cmds::cmd::CmdBase* cmd){
+    return 0;
+}; 
+
+int rfir::module::device::Device::onSvc_config(JsonObject pld, cmds::cmd::CmdBase* cmd){
+    return 0;
+}; 
+
+int rfir::module::device::Device::onSvc_reboot(JsonObject pld, cmds::cmd::CmdBase* cmd){
+    DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
+    int delay = pld.containsKey("delay") ? pld["delay"] : 0;
+    delay = std::max(1000, delay);
+
+    GEventTimer.delay(delay, std::bind(&Device::doSvc_reboot , this, std::placeholders::_1, std::placeholders::_2));
+    return 1;
+}; 
+
+int rfir::module::device::Device::onSvc_penet(JsonObject pld, cmds::cmd::CmdBase* cmd){
     return 0;
 };
 

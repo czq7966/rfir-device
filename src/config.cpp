@@ -168,6 +168,27 @@ int GlobalConfig::saveToFile(neb::CJsonObject& config){
     return 0;
 };
 
+int GlobalConfig::loadFromFile(JsonObject& config){
+    rfir::util::TxtFile file(configFilename.c_str());
+    std::string str;
+    if (file.readString(str)) {
+        DynamicJsonDocument doc(MQTT_BUFFER_SIZE);
+        deserializeJson(doc, str);
+        return config.set(doc.as<JsonObject>());
+    }
+    return 0;
+};
+
+int GlobalConfig::saveToFile(JsonObject& config){
+    rfir::util::TxtFile file(configFilename.c_str());
+    std::string str;
+    serializeJson(config, str);
+    if (str.length() > 0) {
+        return file.writeString(str);
+    }
+    return 0;
+};
+
 int GlobalConfig::initFromFile(){
     neb::CJsonObject config, app;
     this->loadFromFile(config);
@@ -203,6 +224,23 @@ void  GlobalConfig::getIds(neb::CJsonObject* pld, std::string key){
     if (key != "") pld->ReplaceAdd(key, ids);
 
 };
+
+void  GlobalConfig::getIds(JsonObject pld, std::string key){
+    JsonObject ids = pld;
+
+    if (key != "") 
+        ids = pld.containsKey(key) ? pld[key] : pld.createNestedObject(key);
+    
+
+    ids["app"] = props.app_id;
+    ids["dom"] = props.dom_id;
+    ids["dsp"] = props.dsp_id;
+    ids["edg"] = props.edg_id;
+    ids["dev"] = props.dev_id;
+    ids["dio"] = props.dio_id;
+
+};
+
 
 std::string GlobalConfig::expandTopic(std::string topic){
     return props.expandTopic(topic);

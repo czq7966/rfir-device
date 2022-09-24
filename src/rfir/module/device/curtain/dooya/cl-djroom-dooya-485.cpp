@@ -1,5 +1,6 @@
 #include "cl-djroom-dooya-485.h"
 #include "rfir/util/crc.h"
+#include "rfir/util/util.h"
 
 
 void rfir::module::device::curtain::CL_DJROOM_Dooya_485::init() {

@@ -114,6 +114,8 @@
 #include <vector>
 #include "rfir/util/event-emitter.h"
 #include "rfir/util/cjson/CJsonObject.hpp"
+#include <ArduinoJson.h>
+
 class GlobalConfig {
 public:
     struct Events
@@ -214,6 +216,7 @@ public:
         int networking_reset_timeout = NETWORKING_RESET_TIMEOUT; 
 
         int init(neb::CJsonObject* config);
+        int init(JsonObject config);
         void fixup();
         void fixupTopic();
         void reset();
@@ -228,11 +231,14 @@ public:
     void fixup();
     void fixupTopic();
     void reset();
-    void        getIds(neb::CJsonObject* pld, std::string key = "ids");
+    void getIds(neb::CJsonObject* pld, std::string key = "ids");
+    void getIds(JsonObject pld, std::string key = "ids");
     std::string expandTopic(std::string topic);
 
     int loadFromFile(neb::CJsonObject& config);
     int saveToFile(neb::CJsonObject& config);
+    int loadFromFile(JsonObject& config);
+    int saveToFile(JsonObject& config);
     int initFromFile();
     
 public:
