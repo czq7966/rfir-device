@@ -2,5 +2,5 @@ http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/rs485-pen
 7
 7ac80415c26db6097c295881fd74ec60
 7.0
-1
+0
 ESP8266x00c1cd77,
