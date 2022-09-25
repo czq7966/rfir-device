@@ -23,7 +23,6 @@
 
 #include "FS.h"
 #include <LITTLEFS.h>
-#include "cjson/CJsonObject.hpp"
 #include <WiFi.h>
 
 #define FileFS LITTLEFS
@@ -50,7 +49,6 @@
 #include <sys/time.h>
 #include <FS.h>
 #include <LittleFS.h>
-#include "cjson/CJsonObject.hpp"
 #include <ESP8266WiFi.h>
 
 #define FileFS LittleFS

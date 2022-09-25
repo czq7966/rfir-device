@@ -97,21 +97,19 @@ bool rfir::module::device::ac::Gree::getEncodeRaw(std::list<uint16_t>& result) {
     return encoder->encode(data, result);
 }
 
-int rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::Gree::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     if (!pld) return 0;
     
 
     //Power
     auto power = ac.ac->getPower();
-    std::string powerStr;
-    pld->Get("power", powerStr);
+    std::string powerStr = pld->containsKey("power") ? (*pld)["power"].as<std::string>() : "";
     power = powerStr == "on" ? true : 
             powerStr == "off" ? false : true;
 
     //Mode
     auto mode = ac.ac->getMode();
-    std::string modeStr;
-    pld->Get("mode", modeStr);
+    std::string modeStr = pld->containsKey("mode") ? (*pld)["mode"].as<std::string>() : "";
     mode =  modeStr == "auto" ? kGreeAuto : 
             modeStr == "cool" ? kGreeCool : 
             modeStr == "dry" ? kGreeDry : 
@@ -121,8 +119,7 @@ int rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::
 
     //FanSpeed
     auto fan = ac.ac->getFan();
-    std::string fanStr;
-    pld->Get("fanSpeed", fanStr);
+    std::string fanStr = pld->containsKey("fanSpeed") ? (*pld)["fanSpeed"].as<std::string>() : "";
     fan =   fanStr == "auto" ? kGreeFanAuto : 
             fanStr == "low" ? kGreeFanMin : 
             fanStr == "medium" ? kGreeFanMed : 
@@ -130,22 +127,18 @@ int rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::
 
     //Sleep
     auto sleep = ac.ac->getSleep();
-    std::string sleepStr;
-    pld->Get("sleep", sleepStr);
+    std::string sleepStr = pld->containsKey("sleep") ? (*pld)["sleep"].as<std::string>() : "";
     sleep = sleepStr == "on" ? true : 
             sleepStr == "off" ? false : sleep;
 
     //Swing
     auto swing = ac.ac->getSwingVerticalAuto();
-    std::string swingStr;
-    pld->Get("swing", swingStr);
+    std::string swingStr = pld->containsKey("swing") ? (*pld)["swing"].as<std::string>() : "";
     swing = swingStr == "on" ? true : 
             swingStr == "off" ? false : swing;
 
     //Temp
-    uint32 temp = ac.ac->getTemp();
-    pld->Get("temperature", temp);
-
+    uint32 temp = pld->containsKey("temperature") ? (*pld)["temperature"] : ac.ac->getTemp();
 
     ac.ac->setMode(mode);
     ac.ac->setFan(fan);
@@ -160,9 +153,9 @@ int rfir::module::device::ac::Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::
 }
 
 
-int rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::Gree::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     //Power
-    pld->Add("power", ac.ac->getPower() ? "on" : "off");
+    (*pld)["power"] = ac.ac->getPower() ? "on" : "off";
 
     //Mode
     auto mode = ac.ac->getMode();
@@ -172,7 +165,7 @@ int rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::
                             mode == kGreeFan ? "fan" : 
                             mode == kGreeFan ? "fan_only" : 
                             mode == kGreeHeat ? "heat" : std::string(String(mode).c_str());
-    pld->Add("mode", modeStr);
+    (*pld)["mode"] = modeStr;
 
     //FanSpeed
     auto fan = ac.ac->getFan();
@@ -180,17 +173,17 @@ int rfir::module::device::ac::Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::
                             fan == kGreeFanMin ? "low" : 
                             fan == kGreeFanMed ? "medium" : 
                             fan == kGreeFanMax ? "high" : std::string(String(fan).c_str());
-    pld->Add("fanSpeed", fanStr);
+    (*pld)["fanSpeed"] = fanStr;
 
     //Sleep
-    pld->Add("sleep", ac.ac->getSleep() ? "on" : "off");
+    (*pld)["sleep"] = ac.ac->getSleep() ? "on" : "off";
 
     //Swing
-    pld->Add("swing", ac.ac->getSwingVerticalAuto() ? "on" : "off");
+    (*pld)["swing"] = ac.ac->getSwingVerticalAuto() ? "on" : "off";
 
     //Temp
-    pld->Add("temperature", ac.ac->getTemp());
-    pld->Add("extra", ac.toBitString() + "," + ac.toHexString());
+    (*pld)["temperature"] = ac.ac->getTemp();
+    (*pld)["extra"] = ac.toBitString() + "," + ac.toHexString();
 
     return true;
 }

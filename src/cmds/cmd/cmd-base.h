@@ -3,7 +3,6 @@
 
 #include <string>
 #include "rfir/util/event-emitter.h"
-#include "rfir/util/cjson/CJsonObject.hpp"
 #include <ArduinoJson.h>
 
 namespace cmds {
@@ -33,11 +32,9 @@ namespace cmds {
                 static Address* DefaultTo;
                 static int      DefaultRespTimeout;
                 Head head;
-                neb::CJsonObject hd;
-                neb::CJsonObject pld;
 
                 DynamicJsonDocument* doc;
-                JsonObject root, jhd, jpld;
+                JsonObject root, hd, pld;
 
                 Command();
                 ~Command();
@@ -60,10 +57,6 @@ namespace cmds {
 
                 void cloneFrom(Command& cmd);
                 void cloneTo(Command& cmd);
-                void cloneFrom(neb::CJsonObject& cmd);
-                void cloneTo(neb::CJsonObject& cmd);
-                void cloneFrom(neb::CJsonObject& hd, neb::CJsonObject& pld);
-                void cloneTo(neb::CJsonObject& hd, neb::CJsonObject& pld);
 
                 void cloneFrom(JsonObject cmd);
                 void cloneTo(JsonObject cmd);

@@ -136,15 +136,8 @@ void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
         return 0;
     }
 
-    if (cmd.command.head.entry.id == "") {
-        cmd.command.head.entry.type = "evt";
-        cmd.command.head.entry.id = "error";
-        cmd.command.pld.ReplaceAdd("payload", msg->payload);
-        cmd.send();
-        return 0;
-    } else {     
-        return this->events.onCommand.emit(&cmd); 
-    }
+    return this->events.onCommand.emit(&cmd); 
+    
 }; 
 
 

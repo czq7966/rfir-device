@@ -1,7 +1,6 @@
 #include "smc.h"   
 #include "client.h"
 #include "config.h"     
-#include "rfir/util/cjson/CJsonObject.hpp"
 #include "rfir/util/file.h"
 #include "rfir/util/util.h"
 
@@ -29,22 +28,26 @@ void network::module::wifi::SMC::loop() {
 }
 
 bool network::module::wifi::SMC::loadConfig() {
-    neb::CJsonObject json;
     std::string fn = this->params->configFile;
     rfir::util::TxtFile file(fn.c_str());
     std::string context;
     file.readString(context);
     if (context.length() > 0) {
-        json.Parse(context);
-        std::string version;
-        if (json.Get("configVersion", version) && version == this->params->configVersion) {
-            json.Get("apSsid", this->params->apSsid);
-            json.Get("apPass", this->params->apPass);
-            json.Get("wifiSsid", this->params->wifiSsid);
-            json.Get("wifiPass", this->params->wifiPass);     
-            DEBUGER.println(this->params->wifiSsid.c_str());
-            DEBUGER.println(this->params->wifiPass.c_str());
-            return true;       
+        DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+        deserializeJson(doc, context);
+        JsonObject json = doc.as<JsonObject>();
+        
+        if(json.containsKey("configVersion")) {
+            std::string version = json["configVersion"];
+            if (version == this->params->configVersion) {
+                this->params->apSsid = json.containsKey("apSsid") ? json["apSsid"].as<std::string>() : this->params->apSsid;
+                this->params->apPass = json.containsKey("apPass") ? json["apPass"].as<std::string>() : this->params->apPass;
+                this->params->wifiSsid = json.containsKey("wifiSsid") ? json["wifiSsid"].as<std::string>() : this->params->wifiSsid;
+                this->params->wifiPass = json.containsKey("wifiPass") ? json["wifiPass"].as<std::string>() : this->params->wifiPass;
+                DEBUGER.println(this->params->wifiSsid.c_str());
+                DEBUGER.println(this->params->wifiPass.c_str());       
+                return true;           
+            }
         }
     } 
 
@@ -52,18 +55,17 @@ bool network::module::wifi::SMC::loadConfig() {
 }
 
 bool network::module::wifi::SMC::saveConfig() {
-    neb::CJsonObject json;
+    DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+    doc["apSsid"] = this->params->apSsid;
+    doc["apPass"] = this->params->apPass;
+    doc["wifiSsid"] = this->params->wifiSsid;
+    doc["wifiPass"] = this->params->wifiPass;
+    doc["configVersion"] = this->params->configVersion;
+    std::string context;
+    serializeJson(doc, context);
+
     std::string fn = this->params->configFile;
     rfir::util::TxtFile file(fn.c_str());
-    std::string context;
-
-    json.Add("apSsid", this->params->apSsid);
-    json.Add("apPass", this->params->apPass);
-    json.Add("wifiSsid", this->params->wifiSsid);
-    json.Add("wifiPass", this->params->wifiPass);
-    json.Add("configVersion", this->params->configVersion);
-
-    context = json.ToString();
     return file.writeString(context);
 }
 

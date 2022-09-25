@@ -6,10 +6,11 @@
 void rfir::module::device::RS::RS485::init() {
 #ifdef COSerial       
     this->hwSerial = &COSerial;
-    neb::CJsonObject pld;
-    pld.Add("baudRate", Config.props.co_serial_baud);
-    pld.Add("serialConfig", Config.props.co_serial_config);
-    onSvc_setBandRate(&pld);
+    DynamicJsonDocument doc(256);
+    doc["baudRate"] = Config.props.co_serial_baud;
+    doc["serialConfig"] = Config.props.co_serial_config;
+    JsonObject root = doc.as<JsonObject>();
+    onSvc_setBandRate(&root);
 #else 
     this->hwSerial = &Serial;      
 #endif
@@ -39,11 +40,13 @@ void rfir::module::device::RS::RS485::writeMode(){
 };
 
 
-int rfir::module::device::RS::RS485::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RS::RS485::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     onSvc_setBandRate(pld);
 
     std::string code;
-    pld->Get("code", code);
+    if (pld->containsKey("code"))
+        code = (*pld)["code"].as<std::string>();
+        
     auto nbytes = rfir::util::Util::StringToBytes(code, this->txBuf) / 8;
     
     if (nbytes > 0) {
@@ -54,12 +57,13 @@ int rfir::module::device::RS::RS485::onSvc_set(neb::CJsonObject* pld, cmds::cmd:
     return 0;
 }
 
-bool rfir::module::device::RS::RS485::onSvc_setBandRate(neb::CJsonObject* pld) {
-    int baudRate, serialConfig;
-    if (pld->Get("baudRate", baudRate)) {
+bool rfir::module::device::RS::RS485::onSvc_setBandRate(JsonObject* pld) {
+    if (pld->containsKey("baudRate")) {        
+        int baudRate = (*pld)["baudRate"];
         this->hwSerial->end();
         delay(100);
-        if (pld->Get("serialConfig", serialConfig)) {   
+        if (pld->containsKey("serialConfig")) {   
+            int serialConfig = (*pld)["serialConfig"];
             #ifdef ESP8266                    
                 this->hwSerial->begin(baudRate, SerialConfig(serialConfig));
             #else
@@ -78,20 +82,21 @@ bool rfir::module::device::RS::RS485::onSvc_setBandRate(neb::CJsonObject* pld) {
     return 0;
 }; 
 
-int rfir::module::device::RS::RS485::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RS::RS485::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     std::string code;
-    pld->Get("code", code);
+    if (pld->containsKey("code"))
+        code = (*pld)["code"].as<std::string>();
 
     auto nbytes = rfir::util::Util::StringToBytes(code, this->txBuf) / 8;
     if (nbytes > 0) {
         uint8_t len = 0;
         if(sendCodeAndRecv(this->txBuf, nbytes, this->rxBuf, len, this->recvTimeoutMS)) {
             code = rfir::util::Util::BytesToHexString(this->rxBuf, len);
-            pld->ReplaceAdd("code", code);
+            (*pld)["code"] = code;
             return 1;
         } else {            
             code = rfir::util::Util::BytesToHexString(this->rxBuf, len);
-            pld->ReplaceAdd("errCode", code);
+            (*pld)["errCode"] = code;
             return 0;
         } 
     }

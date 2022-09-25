@@ -27,7 +27,7 @@ void rfir::module::device::ac::FZ_PMZ_F2_Gree::loop() {
     //todo
 }
 
-int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     auto r = Gree::onSvc_get(pld, cmd);
 
     int on = 0;
@@ -44,12 +44,12 @@ int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_get(neb::CJsonObject* pld, c
 
     // auto running = digitalRead(PIN_POWER) ? "on" : "off";
     auto running = on ? "on" : "off";
-    pld->ReplaceAdd("running", running);    
-    pld->ReplaceAdd("power", running);    
+    (*pld)["running"] = running;    
+    (*pld)["power"] = running;    
     return r;
 };
 
-int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::FZ_PMZ_F2_Gree::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     ac.ac->setLight(true);
     auto r = Gree::onSvc_set(pld, cmd);    
     return r;

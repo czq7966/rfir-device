@@ -33,12 +33,6 @@ namespace rfir {
             public:
                 void delayNetworking(int delay_ms = 100);
                 void* doNetworking(void* arg, void* p);
-                bool loginDsp();
-                void delayLoginDsp(int delay_ms = 5000);
-                void* doLoginDsp(void* arg, void* p);
-                bool loginDio();
-                void delayLoginDio(int delay_ms = 5000);
-                void* doLoginDio(void* arg, void* p);                
 
                 bool handshake();
                 void delayHandshake(int delay_ms = 1000);
@@ -46,8 +40,6 @@ namespace rfir {
                 
                 bool setWill();
                 void setOnline();
-                void setOnlineToDsp();
-                void setOnlineToEdg();
                 void setReboot();
                 void subscribe();
                 void unsubscribe();
@@ -58,16 +50,9 @@ namespace rfir {
                 void* onNetworkingTimeout(void* arg, void* p);
                 void* onCommand(void* arg, void* p);
                 void* onConfigFixup(void* arg, void* p);
-            public:
-                void* onDev_login_dsp_resp(void* arg, void* p);
-                void* onDev_login_dsp_timeout(void* arg, void* p);
-                void* onDev_login_dio_resp(void* arg, void* p);
-                void* onDev_login_dio_timeout(void* arg, void* p);                
+            public:             
                 void* onDev_handshake_resp(void* arg, void* p);                
                 void* onDev_handshake_timeout(void* arg, void* p);
-
-                void* onDsp_status_change(void* arg, void* p);
-                void* onEdg_status_change(void* arg, void* p);
             //V3
             public:
                 void delayNetworkingV3(int delay_ms = 100);

@@ -28,9 +28,9 @@ namespace rfir {
                     virtual void initSerial();   
                 public:
                     virtual bool doEvt_penet();
-                    virtual int onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
-                    virtual int onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
-                    virtual int onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;  
+                    virtual int onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_penet(JsonObject* pld, cmds::cmd::CmdBase* cmd) override;  
                 };
             }
         }

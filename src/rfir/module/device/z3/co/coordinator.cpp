@@ -7,7 +7,6 @@ void rfir::module::device::z3::co::Coordinator::init() {
     this->name = "Z3Coordinator";
     COSerial.end();
     COSerial.begin(Config.props.co_serial_baud, SerialConfig(Config.props.co_serial_config));
-    // Serial.println(Config.props.dev_id.c_str());    
 }
 
 
@@ -69,10 +68,11 @@ bool rfir::module::device::z3::co::Coordinator::coWriteBase64(char data[], size_
 
 bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
     if (COSerial.available() && GNetworking.status.connected) {
-        neb::CJsonObject pld;
         std::string code = coReadBase64(coBuffer);
         if (code.length() > 0) {
-            pld.Add("raw", code);
+            DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+            JsonObject pld = doc.to<JsonObject>();
+            pld["raw"] = code;
             events.onEvtPenet.emit(&pld);
             return 1;
         } 
@@ -80,18 +80,18 @@ bool rfir::module::device::z3::co::Coordinator::doEvt_penet(){
     return 0;
 };
 
-int rfir::module::device::z3::co::Coordinator::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::z3::co::Coordinator::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-int rfir::module::device::z3::co::Coordinator::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::z3::co::Coordinator::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-int rfir::module::device::z3::co::Coordinator::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
+int rfir::module::device::z3::co::Coordinator::onSvc_penet(JsonObject* pld, cmds::cmd::CmdBase* cmd){    
     DEBUGER.printf("rfir::module::device::z3::co::Coordinator::onSvc_penet  \r\n");
-    std::string code;
-    if (pld && pld->Get("raw", code) ) {
+    if (pld && pld->containsKey("raw") ) {
+        std::string code =(*pld)["raw"];
         return coWriteBase64((char*)code.c_str(), code.length());
     }    
 

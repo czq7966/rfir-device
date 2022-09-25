@@ -21,11 +21,11 @@ void rfir::module::device::ac::FZ_DM_Midea::start(void * p) {
     pinMode(PIN_POWER, INPUT);
 }
 
-int rfir::module::device::ac::FZ_DM_Midea::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::ac::FZ_DM_Midea::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     auto r = Midea::onSvc_get(pld, cmd);
     auto running = digitalRead(PIN_POWER) ? "on" : "off";
-    pld->ReplaceAdd("running", running);    
-    pld->ReplaceAdd("power", running);    
+    (*pld)["running"] = running;    
+    (*pld)["power"] = running;    
     return r;
 };
 

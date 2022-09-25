@@ -71,15 +71,15 @@ int  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string rea
     ESP.resetHeap();    
     
     ::cmds::cmd::CmdMqtt cmd;
-    JsonObject& hd = cmd.command.jhd;
-    JsonObject& pld = cmd.command.jpld;
+    JsonObject& hd = cmd.command.hd;
+    JsonObject& pld = cmd.command.pld;
 
-    auto result = GDevice->getProps(pld, reqCmd);
+    auto result = GDevice->getProps(&pld, reqCmd);
     pld["_extra"] = reason;
     pld["_success"] = result;
 
     if (reqCmd){
-        hd.set(reqCmd->command.jhd);
+        hd.set(reqCmd->command.hd);
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;
@@ -88,7 +88,7 @@ int  service::cmds::Cmd::OnSvc_get(::cmds::cmd::CmdMqtt* reqCmd, std::string rea
         cmd.command.head.entry.type = "evt";
         cmd.command.head.entry.id = "report";
     }
-    Config.getIds(hd);
+    Config.getIds(&hd);
 
     result = cmd.send();
     GDevice->doEvtTimerReport(1000);
@@ -99,12 +99,12 @@ int  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string rea
     auto result = GDevice->onSvc_set(&reqCmd->command.pld, reqCmd);
     if (result != -1) {
         ::cmds::cmd::CmdMqtt cmd;
-        neb::CJsonObject& hd = cmd.command.hd;
-        neb::CJsonObject& pld = cmd.command.pld;
+        JsonObject& hd = cmd.command.hd;
+        JsonObject& pld = cmd.command.pld;
 
         GDevice->getProps(&pld, reqCmd);
-        pld.ReplaceAdd("_extra", reason);
-        pld.ReplaceAdd("_success", result);
+        pld["_extra"] = reason;
+        pld["_success"] = result;
 
         if (reqCmd){
             hd = reqCmd->command.hd;
@@ -125,11 +125,11 @@ int  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
     auto result = GDevice->onSvc_reboot(&reqCmd->command.pld, reqCmd);
 
     ::cmds::cmd::CmdMqtt cmd;
-    neb::CJsonObject& hd = cmd.command.hd;
-    neb::CJsonObject& pld = cmd.command.pld;
+    JsonObject& hd = cmd.command.hd;
+    JsonObject& pld = cmd.command.pld;
 
     GDevice->getProps(&pld, reqCmd);
-    pld.ReplaceAdd("_success", result);
+    pld["_success"] = result;
     if (reqCmd){
         hd = reqCmd->command.hd;
         cmd.command.head = reqCmd->command.head;
@@ -152,25 +152,25 @@ int  service::cmds::Cmd::OnSvc_handshake_resp(::cmds::cmd::CmdMqtt* cmd){
 };
 
 int  service::cmds::Cmd::OnSvc_config(::cmds::cmd::CmdMqtt* reqCmd){
-    neb::CJsonObject* reqPld = &reqCmd->command.pld;
-    neb::CJsonObject config;
+    JsonObject reqPld = reqCmd->command.pld;
+    JsonObject config = reqPld["config"];
     ::cmds::cmd::CmdMqtt cmd;
-    neb::CJsonObject& hd = cmd.command.hd;
-    neb::CJsonObject& pld = cmd.command.pld;
+    JsonObject& hd = cmd.command.hd;
+    JsonObject& pld = cmd.command.pld;
     int result = 0;
 
 
-    if (reqPld->Get("config", config)) {
+    if (!config.isNull()) {
         result = Config.saveToFile(config);
         GDevice->onSvc_config(&reqCmd->command.pld, reqCmd);
-        pld.ReplaceAdd("_extra", "Config Set");
+        pld["_extra"] = "Config Set";
     } else {
-        pld.ReplaceAdd("_extra", "Config Get");        
+        pld["_extra"] = "Config Get";        
     }
 
     result = Config.loadFromFile(config);
-    pld.ReplaceAdd("config", config);
-    pld.ReplaceAdd("_success", result);
+    pld["config"] = config;
+    pld["_success"] = result;
 
     if (reqCmd){
         hd = reqCmd->command.hd;
@@ -183,7 +183,7 @@ int  service::cmds::Cmd::OnSvc_config(::cmds::cmd::CmdMqtt* reqCmd){
     result = cmd.send();
 
     int reboot = 0;
-    reqPld->Get("reboot", reboot);
+    reboot = reqPld["reboot"].as<int>();
     if (reboot)
         rfir::util::Util::DelayReset(3000);
 
@@ -201,9 +201,9 @@ void*  service::cmds::Cmd::OnEvt_props_change(void* arg, void* p){
 void*  service::cmds::Cmd::OnEvt_penet(void* arg, void* p){
     if (p) {
         ::cmds::cmd::CmdMqtt cmd;
-        neb::CJsonObject& hd = cmd.command.hd;
-        neb::CJsonObject& pld = cmd.command.pld;
-        pld = *((neb::CJsonObject*)p);
+        JsonObject& hd = cmd.command.hd;
+        JsonObject& pld = cmd.command.pld;
+        pld.set(*((JsonObject*)p));
 
         cmd.command.head.entry.type = "evt";
         cmd.command.head.entry.id = "penet";

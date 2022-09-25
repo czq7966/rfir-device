@@ -27,7 +27,6 @@ bool rfir::module::device::Device::loadConfig() {
     GInterrupt.stop();
 
     bool result = false;
-    neb::CJsonObject json;
     std::string fn = getConfigFilename();
     rfir::util::TxtFile file(fn.c_str());
     std::string context;
@@ -45,7 +44,6 @@ bool rfir::module::device::Device::saveConfig() {
     int result = 0;
     std::string context;    
     if (getConfig(context)) {
-        neb::CJsonObject json;
         std::string fn = getConfigFilename();
         rfir::util::TxtFile file(fn.c_str());
         result =  file.writeString(context);
@@ -76,58 +74,26 @@ bool rfir::module::device::Device::getConfig(std::string& context){
 
 //************************* V2 ***********************
 
-bool rfir::module::device::Device::getCommonProps(neb::CJsonObject* pld){
-    pld->ReplaceAdd("id", Config.props.dev_id);
-    pld->ReplaceAdd("mac", rfir::util::Util::GetMacAddress());
-    pld->ReplaceAdd("rssi", WiFi.RSSI());
-    pld->ReplaceAdd("ip", "");
-    pld->ReplaceAdd("ssid", "");
-    pld->ReplaceAdd("version", Config.props.ota_version_number);
-    pld->ReplaceAdd("vendor", Config.props.dev_vendor);
-    pld->ReplaceAdd("model", Config.props.dev_model);    
+bool rfir::module::device::Device::getCommonProps(JsonObject* pld){
+    (*pld)["id"] = Config.props.dev_id;
+    (*pld)["mac"] = rfir::util::Util::GetMacAddress();
+    (*pld)["rssi"] = WiFi.RSSI();
+    (*pld)["ip"] = "";
+    (*pld)["ssid"] = "";
+    (*pld)["version"] = Config.props.ota_version_number;
+    (*pld)["vendor"] = Config.props.dev_vendor;
+    (*pld)["model"] = Config.props.dev_model;    
 
-    uint32_t heapFree;
-    uint16_t heapMax;
-    uint8_t heapFrag;    
-    ESP.getHeapStats(&heapFree, &heapMax, &heapFrag);
-    // pld->ReplaceAdd("heapfree", heapFree);
-    // pld->ReplaceAdd("heapmax", heapMax);
-    // pld->ReplaceAdd("heapfrag", heapFrag);
-    pld->ReplaceAdd("freeheap", ESP.getFreeHeap());
-    pld->ReplaceAdd("freestack", ESP.getFreeContStack());
+    (*pld)["freeheap"] = ESP.getFreeHeap();
+    (*pld)["freestack"] = ESP.getFreeContStack();
 
     if (WiFi.isConnected()) {
-        pld->ReplaceAdd("ip", WiFi.localIP().toString().c_str());
-        pld->ReplaceAdd("ssid", WiFi.SSID().c_str());
+        (*pld)["ip"] = WiFi.localIP().toString().c_str();
+        (*pld)["ssid"] = WiFi.SSID().c_str();
     }
     return true;
 };
-bool rfir::module::device::Device::getProps(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
-    auto result = onSvc_get(pld, cmd);
-    getCommonProps(pld);
-    return result;
-};
-
-bool rfir::module::device::Device::getCommonProps(JsonObject pld){
-    pld["id"] = Config.props.dev_id;
-    pld["mac"] = rfir::util::Util::GetMacAddress();
-    pld["rssi"] = WiFi.RSSI();
-    pld["ip"] = "";
-    pld["ssid"] = "";
-    pld["version"] = Config.props.ota_version_number;
-    pld["vendor"] = Config.props.dev_vendor;
-    pld["model"] = Config.props.dev_model;    
-
-    pld["freeheap"] = ESP.getFreeHeap();
-    pld["freestack"] = ESP.getFreeContStack();
-
-    if (WiFi.isConnected()) {
-        pld["ip"] = WiFi.localIP().toString().c_str();
-        pld["ssid"] = WiFi.SSID().c_str();
-    }
-    return true;
-};
-bool rfir::module::device::Device::getProps(JsonObject pld, cmds::cmd::CmdBase* cmd){
+bool rfir::module::device::Device::getProps(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     auto result = onSvc_get(pld, cmd);
     getCommonProps(pld);
     return result;
@@ -152,55 +118,28 @@ void* rfir::module::device::Device::doSvc_reboot(void* arg, void* p){
     return 0;
 };
 
-
-int rfir::module::device::Device::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-int rfir::module::device::Device::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-int rfir::module::device::Device::onSvc_config(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_config(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-int rfir::module::device::Device::onSvc_reboot(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_reboot(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
-    int delay = 0;
-    pld->Get("delay", delay);
+    int delay = pld->containsKey("delay") ? (*pld)["delay"] : 0;
     delay = std::max(1000, delay);
 
     GEventTimer.delay(delay, std::bind(&Device::doSvc_reboot , this, std::placeholders::_1, std::placeholders::_2));
     return 1;
 }; 
 
-int rfir::module::device::Device::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
-    return 0;
-};
-
-int rfir::module::device::Device::onSvc_get(JsonObject pld, cmds::cmd::CmdBase* cmd){
-    return 0;
-}; 
-
-int rfir::module::device::Device::onSvc_set(JsonObject pld, cmds::cmd::CmdBase* cmd){
-    return 0;
-}; 
-
-int rfir::module::device::Device::onSvc_config(JsonObject pld, cmds::cmd::CmdBase* cmd){
-    return 0;
-}; 
-
-int rfir::module::device::Device::onSvc_reboot(JsonObject pld, cmds::cmd::CmdBase* cmd){
-    DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
-    int delay = pld.containsKey("delay") ? pld["delay"] : 0;
-    delay = std::max(1000, delay);
-
-    GEventTimer.delay(delay, std::bind(&Device::doSvc_reboot , this, std::placeholders::_1, std::placeholders::_2));
-    return 1;
-}; 
-
-int rfir::module::device::Device::onSvc_penet(JsonObject pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::Device::onSvc_penet(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 };
 

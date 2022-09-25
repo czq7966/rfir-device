@@ -17,7 +17,7 @@ namespace rfir {
                     virtual void init() override;   
                     virtual bool loadConfig() override;  
                     virtual bool saveConfig() override;  
-                    virtual bool setConfig(neb::CJsonObject* config);
+                    virtual bool setConfig(JsonObject* config);
                 public:
                     virtual void* onSniffed(void* arg, void* p);
                     virtual void* onSended(void* arg, void* p);
@@ -26,10 +26,10 @@ namespace rfir {
                     virtual bool rfirWrite(uint16_t buffer[], size_t length, int offset = 0);
                     virtual bool rfirWriteBase64(char data[], size_t size);
                 public:
-                    virtual int onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) override; 
-                    virtual int onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) override; 
-                    virtual int onSvc_config(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) override;
-                    virtual int onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) override;  
+                    virtual int onSvc_get(JsonObject* pld, ::cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_set(JsonObject* pld, ::cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_config(JsonObject* pld, ::cmds::cmd::CmdBase* cmd) override;
+                    virtual int onSvc_penet(JsonObject* pld, ::cmds::cmd::CmdBase* cmd) override;  
                 };
             }
         }

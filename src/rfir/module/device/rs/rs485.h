@@ -33,10 +33,10 @@ namespace rfir {
                 public:
                     virtual void init() override;
                     virtual void loop() override;
-                    virtual int onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override;                     
-                    virtual int onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
+                    virtual int onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) override;                     
+                    virtual int onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd) override; 
 
-                    virtual bool onSvc_setBandRate(neb::CJsonObject* pld); 
+                    virtual bool onSvc_setBandRate(JsonObject* pld); 
                 };
             }
         }

@@ -4,7 +4,6 @@
 
 #include <Arduino.h>
 #include "config.h"
-#include "rfir/util/cjson/CJsonObject.hpp"
 #include "cmds/cmd/cmd-base.h"
 
 namespace rfir {
@@ -41,27 +40,19 @@ namespace rfir {
             public:
                 uint32_t m_timer_report_handler = 0;
             public:
-                virtual bool getCommonProps(neb::CJsonObject* pld);
-                virtual bool getProps(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
-                virtual bool getCommonProps(JsonObject pld);
-                virtual bool getProps(JsonObject pld, ::cmds::cmd::CmdBase* cmd);
+                virtual bool getCommonProps(JsonObject* pld);
+                virtual bool getProps(JsonObject* pld, ::cmds::cmd::CmdBase* cmd);
             public:
                 virtual bool doEvtTimerReport(uint32_t timeout = DEVICE_TIMER_REPORT_TIMEOUT);
                 virtual void* onEvt_timer_report(void* arg, void* p);
             public:
                 virtual void* doSvc_reboot(void* arg, void* p);
             public:
-                virtual int onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
-                virtual int onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
-                virtual int onSvc_config(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
-                virtual int onSvc_reboot(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
-                virtual int onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd);
-
-                virtual int onSvc_get(JsonObject pld, ::cmds::cmd::CmdBase* cmd); 
-                virtual int onSvc_set(JsonObject pld, ::cmds::cmd::CmdBase* cmd); 
-                virtual int onSvc_config(JsonObject pld, ::cmds::cmd::CmdBase* cmd);
-                virtual int onSvc_reboot(JsonObject pld, ::cmds::cmd::CmdBase* cmd);
-                virtual int onSvc_penet(JsonObject pld, ::cmds::cmd::CmdBase* cmd);
+                virtual int onSvc_get(JsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual int onSvc_set(JsonObject* pld, ::cmds::cmd::CmdBase* cmd); 
+                virtual int onSvc_config(JsonObject* pld, ::cmds::cmd::CmdBase* cmd);
+                virtual int onSvc_reboot(JsonObject* pld, ::cmds::cmd::CmdBase* cmd);
+                virtual int onSvc_penet(JsonObject* pld, ::cmds::cmd::CmdBase* cmd);
             };
 
         }

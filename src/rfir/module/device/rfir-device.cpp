@@ -24,19 +24,21 @@ rfir::module::device::RFIRDevice::~RFIRDevice() {
 };
 
 bool rfir::module::device::RFIRDevice::setConfig(const char* context){
-    std::string rawStr;
-    neb::CJsonObject json;
-    if (json.Parse(context) && json.Get("raw", rawStr)) {
-        setRaw(rawStr.c_str());
+    DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+    deserializeJson(doc, context);
+    std::string rawStr = doc["raw"];
+    if (rawStr != "") {
+        return setRaw(rawStr.c_str());
     }
     return false;
 };
 
 bool rfir::module::device::RFIRDevice::getConfig(std::string& context){
     auto rawStr = getRaw();
-    neb::CJsonObject json;
-    json.ReplaceAdd("raw", rawStr);
-    context = json.ToString();
+    DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+    deserializeJson(doc, context);
+    doc["raw"] = rawStr;
+    serializeJson(doc, context);
     return true;
 }; 
 
@@ -136,11 +138,11 @@ bool rfir::module::device::RFIRDevice::getEncodeRaw(std::list<uint16_t>& result)
 
 
 
-int rfir::module::device::RFIRDevice::onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RFIRDevice::onSvc_get(JsonObject* pld, ::cmds::cmd::CmdBase* cmd) {
     return false;
 
 }; 
-int rfir::module::device::RFIRDevice::onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd) {
+int rfir::module::device::RFIRDevice::onSvc_set(JsonObject* pld, ::cmds::cmd::CmdBase* cmd) {
     
     return false;
 };

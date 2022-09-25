@@ -4,7 +4,6 @@
 
 #include <Arduino.h>
 #include "config.h"
-#include "rfir/util/cjson/CJsonObject.hpp"
 #include "rfir/util/util.h"
 #include "cmds/cmd/cmd-mqtt.h"
 

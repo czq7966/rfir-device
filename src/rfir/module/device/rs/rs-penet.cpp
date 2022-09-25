@@ -70,10 +70,11 @@ bool rfir::module::device::RS::RSPenet::rsWriteBase64(char data[], size_t size) 
 
 bool rfir::module::device::RS::RSPenet::doEvt_penet(){
     if (hwSerial->available() && GNetworking.status.connected) {
-        neb::CJsonObject pld;
+        DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+        JsonObject pld = doc.to<JsonObject>();
         std::string code = rsReadBase64(rsBuffer);
         if (code.length() > 0) {
-            pld.Add("raw", code);
+            pld["raw"] = code;
             events.onEvtPenet.emit(&pld);
             return 1;
         } 
@@ -81,18 +82,18 @@ bool rfir::module::device::RS::RSPenet::doEvt_penet(){
     return 0;
 };
 
-int rfir::module::device::RS::RSPenet::onSvc_get(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::RS::RSPenet::onSvc_get(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     return 0;
 }; 
 
-int rfir::module::device::RS::RSPenet::onSvc_set(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){
+int rfir::module::device::RS::RSPenet::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd){
     onSvc_penet(pld, cmd);
     return -1;
 }; 
 
-int rfir::module::device::RS::RSPenet::onSvc_penet(neb::CJsonObject* pld, cmds::cmd::CmdBase* cmd){    
+int rfir::module::device::RS::RSPenet::onSvc_penet(JsonObject* pld, cmds::cmd::CmdBase* cmd){    
     std::string code;
-    if (pld && pld->Get("raw", code) ) {
+    if (pld && pld->containsKey("raw") ) {
         DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         auto result = rsWriteBase64((char*)code.c_str(), code.length());
             

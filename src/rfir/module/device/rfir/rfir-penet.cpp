@@ -21,10 +21,13 @@ void rfir::module::device::rfir::RFIRPenet::init() {
 }
 
 bool rfir::module::device::rfir::RFIRPenet::loadConfig() {
-    neb::CJsonObject config, device;
+    DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+    JsonObject config = doc.to<JsonObject>();
     Config.loadFromFile(config);
-    if (config.Get("device", device))
-        setConfig(&device);
+    JsonObject device = config["device"];
+
+    if (!device.isNull())
+        return setConfig(&device);
     return 0;
 }
 
@@ -33,31 +36,33 @@ bool rfir::module::device::rfir::RFIRPenet::saveConfig() {
 }
 
 
-bool rfir::module::device::rfir::RFIRPenet::setConfig(neb::CJsonObject* config) {
-    neb::CJsonObject node, params;
-    if (config->Get("sniff", node) && node.Get("params", params)) {
-        sniffer->stopSniff();
-        int enabled = sniffer->params.enabled;  params.Get("enabled", enabled); sniffer->params.enabled = enabled;
-        int pin = sniffer->params.pin;  params.Get("pin", pin); sniffer->params.pin = pin;
-        int mode = sniffer->params.mode;  params.Get("mode", mode); sniffer->params.mode = mode;
-        int inverted = sniffer->params.inverted;  params.Get("inverted", inverted); sniffer->params.inverted = inverted;
-        int minCount = sniffer->params.minCount;  params.Get("minCount", minCount); sniffer->params.minCount = minCount;
-        int maxCount = sniffer->params.maxCount;  params.Get("maxCount", maxCount); sniffer->params.maxCount = maxCount;
-        int minDelta = sniffer->params.minDelta;  params.Get("minDelta", minDelta); sniffer->params.minDelta = minDelta;
+bool rfir::module::device::rfir::RFIRPenet::setConfig(JsonObject* config) {
+    JsonObject node = (*config)["sniff"];
+    JsonObject params = node["params"];
+    // if (!params.isNull()) {
+    //     sniffer->stopSniff();
+    //     sniffer->params.enabled = params["enabled"].as<int>();
+    //     int enabled = sniffer->params.enabled;  enabled = params.Get("enabled"]; sniffer->params.enabled = enabled;
+    //     int pin = sniffer->params.pin;  params.Get("pin", pin); sniffer->params.pin = pin;
+    //     int mode = sniffer->params.mode;  params.Get("mode", mode); sniffer->params.mode = mode;
+    //     int inverted = sniffer->params.inverted;  params.Get("inverted", inverted); sniffer->params.inverted = inverted;
+    //     int minCount = sniffer->params.minCount;  params.Get("minCount", minCount); sniffer->params.minCount = minCount;
+    //     int maxCount = sniffer->params.maxCount;  params.Get("maxCount", maxCount); sniffer->params.maxCount = maxCount;
+    //     int minDelta = sniffer->params.minDelta;  params.Get("minDelta", minDelta); sniffer->params.minDelta = minDelta;
         
-        sniffer->startSniff();
-    }
+    //     sniffer->startSniff();
+    // }
 
-    if (config->Get("send", node) && node.Get("params", params)) {
-        int enabled = sender->params.enabled;  params.Get("enabled", enabled); sender->params.enabled = enabled;
-        int pin = sender->params.pin;  params.Get("pin", pin); sender->params.pin = pin;
-        int inverted = sender->params.inverted;  params.Get("inverted", inverted); sender->params.inverted = inverted;
-        int modulation = sender->params.modulation;  params.Get("modulation", modulation); sender->params.modulation = modulation;
-        int repeat = sender->params.repeat;  params.Get("repeat", repeat); sender->params.repeat = repeat;
-        int frequency = sender->params.frequency;  params.Get("frequency", frequency); sender->params.frequency = frequency;
-        int dutycycle = sender->params.dutycycle;  params.Get("dutycycle", dutycycle); sender->params.dutycycle = dutycycle;
+    // if (config->Get("send", node) && node.Get("params", params)) {
+    //     int enabled = sender->params.enabled;  params.Get("enabled", enabled); sender->params.enabled = enabled;
+    //     int pin = sender->params.pin;  params.Get("pin", pin); sender->params.pin = pin;
+    //     int inverted = sender->params.inverted;  params.Get("inverted", inverted); sender->params.inverted = inverted;
+    //     int modulation = sender->params.modulation;  params.Get("modulation", modulation); sender->params.modulation = modulation;
+    //     int repeat = sender->params.repeat;  params.Get("repeat", repeat); sender->params.repeat = repeat;
+    //     int frequency = sender->params.frequency;  params.Get("frequency", frequency); sender->params.frequency = frequency;
+    //     int dutycycle = sender->params.dutycycle;  params.Get("dutycycle", dutycycle); sender->params.dutycycle = dutycycle;
     
-    }
+    // }
 
     return 0;
 };
@@ -91,7 +96,7 @@ bool rfir::module::device::rfir::RFIRPenet::rfirWriteBase64(char data[], size_t 
     return rfirWrite((uint16_t*)decoded, len / 2);
 }
 
-int rfir::module::device::rfir::RFIRPenet::onSvc_get(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd){
+int rfir::module::device::rfir::RFIRPenet::onSvc_get(JsonObject* pld, ::cmds::cmd::CmdBase* cmd){
     if (m_sniffed_data && m_sniffed_data->deltas.size() > 0) {
         int size = m_sniffed_data->deltas.size() + 1;
         std::string raw;
@@ -104,32 +109,35 @@ int rfir::module::device::rfir::RFIRPenet::onSvc_get(neb::CJsonObject* pld, ::cm
             }
             raw = encoded;
         }
-        pld->ReplaceAdd("raw", raw);
+        (*pld)["raw"] = raw;
         return 1;
 
     }
     return 0;
 }; 
 
-int rfir::module::device::rfir::RFIRPenet::onSvc_set(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd){
+int rfir::module::device::rfir::RFIRPenet::onSvc_set(JsonObject* pld, ::cmds::cmd::CmdBase* cmd){
     return onSvc_penet(pld, cmd);
 }; 
 
-int rfir::module::device::rfir::RFIRPenet::onSvc_config(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd){
-    neb::CJsonObject config, device;
-    if (pld->Get("config", config) && config.Get("device", device))
+int rfir::module::device::rfir::RFIRPenet::onSvc_config(JsonObject* pld, ::cmds::cmd::CmdBase* cmd){
+    JsonObject config = (*pld)["config"];
+    JsonObject device = config["device"];
+    if (!device.isNull())
         return setConfig(&device);
     return 0;
 }; 
 
-int rfir::module::device::rfir::RFIRPenet::onSvc_penet(neb::CJsonObject* pld, ::cmds::cmd::CmdBase* cmd){    
-    std::string code;
-    if (pld && pld->Get("raw", code) ) {
+int rfir::module::device::rfir::RFIRPenet::onSvc_penet(JsonObject* pld, ::cmds::cmd::CmdBase* cmd){    
+    
+    if (pld && pld->containsKey("raw") ) {
+        std::string code = (*pld)["raw"];
         DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         return rfirWriteBase64((char*)code.c_str(), code.length());
     }  
 
-    if (pld && pld->Get("rawStr", code) ) {
+    if (pld && pld->containsKey("rawStr") ) {
+        std::string code = (*pld)["rawStr"];
         DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         return rfirWrite((char*)code.c_str(), code.length());
     }    

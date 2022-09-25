@@ -9,7 +9,6 @@
 
 #include "rfir/module/device/networking.h"
 #include "rfir/module/device/device.h"
-#include "rfir/module/device/ac/midea/fz-dm-midea.h"
 #include "rfir/module/ttl/sender-v2.h"
 
 #include "rfir/util/event-timer.h"
