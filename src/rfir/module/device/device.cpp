@@ -88,8 +88,8 @@ bool rfir::module::device::Device::getCommonProps(JsonObject* pld){
     (*pld)["freestack"] = ESP.getFreeContStack();
 
     if (WiFi.isConnected()) {
-        (*pld)["ip"] = WiFi.localIP().toString().c_str();
-        (*pld)["ssid"] = WiFi.SSID().c_str();
+        (*pld)["ip"] = WiFi.localIP().toString();
+        (*pld)["ssid"] = WiFi.SSID();
     }
     return true;
 };
