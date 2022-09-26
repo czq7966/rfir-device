@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-midea/firmware_v9.bin
-9
-bbd83c991231a24dc12988f93ca84263
-9.0
-0
-ESP8266x00c66764,
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-midea/firmware_v11.bin
+11
+a93bce35053748e28b5eea1e79cd457c
+11.0
+1
+ESP8266x00c66764,ESP8266x00c5f9c5,ESP8266x002bab4d,ESP8266x00c619a8,ESP8266x00c635f3,
