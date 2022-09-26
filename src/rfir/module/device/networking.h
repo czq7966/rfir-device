@@ -31,9 +31,6 @@ namespace rfir {
                 virtual void start();
                 virtual void loop();
             public:
-                void delayNetworking(int delay_ms = 100);
-                void* doNetworking(void* arg, void* p);
-
                 bool handshake();
                 void delayHandshake(int delay_ms = 1000);
                 void* doHandshake(void* arg, void* p);
@@ -55,8 +52,8 @@ namespace rfir {
                 void* onDev_handshake_timeout(void* arg, void* p);
             //V3
             public:
-                void delayNetworkingV3(int delay_ms = 100);
-                void* doNetworkingV3(void* arg, void* p);
+                void delayNetworking(int delay_ms = 100);
+                void* doNetworking(void* arg, void* p);
 
             };
 

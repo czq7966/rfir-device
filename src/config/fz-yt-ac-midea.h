@@ -12,7 +12,6 @@ extern JLed                         GJLed;
 #define DEV_MODEL                   "FZYTACMIDEA"
 
 // #define DEBUGER RFIRDebuger
-#define NETWORKING_V3
 
 //LED
 #define LED_PIN                     BUILTIN_LED
@@ -74,11 +73,7 @@ extern JLed                         GJLed;
 #define MQTT_DISABLE                false
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
-#ifdef NETWORKING_V3
-    #define MQTT_USER                   "south"
-#else
-    #define MQTT_USER                   "ioe"
-#endif
+#define MQTT_USER                   "south"
 #define MQTT_PASSWORD               ""
 #define MQTT_KEEPALIVE              15  //单位秒
 #define MQTT_CLEAN_SESSION          false
@@ -86,35 +81,18 @@ extern JLed                         GJLed;
 #define MQTT_CONNECT_JLED           GJLed.Stop().LowActive().Blink(1500, 1500).Forever().Reset()
 
 //MQTT Topic
-
-
-//DSP.sub
-#define MQTT_DSP_EVT_STATUS         "0/0/dsp/{dsp}/0/0/evt/status"
-
-//EDG.sub
-#define MQTT_EDG_EVT_STATUS         "0/0/edg/{edg}/0/0/evt/status"
-
-//DEV.sub
-#define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/+/+/dev/{dev}/svc/login"
-#define MQTT_DEV_SVC_HANDSHAKE      "{app}/{dom}/edg/{edg}/dev/{dev}/svc/handshake"
-#define MQTT_DEV_SVC_PENET          "{app}/{dom}/edg/{edg}/dev/{dev}/svc/penet"
-#define MQTT_DEV_SVC_GET            "{app}/{dom}/+/+/dev/{dev}/svc/get"
-#define MQTT_DEV_SVC_SET            "{app}/{dom}/+/+/dev/{dev}/svc/set"
-#define MQTT_DEV_SVC_REBOOT         "{app}/{dom}/+/+/dev/{dev}/svc/reboot"
-
-
+#define MQTT_DEV_SUB                "+/+/+/+/dev/{dev}/+/+"
+#define MQTT_DEV_PUB                "0/0/dev/{dev}/0/0/0/0"
+#define MQTT_DEV_STATUS             "0/0/dev/{dev}/0/0/evt/status"
 
 #define MQTT_RESP_TIMEOUT           1000 * 10 //毫秒
 #define MQTT_BUFFER_SIZE            2048
+
 //Timer Report 
 #define DEVICE_TIMER_REPORT_TIMEOUT        1000 * 60   //1分钟上报一次
 #define NETWORKING_RE_HANDSHAKE_TIMEOUT    1000 * 60 * 5 //5分钟握一次手 
 #define NETWORKING_RESET_TIMEOUT    1000 * 60 * 2 //2分钟组网超时
 #define NETWORKING_LOGIN_JLED       GJLed.Stop().LowActive().Blink(2500, 500).Forever().Reset()
 
-//NETWORKING V3
-#define MQTT_DEV_SUB                "+/+/+/+/dev/{dev}/+/+"
-#define MQTT_DEV_PUB                "0/0/dev/{dev}/0/0/0/0"
-#define MQTT_DEV_STATUS             "0/0/dev/{dev}/0/0/evt/status"
 
 #endif //

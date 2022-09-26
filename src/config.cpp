@@ -144,10 +144,9 @@ void GlobalConfig::Props::fixup(){
 };
 
 void GlobalConfig::Props::fixupTopic() {
-    //NETWORKING V3
     mqtt_dev_sub = expandTopic(MQTT_DEV_SUB);
     mqtt_dev_pub = expandTopic(MQTT_DEV_PUB);
-    mqtt_dev_status = expandTopic(MQTT_DEV_STATUS);     
+    mqtt_dev_status = expandTopic(MQTT_DEV_STATUS);    
 
 }
 

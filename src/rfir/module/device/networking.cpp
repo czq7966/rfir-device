@@ -27,20 +27,6 @@ void rfir::module::device::Networking::loop(){
 
 }
 
-void rfir::module::device::Networking::delayNetworking(int delay_ms){
-    GEventTimer.delay(delay_ms, std::bind(&Networking::doNetworking, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
-};
-
-//
-void* rfir::module::device::Networking::doNetworking(void* arg, void* p){    
-    unsubscribe();
-    subscribe();
-    m_online_count++;
-    setOnline();
- 
-    return 0;
-};
-
 
 //握手
 bool rfir::module::device::Networking::handshake(){
@@ -174,7 +160,7 @@ void rfir::module::device::Networking::reset() {
 void* rfir::module::device::Networking::onMqttConnect(void* arg, void* p){
     DEBUGER.printf("rfir::module::device::Networking::onConnect \r\n");
     status.connected = true;
-    delayNetworkingV3();
+    delayNetworking();
 
     return 0;
 
@@ -244,11 +230,11 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
 };
 
 
-void rfir::module::device::Networking::delayNetworkingV3(int delay_ms){
-    GEventTimer.delay(delay_ms, std::bind(&Networking::doNetworkingV3, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
+void rfir::module::device::Networking::delayNetworking(int delay_ms){
+    GEventTimer.delay(delay_ms, std::bind(&Networking::doNetworking, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
 
-void* rfir::module::device::Networking::doNetworkingV3(void* arg, void* p){    
+void* rfir::module::device::Networking::doNetworking(void* arg, void* p){    
     unsubscribe();
     subscribe();
     m_online_count++;

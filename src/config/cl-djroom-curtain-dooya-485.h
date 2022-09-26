@@ -86,22 +86,6 @@ extern JLed                         GJLed;
 //MQTT Topic
 
 
-//DSP.sub
-#define MQTT_DSP_EVT_STATUS         "0/0/dsp/{dsp}/0/0/evt/status"
-
-//EDG.sub
-#define MQTT_EDG_EVT_STATUS         "0/0/edg/{edg}/0/0/evt/status"
-
-//DEV.sub
-#define MQTT_DEV_SVC_LOGIN          "{app}/{dom}/+/+/dev/{dev}/svc/login"
-#define MQTT_DEV_SVC_HANDSHAKE      "{app}/{dom}/edg/{edg}/dev/{dev}/svc/handshake"
-#define MQTT_DEV_SVC_PENET          "{app}/{dom}/edg/{edg}/dev/{dev}/svc/penet"
-#define MQTT_DEV_SVC_GET            "{app}/{dom}/+/+/dev/{dev}/svc/get"
-#define MQTT_DEV_SVC_SET            "{app}/{dom}/+/+/dev/{dev}/svc/set"
-#define MQTT_DEV_SVC_REBOOT         "{app}/{dom}/+/+/dev/{dev}/svc/reboot"
-
-
-
 #define MQTT_RESP_TIMEOUT           1000 * 10 //毫秒
 #define MQTT_BUFFER_SIZE            2048
 //Timer Report 

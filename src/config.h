@@ -199,15 +199,6 @@ public:
         std::string mqtt_dev_sub = MQTT_DEV_SUB; 
         std::string mqtt_dev_pub = MQTT_DEV_PUB; 
         std::string mqtt_dev_status = MQTT_DEV_STATUS; 
-        //mqtt topic 即将弃用
-        std::string mqtt_dsp_evt_status = MQTT_DSP_EVT_STATUS;
-        std::string mqtt_edg_evt_status = MQTT_EDG_EVT_STATUS;
-        std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
-        std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
-        std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;
-        std::string mqtt_dev_svc_set = MQTT_DEV_SVC_SET;
-        std::string mqtt_dev_svc_reboot = MQTT_DEV_SVC_REBOOT;
-        std::string mqtt_dev_svc_penet = MQTT_DEV_SVC_PENET;
 
         //Timer Report 
         int device_timer_report_timeout = DEVICE_TIMER_REPORT_TIMEOUT; 
@@ -236,84 +227,6 @@ public:
     int saveToFile(JsonObject& config);
     int initFromFile();
     
-public:
-    // //App
-    // std::string app_id;
-    // std::string dom_id;
-    // std::string dsp_id;
-    // std::string edg_id;
-    // std::string dio_id;
-
-    // //Device
-    // std::string dev_id;
-    // std::string dev_vendor = DEV_VENDOR;
-    // std::string dev_model = DEV_MODEL;
-
-    // //Serial
-    // int         serial_baud = SERIAL_BAUD;
-    // int         serial_config = SERIAL_CONFIG;
-    // //OTA
-    // bool        ota_update = OTA_UPDATE;
-    // int         ota_version_number = OTA_VERSION_NUMBER;
-    // std::string ota_version_string = OTA_VERSION_STRING;
-    // std::string ota_update_url = OTA_UPDATE_URL;
-    // //WIFI
-    // std::vector<std::string>  wifi_ssid_dev = WIFI_SSID_DEV;
-    // std::vector<std::string>  wifi_password_dev = WIFI_PASSWORD_DEV;
-    // std::vector<std::string>  wifi_ssid = WIFI_SSID;
-    // std::vector<std::string>  wifi_password = WIFI_PASSWORD;
-    // uint32_t                  wifi_reset_timeout = WIFI_RESET_TIMEOUT;
-
-    // //AP
-    // bool                        ap_mode = AP_MODE;
-    // std::string                 ap_ssid = AP_SSID;
-    // std::string                 ap_password = AP_PASSWORD;
-    // int                         ap_reset_timeout = AP_RESET_TIMEOUT;
-    // std::string                 ap_config_version = AP_CONFIG_VERSION;
-    // int                         ap_config_pin = AP_CONFIG_PIN;
-    // int                         ap_config_pin_timeout = AP_CONFIG_PIN_TIMEOUT;
- 
-
-    // //MQTT
-    // std::string mqtt_ip = MQTT_IP;
-    // int         mqtt_port = MQTT_PORT;
-    // std::string mqtt_user = MQTT_USER;
-    // std::string mqtt_password = MQTT_PASSWORD;
-    // int         mqtt_reset_timeout = MQTT_RESET_TIMEOUT;
-
-    // //TOPIC
-
-    // // //DSP.pub
-    // // std::string mqtt_dsp_svc_login = MQTT_DSP_SVC_LOGIN;
-    // //DSP.sub
-    // std::string mqtt_dsp_evt_status = MQTT_DSP_EVT_STATUS;
-
-    // //EDG.pub
-    // // std::string mqtt_edg_svc_handshake = MQTT_EDG_SVC_HANDSHAKE;
-    // //EDG.sub
-    // std::string mqtt_edg_evt_status = MQTT_EDG_EVT_STATUS;
-
-
-    // //DEV.pub
-    // // std::string mqtt_dev_evt_report = MQTT_DEV_EVT_REPORT;
-    // // std::string mqtt_dev_evt_status = MQTT_DEV_EVT_STATUS;
-    // // std::string mqtt_dev_evt_penet = MQTT_DEV_EVT_PENET;
-
-    // //DEV.sub
-    // std::string mqtt_dev_svc_login = MQTT_DEV_SVC_LOGIN;
-    // std::string mqtt_dev_svc_handshake = MQTT_DEV_SVC_HANDSHAKE;
-    // std::string mqtt_dev_svc_get = MQTT_DEV_SVC_GET;
-    // std::string mqtt_dev_svc_set = MQTT_DEV_SVC_SET;
-    // std::string mqtt_dev_svc_reboot = MQTT_DEV_SVC_REBOOT;
-    // std::string mqtt_dev_svc_penet = MQTT_DEV_SVC_PENET;
-
-    // std::string mqtt_dev_sub = MQTT_DEV_SUB;
-    // std::string mqtt_dev_pub = MQTT_DEV_PUB;
-    // std::string mqtt_dev_status = MQTT_DEV_STATUS;
-
-
-
-    // int         mqtt_resp_timeout = MQTT_RESP_TIMEOUT;
 };
 
 extern GlobalConfig Config;
