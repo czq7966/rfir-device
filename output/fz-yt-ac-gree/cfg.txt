@@ -1,6 +1,6 @@
-http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-gree/firmware_v7.bin
-7
-c49003d88a84621cff32614766f20d48
-7.0
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-gree/firmware_v8.bin
+8
+65663c98b463e69f763df17ece18c51d
+8.0
 0
 ESP8266x00c5bccb,
