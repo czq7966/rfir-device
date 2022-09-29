@@ -10,6 +10,7 @@ namespace rfir {
             struct PinEvent {
                 int pin = 0;
                 int value = -1;
+                int mode = INPUT;
                 bool started = false;
                 void* arg;
                 Event* event;                
@@ -21,7 +22,7 @@ namespace rfir {
         public:
             void start(int pin = -1);
             void stop(int pin = -1);
-            PinEvent* getPinEvent(int pin);
+            PinEvent* getPinEvent(int pin, int mode = INPUT);
         public:
             static IRAM_ATTR void OnPinInterrupt(void* arg);
         };

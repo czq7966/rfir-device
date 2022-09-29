@@ -13,6 +13,7 @@ void rfir::util::Interrupt::start(int pin){
         
         if (started) {
             pinEvent->started = started;
+            pinMode(pinEvent->pin, pinEvent->mode);
             attachInterruptArg(pinEvent->pin, OnPinInterrupt, (void*)pinEvent, CHANGE);
             DEBUGER.printf("start interrupt pin: %d  \r\n", pinEvent->pin);            
         }
@@ -35,12 +36,13 @@ void rfir::util::Interrupt::stop(int pin){
     
 };
 
-rfir::util::Interrupt::PinEvent* rfir::util::Interrupt::getPinEvent(int pin){
+rfir::util::Interrupt::PinEvent* rfir::util::Interrupt::getPinEvent(int pin, int mode){
     PinEvent* pinEvent;
     if (!pinEvents.get(pin, pinEvent)) {
         pinEvent = new PinEvent();
         pinEvent->arg = (void*)this;
         pinEvent->pin = pin;
+        pinEvent->mode = mode;
         pinEvent->event = new Event();
         pinEvents.add(pin, pinEvent);
     }
