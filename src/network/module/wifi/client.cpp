@@ -6,11 +6,11 @@
 
 
 bool network::module::wifi::Client::Params::assign(Params& p) {
-    this->apMode = p.apMode;
-    this->ap = p.ap;
-    this->smcMode = p.smcMode;
-    this->smc = p.smc;
-    this->smc.parent = this;
+    // this->apMode = p.apMode;
+    // this->ap = p.ap;
+    // this->smcMode = p.smcMode;
+    // this->smc = p.smc;
+    // this->smc.parent = this;
     this->ssid.assign(p.ssid.begin(), p.ssid.end());
     this->pass.assign(p.pass.begin(), p.pass.end());
     this->timeout = p.timeout;
@@ -266,7 +266,7 @@ void  network::module::wifi::Client::loopV2(){
 void  network::module::wifi::Client::connectToWifi(){
     removeDelayConnectHandler();
 
-    if (WiFi.isConnected()) 
+    if (WiFi.isConnected() || Config.mode != GlobalConfig::Mode::Running) 
         return;
 
 // #ifdef ESP8266     
@@ -282,6 +282,7 @@ void  network::module::wifi::Client::connectToWifi(){
         std::string ssid_ssid = this->params.ssid[m_connect_ssid_index];
         std::string ssid_pass = this->params.pass[m_connect_ssid_index];
         DEBUGER.printf("Wifi connecting... %s %s \r\n", ssid_ssid.c_str(), ssid_pass.c_str());
+        WiFi.mode(WIFI_AP_STA);
         WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());        
     }    
 

@@ -105,7 +105,7 @@ int rfir::module::device::ac::Gree::onSvc_set(JsonObject* pld, cmds::cmd::CmdBas
     auto power = ac.ac->getPower();
     std::string powerStr = pld->containsKey("power") ? (*pld)["power"].as<std::string>() : "";
     power = powerStr == "on" ? true : 
-            powerStr == "off" ? false : true;
+            powerStr == "off" ? false : power;
 
     //Mode
     auto mode = ac.ac->getMode();

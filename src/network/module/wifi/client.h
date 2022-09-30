@@ -28,8 +28,8 @@ namespace network {
                     std::vector<std::string>    pass;                   
                     uint32_t                    timeout;
                     uint32_t                    interval = 30 * 1000;
-                    AP::Params          ap;
-                    SMC::Params         smc;
+                    // AP::Params          ap;
+                    // SMC::Params         smc;
                     bool                assign(Params& p);
                 };
             public:

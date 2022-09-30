@@ -1,6 +1,7 @@
 #include "config.h"
 #include "rfir/util/util.h"
 #include "rfir/util/file.h"
+#include "network/module/wifi/ap.h"
 
 int GlobalConfig::Props::init(JsonObject* _config){
     JsonObject config = *_config;
@@ -100,6 +101,7 @@ int GlobalConfig::Props::init(JsonObject* _config){
     this->ap_mode = config.containsKey("ap_mode") ?  config["ap_mode"].as<bool>() : this->ap_mode;
     this->ap_password = config.containsKey("ap_password") ?  config["ap_password"].as<std::string>() : this->ap_password;
     this->ap_reset_timeout = config.containsKey("ap_reset_timeout") ?  config["ap_reset_timeout"].as<int>() : this->ap_reset_timeout;
+    this->ap_start_wifi_timeout = config.containsKey("ap_start_wifi_timeout") ?  config["ap_start_wifi_timeout"].as<int>() : this->ap_start_wifi_timeout;
     this->ap_ssid = config.containsKey("ap_ssid") ?  config["ap_ssid"].as<std::string>() : this->ap_ssid;
 
 
@@ -174,6 +176,13 @@ GlobalConfig::GlobalConfig(){
     reset();
     initFromFile();
     fixup();
+    GWifiAP.events.configSaved.add(this, [this](void* arg, void* p)->void*{this->onAPConfigSaved(arg, p); return 0;}, this);
+    GWifiAP.events.applyDefault.add(this, [this](void* arg, void* p)->void*{this->onAPApplyDefault(arg, p); return 0;}, this);
+};
+
+GlobalConfig::~GlobalConfig(){
+    GWifiAP.events.configSaved.remove(this);
+    GWifiAP.events.applyDefault.remove(this);
 };
 
 int GlobalConfig::loadFromFile(JsonObject& config){
@@ -242,6 +251,25 @@ void  GlobalConfig::getIds(JsonObject* _pld, std::string key){
 
 std::string GlobalConfig::expandTopic(std::string topic){
     return props.expandTopic(topic);
+};
+
+
+void GlobalConfig::setMode(Mode mode) {
+    if (this->mode != mode) {
+        this->mode = mode;
+        this->events.onModeChange.emit((void*)this->mode);
+    }
+}
+
+void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
+    DEBUGER.printf("GlobalConfig::onAPConfigSaved: %s \n", GWifiAP.wifiSsid);
+    
+    return 0;
+};
+
+void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
+
+    return 0;
 };
 
 GlobalConfig Config;

@@ -9,13 +9,16 @@ namespace rfir {
         class Led {
         public:
             JLed* led = 0;
+            void* owner = 0;
         public:
             void start(JLed* pled);
+            void start(JLed* pled, void* owner);
+            void stop();
+            void stop(void* owner);
             void loop();
         public:
             bool idle();
-            void update();
-            void stop();
+            void update();            
         };
     }
 }

@@ -5,6 +5,12 @@ void rfir::util::Led::start(JLed* pled){
     led = pled;    
 };
 
+void rfir::util::Led::start(JLed* pled, void* owner){
+    stop();    
+    this->led = pled;    
+    this->owner = owner;
+};
+
 void rfir::util::Led::loop(){
     update();    
 };
@@ -25,5 +31,17 @@ void rfir::util::Led::stop(){
         led = nullptr;
     }    
 };
+
+void rfir::util::Led::stop(void* owner){
+    if (owner == this->owner) {
+        if (led) {
+            led->Stop();
+            led = nullptr;
+        }    
+        this->owner = 0;
+    }
+};
+
+
 
 rfir::util::Led GLed;

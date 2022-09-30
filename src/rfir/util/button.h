@@ -8,6 +8,7 @@ namespace rfir {
         class Button {
         public:
             struct KeyTime {
+                unsigned long prePressed = 0;
                 unsigned long pressed = 0;
                 unsigned long released = 0;
             };

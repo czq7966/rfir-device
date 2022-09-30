@@ -4,6 +4,7 @@
 #include "network/module/wifi/client.h"
 #include "network/module/ota/updater.h"
 #include "network/service/wifi/client.h"
+#include "network/service/wifi/ap.h"
 #include "network/service/mqtt/async-client.h"
 #include "network/service/ota/updater.h"
 
@@ -13,6 +14,7 @@
 
 #include "rfir/util/event-timer.h"
 #include "rfir/util/led.h"
+#include "rfir/util/button.h"
 
 #include "cmds/cmd/cmd-base.h"
 #include "cmds/cmd/cmd-dispatcher.h"
@@ -42,22 +44,13 @@ void setup() {
     DEBUGER.println(String(Config.props.serial_baud)+ ":" + String(Config.props.serial_config));
     DEBUGER.println("begin chid id: " + String(Config.props.dev_id.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
 
+    //WiFi
     if (!Config.props.wifi_disable) {
         //启动wifi或热点
         network::module::wifi::Client::Params np;    
         np.ssid = Config.props.wifi_ssid;
         np.pass = Config.props.wifi_password;
         np.timeout = Config.props.wifi_reset_timeout;
-        //AP
-        if (Config.props.ap_mode) {
-            np.apMode = Config.props.ap_mode;
-            np.ap.apSsid = Config.props.ap_ssid == "" ? Config.props.dev_id : Config.props.ap_ssid;
-            np.ap.apPass = Config.props.ap_password;
-            np.ap.resetTimeout = Config.props.ap_reset_timeout;
-            np.ap.configVersion = Config.props.ap_config_version;
-            np.ap.configPin = Config.props.ap_config_pin;
-            np.ap.configPinTimeout = Config.props.ap_config_pin_timeout;
-        }
 
         for(auto it = Config.props.wifi_ssid_dev.begin(); it != Config.props.wifi_ssid_dev.end(); it++) {
             np.ssid.push_back(*it);
@@ -85,6 +78,18 @@ void setup() {
 
     }
 
+    //AP
+    if (Config.props.ap_mode) {
+        network::module::wifi::AP::Params ap;    
+        ap.apSsid = Config.props.ap_ssid == "" ? Config.props.dev_id : Config.props.ap_ssid;
+        ap.apPass = Config.props.ap_password;
+        ap.resetTimeout = Config.props.ap_reset_timeout;
+        ap.configVersion = Config.props.ap_config_version;
+        ap.configPin = Config.props.ap_config_pin;
+        ap.configPinTimeout = Config.props.ap_config_pin_timeout;        
+        GWifiAP.start(ap);
+    }    
+
     if (!Config.props.ota_disable) {
         //启动OTA
         network::module::ota::Updater::Params op;
@@ -108,7 +113,7 @@ void setup() {
         mp.clean_session = Config.props.mqtt_clean_session;
 
         GCmdDispatcher.setSignaler(&GMqttSignaler);
-        GMqttSignaler.setMqtt(&GMqttClient);
+        GMqttSignaler.setMqtt(&GMqttClient);        
         GMqttClient.start(mp);
     }
     //启动组网组件
@@ -128,6 +133,10 @@ void setup() {
     //全局配置, 得先于其他组件
     Config.events.onFixup.add(0, OnConfigFixup, 0);    
     Config.fixup();
+
+    //按钮
+    GButton.start(Config.props.button_pin);
+    // GButton.events.onPressed.add(0, ()=> {}, 0)
 }
 
 
@@ -135,11 +144,18 @@ void setup() {
 void loop() {
     //设备循环
     GDevice->loop();
-    //业务循环
+
     //定时器
     GEventTimer.loop();
+
     //LED
     GLed.loop();
+
+    //按钮
+    GButton.loop();
+
+    //热点
+    GWifiAP.loop();
 }
 
 

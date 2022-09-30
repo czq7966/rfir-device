@@ -120,6 +120,7 @@ public:
     struct Events
     {
         rfir::util::Event onFixup;
+        rfir::util::Event onModeChange;
     };
     struct Props {
         //App
@@ -167,6 +168,7 @@ public:
         std::string ap_ssid = AP_SSID; 
         std::string ap_password = AP_PASSWORD; 
         int ap_reset_timeout = AP_RESET_TIMEOUT; 
+        int ap_start_wifi_timeout = AP_START_WIFI_TIMEOUT; 
         std::string ap_config_version = AP_CONFIG_VERSION; 
         int ap_config_pin = AP_CONFIG_PIN; 
         int ap_config_pin_timeout = AP_CONFIG_PIN_TIMEOUT; 
@@ -211,12 +213,17 @@ public:
         void reset();
         std::string expandTopic(std::string topic);
     };
-
+    enum Mode {
+        Setting,
+        Running
+    };
     Events events;   
     Props props; 
+    Mode mode = Mode::Running;
     std::string configFilename = "/gconfig.json";
 public:
     GlobalConfig();
+    ~GlobalConfig();
     void fixup();
     void fixupTopic();
     void reset();
@@ -226,7 +233,10 @@ public:
     int loadFromFile(JsonObject& config);
     int saveToFile(JsonObject& config);
     int initFromFile();
-    
+
+    void setMode(Mode mode);
+    void* onAPConfigSaved(void* arg, void* p);
+    void* onAPApplyDefault(void* arg, void* p);
 };
 
 extern GlobalConfig Config;

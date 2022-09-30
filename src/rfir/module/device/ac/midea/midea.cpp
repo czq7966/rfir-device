@@ -64,7 +64,7 @@ int rfir::module::device::ac::Midea::onSvc_set(JsonObject* _pld, cmds::cmd::CmdB
     auto power = ac.getPower();
     std::string powerStr = pld["power"];
     power = powerStr == "on" ? true : 
-            powerStr == "off" ? false : true;
+            powerStr == "off" ? false : power;
 
     //Mode
     auto mode = ac.getMode();

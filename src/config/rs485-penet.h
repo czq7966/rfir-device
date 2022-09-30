@@ -49,13 +49,15 @@ extern JLed                         GJLed;
 
 
 //AP
-#define AP_MODE                     false //true时，支持热点配网
+#define AP_MODE                     true //true时，支持热点配网
 #define AP_SSID                     ""  //为空时，取ChipID
 #define AP_PASSWORD                 "12345678"
 #define AP_RESET_TIMEOUT            1000 * 60 * 5 //多少时间内WIFI未连接，重启，单位毫秒
+#define AP_START_WIFI_TIMEOUT       1000 * 20 //WIFI断网多少毫秒，启动热点配网
 #define AP_CONFIG_VERSION           "1" //该值若有修改，AP配置将被重置
 #define AP_CONFIG_PIN               -1  //配合AP_CONFIG_PIN_TIMEOUT，长按后进入AP配网模式
 #define AP_CONFIG_PIN_TIMEOUT       1000 * 5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位毫秒
+#define AP_CONFIG_JLED             GJLed.Stop().LowActive().Blink(5000, 500).Forever().Reset()
 
 //SMC
 #define SMC_DISABLE                  false

@@ -13,7 +13,7 @@ cmds::cmd::CmdBase::Command::Command(){
     head.from.id = DefaultFrom->id;
     head.to.type = DefaultTo->type;
     head.to.id = DefaultTo->id;    
-    doc = new DynamicJsonDocument(MQTT_BUFFER_SIZE);
+    doc = new DynamicJsonDocument(Config.props.mqtt_buffer_size);
     root = doc->to<JsonObject>();
     hd = root.createNestedObject("hd");
     pld = root.createNestedObject("pld");
