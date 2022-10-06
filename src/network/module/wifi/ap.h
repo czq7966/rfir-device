@@ -7,6 +7,13 @@
 #include "rfir/util/button.h"
 #include "rfir/util/event-emitter.h"
 
+static const char Serial_Config_8N1[] PROGMEM = "8N1";
+static const char Serial_Config_8N2[] PROGMEM = "8N2";
+static const char Serial_Config_8O1[] PROGMEM = "8O1";
+static const char Serial_Config_8O2[] PROGMEM = "8O2";
+static const char Serial_Config_8E1[] PROGMEM = "8E1";
+static const char Serial_Config_8E2[] PROGMEM = "8E2";
+
 namespace network {
     namespace module {
         namespace wifi {
@@ -33,8 +40,6 @@ namespace network {
 #endif                    
                 };
             public:
-                void init();
-                void uninit();
                 void initBtnStart();
                 void initBtnStop();
                 void* delayInitBtnStart(void* arg, void* p);
@@ -43,15 +48,28 @@ namespace network {
             public:
                 DNSServer* dnsServer;
                 WebServer* webServer;
-                IotWebConf* iotWebConf;
+                IotWebConf* iotWebConf;                
+
+                //Wifi
                 static const uint8_t PROGMEM WifiSsid_max_length = 32;
                 static const uint8_t PROGMEM WifiSsid_max_count = 20;
-
-                // char wifiSsids[WifiSsid_max_length * WifiSsid_max_count] = {};
                 char* wifiSsids = 0;
                 char  wifiSsid[WifiSsid_max_length] = {};
+                char  wifiPass[WifiSsid_max_length] = {};
                 IotWebConfParameterGroup* wifiGroup = 0;
-                IotWebConfSelectParameter* wifiParam = 0;
+                IotWebConfSelectParameter* wifiParamSsid = 0;
+                IotWebConfPasswordParameter* wifiParamPass = 0;
+
+                //Serial
+                static const uint8_t PROGMEM Serial_Band_max_length = 8;
+                static const uint8_t PROGMEM Serial_Config_max_count = 6;
+
+                char* serialConfigs = 0;
+                char  serialBand[Serial_Band_max_length] = {};
+                char  serialConfig[Serial_Band_max_length] = {};
+                IotWebConfParameterGroup* serialGroup = 0;
+                IotWebConfNumberParameter* serialParamBand = 0;
+                IotWebConfSelectParameter* serialParamConfig = 0;
                 
             public:
                 Params params;
@@ -65,8 +83,16 @@ namespace network {
                 void start();
                 void stop();
                 void loop();
+            public:
+                void init();
+                void uninit();
+                void initWebConf();
+                void uninitWebConf();
+                void initWifi();
+                void uninitWifi();
+                void initSerial();
+                void uninitSerial();
                 void applyDefault();
-                void unApplyDefault();
             public:
                 void* onBtnStart(void* arg, void* p);
                 void* onBtnStop(void* arg, void* p);

@@ -212,6 +212,9 @@ public:
         void fixupTopic();
         void reset();
         std::string expandTopic(std::string topic);
+
+        int saveWifi(JsonObject& config);
+        int saveSerial(JsonObject& config);
     };
     enum Mode {
         Setting,
@@ -230,9 +233,12 @@ public:
     void getIds(JsonObject* pld, std::string key = "ids");
     std::string expandTopic(std::string topic);
 
-    int loadFromFile(JsonObject& config);
+    int loadFromFile(JsonDocument& doc);
+    int loadFromFile(JsonObject& config, std::string key = "app");
     int saveToFile(JsonObject& config);
-    int initFromFile();
+    int saveToFile(JsonDocument& doc);
+    int initFromFile(std::string key = "app");
+
 
     void setMode(Mode mode);
     void* onAPConfigSaved(void* arg, void* p);

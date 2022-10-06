@@ -4,7 +4,47 @@
 #include "rfir/util/led.h"
 #include "rfir/util/event-timer.h"
 
+void network::module::wifi::AP::start(Params p) {
+    this->params = p;
+    stop();
+}
+
+void network::module::wifi::AP::start(){
+    init();
+    if (GLed.idle()) GLed.start(&(AP_CONFIG_JLED), this);    
+};
+
+void network::module::wifi::AP::stop(){
+    GLed.stop(this);
+    uninit();
+};
+
+void network::module::wifi::AP::loop() {
+    if (iotWebConf)
+        iotWebConf->doLoop();
+}
+
 void network::module::wifi::AP::init(){
+    initWebConf();
+    initWifi();
+    initSerial();
+
+
+
+    DEBUGER.println("AP Ready.");
+
+    initBtnStop();
+};
+
+void network::module::wifi::AP::uninit(){
+
+    uninitWebConf();  
+    uninitWifi();
+    uninitSerial();
+    initBtnStart();    
+};
+
+void network::module::wifi::AP::initWebConf(){
     this->dnsServer = new DNSServer();
     this->webServer = new WebServer(80);
     this->iotWebConf = new IotWebConf(this->params.apSsid.c_str(), this->dnsServer, this->webServer, this->params.apPass.c_str(), this->params.configVersion.c_str());
@@ -19,41 +59,79 @@ void network::module::wifi::AP::init(){
     auto valid = this->iotWebConf->init();
     this->iotWebConf->forceApMode(true);
 
-    // this->applyDefault();    
     this->webServer->on("/", [this]{ this->handleRoot(); });
     this->webServer->on("/config", [this]{ this->iotWebConf->handleConfig(); });
     this->webServer->onNotFound([this]{ this->iotWebConf->handleNotFound(); });
-
-    DEBUGER.println("AP Ready.");
-
-    initBtnStop();
 };
 
-void network::module::wifi::AP::uninit(){
-
+void network::module::wifi::AP::uninitWebConf(){
     if (iotWebConf) 
         WiFi.softAPdisconnect(true);            
-    DEBUGER.println("111111111111");
         
     if(webServer)
         webServer->stop();
-DEBUGER.println("22222222222");
     if (dnsServer)
         dnsServer->stop();
-DEBUGER.println("3333333333");    
+ 
     delete iotWebConf;
     delete webServer;
     delete dnsServer;
-DEBUGER.println("44444444444");
 
     iotWebConf = 0;
     webServer = 0;
     dnsServer = 0;
-DEBUGER.println("5555555555555");
-    unApplyDefault();
-DEBUGER.println("66666666666");    
-    initBtnStart();    
-DEBUGER.println("77777777777");    
+};
+
+void network::module::wifi::AP::initWifi(){
+    wifiSsids = new char[WifiSsid_max_length * WifiSsid_max_count];
+
+    wifiGroup = new IotWebConfParameterGroup("wifi_factor", "Wifi配网");
+    wifiParamSsid = new IotWebConfSelectParameter("wifi 名称", "wifi_ssid", wifiSsid, WifiSsid_max_length, (char*)wifiSsids, (char*)wifiSsids, WifiSsid_max_count, WifiSsid_max_length);
+    wifiParamPass = new IotWebConfPasswordParameter("wifi 密码", "wifi_pass", wifiPass, WifiSsid_max_length);
+    wifiParamPass->defaultValue = this->params.wifiPass.c_str();
+    wifiParamPass->applyDefaultValue();
+
+    wifiGroup->addItem(wifiParamSsid);
+    wifiGroup->addItem(wifiParamPass);
+    iotWebConf->addParameterGroup(wifiGroup);
+
+};
+void network::module::wifi::AP::uninitWifi(){
+    delete wifiSsids;
+    delete wifiGroup;
+    delete wifiParamSsid;
+    delete wifiParamPass;
+
+    wifiSsids = 0;
+    wifiGroup = 0;
+    wifiParamSsid = 0;
+    wifiParamPass = 0;
+};
+void network::module::wifi::AP::initSerial(){
+    serialConfigs = new char[Serial_Band_max_length * Serial_Config_max_count];
+    serialGroup = new IotWebConfParameterGroup("serial_factor", "串口pz");
+    serialParamBand = new IotWebConfNumberParameter("波特率", "serial_band", serialBand, Serial_Band_max_length);
+    serialParamConfig = new IotWebConfSelectParameter("控制位", "serial_config", serialConfig, WifiSsid_max_length, (char*)serialConfigs, (char*)serialConfigs, Serial_Config_max_count, Serial_Band_max_length);
+  
+    serialParamBand->defaultValue = this->serialBand;
+    serialParamBand->applyDefaultValue();
+    serialParamConfig->defaultValue = this->serialConfig;
+    serialParamConfig->applyDefaultValue();
+
+    serialGroup->addItem(serialParamBand);
+    serialGroup->addItem(serialParamConfig);
+    iotWebConf->addParameterGroup(serialGroup);
+};
+void network::module::wifi::AP::uninitSerial(){
+    delete serialConfigs;
+    delete serialGroup;
+    delete serialParamBand;
+    delete serialParamConfig;
+
+    serialConfigs = 0;
+    serialGroup = 0;
+    serialParamBand = 0;
+    serialParamConfig = 0;    
 };
 
 void network::module::wifi::AP::initBtnStart(){
@@ -81,25 +159,6 @@ void network::module::wifi::AP::initBtnStop(){
     GButton.events.onReleased.once(this, std::bind(&AP::onBtnStop,this, std::placeholders::_1, std::placeholders::_1), this, &this->keyTimeBtnStop);
 };
 
-void network::module::wifi::AP::start(Params p) {
-    this->params = p;
-    stop();
-}
-
-void network::module::wifi::AP::start(){
-    init();
-    if (GLed.idle()) GLed.start(&(AP_CONFIG_JLED), this);    
-};
-
-void network::module::wifi::AP::stop(){
-    GLed.stop(this);
-    uninit();
-};
-
-void network::module::wifi::AP::loop() {
-    if (iotWebConf)
-        iotWebConf->doLoop();
-}
 
 void network::module::wifi::AP::handleRoot() {
 
@@ -120,13 +179,12 @@ void network::module::wifi::AP::handleRoot() {
 
 
 void network::module::wifi::AP::applyDefault() {
-    unApplyDefault();
+    if ((int)this->events.applyDefault.emit(this) == -1)
+        return;
 
     this->iotWebConf->getThingNameParameter()->defaultValue = this->params.apSsid.c_str();
     this->iotWebConf->getThingNameParameter()->applyDefaultValue();
     this->iotWebConf->getThingNameParameter()->label = 0;
-    // this->iotWebConf->getThingNameParameter()->visible = false;
-    
 
     this->iotWebConf->getApPasswordParameter()->defaultValue = this->params.apPass.c_str();
     this->iotWebConf->getApPasswordParameter()->applyDefaultValue();
@@ -140,7 +198,6 @@ void network::module::wifi::AP::applyDefault() {
     this->iotWebConf->getWifiPasswordParameter()->applyDefaultValue();
     this->iotWebConf->getWifiPasswordParameter()->visible = false;
 
-    this->events.applyDefault.emit(this);
     DEBUGER.println("Use defaults: ");
     DEBUGER.printf("---AP   Ssid: %s\n", this->params.apSsid.c_str());
     DEBUGER.printf("---AP   Pass: %s\n", this->params.apPass.c_str());
@@ -148,31 +205,25 @@ void network::module::wifi::AP::applyDefault() {
     DEBUGER.printf("---WiFi Pass: %s\n", this->params.wifiPass.c_str());
 
     int count = WiFi.scanNetworks();    
-    wifiSsids = new char[WifiSsid_max_length * WifiSsid_max_count];
-
-    for(int i=0; i < WifiSsid_max_count; i++){             
-        if (i < count) {            
-            strcpy(this->wifiSsids + i * WifiSsid_max_length, WiFi.SSID(i).c_str());
-        }
+    for(int i=0; i < WifiSsid_max_count; i++){         
+        char * ssid = this->wifiSsids + i * WifiSsid_max_length;    
+        if (i < count)            
+            strcpy(ssid, WiFi.SSID(i).c_str());
+        else 
+            strcpy(ssid, "");
     }
 
     WiFi.scanDelete();
-    IotWebConfParameterGroup* wifiGroup = new IotWebConfParameterGroup("wifi_factor", "Wifi Factor");
-    IotWebConfSelectParameter* wifiParam = new IotWebConfSelectParameter("wifi ssid", "wifi_ssid", wifiSsid, WifiSsid_max_length, (char*)wifiSsids, (char*)wifiSsids, count, WifiSsid_max_length);
-    wifiParam.
-    wifiGroup->addItem(wifiParam);
-    iotWebConf->addParameterGroup(wifiGroup);
-    iotWebConf->
-}
 
-void network::module::wifi::AP::unApplyDefault() {
-    // for(int i=0; i < WifiSsid_max_count; i++){ delete[] this->wifiSsids[i]; this->wifiSsids[i] = 0; }
-    delete wifiSsids;
-    delete wifiGroup;
-    delete wifiParam;
-    wifiSsids = 0;
-    wifiGroup = 0;
-    wifiParam = 0;
+    wifiParamSsid->defaultValue = wifiSsid;
+    wifiParamSsid->applyDefaultValue();
+    wifiParamPass->defaultValue = wifiPass;
+    wifiParamPass->applyDefaultValue();
+
+    serialParamBand->defaultValue = serialBand;
+    serialParamBand->applyDefaultValue();
+    serialParamConfig->defaultValue = serialConfig;
+    serialParamConfig->applyDefaultValue();
 }
 
 

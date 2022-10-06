@@ -185,14 +185,26 @@ GlobalConfig::~GlobalConfig(){
     GWifiAP.events.applyDefault.remove(this);
 };
 
-int GlobalConfig::loadFromFile(JsonObject& config){
+
+int  GlobalConfig::loadFromFile(JsonDocument& doc){
     rfir::util::TxtFile file(configFilename.c_str());
     std::string str;
     if (file.readString(str)) {
-        DynamicJsonDocument doc(MQTT_BUFFER_SIZE);
         deserializeJson(doc, str);
-        return config.set(doc.as<JsonObject>());
+        return 1;
+    }    
+    return 0;
+};
+
+int GlobalConfig::loadFromFile(JsonObject& config, std::string key){
+    DynamicJsonDocument doc(MQTT_BUFFER_SIZE);
+    if (loadFromFile(doc)) {
+        if (key == "") 
+            return config.set(doc.as<JsonObject>());
+        else if (doc.containsKey(key))
+            return config.set(doc[key]);
     }
+
     return 0;
 };
 
@@ -206,14 +218,41 @@ int GlobalConfig::saveToFile(JsonObject& config){
     return 0;
 };
 
-int GlobalConfig::initFromFile(){
-    DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
-    JsonObject config = doc.to<JsonObject>();    
-    this->loadFromFile(config);
-    JsonObject app = config["app"];
-    return this->props.init(&app);
+int GlobalConfig::saveToFile(JsonDocument& doc){
+    auto config = doc.as<JsonObject>();
+    return saveToFile(config);
 };
 
+int GlobalConfig::initFromFile(std::string key){
+    DynamicJsonDocument doc(Config.props.mqtt_buffer_size);
+    JsonObject app = doc.to<JsonObject>();    
+    if (this->loadFromFile(app, key))
+        return this->props.init(&app);  
+    return 0;
+};
+
+int GlobalConfig::Props::saveWifi(JsonObject& config){
+    config.remove("wifi_ssid");
+    config.remove("wifi_password");
+    auto ssid = config.createNestedArray("wifi_ssid");
+    auto pass = config.createNestedArray("wifi_password");
+    for (size_t i = 0; i < this->wifi_ssid.size(); i++)
+    {
+        ssid.add(this->wifi_ssid[i]);
+        pass.add(this->wifi_password[i]);
+    }
+
+    return 1;
+};
+
+int GlobalConfig::Props::saveSerial(JsonObject& config){
+    config["serial_baud"] = this->serial_baud;
+    config["serial_config"] = this->serial_config;
+    config["co_serial_baud"] = this->co_serial_baud;
+    config["co_serial_config"] = this->co_serial_config;
+
+    return 1;
+};
 
 void GlobalConfig::fixup(){
     props.fixup();
@@ -263,11 +302,91 @@ void GlobalConfig::setMode(Mode mode) {
 
 void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
     DEBUGER.printf("GlobalConfig::onAPConfigSaved: %s \n", GWifiAP.wifiSsid);
+
+    auto ap = &GWifiAP;
+
+    //Wifi
+    int idx = -1;        
+    for (size_t i = 0; i < props.wifi_ssid.size(); i++)
+    {
+        if (props.wifi_ssid[i] == ap->wifiSsid){
+            idx = i;
+            break;
+        }            
+    }
+
+    if (idx >= 0) {
+        props.wifi_ssid.erase(props.wifi_ssid.begin() + idx);
+        props.wifi_password.erase(props.wifi_password.begin() + idx);
+    }
+
+    props.wifi_ssid.insert(props.wifi_ssid.begin(), ap->wifiSsid);
+    props.wifi_password.insert(props.wifi_password.begin(), ap->wifiPass);
+
+    //Serial
+    props.serial_baud = atoi(ap->serialBand);
+    if (strcmp(ap->serialConfig, Serial_Config_8N1) == 0)
+        props.serial_config = SERIAL_8N1;
+    else if (strcmp(ap->serialConfig, Serial_Config_8N2) == 0)
+        props.serial_config = SERIAL_8N2;
+    else if (strcmp(ap->serialConfig, Serial_Config_8O1) == 0)
+        props.serial_config = SERIAL_8O1;
+    else if (strcmp(ap->serialConfig, Serial_Config_8O2) == 0)
+        props.serial_config = SERIAL_8O2;
+    else if (strcmp(ap->serialConfig, Serial_Config_8E1) == 0)
+        props.serial_config = SERIAL_8E1;
+    else if (strcmp(ap->serialConfig, Serial_Config_8E2) == 0)
+        props.serial_config = SERIAL_8E2;   
+
+    props.co_serial_baud = props.serial_baud;
+    props.co_serial_config = props.serial_config;
+
+    DynamicJsonDocument doc(props.mqtt_buffer_size);    
+    const std::string key = "app";
+    loadFromFile(doc);
+    if (!doc.containsKey(key))
+        doc.createNestedObject(key);
+    JsonObject app = doc[key].as<JsonObject>();
+
+    props.saveWifi(app);
+    props.saveSerial(app);
+    saveToFile(doc);    
+    rfir::util::Util::Reset();
     
     return 0;
 };
 
 void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
+    DEBUGER.printf("GlobalConfig::onAPApplyDefault:  \n");
+
+    auto ap = &GWifiAP;
+    if (props.wifi_ssid.size() > 0){
+        strcpy(ap->wifiSsid, props.wifi_ssid[0].c_str());
+        strcpy(ap->wifiPass, props.wifi_password[0].c_str());
+    }
+
+    itoa(props.serial_baud, ap->serialBand, 10);
+    switch (props.serial_config)
+    {
+        case SERIAL_8N2:
+            strcpy(ap->serialConfig, Serial_Config_8N2);
+            break;
+        case SERIAL_8O1:
+            strcpy(ap->serialConfig, Serial_Config_8O1);
+            break;
+        case SERIAL_8O2:
+            strcpy(ap->serialConfig, Serial_Config_8O2);
+            break;
+        case SERIAL_8E1:
+            strcpy(ap->serialConfig, Serial_Config_8E1);
+            break;
+        case SERIAL_8E2:
+            strcpy(ap->serialConfig, Serial_Config_8E2);
+            break;
+        default:
+            strcpy(ap->serialConfig, Serial_Config_8N1);
+    }
+    
 
     return 0;
 };
