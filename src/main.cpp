@@ -15,6 +15,7 @@
 #include "rfir/util/event-timer.h"
 #include "rfir/util/led.h"
 #include "rfir/util/button.h"
+#include "rfir/util/mem.h"
 
 #include "cmds/cmd/cmd-base.h"
 #include "cmds/cmd/cmd-dispatcher.h"
@@ -142,6 +143,9 @@ void setup() {
 
 
 void loop() {
+    //内存
+    GMem.loop();
+
     //设备循环
     GDevice->loop();
 

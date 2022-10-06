@@ -31,8 +31,8 @@ extern JLed                         GJLed;
 //OTA
 #define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          11
-#define OTA_VERSION_STRING          "11.0"
+#define OTA_VERSION_NUMBER          12
+#define OTA_VERSION_STRING          "12.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-midea/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
@@ -52,9 +52,11 @@ extern JLed                         GJLed;
 #define AP_SSID                     ""  //为空时，取ChipID
 #define AP_PASSWORD                 "12345678"
 #define AP_RESET_TIMEOUT            1000 * 60 * 5 //多少时间内WIFI未连接，重启，单位毫秒
+#define AP_START_WIFI_TIMEOUT       1000 * 20 //WIFI断网多少毫秒，启动热点配网
 #define AP_CONFIG_VERSION           "1" //该值若有修改，AP配置将被重置
 #define AP_CONFIG_PIN               -1  //配合AP_CONFIG_PIN_TIMEOUT，长按后进入AP配网模式
 #define AP_CONFIG_PIN_TIMEOUT       1000 * 5   //配合AP_CONFIG_PIN，长按后进入AP配网模式，单位毫秒
+#define AP_CONFIG_JLED              GJLed.Stop().LowActive().Blink(5000, 500).Forever().Reset()
 
 //SMC
 #define SMC_DISABLE                  false

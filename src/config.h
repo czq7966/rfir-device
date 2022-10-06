@@ -224,6 +224,7 @@ public:
     Props props; 
     Mode mode = Mode::Running;
     std::string configFilename = "/gconfig.json";
+    uint32_t mem_low_handler = 0;
 public:
     GlobalConfig();
     ~GlobalConfig();
@@ -243,6 +244,8 @@ public:
     void setMode(Mode mode);
     void* onAPConfigSaved(void* arg, void* p);
     void* onAPApplyDefault(void* arg, void* p);
+    void* onMemLower(void* arg, void* p);
+    
 };
 
 extern GlobalConfig Config;

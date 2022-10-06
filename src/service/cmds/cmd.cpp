@@ -107,7 +107,7 @@ int  service::cmds::Cmd::OnSvc_set(::cmds::cmd::CmdMqtt* reqCmd, std::string rea
         pld["_success"] = result;
 
         if (reqCmd){
-            hd = reqCmd->command.hd;
+            hd.set(reqCmd->command.hd);
             cmd.command.head = reqCmd->command.head;
             cmd.command.head.from = reqCmd->command.head.to;
             cmd.command.head.to = reqCmd->command.head.from;
@@ -131,7 +131,7 @@ int  service::cmds::Cmd::OnSvc_reboot(::cmds::cmd::CmdMqtt* reqCmd){
     GDevice->getProps(&pld, reqCmd);
     pld["_success"] = result;
     if (reqCmd){
-        hd = reqCmd->command.hd;
+        hd.set(reqCmd->command.hd);
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;
@@ -173,7 +173,7 @@ int  service::cmds::Cmd::OnSvc_config(::cmds::cmd::CmdMqtt* reqCmd){
     pld["_success"] = result;
 
     if (reqCmd){
-        hd = reqCmd->command.hd;
+        hd.set(reqCmd->command.hd);
         cmd.command.head = reqCmd->command.head;
         cmd.command.head.from = reqCmd->command.head.to;
         cmd.command.head.to = reqCmd->command.head.from;

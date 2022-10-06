@@ -1,7 +1,10 @@
 #include "config.h"
 #include "rfir/util/util.h"
 #include "rfir/util/file.h"
+#include "rfir/util/mem.h"
+#include "rfir/util/event-timer.h"
 #include "network/module/wifi/ap.h"
+#include "service/cmds/cmd.h"
 
 int GlobalConfig::Props::init(JsonObject* _config){
     JsonObject config = *_config;
@@ -178,9 +181,11 @@ GlobalConfig::GlobalConfig(){
     fixup();
     GWifiAP.events.configSaved.add(this, [this](void* arg, void* p)->void*{this->onAPConfigSaved(arg, p); return 0;}, this);
     GWifiAP.events.applyDefault.add(this, [this](void* arg, void* p)->void*{this->onAPApplyDefault(arg, p); return 0;}, this);
+    GMem.events.lower.add(this, [this](void* arg, void* p)->void*{this->onMemLower(arg, p); return 0;}, this);
 };
 
 GlobalConfig::~GlobalConfig(){
+    GMem.events.lower.remove(this);
     GWifiAP.events.configSaved.remove(this);
     GWifiAP.events.applyDefault.remove(this);
 };
@@ -390,6 +395,23 @@ void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
 
     return 0;
 };
+
+void* GlobalConfig::onMemLower(void* arg, void* p){
+    if (!this->mem_low_handler) {
+        this->mem_low_handler = GEventTimer.delay(500, [this](void* arg, void* p)->void*{rfir::util::Util::Reset(); return 0;});
+
+        ::cmds::cmd::CmdMqtt cmd;
+        cmd.command.head.entry.type = "evt";
+        cmd.command.head.entry.id = "memlow";
+        
+        cmd.send();
+    }
+    
+    return 0;
+
+}
+
+
 
 GlobalConfig Config;
 JLed  GJLed = JLed(Config.props.led_pin);
