@@ -117,6 +117,9 @@ void* rfir::util::Button::onPinInterrupt(void* arg, void* p) {
     else {
         if (!this->keyTime.released) {
             this->keyTime.released = millis();
+            if (this->keyTime.released - this->keyTime.pressed < 5)
+                this->keyTime.pressed = this->keyTime.prePressed || this->keyTime.pressed;
+            this->keyTime.prePressed = this->keyTime.pressed;
             this->events.onReleased.emit(p);        
         }
     }

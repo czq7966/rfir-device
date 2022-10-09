@@ -3,12 +3,23 @@
 #include "rfir/util/file.h"
 #include "rfir/util/mem.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/util/serial.h"
+#include "rfir/util/button.h"
 #include "network/module/wifi/ap.h"
 #include "service/cmds/cmd.h"
 
 int GlobalConfig::Props::init(JsonObject* _config){
     JsonObject config = *_config;
     if (config.isNull()) return 0;
+    
+
+    //version
+    if (this->cfg_version_number == -1 || 
+        !config.containsKey("cfg_version_number") || 
+        this->cfg_version_number > config["cfg_version_number"].as<int>())
+        return 0; 
+
+    this->cfg_version_number = config["cfg_version_number"].as<int>();
 
     //id
     this->app_id = config.containsKey("app_id") ?  config["app_id"].as<std::string>() : this->app_id;
@@ -182,12 +193,22 @@ GlobalConfig::GlobalConfig(){
     GWifiAP.events.configSaved.add(this, [this](void* arg, void* p)->void*{this->onAPConfigSaved(arg, p); return 0;}, this);
     GWifiAP.events.applyDefault.add(this, [this](void* arg, void* p)->void*{this->onAPApplyDefault(arg, p); return 0;}, this);
     GMem.events.lower.add(this, [this](void* arg, void* p)->void*{this->onMemLower(arg, p); return 0;}, this);
+
+    auto keyTimeResetConfig = new rfir::util::Button::KeyTime();
+    keyTimeResetConfig->pressed = 10 * 1000;
+    keyTimeResetConfig->released = 13 * 1000;
+    this->keyTime_resetConfig = keyTimeResetConfig;
+    GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, this->keyTime_resetConfig);
 };
 
-GlobalConfig::~GlobalConfig(){
+GlobalConfig::~GlobalConfig(){    
     GMem.events.lower.remove(this);
     GWifiAP.events.configSaved.remove(this);
     GWifiAP.events.applyDefault.remove(this);
+
+    GButton.events.onLongPressed.remove(this);
+    delete this->keyTime_resetConfig;
+    this->keyTime_resetConfig = 0;
 };
 
 
@@ -236,6 +257,11 @@ int GlobalConfig::initFromFile(std::string key){
     return 0;
 };
 
+int GlobalConfig::Props::saveCfgVersion(JsonObject& config){
+    config["cfg_version_number"] = this->cfg_version_number;
+    return 1;
+};
+
 int GlobalConfig::Props::saveWifi(JsonObject& config){
     config.remove("wifi_ssid");
     config.remove("wifi_password");
@@ -272,23 +298,30 @@ void GlobalConfig::reset() {
     props.reset();
 };
 
+void GlobalConfig::resetConfig() {
+    DEBUGER.println("GlobalConfig::resetConfig");
+    DynamicJsonDocument doc(32);
+    this->saveToFile(doc);
+    GEventTimer.delay(100, [this](void*, void*)->void*{ rfir::util::Util::Reset(); return 0;});    
+};
+
 
 void  GlobalConfig::getIds(JsonObject* _pld, std::string key){
-    if (!_pld) return;
+    // if (!_pld) return;
 
-    JsonObject pld = *_pld;
-    JsonObject ids = pld;
+    // JsonObject pld = *_pld;
+    // JsonObject ids = pld;
 
-    if (key != "") 
-        ids = pld.containsKey(key) ? pld[key] : pld.createNestedObject(key);
+    // if (key != "") 
+    //     ids = pld.containsKey(key) ? pld[key] : pld.createNestedObject(key);
     
 
-    ids["app"] = props.app_id;
-    ids["dom"] = props.dom_id;
-    ids["dsp"] = props.dsp_id;
-    ids["edg"] = props.edg_id;
-    ids["dev"] = props.dev_id;
-    ids["dio"] = props.dio_id;
+    // ids["app"] = props.app_id;
+    // ids["dom"] = props.dom_id;
+    // ids["dsp"] = props.dsp_id;
+    // ids["edg"] = props.edg_id;
+    // ids["dev"] = props.dev_id;
+    // ids["dio"] = props.dio_id;
 
 };
 
@@ -298,6 +331,9 @@ std::string GlobalConfig::expandTopic(std::string topic){
 };
 
 
+GlobalConfig::Mode GlobalConfig::getMode() {
+    return this->mode;
+}
 void GlobalConfig::setMode(Mode mode) {
     if (this->mode != mode) {
         this->mode = mode;
@@ -305,44 +341,34 @@ void GlobalConfig::setMode(Mode mode) {
     }
 }
 
+void GlobalConfig::setLowMem(){
+    GMem.lowSize = props.mqtt_buffer_size * 2;
+};
+
+void GlobalConfig::checkSettingMode(){
+    if (this->props.wifi_ssid.size() == 0) {
+        this->setMode(Mode::Setting);        
+        GWifiAP.start();
+    }
+
+    GEventTimer.delay(props.ap_start_wifi_timeout, [this](void* arg, void* p)->void*{ return 0;});
+};
+
 void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
     DEBUGER.printf("GlobalConfig::onAPConfigSaved: %s \n", GWifiAP.wifiSsid);
 
     auto ap = &GWifiAP;
 
     //Wifi
-    int idx = -1;        
-    for (size_t i = 0; i < props.wifi_ssid.size(); i++)
-    {
-        if (props.wifi_ssid[i] == ap->wifiSsid){
-            idx = i;
-            break;
-        }            
-    }
 
-    if (idx >= 0) {
-        props.wifi_ssid.erase(props.wifi_ssid.begin() + idx);
-        props.wifi_password.erase(props.wifi_password.begin() + idx);
-    }
-
-    props.wifi_ssid.insert(props.wifi_ssid.begin(), ap->wifiSsid);
-    props.wifi_password.insert(props.wifi_password.begin(), ap->wifiPass);
+    props.wifi_ssid.clear();
+    props.wifi_password.clear();
+    props.wifi_ssid.push_back(ap->wifiSsid);
+    props.wifi_password.push_back(ap->wifiPass);
 
     //Serial
     props.serial_baud = atoi(ap->serialBand);
-    if (strcmp(ap->serialConfig, Serial_Config_8N1) == 0)
-        props.serial_config = SERIAL_8N1;
-    else if (strcmp(ap->serialConfig, Serial_Config_8N2) == 0)
-        props.serial_config = SERIAL_8N2;
-    else if (strcmp(ap->serialConfig, Serial_Config_8O1) == 0)
-        props.serial_config = SERIAL_8O1;
-    else if (strcmp(ap->serialConfig, Serial_Config_8O2) == 0)
-        props.serial_config = SERIAL_8O2;
-    else if (strcmp(ap->serialConfig, Serial_Config_8E1) == 0)
-        props.serial_config = SERIAL_8E1;
-    else if (strcmp(ap->serialConfig, Serial_Config_8E2) == 0)
-        props.serial_config = SERIAL_8E2;   
-
+    GSerial_Configs.configs.getKeyByValue(ap->serialConfig, props.serial_config);
     props.co_serial_baud = props.serial_baud;
     props.co_serial_config = props.serial_config;
 
@@ -353,11 +379,16 @@ void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
         doc.createNestedObject(key);
     JsonObject app = doc[key].as<JsonObject>();
 
+    props.saveCfgVersion(app);
     props.saveWifi(app);
     props.saveSerial(app);
+
     saveToFile(doc);    
-    rfir::util::Util::Reset();
-    
+    GEventTimer.delay(1000, [this](void*, void*)->void*{
+        rfir::util::Util::Reset();
+        return 0;
+    });    
+
     return 0;
 };
 
@@ -371,27 +402,10 @@ void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
     }
 
     itoa(props.serial_baud, ap->serialBand, 10);
-    switch (props.serial_config)
-    {
-        case SERIAL_8N2:
-            strcpy(ap->serialConfig, Serial_Config_8N2);
-            break;
-        case SERIAL_8O1:
-            strcpy(ap->serialConfig, Serial_Config_8O1);
-            break;
-        case SERIAL_8O2:
-            strcpy(ap->serialConfig, Serial_Config_8O2);
-            break;
-        case SERIAL_8E1:
-            strcpy(ap->serialConfig, Serial_Config_8E1);
-            break;
-        case SERIAL_8E2:
-            strcpy(ap->serialConfig, Serial_Config_8E2);
-            break;
-        default:
-            strcpy(ap->serialConfig, Serial_Config_8N1);
-    }
-    
+    std::string config;
+    if (GSerial_Configs.configs.get(props.serial_config, config)) {
+        strcpy(ap->serialConfig, config.c_str());
+    }    
 
     return 0;
 };

@@ -20,6 +20,8 @@ namespace network {
                 struct Events {
                     rfir::util::Event onWifiConnect;
                     rfir::util::Event onWifiDisconnect;
+                    rfir::util::Event softAPModeStationConnected;
+                    rfir::util::Event softAPModeStationDisconnected;
                 };
                 struct Params {
                     bool                apMode = false;
@@ -66,9 +68,13 @@ namespace network {
 #ifdef ESP8266               
                 WiFiEventHandler wifiConnectHandler;
                 WiFiEventHandler wifiDisconnectHandler;
+                WiFiEventHandler softAPModeStationConnectedHandler;
+                WiFiEventHandler softAPModeStationDisconnectedHandler;
 
                 void _onWifiConnect(const WiFiEventStationModeGotIP& event);
                 void _onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+                void _onSoftAPModeStationConnected(const WiFiEventSoftAPModeStationConnected& event);
+                void _onSoftAPModeStationDisconnected(const WiFiEventSoftAPModeStationDisconnected& event);
 #else
                 void WiFiEvent(WiFiEvent_t event);
 #endif                

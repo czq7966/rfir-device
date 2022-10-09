@@ -9,6 +9,8 @@ void rfir::util::Led::start(JLed* pled, void* owner){
     stop();    
     this->led = pled;    
     this->owner = owner;
+    if (this->led)
+        this->led->Reset();
 };
 
 void rfir::util::Led::loop(){

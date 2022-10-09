@@ -16,6 +16,7 @@
 #include "rfir/util/led.h"
 #include "rfir/util/button.h"
 #include "rfir/util/mem.h"
+#include "rfir/util/util.h"
 
 #include "cmds/cmd/cmd-base.h"
 #include "cmds/cmd/cmd-dispatcher.h"
@@ -82,10 +83,12 @@ void setup() {
     //AP
     if (Config.props.ap_mode) {
         network::module::wifi::AP::Params ap;    
+        Config.props.ap_ssid = rfir::util::Util::GetChipId("ndiot_");
         ap.apSsid = Config.props.ap_ssid == "" ? Config.props.dev_id : Config.props.ap_ssid;
         ap.apPass = Config.props.ap_password;
         ap.resetTimeout = Config.props.ap_reset_timeout;
-        ap.configVersion = Config.props.ap_config_version;
+        // ap.configVersion = Config.props.ap_config_version;
+        ap.configVersion = "";
         ap.configPin = Config.props.ap_config_pin;
         ap.configPinTimeout = Config.props.ap_config_pin_timeout;        
         GWifiAP.start(ap);

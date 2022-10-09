@@ -91,6 +91,16 @@ namespace rfir {
                 return m_map.size();                
             };
 
+            bool getKeyByValue(ValueType value, KeyType& key) {
+                for (auto it = m_map.begin(); it != m_map.end(); ++it) {
+                    if (it->second == value) {
+                        key = it->first;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             bool existValue(ValueType value){
                 for (auto it = m_map.begin(); it != m_map.end(); ++it) {
                     if (it->second == value)

@@ -7,6 +7,8 @@
 
 extern JLed                         GJLed;
 
+#define CFG_VERSION_NUMBER          0;  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
+
 //Device
 #define DEV_VENDOR                  "ND"
 #define DEV_MODEL                   "RS485PENET"
@@ -39,12 +41,12 @@ extern JLed                         GJLed;
 
 //WIFI
 #define WIFI_DISABLE                false
-#define WIFI_SSID_DEV               {"MERCURY_95E8"}
-#define WIFI_PASSWORD_DEV           {"12345678"}
-#define WIFI_SSID                   {"MERCURY_95E8", "NDSEC", "ND-MAC"}
-#define WIFI_PASSWORD               {"12345678", "wanglong","wanglong"}
+#define WIFI_SSID_DEV               {}
+#define WIFI_PASSWORD_DEV           {}
+#define WIFI_SSID                   {}
+#define WIFI_PASSWORD               {}
 // #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
-#define WIFI_RESET_TIMEOUT          1000 * 60  //多少时间内WIFI未连接，重启，单位毫秒
+#define WIFI_RESET_TIMEOUT          1000 * 60 * 10 //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 
 

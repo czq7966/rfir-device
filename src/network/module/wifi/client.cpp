@@ -253,6 +253,9 @@ void  network::module::wifi::Client::startV2(){
 #ifdef ESP8266    
     wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&Client::_onWifiConnect,this, std::placeholders::_1));
     wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&Client::_onWifiDisconnect,this, std::placeholders::_1));
+    softAPModeStationConnectedHandler = WiFi.onSoftAPModeStationConnected(std::bind(&Client::_onSoftAPModeStationConnected, this, std::placeholders::_1));
+    softAPModeStationDisconnectedHandler = WiFi.onSoftAPModeStationDisconnected(std::bind(&Client::_onSoftAPModeStationDisconnected,this, std::placeholders::_1));
+
 #else
     WiFi.onEvent(std::bind(&Client::WiFiEvent, this, std::placeholders::_1));
 #endif    
@@ -266,8 +269,13 @@ void  network::module::wifi::Client::loopV2(){
 void  network::module::wifi::Client::connectToWifi(){
     removeDelayConnectHandler();
 
-    if (WiFi.isConnected() || Config.mode != GlobalConfig::Mode::Running) 
+    if (WiFi.isConnected()) 
         return;
+    
+    if (WiFi.softAPgetStationNum() > 0) {
+        delayConnectToNextWifi();
+        return;
+    }
 
 // #ifdef ESP8266     
 //         WiFi.setPhyMode(WIFI_PHY_MODE_11B);
@@ -276,13 +284,13 @@ void  network::module::wifi::Client::connectToWifi(){
         m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&Client::onWifiConnectTimeout, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    if (GLed.idle()) GLed.start(&(WIFI_CONNECT_JLED));
+    if (GLed.idle()) GLed.start(&(WIFI_CONNECT_JLED), this);
    
     if (m_connect_ssid_index < params.ssid.size()) {
         std::string ssid_ssid = this->params.ssid[m_connect_ssid_index];
         std::string ssid_pass = this->params.pass[m_connect_ssid_index];
         DEBUGER.printf("Wifi connecting... %s %s \r\n", ssid_ssid.c_str(), ssid_pass.c_str());
-        WiFi.mode(WIFI_AP_STA);
+        // WiFi.mode(WIFI_AP_STA);
         WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());        
     }    
 
@@ -339,6 +347,14 @@ void network::module::wifi::Client::_onWifiDisconnect(const WiFiEventStationMode
     this->events.onWifiDisconnect.emit(0);
 };
 
+
+void network::module::wifi::Client::_onSoftAPModeStationConnected(const WiFiEventSoftAPModeStationConnected& event){
+    this->events.softAPModeStationConnected.emit(0);
+};
+void network::module::wifi::Client::_onSoftAPModeStationDisconnected(const WiFiEventSoftAPModeStationDisconnected& event){
+    this->events.softAPModeStationDisconnected.emit(0);
+};
+
 #else
 void network::module::wifi::Client::WiFiEvent(WiFiEvent_t event) {
     switch(event) {
@@ -359,7 +375,7 @@ void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     removeDelayConnectHandler();
 
     onWifiCheckTimeout(0, 0);
-    GLed.stop();        
+    GLed.stop(this);        
     return 0;
 };
 void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {

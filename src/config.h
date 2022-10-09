@@ -130,6 +130,8 @@ public:
         std::string edg_id;
         std::string dio_id;
 
+        int cfg_version_number = CFG_VERSION_NUMBER;
+
         //Device
         std::string dev_id;
         std::string dev_vendor = DEV_VENDOR;
@@ -213,6 +215,7 @@ public:
         void reset();
         std::string expandTopic(std::string topic);
 
+        int saveCfgVersion(JsonObject& config);
         int saveWifi(JsonObject& config);
         int saveSerial(JsonObject& config);
     };
@@ -225,12 +228,14 @@ public:
     Mode mode = Mode::Running;
     std::string configFilename = "/gconfig.json";
     uint32_t mem_low_handler = 0;
+    void* keyTime_resetConfig;
 public:
     GlobalConfig();
     ~GlobalConfig();
     void fixup();
     void fixupTopic();
     void reset();
+    void resetConfig();
     void getIds(JsonObject* pld, std::string key = "ids");
     std::string expandTopic(std::string topic);
 
@@ -240,8 +245,10 @@ public:
     int saveToFile(JsonDocument& doc);
     int initFromFile(std::string key = "app");
 
-
+    Mode getMode();
     void setMode(Mode mode);
+    void setLowMem();
+    void checkSettingMode();
     void* onAPConfigSaved(void* arg, void* p);
     void* onAPApplyDefault(void* arg, void* p);
     void* onMemLower(void* arg, void* p);

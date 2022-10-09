@@ -7,12 +7,6 @@
 #include "rfir/util/button.h"
 #include "rfir/util/event-emitter.h"
 
-static const char Serial_Config_8N1[] PROGMEM = "8N1";
-static const char Serial_Config_8N2[] PROGMEM = "8N2";
-static const char Serial_Config_8O1[] PROGMEM = "8O1";
-static const char Serial_Config_8O2[] PROGMEM = "8O2";
-static const char Serial_Config_8E1[] PROGMEM = "8E1";
-static const char Serial_Config_8E2[] PROGMEM = "8E2";
 
 namespace network {
     namespace module {
@@ -51,18 +45,18 @@ namespace network {
                 IotWebConf* iotWebConf;                
 
                 //Wifi
-                static const uint8_t PROGMEM WifiSsid_max_length = 32;
+                static const uint8_t PROGMEM WifiSsid_max_length = 33;
                 static const uint8_t PROGMEM WifiSsid_max_count = 20;
                 char* wifiSsids = 0;
                 char  wifiSsid[WifiSsid_max_length] = {};
                 char  wifiPass[WifiSsid_max_length] = {};
                 IotWebConfParameterGroup* wifiGroup = 0;
                 IotWebConfSelectParameter* wifiParamSsid = 0;
-                IotWebConfPasswordParameter* wifiParamPass = 0;
+                IotWebConfTextParameter* wifiParamPass = 0;
 
                 //Serial
                 static const uint8_t PROGMEM Serial_Band_max_length = 8;
-                static const uint8_t PROGMEM Serial_Config_max_count = 6;
+                // static const uint8_t PROGMEM Serial_Config_max_count = 6;
 
                 char* serialConfigs = 0;
                 char  serialBand[Serial_Band_max_length] = {};
@@ -76,14 +70,17 @@ namespace network {
                 Events events;
                 rfir::util::Button::KeyTime keyTimeBtnStart = {pressed: 3000, released: 5000};
                 rfir::util::Button::KeyTime keyTimeBtnStop = {pressed: 200, released: 1000};
+                uint32_t wifi_timeout_handler = 0;
             
             
             public:
                 void start(Params p);
                 void start();
+                bool started();
                 void stop();
                 void loop();
             public:
+                void initWifiWatch();
                 void init();
                 void uninit();
                 void initWebConf();
@@ -92,15 +89,15 @@ namespace network {
                 void uninitWifi();
                 void initSerial();
                 void uninitSerial();
-                void applyDefault();
+                void applyDefault();                
             public:
                 void* onBtnStart(void* arg, void* p);
                 void* onBtnStop(void* arg, void* p);
                 void* onBtnLongPressed(void* arg, void* p);
                 void* onBtnLongReleased(void* arg, void* p);
             public:
-                static void connectWifi(const char* ssid, const char* password);
-                static bool connectAp(const char* apName, const char* password);
+                void connectWifi(const char* ssid, const char* password);
+                bool connectAp(const char* apName, const char* password);
 
             };
         }

@@ -9,7 +9,7 @@ void rfir::util::Mem::loop(){
 };
 
 void rfir::util::Mem::lowCheck(){
-    auto p = malloc(MQTT_BUFFER_SIZE);
+    auto p = malloc(this->lowSize);
     if (p) 
         free(p);
     else

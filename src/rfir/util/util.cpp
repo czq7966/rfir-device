@@ -17,7 +17,7 @@ uint64_t  rfir::util::Util::reverseBits(uint64_t input, uint16_t nbits) {
 
 std::string rfir::util::Util::GetChipId(std::string prefix) {
 #ifdef CHIP_ID_PREFIX
-  prefix = CHIP_ID_PREFIX;
+  prefix = prefix == "" ? CHIP_ID_PREFIX : prefix;
 #endif  
 
 #ifdef ESP8266
