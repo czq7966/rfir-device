@@ -23,7 +23,7 @@ std::string cmds::cmd::CmdMqtt::expandTopic(){
 };
 
 bool cmds::cmd::CmdMqtt::send(const void* p) {
-    GDebuger.println("cmds::cmd::CmdMqtt::send");
+    GDebuger.println(F("cmds::cmd::CmdMqtt::send"));
     return GCmdDispatcher.sendCmd(this);
 };
 

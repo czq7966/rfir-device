@@ -1,7 +1,6 @@
 #ifndef __CONFIG_CONFIG_CL_DJROOM_CURTAIN_DOOYA_485_H__
 #define __CONFIG_CONFIG_CL_DJROOM_CURTAIN_DOOYA_485_H__
 
-#include "rfir/util/GDebuger.h"
 #include "jled.h"
 #include "AceButton.h"
 

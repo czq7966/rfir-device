@@ -7,31 +7,17 @@ cmds::network::Signaler::~Signaler() {
 
 
 int cmds::network::Signaler::write(void* p) {
-    GDebuger.println("cmds::network::Signaler::write");
     return 0;
 };
 
 
 void* cmds::network::Signaler::onConnect(void* arg, void* p){  
-    GDebuger.println("cmds::network::Signaler::OnConnect");
     return this->events.onConnect.emit(p);
-
-    
-    // auto signaler = (Signaler*)arg;
-    // return signaler->events.onConnect.emit(p);
-    // return 0;
 };
 
 void* cmds::network::Signaler::onDisconnect(void* arg, void* p){
-    return this->events.onDisconnect.emit(p);
-    // auto signaler = (Signaler*)arg;
-    // return signaler->events.onDisconnect.emit(p);
-    // return 0;
-    
+    return this->events.onDisconnect.emit(p);   
 };
 void* cmds::network::Signaler::onMessage(void* arg, void* p){   
     return this->events.onMessage.emit(p); 
-    // auto signaler = (Signaler*)arg;
-    // return signaler->events.onMessage.emit(p);
-    // return 0;
 };

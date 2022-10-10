@@ -29,7 +29,7 @@ void* rfir::util::Button::onLongPressedCheck(void* arg, void* p){
 };
 
 void* rfir::util::Button::onLongReleasedCheck(void* arg, void* p){
-    GDebuger.println("rfir::util::Button::onBetweenReleasedCheck");
+    GDebuger.println(F("rfir::util::Button::onBetweenReleasedCheck"));
     if (arg && p) {        
         auto check = (KeyTime*)arg;
         auto value = (KeyTime*)p;
@@ -71,7 +71,7 @@ void rfir::util::Button::start(int pin, int pressedValue){
 
 void rfir::util::Button::start(){
     if (this->pin >= 0) {
-        GDebuger.println("rfir::util::Button::start()");
+        GDebuger.println(F("rfir::util::Button::start()"));
         GInterrupt.start(this->pin);
     }    
 };
@@ -96,7 +96,7 @@ void rfir::util::Button::loop(){
             time.released = this->keyTime.released - this->keyTime.pressed + time.pressed;
             this->events.onLongReleased.emit((void*)&time, true);
             this->events.onBetweenReleased.emit((void*)&time, true);            
-            GDebuger.println("rfir::util::Button::loop released");
+            GDebuger.println(F("rfir::util::Button::loop released"));
         }        
 
         this->keyTime.pressed = 0;

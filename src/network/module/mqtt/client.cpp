@@ -43,7 +43,7 @@ void network::module::mqtt::Client::connect() {
     static unsigned long Mqtt_client_connect_time = 0;
 
     if(WiFi.status() == WL_CONNECTED) {
-        GDebuger.println("mqtt connecting...:" + String(this->params.ip.c_str()) + ":" + String(this->params.port));
+        GDebuger.println(F("mqtt connecting...:"));
         digitalWrite(LED_BUILTIN, LOW);        
         
         if (!mqtt->connect(this->params.id.c_str() , this->params.user.c_str(), this->params.pass.c_str()) && (WiFi.status() == WL_CONNECTED)) {
@@ -57,7 +57,7 @@ void network::module::mqtt::Client::connect() {
 
         if (mqtt->connected()) {
             Mqtt_client_connect_time = 0;
-            GDebuger.println("\nmqtt connected!");
+            GDebuger.println(F("\nmqtt connected!"));
             digitalWrite(LED_BUILTIN, HIGH);
 
             mqtt->subscribe(this->params.sub_topic.c_str()); 
@@ -67,7 +67,7 @@ void network::module::mqtt::Client::connect() {
             this->events.onConnect.emit((void*)this);
         } else { //超时重启
             if (millis() - Mqtt_client_connect_time > Config.props.mqtt_reset_timeout)  {
-                GDebuger.println("MQTT connect time out. ESP reset!\n");
+                GDebuger.println(F("MQTT connect time out. ESP reset!"));
                 delay(1000);
                 rfir::util::Util::Reset();
             }
@@ -99,10 +99,8 @@ bool network::module::mqtt::Client::publish(const char* msg) {
 }
 
 bool network::module::mqtt::Client::publish(const char* topic, const char* msg) {
-    GDebuger.println("network::module::mqtt::Client::publish:");    
+    GDebuger.println(F("network::module::mqtt::Client::publish:"));    
     if (mqtt->connected()) {
-        GDebuger.println(topic);
-        GDebuger.println(msg);
         return mqtt->publish(topic, msg);
     }
     return 0;

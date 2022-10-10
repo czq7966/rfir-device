@@ -1,19 +1,15 @@
 #ifndef __CONFIG_CONFIG_FZ_YT_AC_GREE_H__
 #define __CONFIG_CONFIG_FZ_YT_AC_GREE_H__
 
-#include "rfir/util/Debuger.h"
 #include "jled.h"
-#include "AceButton.h"
 
 extern JLed                         GJLed;
 
-#define CFG_VERSION_NUMBER          0;  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
+#define CFG_VERSION_NUMBER          0  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
 
 //Device
 #define DEV_VENDOR                  "ND"
 #define DEV_MODEL                   "FZYTACGREE"
-
-#define DEBUGER RFIRDebuger
 
 //LED
 #define LED_PIN                     BUILTIN_LED
@@ -23,6 +19,7 @@ extern JLed                         GJLed;
 #define RESET_PIN                   12
 
 //Serial
+#define SERIAL_DEBUG                true
 #define SERIAL_BAUD                 115200
 #define SERIAL_CONFIG               SERIAL_8N1
 

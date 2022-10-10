@@ -39,7 +39,7 @@ bool rfir::module::device::Networking::handshake(){
     m_handshake_handler = 0;
     m_handshake_heartbeat_handler = 0;
 
-    GDebuger.println("rfir::module::device::Networking::handshake");
+    GDebuger.println(F("rfir::module::device::Networking::handshake"));
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
     m_handshake_handler = cmd.command.getIntSid();

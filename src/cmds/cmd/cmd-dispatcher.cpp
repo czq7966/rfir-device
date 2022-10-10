@@ -20,14 +20,14 @@ void cmds::cmd::CmdDispatcher::setSignaler(cmds::network::Signaler* p){
 };
 
 void* cmds::cmd::CmdDispatcher::onConnect(void* arg, void* p){
-    GDebuger.println("cmds::cmd::CmdDispatcher::OnConnect");
+    GDebuger.println(F("cmds::cmd::CmdDispatcher::OnConnect"));
     return this->events.onConnect.emit(p);
     // auto dispatcher = (CmdDispatcher*)arg;
     // return dispatcher->events.onConnect.emit(p);
     // return 0;
 };
 void* cmds::cmd::CmdDispatcher::onDisconnect(void* arg, void* p){
-    GDebuger.println("cmds::cmd::CmdDispatcher::onDisconnect");
+    GDebuger.println(F("cmds::cmd::CmdDispatcher::onDisconnect"));
     return this->events.onDisconnect.emit(p);
     // auto dispatcher = (CmdDispatcher*)arg;
     // return dispatcher->events.onConnect.emit(p);    
@@ -40,11 +40,10 @@ void* cmds::cmd::CmdDispatcher::onMessage(void* arg, void* p){
 };   
 
 void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
-    GDebuger.print("cmds::cmd::CmdDispatcher::OnResp: ");    
+    GDebuger.println(F("cmds::cmd::CmdDispatcher::OnResp: "));    
     auto cmd = (cmds::cmd::CmdBase*)p;
     if (cmd->command.isRespCmd()) {
         auto sid = cmd->command.getIntSid();
-        GDebuger.println(String(sid));
         if (sid > 0) {
             cmds::cmd::CmdBase::Events events;
             GEventTimer.remove(sid);
@@ -56,29 +55,10 @@ void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
     }
 
     return 0;
-
-    // GDebuger.print("cmds::cmd::CmdDispatcher::OnResp: ");    
-    // auto cmd = (cmds::cmd::CmdBase*)p;
-    // auto dispatcher = (CmdDispatcher*)arg;  
-    // if (cmd->command.isRespCmd()) {
-    //     auto sid = cmd->command.getSid();
-    //     GDebuger.println(String(sid));
-    //     if (sid > 0) {
-    //         cmds::cmd::CmdBase::Events* events = 0;
-    //         GEventTimer.remove(sid);
-    //         dispatcher->wait_resp_queue.remove(sid, events);
-    //         if (events && events->onResp.callback) {
-    //             events->onResp.callback(events->onResp.cbArg, p);
-    //         }
-    //         delete events;
-    //     }
-    // }
-
-    // return 0;
 }
 
 void* cmds::cmd::CmdDispatcher::onRespTimeout(void* arg, void* p) {
-    GDebuger.println("cmds::cmd::CmdDispatcher::onRespTimeout");
+    GDebuger.println(F("cmds::cmd::CmdDispatcher::onRespTimeout"));
     auto sid = (uint32_t)p;
 
     cmds::cmd::CmdBase::Events events;
@@ -91,7 +71,7 @@ void* cmds::cmd::CmdDispatcher::onRespTimeout(void* arg, void* p) {
 }
 
 bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){    
-    GDebuger.println("cmds::cmd::CmdDispatcher::sendCmd");  
+    GDebuger.println(F("cmds::cmd::CmdDispatcher::sendCmd"));  
     if (!signaler)
         return false;
           

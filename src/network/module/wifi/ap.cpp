@@ -80,7 +80,7 @@ void network::module::wifi::AP::init(){
 
 
     initBtnStop();
-    GDebuger.println("AP Ready.");   
+    GDebuger.println(F("AP Ready."));   
 };
 
 void network::module::wifi::AP::uninit(){
@@ -91,7 +91,7 @@ void network::module::wifi::AP::uninit(){
     initBtnStart();    
 
     // Config.setMode(GlobalConfig::Mode::Running);
-    GDebuger.println("AP Released.");    
+    GDebuger.println(F("AP Released."));    
 };
 
 void network::module::wifi::AP::initWebConf(){
@@ -168,9 +168,11 @@ void network::module::wifi::AP::initSerial(){
     auto Serial_Config_max_count = GSerial_Configs.configs.getSize();
     serialConfigs = new char[Serial_Band_max_length * Serial_Config_max_count];
     serialParamConfig = new IotWebConfSelectParameter("数据位", "serial_config", serialConfig, Serial_Band_max_length, (char*)serialConfigs, (char*)serialConfigs, Serial_Config_max_count, Serial_Band_max_length);
-    
+    serialParamDebug = new IotWebConfCheckboxParameter("调试模式", "serial_debug", serialDebug, Serial_Band_max_length);
+
     serialGroup->addItem(serialParamBand);
     serialGroup->addItem(serialParamConfig);
+    serialGroup->addItem(serialParamDebug);
     iotWebConf->addParameterGroup(serialGroup);
   
 };
@@ -179,12 +181,16 @@ void network::module::wifi::AP::uninitSerial(){
     delete serialGroup;
     delete serialParamBand;
     delete serialParamConfig;
+    delete serialParamDebug;
 
     serialConfigs = 0;
     serialGroup = 0;
     serialParamBand = 0;
-    serialParamConfig = 0;    
+    serialParamConfig = 0;  
+    serialParamDebug = 0;  
 };
+
+
 
 void network::module::wifi::AP::initBtnStart(){
     GButton.events.onLongPressed.remove(this);
@@ -216,14 +222,14 @@ void network::module::wifi::AP::handleRoot() {
     }
     applyDefault();
     
-    String s = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/>";
-    s += "<title>IotWebConf 01 Minimal</title></head><body>";
-    s += "Go to <a href='config'>configure page</a> to change settings.";
-    s += "</body></html>\n";
+    // String s = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/>";
+    // s += "<title>IotWebConf 01 Minimal</title></head><body>";
+    // s += "Go to <a href='config'>configure page</a> to change settings.";
+    // s += "</body></html>\n";
 
-    this->webServer->send(200, "text/html", s);
+    // this->webServer->send(200, "text/html", s);
 
-
+    this->iotWebConf->handleConfig();
 
 }
 
@@ -277,11 +283,13 @@ void network::module::wifi::AP::applyDefault() {
     serialParamBand->applyDefaultValue();
     serialParamConfig->defaultValue = serialConfig;
     serialParamConfig->applyDefaultValue();
+    serialParamDebug->defaultValue = serialDebug;
+    serialParamDebug->applyDefaultValue();
 }
 
 
 void* network::module::wifi::AP::onBtnStart(void* arg, void* p) {
-    GDebuger.println("network::module::wifi::AP::onBtnStart");
+    GDebuger.println(F("network::module::wifi::AP::onBtnStart"));
     GEventTimer.delay(100, [this](void* arg, void* p) -> void* {
         start();
         return 0;
@@ -291,7 +299,7 @@ void* network::module::wifi::AP::onBtnStart(void* arg, void* p) {
 };
 
 void* network::module::wifi::AP::onBtnStop(void* arg, void* p) {
-    GDebuger.println("network::module::wifi::AP::onBtnStop");
+    GDebuger.println(F("network::module::wifi::AP::onBtnStop"));
     GEventTimer.delay(100, [this](void* arg, void* p) -> void* {
         stop();
         return 0;
@@ -301,13 +309,13 @@ void* network::module::wifi::AP::onBtnStop(void* arg, void* p) {
 };
 
 void* network::module::wifi::AP::onBtnLongPressed(void* arg, void* p) {
-    GDebuger.println("network::module::wifi::AP::onBtnLongPressed");
+    GDebuger.println(F("network::module::wifi::AP::onBtnLongPressed"));
     GLed.start(&(AP_CONFIG_JLED), this);  
     return 0;
 };
 
 void* network::module::wifi::AP::onBtnLongReleased(void* arg, void* p) {
-    GDebuger.println("network::module::wifi::AP::onBtnLongReleased");
+    GDebuger.println(F("network::module::wifi::AP::onBtnLongReleased"));
     GLed.stop(this);
     GEventTimer.delay(1000, [this](void* arg, void* p) -> void* {
         this->initBtnStart(); 

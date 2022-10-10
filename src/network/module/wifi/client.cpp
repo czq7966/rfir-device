@@ -290,7 +290,6 @@ void  network::module::wifi::Client::connectToWifi(){
         std::string ssid_ssid = this->params.ssid[m_connect_ssid_index];
         std::string ssid_pass = this->params.pass[m_connect_ssid_index];
         GDebuger.printf("Wifi connecting... %s %s \r\n", ssid_ssid.c_str(), ssid_pass.c_str());
-        // WiFi.mode(WIFI_AP_STA);
         WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());        
     }    
 

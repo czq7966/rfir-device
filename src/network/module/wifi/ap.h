@@ -55,16 +55,17 @@ namespace network {
                 IotWebConfTextParameter* wifiParamPass = 0;
 
                 //Serial
-                static const uint8_t PROGMEM Serial_Band_max_length = 8;
-                // static const uint8_t PROGMEM Serial_Config_max_count = 6;
-
+                static const uint8_t PROGMEM Serial_Band_max_length = 10;
                 char* serialConfigs = 0;
                 char  serialBand[Serial_Band_max_length] = {};
                 char  serialConfig[Serial_Band_max_length] = {};
+                char  serialDebug[Serial_Band_max_length] = {};
+
                 IotWebConfParameterGroup* serialGroup = 0;
                 IotWebConfNumberParameter* serialParamBand = 0;
                 IotWebConfSelectParameter* serialParamConfig = 0;
-                
+                IotWebConfCheckboxParameter* serialParamDebug = 0;
+
             public:
                 Params params;
                 Events events;

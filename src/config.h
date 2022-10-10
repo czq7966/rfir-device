@@ -5,10 +5,12 @@
 
 
 //SYSTEM
+#ifndef CHIP_ID_PREFIX
 #ifdef ESP8266
 #define CHIP_ID_PREFIX              "ESP8266x" 
 #else
 #define CHIP_ID_PREFIX              "ESP32x" 
+#endif
 #endif
 
 //福州东门4楼Gree空调
@@ -113,6 +115,7 @@
 #include <string>
 #include <vector>
 #include "rfir/util/event-emitter.h"
+#include "rfir/util/debuger.h"
 #include <ArduinoJson.h>
 
 class GlobalConfig {
@@ -143,10 +146,11 @@ public:
         int reset_pin = RESET_PIN;
 
         // Serial
+        bool serial_debug = SERIAL_DEBUG;
         int serial_baud = SERIAL_BAUD; 
-        int serial_config = SERIAL_CONFIG; 
+        int serial_config = SERIAL_CONFIG;      
         int co_serial_baud = CO_SERIAL_BAUD;
-        int co_serial_config = CO_SERIAL_CONFIG;
+        int co_serial_config = CO_SERIAL_CONFIG;        
 
         // OTA
         bool ota_disable = OTA_DISABLE; 

@@ -51,11 +51,11 @@ bool EOTAUpdate::CheckAndUpdate(bool force)
 
     if (WiFi.status() != WL_CONNECTED)
     {
-        GDebuger.println("Wifi not connected");
+        GDebuger.println(F("Wifi not connected"));
         return false;
     }
 
-    GDebuger.println("Checking for updates");
+    GDebuger.println(F("Checking for updates"));
 
     _lastUpdateMs = millis();
     String binURL;
@@ -64,7 +64,7 @@ bool EOTAUpdate::CheckAndUpdate(bool force)
     GInterrupt.stop();
     if (GetUpdateFWURL(binURL, binMD5))
     {
-        GDebuger.println("Update found. Performing update");
+        GDebuger.println(F("Update found. Performing update"));
         result = PerformOTA(binURL, binMD5);
     }
     GInterrupt.start();
@@ -83,7 +83,7 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
 
     if (retries == 0)
     {
-        GDebuger.println("Too many retries/redirections");
+        GDebuger.println(F("Too many retries/redirections"));
         return false;
     }
 
@@ -91,7 +91,7 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
 
     if (_forceSSL && !isSSL)
     {
-        GDebuger.println("Trying to access a non-ssl URL on a secure update checker");
+        GDebuger.println(F("Trying to access a non-ssl URL on a secure update checker"));
         return false;
     }
 
@@ -99,7 +99,7 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
     //WiFiClient client = WiFiClient();
     if (!httpClient.begin(wf_client,url))
     {
-        GDebuger.println("Error initializing client");
+        GDebuger.println(F("Error initializing client"));
         return false;
     }
 
@@ -156,13 +156,13 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
 
     if (binURL.length() == 0)
     {
-        GDebuger.println("Error parsing remote path of new binary");
+        GDebuger.println(F("Error parsing remote path of new binary"));
         return false;
     }
 
     if (newVersionNumber == 0)
     {
-        GDebuger.println("Error parsing version number");
+        GDebuger.println(F("Error parsing version number"));
         return false;
     }
 
@@ -221,20 +221,20 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     bool isSSL = binURL.startsWith("https");
     if (_forceSSL && !isSSL)
     {
-        GDebuger.println("Trying to access a non-ssl URL on a secure update checker");
+        GDebuger.println(F("Trying to access a non-ssl URL on a secure update checker"));
         return false;
     }
 
     if (WiFi.status() != WL_CONNECTED)
     {
-        GDebuger.println("Wifi not connected");
+        GDebuger.println(F("Wifi not connected"));
         return false;
     }
 
     HTTPClient httpClient;
     if (!httpClient.begin(wf_client,binURL))
     {
-        GDebuger.println("Error initializing client");
+        GDebuger.println(F("Error initializing client"));
         return false;
     }
 
@@ -255,7 +255,7 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     if (binMD5.length() > 0 &&
         !Update.setMD5(binMD5.c_str()))
     {
-            GDebuger.println("Failed to set the expected MD5");
+            GDebuger.println(F("Failed to set the expected MD5"));
             return false;
     }
 
@@ -263,13 +263,13 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
 
     if (payloadSize <= 0)
     {
-        GDebuger.println("Fetched binary has 0 size");
+        GDebuger.println(F("Fetched binary has 0 size"));
         return false;
     }
 
     if (!canBegin)
     {
-        GDebuger.println("Not enough space to begin OTA");
+        GDebuger.println(F("Not enough space to begin OTA"));
         return false;
     }
 
@@ -296,7 +296,7 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
         return false;
     }
 
-    GDebuger.println("Update completed. Rebooting");
+    GDebuger.println(F("Update completed. Rebooting"));
     rfir::util::Util::Reset();
     // ESP.restart();
     return true;

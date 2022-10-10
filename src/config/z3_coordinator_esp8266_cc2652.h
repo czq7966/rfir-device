@@ -1,7 +1,6 @@
 #ifndef __CONFIG_CONFIG_Z3_COORDINATOR_ESP8266_CC2652_H__
 #define __CONFIG_CONFIG_Z3_COORDINATOR_ESP8266_CC2652_H__
 
-#include "rfir/util/GDebuger.h"
 #include "jled.h"
 #include "AceButton.h"
 
@@ -11,8 +10,6 @@ extern JLed                         GJLed;
 #define DEV_VENDOR                "ND"
 #define DEV_MODEL                   "Z3CO2652ESP8266"
 
-// #define DEBUG_RFIR
-#define DEBUGER RFIRDebuger
 #define COSerial Serial
 
 //LED

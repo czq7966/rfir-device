@@ -24,7 +24,7 @@ bool rfir::util::TxtFile::begin() {
 #endif        
         if (!FileFS.begin())
         {
-            GDebuger.println("LittleFS begin failed");
+            GDebuger.println(F("LittleFS begin failed"));
             return false;
         }
     }    

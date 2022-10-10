@@ -20,6 +20,7 @@ int GlobalConfig::Props::init(JsonObject* _config){
         return 0; 
 
     this->cfg_version_number = config["cfg_version_number"].as<int>();
+    
 
     //id
     this->app_id = config.containsKey("app_id") ?  config["app_id"].as<std::string>() : this->app_id;
@@ -37,8 +38,9 @@ int GlobalConfig::Props::init(JsonObject* _config){
     this->button_pin = config.containsKey("button_pin") ?  config["button_pin"].as<int>() : this->button_pin;
 
     //serial
+    this->serial_debug = config.containsKey("serial_debug") ?  config["serial_debug"].as<bool>() : this->serial_debug;    
     this->serial_baud = config.containsKey("serial_baud") ?  config["serial_baud"].as<int>() : this->serial_baud;
-    this->serial_config = config.containsKey("serial_config") ?  config["serial_config"].as<int>() : this->serial_config;
+    this->serial_config = config.containsKey("serial_config") ?  config["serial_config"].as<int>() : this->serial_config;    
     this->co_serial_baud = config.containsKey("co_serial_baud") ?  config["co_serial_baud"].as<int>() : this->co_serial_baud;
     this->co_serial_config = config.containsKey("co_serial_config") ?  config["co_serial_config"].as<int>() : this->co_serial_config;
 
@@ -277,6 +279,7 @@ int GlobalConfig::Props::saveWifi(JsonObject& config){
 };
 
 int GlobalConfig::Props::saveSerial(JsonObject& config){
+    config["serial_debug"] = this->serial_debug;
     config["serial_baud"] = this->serial_baud;
     config["serial_config"] = this->serial_config;
     config["co_serial_baud"] = this->co_serial_baud;
@@ -299,7 +302,7 @@ void GlobalConfig::reset() {
 };
 
 void GlobalConfig::resetConfig() {
-    GDebuger.println("GlobalConfig::resetConfig");
+    GDebuger.println(F("GlobalConfig::resetConfig"));
     DynamicJsonDocument doc(32);
     this->saveToFile(doc);
     GEventTimer.delay(100, [this](void*, void*)->void*{ rfir::util::Util::Reset(); return 0;});    
@@ -367,6 +370,7 @@ void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
     props.wifi_password.push_back(ap->wifiPass);
 
     //Serial
+    props.serial_debug = strcmp(ap->serialDebug, "selected") == 0;
     props.serial_baud = atoi(ap->serialBand);
     GSerial_Configs.configs.getKeyByValue(ap->serialConfig, props.serial_config);
     props.co_serial_baud = props.serial_baud;
@@ -393,7 +397,7 @@ void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
 };
 
 void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
-    GDebuger.printf("GlobalConfig::onAPApplyDefault:  \n");
+    GDebuger.println(F("GlobalConfig::onAPApplyDefault "));
 
     auto ap = &GWifiAP;
     if (props.wifi_ssid.size() > 0){
@@ -406,6 +410,8 @@ void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
     if (GSerial_Configs.configs.get(props.serial_config, config)) {
         strcpy(ap->serialConfig, config.c_str());
     }    
+
+    strcpy(ap->serialDebug , this->props.serial_debug ? "selected" : "");
 
     return 0;
 };

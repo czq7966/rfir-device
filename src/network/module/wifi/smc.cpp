@@ -12,7 +12,7 @@ network::module::wifi::SmcButton::SmcButton(uint8_t pin, uint8_t defaultReleased
 }
 
 void network::module::wifi::SMC::start(Params* p) {
-    GDebuger.println("SMC_start");
+    GDebuger.println(F("SMC_start"));
     this->params = p;
     this->setupSMC();
     this->setupConfigPin();
@@ -44,8 +44,6 @@ bool network::module::wifi::SMC::loadConfig() {
                 this->params->apPass = json.containsKey("apPass") ? json["apPass"].as<std::string>() : this->params->apPass;
                 this->params->wifiSsid = json.containsKey("wifiSsid") ? json["wifiSsid"].as<std::string>() : this->params->wifiSsid;
                 this->params->wifiPass = json.containsKey("wifiPass") ? json["wifiPass"].as<std::string>() : this->params->wifiPass;
-                GDebuger.println(this->params->wifiSsid.c_str());
-                GDebuger.println(this->params->wifiPass.c_str());       
                 return true;           
             }
         }
@@ -156,9 +154,9 @@ void network::module::wifi::SMC::setupConfigPin() {
 }
 
 void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
-    GDebuger.println("network::module::wifi::SMC::handleButtonEvent");
+    GDebuger.println(F("network::module::wifi::SMC::handleButtonEvent"));
     if (eventType == ace_button::AceButton::kEventPressed || eventType ==  ace_button::AceButton::kEventReleased) {
-        GDebuger.println("kEventPressed or kEventReleased");
+        GDebuger.println(F("kEventPressed or kEventReleased"));
         return;
     }
 
@@ -229,7 +227,7 @@ void network::module::wifi::SMC::setupSMC() {
 }
 
 void network::module::wifi::SMC::startSMC() {
-    GDebuger.println("startSMC");
+    GDebuger.println(F("startSMC"));
 #ifdef ESP8266
     this->params->smcIng = true;
     jw.startSmartConfig();
