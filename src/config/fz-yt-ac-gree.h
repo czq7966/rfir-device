@@ -37,11 +37,10 @@ extern JLed                         GJLed;
 
 //WIFI
 #define WIFI_DISABLE                false
-#define WIFI_SSID_DEV               {}
-#define WIFI_PASSWORD_DEV           {}
-#define WIFI_SSID                   {}
-#define WIFI_PASSWORD               {}
-// #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
+#define WIFI_SSID_DEV               {"MERCURY_95E8"}
+#define WIFI_PASSWORD_DEV           {"12345678"}
+#define WIFI_SSID                   {"NDSEC", "ND-MAC"}
+#define WIFI_PASSWORD               {"wanglong","wanglong"}
 #define WIFI_RESET_TIMEOUT          1000 * 60 * 10 //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 
