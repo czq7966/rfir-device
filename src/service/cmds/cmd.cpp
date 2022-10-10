@@ -21,7 +21,7 @@ void* service::cmds::Cmd::OnConnect(void* arg, void * p){
 
 void* service::cmds::Cmd::OnCommand(void* arg, void * p){    
     auto cmd = (::cmds::cmd::CmdMqtt*)p;
-    DEBUGER.printf("service::cmds::Cmd::OnCommand: %s %s %s \r\n", cmd->topic.c_str(), cmd->command.head.entry.type.c_str(), cmd->command.head.entry.id.c_str() );
+    GDebuger.printf("service::cmds::Cmd::OnCommand: %s %s %s \r\n", cmd->topic.c_str(), cmd->command.head.entry.type.c_str(), cmd->command.head.entry.id.c_str() );
 
 
     //服务请求

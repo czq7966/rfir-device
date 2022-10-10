@@ -94,7 +94,7 @@ int rfir::module::device::RS::RSPenet::onSvc_set(JsonObject* pld, cmds::cmd::Cmd
 int rfir::module::device::RS::RSPenet::onSvc_penet(JsonObject* pld, cmds::cmd::CmdBase* cmd){        
     if (pld && pld->containsKey("raw") ) {
         std::string code = (*pld)["raw"];
-        DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
+        GDebuger.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         auto result = rsWriteBase64((char*)code.c_str(), code.length());
             
         return result;

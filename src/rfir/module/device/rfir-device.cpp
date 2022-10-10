@@ -58,7 +58,7 @@ void rfir::module::device::RFIRDevice::loop() {
 
 void* rfir::module::device::RFIRDevice::onSniffed(void* arg, void* p){
     auto data = (::rfir::module::ttl::SnifferV2::Data*)p;
-    DEBUGER.println(data->toString().c_str());
+    GDebuger.println(data->toString().c_str());
     decoder->decode(data->deltas);
     return 0;
 };
@@ -78,7 +78,7 @@ void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
         bitStr = bitStr + (bitStr == "" ? bStr : "," + bStr);
     }
 
-    DEBUGER.printf("rfir::module::device::RFIRDevice::onDecoded: %s  %s \r\n", bitStr.c_str(), hexStr.c_str());  
+    GDebuger.printf("rfir::module::device::RFIRDevice::onDecoded: %s  %s \r\n", bitStr.c_str(), hexStr.c_str());  
     if (onSvc_decoded(*decodeResults)) {
         ::service::cmds::Cmd::OnSvc_get(0, "IR Change");
     };
@@ -87,10 +87,10 @@ void* rfir::module::device::RFIRDevice::onDecoded(void* arg, void* p){
 };
 
 void* rfir::module::device::RFIRDevice::onEncoded(void* arg, void* p){
-    // DEBUGER.println("rfir::module::device::RFIRDevice::onEncoded");    
+    // GDebuger.println("rfir::module::device::RFIRDevice::onEncoded");    
     // OnEncoded = true;
     // auto data = (std::list<uint16_t>*)p;
-    // DEBUGER.println(encoder->toString(*data).c_str());
+    // GDebuger.println(encoder->toString(*data).c_str());
 
     // decoder->decode(*data);
     return 0;

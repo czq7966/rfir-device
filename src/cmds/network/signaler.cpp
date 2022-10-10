@@ -7,13 +7,13 @@ cmds::network::Signaler::~Signaler() {
 
 
 int cmds::network::Signaler::write(void* p) {
-    DEBUGER.println("cmds::network::Signaler::write");
+    GDebuger.println("cmds::network::Signaler::write");
     return 0;
 };
 
 
 void* cmds::network::Signaler::onConnect(void* arg, void* p){  
-    DEBUGER.println("cmds::network::Signaler::OnConnect");
+    GDebuger.println("cmds::network::Signaler::OnConnect");
     return this->events.onConnect.emit(p);
 
     

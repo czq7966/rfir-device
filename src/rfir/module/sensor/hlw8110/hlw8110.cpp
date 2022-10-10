@@ -122,9 +122,9 @@ void rfir::module::sensor::HLW8110::Start_Recv_UartData(unsigned char len, unsig
         // printf("接收成功:%x == %x\r\n" ,u8_RX_Index, len);
         // for (size_t i = 0; i < len; i++)
         // {
-        //     DEBUGER.write(u8_RxBuf[i]);
+        //     GDebuger.write(u8_RxBuf[i]);
         // }
-        // DEBUGER.println("");
+        // GDebuger.println("");
 
         B_Rx_Finish = true;										// 数据接收完毕
         u8_RX_Index = 0;              

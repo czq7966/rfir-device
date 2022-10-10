@@ -87,7 +87,7 @@ bool rfir::module::device::curtain::CL_DJROOM_Dooya_485::onSvc_set_open(JsonObje
     std::string code = "0x55 FE FE 03 01";
     code = rfir::util::Crc::Get_CRC16_Str(code);
     (*pld)["code"] = code;
-    DEBUGER.println(code.c_str());
+    GDebuger.println(code.c_str());
     return RS::RS485::onSvc_set(pld, cmd);        
 }; 
 

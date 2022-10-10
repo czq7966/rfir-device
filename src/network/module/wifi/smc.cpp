@@ -12,7 +12,7 @@ network::module::wifi::SmcButton::SmcButton(uint8_t pin, uint8_t defaultReleased
 }
 
 void network::module::wifi::SMC::start(Params* p) {
-    DEBUGER.println("SMC_start");
+    GDebuger.println("SMC_start");
     this->params = p;
     this->setupSMC();
     this->setupConfigPin();
@@ -44,8 +44,8 @@ bool network::module::wifi::SMC::loadConfig() {
                 this->params->apPass = json.containsKey("apPass") ? json["apPass"].as<std::string>() : this->params->apPass;
                 this->params->wifiSsid = json.containsKey("wifiSsid") ? json["wifiSsid"].as<std::string>() : this->params->wifiSsid;
                 this->params->wifiPass = json.containsKey("wifiPass") ? json["wifiPass"].as<std::string>() : this->params->wifiPass;
-                DEBUGER.println(this->params->wifiSsid.c_str());
-                DEBUGER.println(this->params->wifiPass.c_str());       
+                GDebuger.println(this->params->wifiSsid.c_str());
+                GDebuger.println(this->params->wifiPass.c_str());       
                 return true;           
             }
         }
@@ -118,8 +118,8 @@ smc_messages_t network::module::wifi::SMC::SmcLastMessage = 0;
 #endif
 void network::module::wifi::SMC::setupConfigPin() {
     if (this->params->configPin >=0) {
-        DEBUGER.print("configPin:");
-        DEBUGER.println(this->params->configPin);
+        GDebuger.print("configPin:");
+        GDebuger.println(this->params->configPin);
         button = new SmcButton(this->params->configPin);
         button->arg = this;
         pinMode(this->params->configPin, INPUT_PULLUP);
@@ -156,9 +156,9 @@ void network::module::wifi::SMC::setupConfigPin() {
 }
 
 void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
-    DEBUGER.println("network::module::wifi::SMC::handleButtonEvent");
+    GDebuger.println("network::module::wifi::SMC::handleButtonEvent");
     if (eventType == ace_button::AceButton::kEventPressed || eventType ==  ace_button::AceButton::kEventReleased) {
-        DEBUGER.println("kEventPressed or kEventReleased");
+        GDebuger.println("kEventPressed or kEventReleased");
         return;
     }
 
@@ -188,10 +188,10 @@ void network::module::wifi::SMC::handleButtonEvent(ace_button::AceButton* button
 }
 
 void network::module::wifi::SMC::HandleAceButtonEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState) {
-    DEBUGER.print(F("handleEvent(): eventType: "));
-    DEBUGER.print(eventType);
-    DEBUGER.print(F("; buttonState: "));
-    DEBUGER.println(buttonState);
+    GDebuger.print(F("handleEvent(): eventType: "));
+    GDebuger.print(eventType);
+    GDebuger.print(F("; buttonState: "));
+    GDebuger.println(buttonState);
 
     SmcButton* smcB = (SmcButton*)button;
     SMC* smc = (SMC*)(smcB->arg);
@@ -199,7 +199,7 @@ void network::module::wifi::SMC::HandleAceButtonEvent(ace_button::AceButton* but
 }
 
 void network::module::wifi::SMC::OnConfigPinChanged() {
-    DEBUGER.print("OnConfigPinChanged");
+    GDebuger.print("OnConfigPinChanged");
     ConfigPinChanged = true;
     ConfigPinChangeTime = millis();
 }
@@ -229,7 +229,7 @@ void network::module::wifi::SMC::setupSMC() {
 }
 
 void network::module::wifi::SMC::startSMC() {
-    DEBUGER.println("startSMC");
+    GDebuger.println("startSMC");
 #ifdef ESP8266
     this->params->smcIng = true;
     jw.startSmartConfig();
@@ -244,35 +244,35 @@ void network::module::wifi::SMC::SmcInfoWifi() {
 
         uint8_t * bssid = WiFi.BSSID();
 
-        DEBUGER.printf("[WIFI] MODE STA -------------------------------------\n");
-        DEBUGER.printf("[WIFI] SSID  %s\n", WiFi.SSID().c_str());
-        DEBUGER.printf("[WIFI] PSW   %s\n", WiFi.psk().c_str());
-        DEBUGER.printf("[WIFI] BSSID %02X:%02X:%02X:%02X:%02X:%02X\n",
+        GDebuger.printf("[WIFI] MODE STA -------------------------------------\n");
+        GDebuger.printf("[WIFI] SSID  %s\n", WiFi.SSID().c_str());
+        GDebuger.printf("[WIFI] PSW   %s\n", WiFi.psk().c_str());
+        GDebuger.printf("[WIFI] BSSID %02X:%02X:%02X:%02X:%02X:%02X\n",
             bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5]
         );
-        DEBUGER.printf("[WIFI] CH    %d\n", WiFi.channel());
-        DEBUGER.printf("[WIFI] RSSI  %d\n", WiFi.RSSI());
-        DEBUGER.printf("[WIFI] IP    %s\n", WiFi.localIP().toString().c_str());
-        DEBUGER.printf("[WIFI] MAC   %s\n", WiFi.macAddress().c_str());
-        DEBUGER.printf("[WIFI] GW    %s\n", WiFi.gatewayIP().toString().c_str());
-        DEBUGER.printf("[WIFI] MASK  %s\n", WiFi.subnetMask().toString().c_str());
-        DEBUGER.printf("[WIFI] DNS   %s\n", WiFi.dnsIP().toString().c_str());
+        GDebuger.printf("[WIFI] CH    %d\n", WiFi.channel());
+        GDebuger.printf("[WIFI] RSSI  %d\n", WiFi.RSSI());
+        GDebuger.printf("[WIFI] IP    %s\n", WiFi.localIP().toString().c_str());
+        GDebuger.printf("[WIFI] MAC   %s\n", WiFi.macAddress().c_str());
+        GDebuger.printf("[WIFI] GW    %s\n", WiFi.gatewayIP().toString().c_str());
+        GDebuger.printf("[WIFI] MASK  %s\n", WiFi.subnetMask().toString().c_str());
+        GDebuger.printf("[WIFI] DNS   %s\n", WiFi.dnsIP().toString().c_str());
         #if defined(ARDUINO_ARCH_ESP32)
-            DEBUGER.printf("[WIFI] HOST  %s\n", WiFi.getHostname());
+            GDebuger.printf("[WIFI] HOST  %s\n", WiFi.getHostname());
         #else
-            DEBUGER.printf("[WIFI] HOST  %s\n", WiFi.hostname().c_str());
+            GDebuger.printf("[WIFI] HOST  %s\n", WiFi.hostname().c_str());
         #endif
-        DEBUGER.printf("[WIFI] ----------------------------------------------\n");
+        GDebuger.printf("[WIFI] ----------------------------------------------\n");
 
     }
 
     if (WiFi.getMode() & WIFI_AP) {
 
-        DEBUGER.printf("[WIFI] MODE AP --------------------------------------\n");
-        DEBUGER.printf("[WIFI] SSID  %s\n", WiFi.softAPSSID().c_str());
-        DEBUGER.printf("[WIFI] IP    %s\n", WiFi.softAPIP().toString().c_str());
-        DEBUGER.printf("[WIFI] MAC   %s\n", WiFi.softAPmacAddress().c_str());
-        DEBUGER.printf("[WIFI] ----------------------------------------------\n");
+        GDebuger.printf("[WIFI] MODE AP --------------------------------------\n");
+        GDebuger.printf("[WIFI] SSID  %s\n", WiFi.softAPSSID().c_str());
+        GDebuger.printf("[WIFI] IP    %s\n", WiFi.softAPIP().toString().c_str());
+        GDebuger.printf("[WIFI] MAC   %s\n", WiFi.softAPmacAddress().c_str());
+        GDebuger.printf("[WIFI] ----------------------------------------------\n");
 
     }
 
@@ -285,39 +285,39 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_TURNING_OFF) {
-        DEBUGER.printf("[WIFI] Turning OFF\n");
+        GDebuger.printf("[WIFI] Turning OFF\n");
     }
 
     if (code == MESSAGE_TURNING_ON) {
-        DEBUGER.printf("[WIFI] Turning ON\n");
+        GDebuger.printf("[WIFI] Turning ON\n");
     }
 
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_SCANNING) {
-        DEBUGER.printf("[WIFI] Scanning\n");
+        GDebuger.printf("[WIFI] Scanning\n");
     }
 
     if (code == MESSAGE_SCAN_FAILED) {
-        DEBUGER.printf("[WIFI] Scan failed\n");
+        GDebuger.printf("[WIFI] Scan failed\n");
     }
 
     if (code == MESSAGE_NO_NETWORKS) {
-        DEBUGER.printf("[WIFI] No networks found\n");
+        GDebuger.printf("[WIFI] No networks found\n");
     }
 
     if (code == MESSAGE_NO_KNOWN_NETWORKS) {
-        DEBUGER.printf("[WIFI] No known networks found\n");
+        GDebuger.printf("[WIFI] No known networks found\n");
     }
 
     if (code == MESSAGE_FOUND_NETWORK) {
-        DEBUGER.printf("[WIFI] %s\n", parameter);
+        GDebuger.printf("[WIFI] %s\n", parameter);
     }
 
     // -------------------------------------------------------------------------
 
     if (code == MESSAGE_CONNECTING) {
-        DEBUGER.printf("[WIFI] Connecting to %s\n", parameter);
+        GDebuger.printf("[WIFI] Connecting to %s\n", parameter);
     }
 
     if (code == MESSAGE_CONNECT_WAITING) {
@@ -325,7 +325,7 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_CONNECT_FAILED) {
-        DEBUGER.printf("[WIFI] Could not connect to %s\n", parameter);
+        GDebuger.printf("[WIFI] Could not connect to %s\n", parameter);
     }
 
     if (code == MESSAGE_CONNECTED) {
@@ -333,7 +333,7 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_DISCONNECTED) {
-        DEBUGER.printf("[WIFI] Disconnected\n");
+        GDebuger.printf("[WIFI] Disconnected\n");
     }
 
     // -------------------------------------------------------------------------
@@ -343,43 +343,43 @@ void network::module::wifi::SMC::SmcInfoCallback(smc_messages_t code, char * par
     }
 
     if (code == MESSAGE_ACCESSPOINT_DESTROYED) {
-        DEBUGER.printf("[WIFI] Disconnecting access point\n");
+        GDebuger.printf("[WIFI] Disconnecting access point\n");
     }
 
     if (code == MESSAGE_ACCESSPOINT_CREATING) {
-        DEBUGER.printf("[WIFI] Creating access point\n");
+        GDebuger.printf("[WIFI] Creating access point\n");
     }
 
     if (code == MESSAGE_ACCESSPOINT_FAILED) {
-        DEBUGER.printf("[WIFI] Could not create access point\n");
+        GDebuger.printf("[WIFI] Could not create access point\n");
     }
 
     // ------------------------------------------------------------------------
 
     if (code == MESSAGE_WPS_START) {
-        DEBUGER.printf("[WIFI] WPS started\n");
+        GDebuger.printf("[WIFI] WPS started\n");
     }
 
     if (code == MESSAGE_WPS_SUCCESS) {
-        DEBUGER.printf("[WIFI] WPS succeded!\n");
+        GDebuger.printf("[WIFI] WPS succeded!\n");
     }
 
     if (code == MESSAGE_WPS_ERROR) {
-        DEBUGER.printf("[WIFI] WPS failed\n");
+        GDebuger.printf("[WIFI] WPS failed\n");
     }
 
     // ------------------------------------------------------------------------
 
     if (code == MESSAGE_SMARTCONFIG_START) {
-        DEBUGER.printf("[WIFI] Smart Config started\n");
+        GDebuger.printf("[WIFI] Smart Config started\n");
     }
 
     if (code == MESSAGE_SMARTCONFIG_SUCCESS) {
-        DEBUGER.printf("[WIFI] Smart Config succeded!\n");
+        GDebuger.printf("[WIFI] Smart Config succeded!\n");
     }
 
     if (code == MESSAGE_SMARTCONFIG_ERROR) {
-        DEBUGER.printf("[WIFI] Smart Config failed\n");
+        GDebuger.printf("[WIFI] Smart Config failed\n");
     }
 #endif    
 }

@@ -29,11 +29,11 @@ void* rfir::util::Button::onLongPressedCheck(void* arg, void* p){
 };
 
 void* rfir::util::Button::onLongReleasedCheck(void* arg, void* p){
-    DEBUGER.println("rfir::util::Button::onBetweenReleasedCheck");
+    GDebuger.println("rfir::util::Button::onBetweenReleasedCheck");
     if (arg && p) {        
         auto check = (KeyTime*)arg;
         auto value = (KeyTime*)p;
-        DEBUGER.printf("rfir::util::Button::onBetweenReleasedCheck %d > %d \r\n", value->released, check->released);
+        GDebuger.printf("rfir::util::Button::onBetweenReleasedCheck %d > %d \r\n", value->released, check->released);
         if (value->released > check->released ) {
             return (void*)1;
         }
@@ -42,12 +42,12 @@ void* rfir::util::Button::onLongReleasedCheck(void* arg, void* p){
 };
 
 void* rfir::util::Button::onBetweenReleasedCheck(void* arg, void* p){
-    DEBUGER.println("rfir::util::Button::onBetweenReleasedCheck");
+    GDebuger.println("rfir::util::Button::onBetweenReleasedCheck");
     if (arg && p) {
         auto check = (KeyTime*)arg;
         auto value = (KeyTime*)p;
 
-        DEBUGER.printf("rfir::util::Button::onBetweenReleasedCheck %d > %d, %d < %d  \r\n", value->released, check->released, value->released , check->released);
+        GDebuger.printf("rfir::util::Button::onBetweenReleasedCheck %d > %d, %d < %d  \r\n", value->released, check->released, value->released , check->released);
 
         if (value->released > check->pressed && value->released < check->released) {
             return (void*)1;
@@ -71,7 +71,7 @@ void rfir::util::Button::start(int pin, int pressedValue){
 
 void rfir::util::Button::start(){
     if (this->pin >= 0) {
-        DEBUGER.println("rfir::util::Button::start()");
+        GDebuger.println("rfir::util::Button::start()");
         GInterrupt.start(this->pin);
     }    
 };
@@ -96,7 +96,7 @@ void rfir::util::Button::loop(){
             time.released = this->keyTime.released - this->keyTime.pressed + time.pressed;
             this->events.onLongReleased.emit((void*)&time, true);
             this->events.onBetweenReleased.emit((void*)&time, true);            
-            DEBUGER.println("rfir::util::Button::loop released");
+            GDebuger.println("rfir::util::Button::loop released");
         }        
 
         this->keyTime.pressed = 0;

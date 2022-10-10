@@ -35,7 +35,7 @@ void network::module::wifi::Client::loop() {
 
 void network::module::wifi::Client::multiCheckOrReset() {
 //     if (!this->params.apMode && !this->params.smc.smcIng && WiFi.status() != WL_CONNECTED ) {
-//         DEBUGER.println("WiFi connecting......");
+//         GDebuger.println("WiFi connecting......");
 //         pinMode(LED_BUILTIN, OUTPUT);
 //         digitalWrite(LED_BUILTIN, HIGH);
 //         WiFi.setAutoConnect(true);
@@ -55,20 +55,20 @@ void network::module::wifi::Client::multiCheckOrReset() {
 //         }
 
 //         if (WiFi.status() != WL_CONNECTED) {
-//             DEBUGER.println("WiFi connect time out. ESP rest!\n");
+//             GDebuger.println("WiFi connect time out. ESP rest!\n");
 //             delay(1000);
 //             rfir::util::Util::Reset();                
 //             return;           
 //         }
         
  
-//         DEBUGER.println("");
-//         DEBUGER.println("WiFi connected\n");
+//         GDebuger.println("");
+//         GDebuger.println("WiFi connected\n");
         
-//         DEBUGER.println("========= WIFI CONNECT OK! Led Light! ==============\n");
+//         GDebuger.println("========= WIFI CONNECT OK! Led Light! ==============\n");
 //         IPAddress ip = WiFi.localIP();
 //         String ipStr = String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]);
-//         DEBUGER.println("IP Address:" + ipStr);
+//         GDebuger.println("IP Address:" + ipStr);
 //         digitalWrite(LED_BUILTIN, HIGH);
 
 //     }
@@ -76,7 +76,7 @@ void network::module::wifi::Client::multiCheckOrReset() {
 }
 
 bool network::module::wifi::Client::connectWifi(std::string ssid, std::string pass, int timeout) {
-    // DEBUGER.printf("WiFi connecting......: %s %s %d \r\n", ssid.c_str(), pass.c_str(), timeout);
+    // GDebuger.printf("WiFi connecting......: %s %s %d \r\n", ssid.c_str(), pass.c_str(), timeout);
     // WiFi.disconnect();
     // WiFi.begin(ssid.c_str(), pass.c_str());
     // long start = millis();
@@ -92,7 +92,7 @@ bool network::module::wifi::Client::connectWifi(std::string ssid, std::string pa
     //     yield();
     //     digitalWrite(LED_BUILTIN, HIGH);
     //     delay(500);
-    //     DEBUGER.print(".");
+    //     GDebuger.print(".");
     // }
     return WiFi.status() == WL_CONNECTED;
 
@@ -109,12 +109,12 @@ void network::module::wifi::Client::multiCheckOrReset2() {
 //         }
 //         //连接成功
 //         if (state == 0) { 
-//             DEBUGER.println("");
-//             DEBUGER.println("WiFi connected\n");                
-//             DEBUGER.println("========= WIFI CONNECT OK! Led Light! ==============\n");
+//             GDebuger.println("");
+//             GDebuger.println("WiFi connected\n");                
+//             GDebuger.println("========= WIFI CONNECT OK! Led Light! ==============\n");
 //             IPAddress ip = WiFi.localIP();
 //             String ipStr = String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]);
-//             DEBUGER.println("IP Address:" + ipStr);   
+//             GDebuger.println("IP Address:" + ipStr);   
 //             return;             
 //         }
 
@@ -127,8 +127,8 @@ void network::module::wifi::Client::multiCheckOrReset2() {
 //         if (state == 2) { 
 // #if (!defined(WIFI_RESET_DISABLED) || WIFI_RESET_DISABLED == TRUE) 
 //             if (WiFi.status() != WL_CONNECTED) {
-//                 DEBUGER.println("WiFi connect time out. ESP rest!\n");
-//                 DEBUGER.flush();
+//                 GDebuger.println("WiFi connect time out. ESP rest!\n");
+//                 GDebuger.flush();
 //                 rfir::util::Util::Reset();                
 //                 return;           
 //             }                    
@@ -193,7 +193,7 @@ int  network::module::wifi::Client::connectWifi() {
 //             ssid_ssid = this->params.ssid[ssid_index];
 //             ssid_pass = this->params.pass[ssid_index];
 //             ssid_timeout = this->params.timeout[ssid_index];
-//             DEBUGER.printf("WiFi connecting......: %s %s %d \r\n", ssid_ssid.c_str(), ssid_pass.c_str(), ssid_timeout);
+//             GDebuger.printf("WiFi connecting......: %s %s %d \r\n", ssid_ssid.c_str(), ssid_pass.c_str(), ssid_timeout);
 //             WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());
 //             connecting = true;
 //             connect_start_time = millis();
@@ -233,7 +233,7 @@ int  network::module::wifi::Client::connectWifi() {
 //                     led_status = !led_status;
 //                     digitalWrite(LED_BUILTIN, led_status);  
 //                     led_breathe_lasttime = millis();
-//                     DEBUGER.print("."); 
+//                     GDebuger.print("."); 
 //                 }
 
 //                 return 1;
@@ -289,7 +289,7 @@ void  network::module::wifi::Client::connectToWifi(){
     if (m_connect_ssid_index < params.ssid.size()) {
         std::string ssid_ssid = this->params.ssid[m_connect_ssid_index];
         std::string ssid_pass = this->params.pass[m_connect_ssid_index];
-        DEBUGER.printf("Wifi connecting... %s %s \r\n", ssid_ssid.c_str(), ssid_pass.c_str());
+        GDebuger.printf("Wifi connecting... %s %s \r\n", ssid_ssid.c_str(), ssid_pass.c_str());
         // WiFi.mode(WIFI_AP_STA);
         WiFi.begin(ssid_ssid.c_str(), ssid_pass.c_str());        
     }    
@@ -370,7 +370,7 @@ void network::module::wifi::Client::WiFiEvent(WiFiEvent_t event) {
 
 
 void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
-    DEBUGER.printf("Wifi connected to : %s \r\n", WiFi.SSID().c_str());
+    GDebuger.printf("Wifi connected to : %s \r\n", WiFi.SSID().c_str());
     removeConnectTimeoutHandler();
     removeDelayConnectHandler();
 
@@ -379,7 +379,7 @@ void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     return 0;
 };
 void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
-    DEBUGER.printf("Wifi disconnect from : %s \r\n", WiFi.SSID().c_str());
+    GDebuger.printf("Wifi disconnect from : %s \r\n", WiFi.SSID().c_str());
     if (m_delay_connect_handler == 0) {
         // m_connect_ssid_index++;
         // if (m_connect_ssid_index >= params.ssid.size()) {

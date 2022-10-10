@@ -299,7 +299,7 @@ void GlobalConfig::reset() {
 };
 
 void GlobalConfig::resetConfig() {
-    DEBUGER.println("GlobalConfig::resetConfig");
+    GDebuger.println("GlobalConfig::resetConfig");
     DynamicJsonDocument doc(32);
     this->saveToFile(doc);
     GEventTimer.delay(100, [this](void*, void*)->void*{ rfir::util::Util::Reset(); return 0;});    
@@ -355,7 +355,7 @@ void GlobalConfig::checkSettingMode(){
 };
 
 void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
-    DEBUGER.printf("GlobalConfig::onAPConfigSaved: %s \n", GWifiAP.wifiSsid);
+    GDebuger.printf("GlobalConfig::onAPConfigSaved: %s \n", GWifiAP.wifiSsid);
 
     auto ap = &GWifiAP;
 
@@ -393,7 +393,7 @@ void* GlobalConfig::onAPConfigSaved(void* arg, void* p){
 };
 
 void* GlobalConfig::onAPApplyDefault(void* arg, void* p){
-    DEBUGER.printf("GlobalConfig::onAPApplyDefault:  \n");
+    GDebuger.printf("GlobalConfig::onAPApplyDefault:  \n");
 
     auto ap = &GWifiAP;
     if (props.wifi_ssid.size() > 0){

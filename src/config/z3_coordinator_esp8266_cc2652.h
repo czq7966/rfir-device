@@ -1,7 +1,7 @@
 #ifndef __CONFIG_CONFIG_Z3_COORDINATOR_ESP8266_CC2652_H__
 #define __CONFIG_CONFIG_Z3_COORDINATOR_ESP8266_CC2652_H__
 
-#include "rfir/util/debuger.h"
+#include "rfir/util/GDebuger.h"
 #include "jled.h"
 #include "AceButton.h"
 

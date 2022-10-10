@@ -27,7 +27,7 @@
 
 
 void* OnConfigFixup(void* arg, void* p) {
-    DEBUGER.println("OnConfigFixup");
+    GDebuger.println("OnConfigFixup");
     cmds::cmd::CmdBase::Command::DefaultFrom->type ="dev";
     cmds::cmd::CmdBase::Command::DefaultFrom->id = Config.props.dev_id;
     if (Config.props.edg_id != "") {
@@ -43,8 +43,8 @@ void* OnConfigFixup(void* arg, void* p) {
 
 void setup() {
     Serial.begin(Config.props.serial_baud, SerialConfig(Config.props.serial_config));
-    DEBUGER.println(String(Config.props.serial_baud)+ ":" + String(Config.props.serial_config));
-    DEBUGER.println("begin chid id: " + String(Config.props.dev_id.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
+    GDebuger.println(String(Config.props.serial_baud)+ ":" + String(Config.props.serial_config));
+    GDebuger.println("begin chid id: " + String(Config.props.dev_id.c_str()) + " , mac: " + String(rfir::util::Util::GetMacAddress().c_str()));
 
     //WiFi
     if (!Config.props.wifi_disable) {

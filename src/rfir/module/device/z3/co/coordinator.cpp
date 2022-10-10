@@ -89,7 +89,7 @@ int rfir::module::device::z3::co::Coordinator::onSvc_set(JsonObject* pld, cmds::
 }; 
 
 int rfir::module::device::z3::co::Coordinator::onSvc_penet(JsonObject* pld, cmds::cmd::CmdBase* cmd){    
-    DEBUGER.printf("rfir::module::device::z3::co::Coordinator::onSvc_penet  \r\n");
+    GDebuger.printf("rfir::module::device::z3::co::Coordinator::onSvc_penet  \r\n");
     if (pld && pld->containsKey("raw") ) {
         std::string code =(*pld)["raw"];
         return coWriteBase64((char*)code.c_str(), code.length());

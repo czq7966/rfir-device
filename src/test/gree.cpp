@@ -11,7 +11,7 @@
 // rfir::module::ttl::Sender sender;
 
 // void setup() {
-//   DEBUGER.begin(115200);
+//   GDebuger.begin(115200);
 
 //   rfir::module::ttl::Sender::SendParams p;
 //   p.params.pin = 5;  

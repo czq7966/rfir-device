@@ -51,9 +51,9 @@ void rfir::module::ttl::SnifferV2::startSniff() {
         stopSniff();
         GInterrupt.start(params.pin);
         m_started = true;
-        DEBUGER.println(("start sniff......: (" + this->name + ")" + params.toString()).c_str());
+        GDebuger.println(("start sniff......: (" + this->name + ")" + params.toString()).c_str());
     } else {
-        DEBUGER.println(("start sniff failed, pin is 0: (" + this->name + ")" +  params.toString()).c_str());
+        GDebuger.println(("start sniff failed, pin is 0: (" + this->name + ")" +  params.toString()).c_str());
     }
 };
 
@@ -61,7 +61,7 @@ void rfir::module::ttl::SnifferV2::stopSniff() {
     if (params.pin > 0) {
         GInterrupt.stop(params.pin);
         m_started = false;
-        DEBUGER.println(("stop sniff......: (" + this->name + ")" + params.toString()).c_str());
+        GDebuger.println(("stop sniff......: (" + this->name + ")" + params.toString()).c_str());
     }
 };
 

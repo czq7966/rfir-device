@@ -131,7 +131,7 @@ int rfir::module::device::Device::onSvc_config(JsonObject* pld, cmds::cmd::CmdBa
 }; 
 
 int rfir::module::device::Device::onSvc_reboot(JsonObject* pld, cmds::cmd::CmdBase* cmd){
-    DEBUGER.println("rfir::module::device::Device::onSvc_reboot");
+    GDebuger.println("rfir::module::device::Device::onSvc_reboot");
     int delay = pld->containsKey("delay") ? (*pld)["delay"] : 0;
     delay = std::max(1000, delay);
 

@@ -1,7 +1,7 @@
 #ifndef __CONFIG_CONFIG_FZ_PMZ_F2_AC_GREE_H__
 #define __CONFIG_CONFIG_FZ_PMZ_F2_AC_GREE_H__
 
-#include "rfir/util/debuger.h"
+#include "rfir/util/GDebuger.h"
 #include "jled.h"
 #include "AceButton.h"
 

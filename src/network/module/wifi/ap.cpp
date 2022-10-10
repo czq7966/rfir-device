@@ -80,7 +80,7 @@ void network::module::wifi::AP::init(){
 
 
     initBtnStop();
-    DEBUGER.println("AP Ready.");   
+    GDebuger.println("AP Ready.");   
 };
 
 void network::module::wifi::AP::uninit(){
@@ -91,7 +91,7 @@ void network::module::wifi::AP::uninit(){
     initBtnStart();    
 
     // Config.setMode(GlobalConfig::Mode::Running);
-    DEBUGER.println("AP Released.");    
+    GDebuger.println("AP Released.");    
 };
 
 void network::module::wifi::AP::initWebConf(){
@@ -99,7 +99,7 @@ void network::module::wifi::AP::initWebConf(){
     this->webServer = new WebServer(80);
     this->iotWebConf = new IotWebConf(this->params.apSsid.c_str(), this->dnsServer, this->webServer, this->params.apPass.c_str(), this->params.configVersion.c_str());
 
-    DEBUGER.printf("AP Starting up...%s %s\n:", this->params.apSsid.c_str(), this->params.apPass.c_str());
+    GDebuger.printf("AP Starting up...%s %s\n:", this->params.apSsid.c_str(), this->params.apPass.c_str());
     // this->iotWebConf->setStatusPin(this->params.statusPin, this->params.statusPinOnLevel);
     // this->iotWebConf->setConfigPin(this->params.configPin);
     // this->iotWebConf->setWifiConnectionHandler(&connectWifi);
@@ -281,7 +281,7 @@ void network::module::wifi::AP::applyDefault() {
 
 
 void* network::module::wifi::AP::onBtnStart(void* arg, void* p) {
-    DEBUGER.println("network::module::wifi::AP::onBtnStart");
+    GDebuger.println("network::module::wifi::AP::onBtnStart");
     GEventTimer.delay(100, [this](void* arg, void* p) -> void* {
         start();
         return 0;
@@ -291,7 +291,7 @@ void* network::module::wifi::AP::onBtnStart(void* arg, void* p) {
 };
 
 void* network::module::wifi::AP::onBtnStop(void* arg, void* p) {
-    DEBUGER.println("network::module::wifi::AP::onBtnStop");
+    GDebuger.println("network::module::wifi::AP::onBtnStop");
     GEventTimer.delay(100, [this](void* arg, void* p) -> void* {
         stop();
         return 0;
@@ -301,13 +301,13 @@ void* network::module::wifi::AP::onBtnStop(void* arg, void* p) {
 };
 
 void* network::module::wifi::AP::onBtnLongPressed(void* arg, void* p) {
-    DEBUGER.println("network::module::wifi::AP::onBtnLongPressed");
+    GDebuger.println("network::module::wifi::AP::onBtnLongPressed");
     GLed.start(&(AP_CONFIG_JLED), this);  
     return 0;
 };
 
 void* network::module::wifi::AP::onBtnLongReleased(void* arg, void* p) {
-    DEBUGER.println("network::module::wifi::AP::onBtnLongReleased");
+    GDebuger.println("network::module::wifi::AP::onBtnLongReleased");
     GLed.stop(this);
     GEventTimer.delay(1000, [this](void* arg, void* p) -> void* {
         this->initBtnStart(); 

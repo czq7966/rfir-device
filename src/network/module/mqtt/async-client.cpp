@@ -5,7 +5,7 @@
 #include "../wifi/client.h"
 
 void network::module::mqtt::AClient::init(Params p){
-    DEBUGER.println(" network::module::mqtt::AClient::init");
+    GDebuger.println(" network::module::mqtt::AClient::init");
     this->params = p;
     // wifiConnectHandler = WiFi.onStationModeGotIP(std::bind(&AClient::onWifiConnect, this, std::placeholders::_1));
     // wifiDisconnectHandler = WiFi.onStationModeDisconnected(std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1));
@@ -50,7 +50,7 @@ uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* 
 void network::module::mqtt::AClient::connectToMqtt() {
     if (WiFi.isConnected()) {
         if (!mqtt.connected()) {
-            DEBUGER.println("Connecting to MQTT...");
+            GDebuger.println("Connecting to MQTT...");
             if (m_connect_timeout_handler == 0) {        
                 m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
             }
@@ -64,25 +64,25 @@ void network::module::mqtt::AClient::connectToMqtt() {
 
 void network::module::mqtt::AClient::disconnectToMqtt(bool force) {
     if (mqtt.connected()) {
-        DEBUGER.println("Disconnecting to MQTT...");
+        GDebuger.println("Disconnecting to MQTT...");
         mqtt.disconnect(force);
     }
 }
 
 
 void* network::module::mqtt::AClient::onWifiConnect(void* arg, void* p) {
-    DEBUGER.println("mqtt Connected to Wi-Fi.");
+    GDebuger.println("mqtt Connected to Wi-Fi.");
     delayConnectToMqtt();
     return 0;
 }
 
 void* network::module::mqtt::AClient::onWifiDisconnect(void* arg, void* p) {
-    DEBUGER.println("mqtt Disconnected from Wi-Fi.");
+    GDebuger.println("mqtt Disconnected from Wi-Fi.");
     return 0;
 }
 
 void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
-    DEBUGER.println("Connected to MQTT.");
+    GDebuger.println("Connected to MQTT.");
     GEventTimer.remove(m_connect_timeout_handler);
     m_connect_timeout_handler = 0;
     onCheckToMqttTimeout(0, 0);
@@ -91,7 +91,7 @@ void network::module::mqtt::AClient::onMqttConnect(bool sessionPresent) {
 }
 
 void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-    DEBUGER.printf("Disconnected from MQTT. %d \r\n", reason);
+    GDebuger.printf("Disconnected from MQTT. %d \r\n", reason);
     events.onMqttDisconnect.emit((void*)(int)reason);
     GLed.stop();
     if (WiFi.isConnected())
@@ -100,41 +100,41 @@ void network::module::mqtt::AClient::onMqttDisconnect(AsyncMqttClientDisconnectR
 }
 
 void network::module::mqtt::AClient::onMqttSubscribe(uint16_t packetId, uint8_t qos) {    
-    // DEBUGER.println("Subscribe acknowledged.");
-    // DEBUGER.print("  packetId: ");
-    // DEBUGER.println(packetId);
-    // DEBUGER.print("  qos: ");
-    // DEBUGER.println(qos);
+    // GDebuger.println("Subscribe acknowledged.");
+    // GDebuger.print("  packetId: ");
+    // GDebuger.println(packetId);
+    // GDebuger.print("  qos: ");
+    // GDebuger.println(qos);
 
     events.onMqttSubscribe.emit((void*)(int)packetId);
 }
 
 void network::module::mqtt::AClient::onMqttUnsubscribe(uint16_t packetId) {
-    // DEBUGER.println("Unsubscribe acknowledged.");
-    // DEBUGER.print("  packetId: ");
-    // DEBUGER.println(packetId);
+    // GDebuger.println("Unsubscribe acknowledged.");
+    // GDebuger.print("  packetId: ");
+    // GDebuger.println(packetId);
 
     events.onMqttUnsubscribe.emit((void*)(int)packetId);
 }
 
 void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-    // DEBUGER.println("Publish received.");
-    // DEBUGER.print("  topic: ");
-    // DEBUGER.println(topic);
-    // DEBUGER.print("  qos: ");
-    // DEBUGER.println(properties.qos);
-    // DEBUGER.print("  dup: ");
-    // DEBUGER.println(properties.dup);
-    // DEBUGER.print("  retain: ");
-    // DEBUGER.println(properties.retain);
-    // DEBUGER.print("  len: ");
-    // DEBUGER.println(len);
-    // DEBUGER.print("  index: ");
-    // DEBUGER.println(index);
-    // DEBUGER.print("  total: ");
-    // DEBUGER.println(total);
+    // GDebuger.println("Publish received.");
+    // GDebuger.print("  topic: ");
+    // GDebuger.println(topic);
+    // GDebuger.print("  qos: ");
+    // GDebuger.println(properties.qos);
+    // GDebuger.print("  dup: ");
+    // GDebuger.println(properties.dup);
+    // GDebuger.print("  retain: ");
+    // GDebuger.println(properties.retain);
+    // GDebuger.print("  len: ");
+    // GDebuger.println(len);
+    // GDebuger.print("  index: ");
+    // GDebuger.println(index);
+    // GDebuger.print("  total: ");
+    // GDebuger.println(total);
     if (total > MsgBufSize) {
-        DEBUGER.printf("Mqtt message max length %d, min length 1. actual total: %d\r\n", MsgBufSize, total);
+        GDebuger.printf("Mqtt message max length %d, min length 1. actual total: %d\r\n", MsgBufSize, total);
         return ;
     }
 
@@ -154,9 +154,9 @@ void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, A
 }
 
 void network::module::mqtt::AClient::onMqttPublish(uint16_t packetId) {
-    // DEBUGER.println("Publish acknowledged.");
-    // DEBUGER.print("  packetId: ");
-    // DEBUGER.println(packetId);
+    // GDebuger.println("Publish acknowledged.");
+    // GDebuger.print("  packetId: ");
+    // GDebuger.println(packetId);
     events.onMqttPublish.emit((void*)packetId);
 }
 

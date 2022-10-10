@@ -69,7 +69,7 @@ bool rfir::module::device::rfir::RFIRPenet::setConfig(JsonObject* config) {
 
 void* rfir::module::device::rfir::RFIRPenet::onSniffed(void* arg, void* p){
     m_sniffed_data = (::rfir::module::ttl::SnifferV2::Data*)p;
-    DEBUGER.println(m_sniffed_data->toString().c_str());
+    GDebuger.println(m_sniffed_data->toString().c_str());
     ::service::cmds::Cmd::OnSvc_get(0, "On Sniffed");
     m_sniffed_data = 0;
     return 0;
@@ -132,13 +132,13 @@ int rfir::module::device::rfir::RFIRPenet::onSvc_penet(JsonObject* pld, ::cmds::
     
     if (pld && pld->containsKey("raw") ) {
         std::string code = (*pld)["raw"];
-        DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
+        GDebuger.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         return rfirWriteBase64((char*)code.c_str(), code.length());
     }  
 
     if (pld && pld->containsKey("rawStr") ) {
         std::string code = (*pld)["rawStr"];
-        DEBUGER.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
+        GDebuger.printf("rfir::module::device::RS::RSPenet::onSvc_penet %s \r\n", code.c_str());
         return rfirWrite((char*)code.c_str(), code.length());
     }    
 

@@ -28,7 +28,7 @@ int cmds::network::MqttSignaler::write(cmds::cmd::CmdMqtt* cmd) {
         if (topic == "") {
             topic = cmd->expandTopic();
         }
-        DEBUGER.printf("cmds::network::MqttSignaler::write %s\r\n", topic.c_str());
+        GDebuger.printf("cmds::network::MqttSignaler::write %s\r\n", topic.c_str());
         return mqtt->publish(topic.c_str(), cmd->command.toString().c_str(), cmd->command.head.retain, cmd->command.head.qos);
     }
 

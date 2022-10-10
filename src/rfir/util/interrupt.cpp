@@ -15,7 +15,7 @@ void rfir::util::Interrupt::start(int pin){
             pinEvent->started = started;
             pinMode(pinEvent->pin, pinEvent->mode);
             attachInterruptArg(pinEvent->pin, OnPinInterrupt, (void*)pinEvent, CHANGE);
-            DEBUGER.printf("start interrupt pin: %d  \r\n", pinEvent->pin);            
+            GDebuger.printf("start interrupt pin: %d  \r\n", pinEvent->pin);            
         }
     }
 
@@ -30,7 +30,7 @@ void rfir::util::Interrupt::stop(int pin){
         if (pin == -1 || pin == pinEvent->pin) {
             detachInterrupt(pinEvent->pin);
             pinEvent->started = (pin == pinEvent->pin ? false : pinEvent->started);
-            DEBUGER.printf("stop interrupt pin: %d  \r\n", pinEvent->pin);
+            GDebuger.printf("stop interrupt pin: %d  \r\n", pinEvent->pin);
         }
     }
     

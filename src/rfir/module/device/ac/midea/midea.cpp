@@ -133,7 +133,7 @@ int rfir::module::device::ac::Midea::onSvc_get(JsonObject* _pld, cmds::cmd::CmdB
 }
 
 int rfir::module::device::ac::Midea::onSvc_decoded(std::vector<::rfir::module::ttl::DecoderV2::DecodeResult>& data) {
-    DEBUGER.println("rfir::module::device::ac::Midea::onSvc_decoded");    
+    GDebuger.println("rfir::module::device::ac::Midea::onSvc_decoded");    
     
     auto result = setRaw(data[0].bytes);
     delaySaveConfig();

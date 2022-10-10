@@ -1,6 +1,7 @@
 #include "cmd-dispatcher.h"
 #include "../network/mqtt-signaler.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/util/debuger.h"
 
 void cmds::cmd::CmdDispatcher::setSignaler(cmds::network::Signaler* p){
     if (signaler) {
@@ -19,14 +20,14 @@ void cmds::cmd::CmdDispatcher::setSignaler(cmds::network::Signaler* p){
 };
 
 void* cmds::cmd::CmdDispatcher::onConnect(void* arg, void* p){
-    DEBUGER.println("cmds::cmd::CmdDispatcher::OnConnect");
+    GDebuger.println("cmds::cmd::CmdDispatcher::OnConnect");
     return this->events.onConnect.emit(p);
     // auto dispatcher = (CmdDispatcher*)arg;
     // return dispatcher->events.onConnect.emit(p);
     // return 0;
 };
 void* cmds::cmd::CmdDispatcher::onDisconnect(void* arg, void* p){
-    DEBUGER.println("cmds::cmd::CmdDispatcher::onDisconnect");
+    GDebuger.println("cmds::cmd::CmdDispatcher::onDisconnect");
     return this->events.onDisconnect.emit(p);
     // auto dispatcher = (CmdDispatcher*)arg;
     // return dispatcher->events.onConnect.emit(p);    
@@ -39,11 +40,11 @@ void* cmds::cmd::CmdDispatcher::onMessage(void* arg, void* p){
 };   
 
 void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
-    DEBUGER.print("cmds::cmd::CmdDispatcher::OnResp: ");    
+    GDebuger.print("cmds::cmd::CmdDispatcher::OnResp: ");    
     auto cmd = (cmds::cmd::CmdBase*)p;
     if (cmd->command.isRespCmd()) {
         auto sid = cmd->command.getIntSid();
-        DEBUGER.println(String(sid));
+        GDebuger.println(String(sid));
         if (sid > 0) {
             cmds::cmd::CmdBase::Events events;
             GEventTimer.remove(sid);
@@ -56,12 +57,12 @@ void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
 
     return 0;
 
-    // DEBUGER.print("cmds::cmd::CmdDispatcher::OnResp: ");    
+    // GDebuger.print("cmds::cmd::CmdDispatcher::OnResp: ");    
     // auto cmd = (cmds::cmd::CmdBase*)p;
     // auto dispatcher = (CmdDispatcher*)arg;  
     // if (cmd->command.isRespCmd()) {
     //     auto sid = cmd->command.getSid();
-    //     DEBUGER.println(String(sid));
+    //     GDebuger.println(String(sid));
     //     if (sid > 0) {
     //         cmds::cmd::CmdBase::Events* events = 0;
     //         GEventTimer.remove(sid);
@@ -77,7 +78,7 @@ void* cmds::cmd::CmdDispatcher::onResp(void* arg, void* p) {
 }
 
 void* cmds::cmd::CmdDispatcher::onRespTimeout(void* arg, void* p) {
-    DEBUGER.println("cmds::cmd::CmdDispatcher::onRespTimeout");
+    GDebuger.println("cmds::cmd::CmdDispatcher::onRespTimeout");
     auto sid = (uint32_t)p;
 
     cmds::cmd::CmdBase::Events events;
@@ -90,7 +91,7 @@ void* cmds::cmd::CmdDispatcher::onRespTimeout(void* arg, void* p) {
 }
 
 bool cmds::cmd::CmdDispatcher::sendCmd(cmds::cmd::CmdBase* cmd){    
-    DEBUGER.println("cmds::cmd::CmdDispatcher::sendCmd");  
+    GDebuger.println("cmds::cmd::CmdDispatcher::sendCmd");  
     if (!signaler)
         return false;
           
@@ -118,10 +119,10 @@ void cmds::cmd::MqttDispatcher::setSignaler(cmds::network::Signaler* p){
 }
 void* cmds::cmd::MqttDispatcher::onMqttMessage(void* arg, void* p){
     auto msg = (::network::module::mqtt::AClient::Message*)p;
-    DEBUGER.printf("cmds::cmd::MqttDispatcher::OnMqttMessage: topic: %s, total: %d \r\n", msg->topic, msg->total);
+    GDebuger.printf("cmds::cmd::MqttDispatcher::OnMqttMessage: topic: %s, total: %d \r\n", msg->topic, msg->total);
     
     if (msg->total == 0) {
-        DEBUGER.printf("Mqtt message min length 1. actual total: %d, actual len: %d\r\n", msg->total, msg->len);
+        GDebuger.printf("Mqtt message min length 1. actual total: %d, actual len: %d\r\n", msg->total, msg->len);
         return 0;
     }
 

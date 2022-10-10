@@ -39,7 +39,7 @@ bool rfir::module::device::Networking::handshake(){
     m_handshake_handler = 0;
     m_handshake_heartbeat_handler = 0;
 
-    DEBUGER.println("rfir::module::device::Networking::handshake");
+    GDebuger.println("rfir::module::device::Networking::handshake");
     cmds::cmd::CmdMqtt cmd;
     cmd.command.setNeedResp();
     m_handshake_handler = cmd.command.getIntSid();
@@ -66,7 +66,7 @@ bool rfir::module::device::Networking::handshake(){
 
 //延时握手
 void rfir::module::device::Networking::delayHandshake(int delay_ms){
-    DEBUGER.printf("rfir::module::device::Networking::delayHandshake %d \r\n", delay_ms);
+    GDebuger.printf("rfir::module::device::Networking::delayHandshake %d \r\n", delay_ms);
     GEventTimer.remove(m_handshake_heartbeat_handler);
     m_handshake_heartbeat_handler = GEventTimer.delay(delay_ms, std::bind(&Networking::doHandshake, this, std::placeholders::_1, std::placeholders::_2), (void*)this);
 };
@@ -134,7 +134,7 @@ void rfir::module::device::Networking::subscribe() {
     if (!GMqttClient.mqtt.connected())
         return;
 
-    DEBUGER.printf("rfir::module::device::Networking::subscribe %s \r\n", Config.props.mqtt_dev_sub.c_str());
+    GDebuger.printf("rfir::module::device::Networking::subscribe %s \r\n", Config.props.mqtt_dev_sub.c_str());
     GMqttClient.mqtt.subscribe(Config.props.mqtt_dev_sub.c_str(), 2);
 }
 
@@ -143,7 +143,7 @@ void rfir::module::device::Networking::unsubscribe() {
     if (!GMqttClient.mqtt.connected())
         return;    
 
-    DEBUGER.printf("rfir::module::device::Networking::unsubscribe %s \r\n", Config.props.mqtt_dev_sub.c_str());
+    GDebuger.printf("rfir::module::device::Networking::unsubscribe %s \r\n", Config.props.mqtt_dev_sub.c_str());
     GMqttClient.mqtt.unsubscribe(Config.props.mqtt_dev_sub.c_str());
 
 }
@@ -158,7 +158,7 @@ void rfir::module::device::Networking::reset() {
 };
 //MQTT连接事件
 void* rfir::module::device::Networking::onMqttConnect(void* arg, void* p){
-    DEBUGER.printf("rfir::module::device::Networking::onConnect \r\n");
+    GDebuger.printf("rfir::module::device::Networking::onConnect \r\n");
     status.connected = true;
     delayNetworking();
 
@@ -168,7 +168,7 @@ void* rfir::module::device::Networking::onMqttConnect(void* arg, void* p){
 
 //MQTT断线事件
 void* rfir::module::device::Networking::onMqttDisconnect(void* arg, void* p){
-    DEBUGER.printf("rfir::module::device::Networking::onDisconnect \r\n");
+    GDebuger.printf("rfir::module::device::Networking::onDisconnect \r\n");
     status.connected = false;
     GLed.stop();
     return 0;
@@ -183,7 +183,7 @@ void* rfir::module::device::Networking::onNetworkingTimeout(void* arg, void* p) 
 //事件指令
 void* rfir::module::device::Networking::onCommand(void* arg, void* p){
     auto cmd = (cmds::cmd::CmdMqtt*)p;
-    DEBUGER.printf("rfir::module::device::Networking::onCommand: %s \r\n", cmd->topic.c_str());
+    GDebuger.printf("rfir::module::device::Networking::onCommand: %s \r\n", cmd->topic.c_str());
     
     if (cmd->command.head.stp == 0) {
         //握手请求
@@ -213,7 +213,7 @@ void* rfir::module::device::Networking::onDev_handshake_resp(void* arg, void* p)
     m_handshake_success_count++;
     m_handshake_handler = 0;
     delayHandshake(Config.props.networking_re_handshake_timeout);
-    DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
+    GDebuger.printf("rfir::module::device::Networking::onDev_handshake_resp: %d\r\n", m_handshake_success_count);
     return 0;
 
 };               
@@ -223,7 +223,7 @@ void* rfir::module::device::Networking::onDev_handshake_timeout(void* arg, void*
     status.handshaked = false;
     m_handshake_failed_count++;
     m_handshake_handler = 0;
-    DEBUGER.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
+    GDebuger.printf("rfir::module::device::Networking::onDev_handshake_timeout: %d\r\n", m_handshake_failed_count);    
     delayHandshake(Config.props.networking_re_handshake_timeout);
     
     return 0;
