@@ -37,6 +37,13 @@ int rfir::module::device::ac::FZ_YT_Gree::onSvc_get(JsonObject* pld, cmds::cmd::
 
 int rfir::module::device::ac::FZ_YT_Gree::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     ac.ac->setLight(true);
-    auto r = Gree::onSvc_set(pld, cmd);    
+    auto r = Gree::onSvc_set(pld, cmd);   
+    if ((*pld).containsKey("power")) {
+        delayMicroseconds(1500 * 1000);
+        if ((*pld)["power"].as<std::string>() == (digitalRead(PIN_POWER) ? "on" : "off"))
+            return 1;
+        else 
+            return 0;
+    } 
     return r;
 }
