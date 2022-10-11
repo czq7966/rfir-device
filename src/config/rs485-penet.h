@@ -5,7 +5,7 @@
 
 extern JLed                         GJLed;
 
-#define CFG_VERSION_NUMBER          0  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
+#define CFG_VERSION_NUMBER          1  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
 
 //Device
 #define DEV_VENDOR                  "ND"
@@ -20,7 +20,7 @@ extern JLed                         GJLed;
 #define RESET_PIN                   12
 
 //Serial
-#define SERIAL_DEBUG                true
+#define SERIAL_DEBUG                false
 #define SERIAL_BAUD                 9600
 #define SERIAL_CONFIG               SERIAL_8N1
 
@@ -32,18 +32,17 @@ extern JLed                         GJLed;
 //OTA
 #define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          8
-#define OTA_VERSION_STRING          "8.0"
+#define OTA_VERSION_NUMBER          10
+#define OTA_VERSION_STRING          "10.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/rs485-penet/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
 //WIFI
 #define WIFI_DISABLE                false
-#define WIFI_SSID_DEV               {}
-#define WIFI_PASSWORD_DEV           {}
-#define WIFI_SSID                   {}
-#define WIFI_PASSWORD               {}
-// #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
+#define WIFI_SSID_DEV               {"MERCURY_95E8"}
+#define WIFI_PASSWORD_DEV           {"12345678"}
+#define WIFI_SSID                   {"NDSEC", "ND-MAC"}
+#define WIFI_PASSWORD               {"wanglong","wanglong"}
 #define WIFI_RESET_TIMEOUT          1000 * 60 * 10 //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 
