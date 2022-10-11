@@ -31,8 +31,8 @@ int rfir::module::device::ac::FZ_DM_Midea::onSvc_get(JsonObject* pld, cmds::cmd:
 
 int rfir::module::device::ac::FZ_DM_Midea::onSvc_set(JsonObject* pld, cmds::cmd::CmdBase* cmd) {
     auto result = Midea::onSvc_set(pld, cmd);
-    delay(1500);
     if ((*pld).containsKey("power")) {
+        delayMicroseconds(1500 * 1000);
         if ((*pld)["power"].as<std::string>() == (digitalRead(PIN_POWER) ? "on" : "off"))
             return 1;
         else 
