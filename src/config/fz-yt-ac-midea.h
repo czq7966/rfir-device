@@ -1,11 +1,12 @@
 #ifndef __CONFIG_CONFIG_FZ_YT_AC_MIDEA_H__
 #define __CONFIG_CONFIG_FZ_YT_AC_MIDEA_H__
 
-#include "rfir/util/GDebuger.h"
 #include "jled.h"
 #include "AceButton.h"
 
 extern JLed                         GJLed;
+
+#define CFG_VERSION_NUMBER          1  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
 
 //Device
 #define DEV_VENDOR                  "ND"
@@ -21,6 +22,7 @@ extern JLed                         GJLed;
 #define RESET_PIN                   12
 
 //Serial
+#define SERIAL_DEBUG                false
 #define SERIAL_BAUD                 115200
 #define SERIAL_CONFIG               SERIAL_8N1
 
@@ -31,8 +33,8 @@ extern JLed                         GJLed;
 //OTA
 #define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          12
-#define OTA_VERSION_STRING          "12.0"
+#define OTA_VERSION_NUMBER          13
+#define OTA_VERSION_STRING          "13.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/fz-yt-ac-midea/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
@@ -42,13 +44,12 @@ extern JLed                         GJLed;
 #define WIFI_PASSWORD_DEV           {"12345678"}
 #define WIFI_SSID                   {"NDSEC", "ND-MAC"}
 #define WIFI_PASSWORD               {"wanglong","wanglong"}
-// #define WIFI_RESET_TIMEOUT          {300, 300, 300, 300, 300}  //多少时间内WIFI未连接，重启，单位秒
-#define WIFI_RESET_TIMEOUT          1000 * 80  //多少时间内WIFI未连接，重启，单位毫秒
+#define WIFI_RESET_TIMEOUT          1000 * 60 * 10 //多少时间内WIFI未连接，重启，单位毫秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 
 
 //AP
-#define AP_MODE                     false //true时，支持热点配网
+#define AP_MODE                     true //true时，支持热点配网
 #define AP_SSID                     ""  //为空时，取ChipID
 #define AP_PASSWORD                 "12345678"
 #define AP_RESET_TIMEOUT            1000 * 60 * 5 //多少时间内WIFI未连接，重启，单位毫秒
