@@ -71,8 +71,6 @@ void network::module::wifi::AP::initWifiWatch(){
 };
 
 void network::module::wifi::AP::init(){
-    // Config.setMode(GlobalConfig::Mode::Setting);
-
 
     initWebConf();
     initWifi();
@@ -90,7 +88,6 @@ void network::module::wifi::AP::uninit(){
 
     initBtnStart();    
 
-    // Config.setMode(GlobalConfig::Mode::Running);
     GDebuger.println(F("AP Released."));    
 };
 
@@ -99,12 +96,14 @@ void network::module::wifi::AP::initWebConf(){
     this->webServer = new WebServer(80);
     this->iotWebConf = new IotWebConf(this->params.apSsid.c_str(), this->dnsServer, this->webServer, this->params.apPass.c_str(), this->params.configVersion.c_str());
 
-    GDebuger.printf("AP Starting up...%s %s\n:", this->params.apSsid.c_str(), this->params.apPass.c_str());
+    Serial.printf("AP Starting up...%s %s\n:", this->params.apSsid.c_str(), this->params.apPass.c_str());
     // this->iotWebConf->setStatusPin(this->params.statusPin, this->params.statusPinOnLevel);
     // this->iotWebConf->setConfigPin(this->params.configPin);
     // this->iotWebConf->setWifiConnectionHandler(&connectWifi);
     this->iotWebConf->setApConnectionHandler([this](const char* apName, const char* password)->bool{return this->connectAp(apName, password);});
     this->iotWebConf->setConfigSavedCallback([this]{this->events.configSaved.emit(this);});
+    this->iotWebConf->getApPasswordParameter()->defaultValue = this->params.apPass.c_str();
+    this->iotWebConf->getApPasswordParameter()->applyDefaultValue();
 
     auto valid = this->iotWebConf->init();
     #ifdef ESP8266
@@ -246,6 +245,7 @@ void network::module::wifi::AP::applyDefault() {
     this->iotWebConf->getApPasswordParameter()->applyDefaultValue();
     this->iotWebConf->getApPasswordParameter()->visible = false;
 
+    Serial.println(this->iotWebConf->getApPasswordParameter()->valueBuffer);
     this->iotWebConf->getWifiSsidParameter()->defaultValue = this->params.wifiSsid.c_str();
     this->iotWebConf->getWifiSsidParameter()->applyDefaultValue();
     this->iotWebConf->getWifiSsidParameter()->visible = false;

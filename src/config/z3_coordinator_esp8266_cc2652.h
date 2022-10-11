@@ -5,10 +5,10 @@
 #include "AceButton.h"
 
 extern JLed                         GJLed;
-#define CFG_VERSION_NUMBER          0  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
+#define CFG_VERSION_NUMBER          1  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
 
 //Device
-#define DEV_VENDOR                "ND"
+#define DEV_VENDOR                  "ND"
 #define DEV_MODEL                   "Z3CO2652ESP8266"
 
 #define COSerial Serial
@@ -32,8 +32,8 @@ extern JLed                         GJLed;
 //OTA
 #define OTA_DISABLE                 false
 #define OTA_UPDATE                  true
-#define OTA_VERSION_NUMBER          9
-#define OTA_VERSION_STRING          "9.0"
+#define OTA_VERSION_NUMBER          10
+#define OTA_VERSION_STRING          "10.0"
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/z3_coordinator_esp8266_cc2652/cfg.txt"
 #define OTA_UPDATE_INTERVAL         1000 * 60 * 60 * 3     //3小时检查一次OTA
 
