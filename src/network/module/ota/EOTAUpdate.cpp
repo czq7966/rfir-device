@@ -1,0 +1,303 @@
+#include "Arduino.h"
+#include "rfir/util/interrupt.h"
+#include "rfir/util/util.h"
+
+#ifdef ESP8266
+    #include "EOTAUpdate.h"
+    #include <MD5Builder.h>
+    #include <StreamString.h>
+    #include <Updater.h>
+    #include <WiFiClient.h>
+    #include <ESP8266HTTPClient.h>
+    #include <ESP8266WiFi.h>
+#else
+    #include <HTTPClient.h>
+    #include <MD5Builder.h>
+    #include <StreamString.h>
+    #include <Update.h>
+    #include <WiFi.h>
+    #include <WiFiClient.h>
+
+    #include "EOTAUpdate.h"
+#endif
+
+#define GRAY_UPDATE       1
+
+WiFiClient wf_client;
+
+EOTAUpdate::EOTAUpdate(
+    const String &url,
+    const String chipID,
+    const unsigned currentVersion,
+    const unsigned long updateIntervalMs)
+    :
+    _url(url),
+    _forceSSL(url.startsWith("https://")),
+    _currentVersion(currentVersion),
+    _updateIntervalMs(updateIntervalMs),
+    _lastUpdateMs(0)
+{
+    m_str8266ChipID = chipID;
+}
+
+bool EOTAUpdate::CheckAndUpdate(bool force)
+{
+    const bool hasEverChecked = _lastUpdateMs != 0;
+    const bool lastCheckIsRecent = (millis() - _lastUpdateMs < _updateIntervalMs);
+    if (!force && hasEverChecked && lastCheckIsRecent)
+    {
+        return false;
+    }
+
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        GDebuger.println(F("Wifi not connected"));
+        return false;
+    }
+
+    GDebuger.println(F("Checking for updates"));
+
+    _lastUpdateMs = millis();
+    String binURL;
+    String binMD5;
+    bool result = false;
+    GInterrupt.stop();
+    if (GetUpdateFWURL(binURL, binMD5))
+    {
+        GDebuger.println(F("Update found. Performing update"));
+        result = PerformOTA(binURL, binMD5);
+    }
+    GInterrupt.start();
+
+    return result;
+}
+
+bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5)
+{
+    return GetUpdateFWURL(binURL, binMD5, _url);
+}
+
+bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &url, const uint16_t retries)
+{
+    GDebuger.printf("Fetching OTA config from: %s\n", url.c_str());
+
+    if (retries == 0)
+    {
+        GDebuger.println(F("Too many retries/redirections"));
+        return false;
+    }
+
+    bool isSSL = url.startsWith("https");
+
+    if (_forceSSL && !isSSL)
+    {
+        GDebuger.println(F("Trying to access a non-ssl URL on a secure update checker"));
+        return false;
+    }
+
+    HTTPClient httpClient;
+    //WiFiClient client = WiFiClient();
+    if (!httpClient.begin(wf_client,url))
+    {
+        GDebuger.println(F("Error initializing client"));
+        return false;
+    }
+
+    const char *headerKeys[] = {"Location"};
+    httpClient.collectHeaders(headerKeys, 1);
+    int httpCode = httpClient.GET();
+    switch (httpCode)
+    {
+    case HTTP_CODE_OK:
+        break;
+    case HTTP_CODE_MOVED_PERMANENTLY:
+        if (httpClient.hasHeader("Location"))
+        {
+            return GetUpdateFWURL(binURL, binMD5, httpClient.header("Location"), retries - 1);
+        }
+        // Do not break here
+    default:
+        GDebuger.printf("1-[HTTP] [ERROR] [%d] %s\n",httpCode,httpClient.errorToString(httpCode).c_str());
+        if (httpCode >= 400) //404 会崩溃
+        {
+            httpClient.end();
+            return false;
+        }
+        GDebuger.printf("Response:\n%s\n",httpClient.getString().c_str());
+        httpClient.end();
+        return false;
+    }
+
+    auto & payloadStream = httpClient.getStream();
+    binURL = payloadStream.readStringUntil('\n');
+    const unsigned newVersionNumber = payloadStream.readStringUntil('\n').toInt();
+    binMD5 = payloadStream.readStringUntil('\n');
+    const String newVersionString = payloadStream.readStringUntil('\n');
+    unsigned nUpdateFlag =  payloadStream.readStringUntil('\n').toInt(); //0是全网升级，1是灰度升级
+    String strUpdateList =  payloadStream.readStringUntil('\n');
+
+    int nSub = binURL.lastIndexOf("\r");
+    binURL = binURL.substring(0,nSub);
+
+    nSub = binMD5.lastIndexOf("\r");
+    binMD5 = binMD5.substring(0,nSub);
+
+    nSub = strUpdateList.lastIndexOf("\r");
+    strUpdateList = strUpdateList.substring(0,nSub);
+
+    GDebuger.printf("binURL=%s\n", binURL.c_str());
+    GDebuger.printf("binMD5=%s\n", binMD5.c_str());
+    GDebuger.printf("newVersionNumber=%d\n",newVersionNumber);
+    GDebuger.printf("newVersionString=%s\n", newVersionString.c_str());
+    GDebuger.printf("nUpdateFlag=%d\n", nUpdateFlag);
+    GDebuger.printf("strUpdateList=%s\n", strUpdateList.c_str());
+
+    httpClient.end();
+
+    if (binURL.length() == 0)
+    {
+        GDebuger.println(F("Error parsing remote path of new binary"));
+        return false;
+    }
+
+    if (newVersionNumber == 0)
+    {
+        GDebuger.println(F("Error parsing version number"));
+        return false;
+    }
+
+    // int nSub = binMD5.lastIndexOf("\r");
+    // GDebuger.printf("nSub=%d\n",nSub);
+    // binMD5 = binMD5.substring(0,nSub);
+    if (binMD5.length() > 0 && binMD5.length() != 32)
+    {
+        GDebuger.printf("The MD5:%s is not 32 characters long. Aborting update! binMD5.length()=%d\n",binMD5.c_str(), binMD5.length());
+        return false;
+    }
+
+    
+    bool bIsUpdate =   (newVersionNumber > _currentVersion);
+    GDebuger.printf("Need Update = %d\n", bIsUpdate);
+    if (bIsUpdate)
+    {
+        if (nUpdateFlag == GRAY_UPDATE)
+        {  
+            int nFind = strUpdateList.indexOf(m_str8266ChipID);
+            if(nFind != -1)
+            {
+                bIsUpdate =  true;
+            }
+            else
+            {
+                bIsUpdate = false;
+            }
+            
+            GDebuger.printf("%s Gray Update: %d\n",m_str8266ChipID.c_str(), bIsUpdate);
+        }
+    }
+    
+    GDebuger.println("Fetched update information:");
+    GDebuger.printf("File url:           %s\n",       binURL.c_str());
+    GDebuger.printf("File MD5:           %s\n",       binMD5.c_str());
+    GDebuger.printf("Current version:    %u\n",       _currentVersion);
+    GDebuger.printf("Current ChipID:     %s\n",       m_str8266ChipID.c_str());
+    GDebuger.printf("Published version:  [%u] %s\n",  newVersionNumber, newVersionString.c_str());
+    GDebuger.printf("Update available:   %s\n",       bIsUpdate ? "YES" : "NO");
+    GDebuger.printf("Update Flag:   %d\n",      nUpdateFlag);
+    GDebuger.printf("Update List:   %s\n",      strUpdateList.c_str());
+
+    return bIsUpdate;
+}
+
+bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
+{   
+    GDebuger.printf("Fetching OTA from: %s\n", binURL.c_str());
+
+    if (binURL.length() == 0)
+    {
+        return false;
+    }
+
+    bool isSSL = binURL.startsWith("https");
+    if (_forceSSL && !isSSL)
+    {
+        GDebuger.println(F("Trying to access a non-ssl URL on a secure update checker"));
+        return false;
+    }
+
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        GDebuger.println(F("Wifi not connected"));
+        return false;
+    }
+
+    HTTPClient httpClient;
+    if (!httpClient.begin(wf_client,binURL))
+    {
+        GDebuger.println(F("Error initializing client"));
+        return false;
+    }
+
+    const auto httpCode = httpClient.GET();
+    if (httpCode != HTTP_CODE_OK)
+    {
+        GDebuger.printf("2-[HTTP] [ERROR] [%d] %s\n",
+                httpCode,
+                httpClient.errorToString(httpCode).c_str());
+        GDebuger.printf("Response:\n%s\n",
+                httpClient.getString().c_str());
+        return false;
+    }
+
+    const auto payloadSize = httpClient.getSize();
+    auto & payloadStream = httpClient.getStream();
+
+    if (binMD5.length() > 0 &&
+        !Update.setMD5(binMD5.c_str()))
+    {
+            GDebuger.println(F("Failed to set the expected MD5"));
+            return false;
+    }
+
+    const bool canBegin = Update.begin(payloadSize);
+
+    if (payloadSize <= 0)
+    {
+        GDebuger.println(F("Fetched binary has 0 size"));
+        return false;
+    }
+
+    if (!canBegin)
+    {
+        GDebuger.println(F("Not enough space to begin OTA"));
+        return false;
+    }
+
+    const auto written = Update.writeStream(payloadStream);
+    if (written != payloadSize)
+    {
+        GDebuger.printf("Error. Written %lu out of %lu\n", written, payloadSize);
+        return false;
+    }
+
+    if (!Update.end())
+    {
+        StreamString errorMsg;
+        Update.printError(errorMsg);
+        GDebuger.printf("Error Occurred: %s\n", errorMsg.c_str());
+        return false;
+    }
+
+    if (!Update.isFinished())
+    {
+        StreamString errorMsg;
+        Update.printError(errorMsg);
+        GDebuger.printf("Undefined OTA update error: %s\n", errorMsg.c_str());
+        return false;
+    }
+
+    GDebuger.println(F("Update completed. Rebooting"));
+    rfir::util::Util::Reset();
+    // ESP.restart();
+    return true;
+}
