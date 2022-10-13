@@ -24,20 +24,17 @@ namespace network {
                     rfir::util::Event softAPModeStationDisconnected;
                 };
                 struct Params {
-                    bool                apMode = false;
-                    bool                smcMode= false;
                     std::vector<const char*>    ssid;
                     std::vector<const char*>    pass;                   
                     uint32_t                    timeout;
                     uint32_t                    interval = 30 * 1000;
-                    JLed*               jled = 0;
-                    bool                assign(Params& p);
+                    JLed*                       jled = 0;
                 };
             public:
                 Events  events;
                 Params  params;
             public:
-                void start(Params& p);
+                void start();
                 void loop();
             //V2
             public:
@@ -75,8 +72,10 @@ namespace network {
                 void* onWifiDisconnect(void* arg, void* p);
                 void* onWifiConnectTimeout(void* arg, void* p);
                 void* onWifiCheckTimeout(void* arg, void* p);
-
-
+            public:
+                void clearSsids();
+                void addSsids(const char* ssid, const char* pass);
+                void addSsid(const char* ssid, const char* pass);
             };
         }
     }

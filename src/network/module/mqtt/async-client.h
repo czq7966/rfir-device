@@ -23,14 +23,16 @@ namespace network {
                     int             keepalive = 15;
                     int             clean_session = false;
                     int             timeout = 1000 * 60;
-                    int             interval = 1000 * 30;
-                    int             bufsize = 2048;
+                    int             interval = 1000 * 30;                    
+                    int             msgbufsize = 0;
+                    char*           msgbuf = 0;
                     JLed*           jled = 0;       
                     const char*     user = 0;
                     const char*     pass = 0;
                     const char*     id = 0;
                     const char*     willTopic = 0;
                     const char*     willPayload = 0;
+
                 };
 
                 struct Message {
@@ -56,7 +58,6 @@ namespace network {
                 
                 Events events;
             public:
-                char* msgBuf = 0;
                 AsyncMqttClient mqtt;
                 Params params;
                 uint32_t        m_connect_timeout_handler = 0;

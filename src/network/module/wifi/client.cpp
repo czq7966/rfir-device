@@ -4,15 +4,7 @@
 #include "rfir/util/debuger.h"
 
 
-bool network::module::wifi::Client::Params::assign(Params& p) {
-    this->ssid.assign(p.ssid.begin(), p.ssid.end());
-    this->pass.assign(p.pass.begin(), p.pass.end());
-    this->timeout = p.timeout;
-    return true;
-}
-
-void network::module::wifi::Client::start(Params& p) {
-    this->params.assign(p);
+void network::module::wifi::Client::start() {
     //V2
     startV2();    
 }
@@ -173,5 +165,68 @@ void* network::module::wifi::Client::onWifiCheckTimeout(void* arg, void* p){
     m_check_timeout_handler = GEventTimer.delay(params.interval, std::bind(&Client::onWifiCheckTimeout, this, std::placeholders::_1, std::placeholders::_2));
     return 0;
 };
+
+void network::module::wifi::Client::clearSsids(){
+    while (this->params.ssid.size() > 0) {
+        auto ssid = this->params.ssid.front();
+        this->params.ssid.erase(this->params.ssid.begin());
+        delete ssid;
+    }
+
+    while (this->params.pass.size() > 0) {
+        auto pass = this->params.pass.front();
+        this->params.pass.erase(this->params.pass.begin());
+        delete pass;
+    }
+
+};
+
+void network::module::wifi::Client::addSsids(const char* ssids, const char* passes){
+    int len = strlen(ssids);
+    int offset = 0;
+    int count = 0;
+    char ssid[32]; ssid[0] = '\0';
+    for (size_t i = 0; i < len; i++)
+    {
+        char c = ssids[i];
+        if (c == ',' || c == ' ' || i == len - 1){            
+            ssid[i - offset] = '\0';
+            auto newSsid = new char[32];
+            strcpy(newSsid, ssid);
+            this->params.ssid.push_back(newSsid);
+            count++;
+            ssid[0] = '\0';
+            offset = i + 1;
+        }
+        else 
+            ssid[i - offset] = c;        
+    }
+    
+    len = strlen(passes);
+    offset = 0;
+    char pass[32]; pass[0] = '\0';   
+    for (size_t i = 0; i < len; i++)
+    {
+        char c = passes[i];
+        if (c == ',' || c == ' ' || i == len - 1){            
+            pass[i - offset] = '\0';
+            auto newPass = new char[32];
+            strcpy(newPass, pass);
+            this->params.pass.push_back(newPass);
+            pass[0] = '\0';
+            offset = i + 1;
+        }
+        else 
+            pass[i - offset] = c;        
+    }
+    
+
+};
+
+void network::module::wifi::Client::addSsid(const char* ssid, const char* pass){
+    this->params.ssid.push_back(ssid);
+    this->params.pass.push_back(pass);
+};
+
 
 network::module::wifi::Client GWifiClient;

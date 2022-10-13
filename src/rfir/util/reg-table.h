@@ -7,19 +7,18 @@
 namespace rfir {
     namespace util {
         class RegTable {
+           
         public:
-            struct IDs
-            {
-                uint16_t vender = 60000;
-            };
-            
+            MapFactory<int, int> tables;   
+            int                  charMinNum = 60000;
+            int                  charMaxNum = 60999;
         public:
-            IDs ids;
-            MapFactory<int, int> tables;          
+            bool encode(char* buf, int& size, std::list<int>& ids);
+            bool encode(char* buf, int& size);
+            bool decode(const char* buf, int size, std::list<int>& ids);   
+            bool decode(const char* buf, int size);     
         };
     }
 }
-                
-extern rfir::util::RegTable GRegTable;
 
 #endif                

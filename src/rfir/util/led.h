@@ -23,6 +23,7 @@ namespace rfir {
     }
 }
                 
+extern JLed            GJLed;                
 extern rfir::util::Led GLed;
 
 #endif                

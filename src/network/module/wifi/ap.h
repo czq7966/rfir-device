@@ -21,13 +21,13 @@ namespace network {
                 struct Params {
                     const char* apSsid = 0;
                     const char* apPass = 0;
-                    const char* wifiSsid = 0;
-                    const char* wifiPass = 0;
-                    const char* configVersion = "0";
-                    int         configPin = -1;
-                    int         configPinTimeout = 5;
-                    long        resetTimeout = 60 * 5;
-                    int         statusPin = -1;
+                    // const char* wifiSsid = 0;
+                    // const char* wifiPass = 0;
+                    // const char* configVersion = "0";
+                    // int         configPin = -1;
+                    // int         configPinTimeout = 5;
+                    // long        resetTimeout = 60 * 5;
+                    // int         statusPin = -1;
 #ifdef ESP32                    
                     int         statusPinOnLevel = HIGH;
 #else

@@ -7,8 +7,6 @@
 void network::module::mqtt::AClient::init(Params p){
     this->params = p;
     
-    this->msgBuf = new char[this->params.bufsize];
-
     GWifiClient.events.onWifiConnect.add(this, std::bind(&AClient::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));
     GWifiClient.events.onWifiDisconnect.add(this, std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -28,7 +26,7 @@ void network::module::mqtt::AClient::init(Params p){
     mqtt.setCredentials(params.user, params.pass);
 };
 void network::module::mqtt::AClient::uninit(){
-    delete this->msgBuf;
+
 };
 
 void network::module::mqtt::AClient::start(Params p){
@@ -110,23 +108,23 @@ void network::module::mqtt::AClient::onMqttUnsubscribe(uint16_t packetId) {
 }
 
 void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-    if (total > this->params.bufsize) {
-        GDebuger.printf("Mqtt message max length %d, min length 1. actual total: %d\r\n", this->params.bufsize, total);
+    if (total > this->params.msgbufsize) {
+        GDebuger.printf("Mqtt message max length %d, min length 1. actual total: %d\r\n", this->params.msgbufsize, total);
         return ;
     }
 
-    memcpy(msgBuf + index, payload, len);
+    memcpy(this->params.msgbuf + index, payload, len);
     if (index + len == total) {
         Message msg;
         msg.client = (void*)this;
         msg.topic = topic;
-        msg.payload = msgBuf;
+        msg.payload = this->params.msgbuf;
         msg.props = &properties;
         msg.len = len;
         msg.index = index;
         msg.total = total;
         events.onMqttMessage.emit((void*)&msg);
-        memset(msgBuf, 0, sizeof(msgBuf));
+        memset(this->params.msgbuf, 0, sizeof(this->params.msgbuf));
     }
 }
 

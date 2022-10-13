@@ -9,18 +9,17 @@ namespace rfir {
         class File {
         public:
             static bool remove(const char* path);
-        };
-
-        class TxtFile: File {   
-        private:
-            std::string fn;
-        public:
-            TxtFile(const char * fn);
+            const char* fn;
+            File(const char * fn);
             bool begin();
             int  readString(std::string& txt);
             int  writeString(std::string txt);
             int  writeString(const char* buf, uint32_t size);
+            int  read(char* buf, size_t maxSize);
+            int  write(const char* buf, size_t size);
         };
+
+
     }
 }
 

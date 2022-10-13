@@ -10,11 +10,11 @@ bool rfir::util::File::remove(const char * fn) {
     return 1;
 }
 
-rfir::util::TxtFile::TxtFile(const char * fn) {
-    this->fn = std::string(fn);
+rfir::util::File::File(const char * fn) {
+    this->fn = fn;
 }
 
-bool rfir::util::TxtFile::begin() {
+bool rfir::util::File::begin() {
 #if ESP8266
     if (!FileFS.begin())
     {
@@ -33,12 +33,12 @@ bool rfir::util::TxtFile::begin() {
     return true;
 }
 
-int rfir::util::TxtFile::readString(std::string& str) {
+int rfir::util::File::readString(std::string& str) {
     int result = 0;
     if (begin()) {
         fs::File file;
-        if (FileFS.exists(this->fn.c_str())) {
-            file = FileFS.open(this->fn.c_str(), "r");
+        if (FileFS.exists(this->fn)) {
+            file = FileFS.open(this->fn, "r");
         } else return -1;
 
         while (file.available())
@@ -71,13 +71,47 @@ int rfir::util::TxtFile::readString(std::string& str) {
 //     return 1;
 }
 
-int  rfir::util::TxtFile::writeString(std::string txt) {
+int  rfir::util::File::writeString(std::string txt) {
     return writeString(txt.c_str(), txt.length());
 }
 
-int rfir::util::TxtFile::writeString(const char* buf, uint32_t size) {
+int rfir::util::File::writeString(const char* buf, uint32_t size) {
     if (begin()) {
-        fs::File file = FileFS.open(this->fn.c_str(), "w");
+        fs::File file = FileFS.open(this->fn, "w");
+        if (!file)
+            return -1;
+
+        int count = file.write((uint8_t *)buf, size);
+        file.flush();
+        file.close();
+
+        return count;   
+    } 
+    return -1; 
+}
+
+int  rfir::util::File::read(char* buf, size_t maxSize) {
+    int result = 0;
+    if (begin()) {
+        fs::File file;
+        if (FileFS.exists(this->fn)) {
+            file = FileFS.open(this->fn, "r");
+        } else return -1;
+
+        while (file.available())
+        {
+            buf[result] = (char)file.read();
+            result++;
+        }
+        file.close();
+    }
+
+    return result;
+};
+
+int  rfir::util::File::write(const char* buf, size_t size) {
+    if (begin()) {
+        fs::File file = FileFS.open(this->fn, "w");
         if (!file)
             return -1;
 
@@ -88,20 +122,4 @@ int rfir::util::TxtFile::writeString(const char* buf, uint32_t size) {
         return count;   
     } 
     return -1;
-
-// #ifdef ESP32
-//     fs::File file = FileFS.open(this->fn.c_str(), FILE_WRITE);
-// #endif
-// #ifdef ESP8266
-//     fs::File file = FileFS.open(this->fn.c_str(), "w");
-// #endif    
-     
-//     if (!file)
-//         return -1;
-
-//     int count = file.write((uint8_t *)buf, size);
-//     file.flush();
-//     file.close();
-
-//     return count;   
-}
+};

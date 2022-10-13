@@ -41,11 +41,41 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
   
 }
 
+int  rfir::util::Util::GetChipId(char* buf, const char* prefix){
+  uint8_t pre_len = 0;
+  if (prefix) {
+    strcpy(buf, prefix);
+    pre_len = strlen(prefix);    
+  }
+  else {
+    #ifdef CHIP_ID_PREFIX
+      strcpy(buf, CHIP_ID_PREFIX);      
+      pre_len = strlen(CHIP_ID_PREFIX);
+    #endif
+  }  
+
+  uint32_t chipId = 0;
+  #ifdef ESP8266
+    chipId = ESP.getChipId();    
+  #else		//ESP32
+    uint32_t chipId = (uint32_t)ESP.getEfuseMac();
+  #endif  
+
+  BytesToHexChar((uint8_t*)(&chipId), sizeof(chipId), buf + pre_len, true, '\0');
+  return strlen(buf);
+};
+
 std::string rfir::util::Util::GetMacAddress() {
   uint8_t mac[6] = {};
   WiFi.macAddress(mac);
   return BytesToHexString(mac, 6, false, '-');
 }
+
+int rfir::util::Util::GetMacAddress(char* buf){
+  uint8_t mac[6] = {};
+  WiFi.macAddress(mac);
+  return BytesToHexChar(mac, 6, buf, false, '-');
+};
 
 std::string rfir::util::Util::BitsToString(uint8_t bytes[], uint16_t nbits) {
   String bitStr;
@@ -93,6 +123,33 @@ std::string  rfir::util::Util::BytesToHexString(uint8_t bytes[], uint16_t nbytes
     return std::string(result.c_str()); 
 }
 
+int rfir::util::Util::BytesToHexChar(uint8_t bytes[], uint16_t nbytes, char* buf, bool revert, char separater){
+    int j = revert ? nbytes - 1 : 0;
+    int pos = 0;
+    while (revert && j >=0 || !revert &&  j < nbytes)
+    {
+        char c[3];
+        char s[3];
+        uint8_t b = bytes[j];  
+        itoa(b, c, 16);
+
+        if (pos > 0 && separater != '\0')
+            buf[pos++] = separater;
+
+        if (strlen(c) == 1) {
+          buf[pos++] = '0';
+          buf[pos++] = c[0];          
+        } else {
+          buf[pos++] = c[0];
+          buf[pos++] = c[1];          
+        }
+
+        if (revert) j--; else j++;
+    }
+    buf[pos] = '\0';
+    return pos; 
+
+};
 
 int  rfir::util::Util::StringToBits(const char* data, int nbits, uint64_t& result) {
   for (size_t i = 0; i < nbits; i++)

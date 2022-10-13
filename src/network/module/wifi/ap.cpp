@@ -93,7 +93,7 @@ void network::module::wifi::AP::uninit(){
 void network::module::wifi::AP::initWebConf(){
     this->dnsServer = new DNSServer();
     this->webServer = new WebServer(80);
-    this->iotWebConf = new IotWebConf(this->params.apSsid, this->dnsServer, this->webServer, this->params.apPass, this->params.configVersion);
+    this->iotWebConf = new IotWebConf(this->params.apSsid, this->dnsServer, this->webServer, this->params.apPass);
 
     Serial.printf("AP Starting up...%s %s\n:", this->params.apSsid, this->params.apPass);
     // this->iotWebConf->setStatusPin(this->params.statusPin, this->params.statusPinOnLevel);
@@ -244,13 +244,13 @@ void network::module::wifi::AP::applyDefault() {
     this->iotWebConf->getApPasswordParameter()->applyDefaultValue();
     this->iotWebConf->getApPasswordParameter()->visible = false;
 
-    Serial.println(this->iotWebConf->getApPasswordParameter()->valueBuffer);
-    this->iotWebConf->getWifiSsidParameter()->defaultValue = this->params.wifiSsid;
-    this->iotWebConf->getWifiSsidParameter()->applyDefaultValue();
+
+    // this->iotWebConf->getWifiSsidParameter()->defaultValue = this->params.wifiSsid;
+    // this->iotWebConf->getWifiSsidParameter()->applyDefaultValue();
     this->iotWebConf->getWifiSsidParameter()->visible = false;
 
-    this->iotWebConf->getWifiPasswordParameter()->defaultValue = this->params.wifiPass;
-    this->iotWebConf->getWifiPasswordParameter()->applyDefaultValue();
+    // this->iotWebConf->getWifiPasswordParameter()->defaultValue = this->params.wifiPass;
+    // this->iotWebConf->getWifiPasswordParameter()->applyDefaultValue();
     this->iotWebConf->getWifiPasswordParameter()->visible = false;
 
 

@@ -45,5 +45,4 @@ void rfir::util::Led::stop(void* owner){
 };
 
 
-
 rfir::util::Led GLed;
