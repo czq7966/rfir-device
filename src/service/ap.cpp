@@ -8,6 +8,7 @@
 #include "rfir/util/util.h"
 
 void service::AP::init(){
+    GWifiAP.stop();
     if (GRegTable.tables.get(GRegTable.keys.ap_disable) == 0) {
         GWifiAP.stop();
 

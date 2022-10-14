@@ -19,6 +19,7 @@ namespace service {
     };
 
 }
-           
+
+extern GAP           
 
 #endif                
