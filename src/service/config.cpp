@@ -1,16 +1,17 @@
 #include "config.h"
 #include "rfir/util/file.h"
 #include "rfir/util/util.h"
+#include "rfir/util/serial.h"
 
 service::Config::Config(){
-    this->init();
+    // this->init();
 };
 
 void service::Config::init(){
     strcpy(GRegTable.values.dev_vender, DEV_VENDOR);
     strcpy(GRegTable.values.dev_model, DEV_MODEL);
-    rfir::util::Util::GetChipId(GRegTable.values.dev_id);
-    rfir::util::Util::GetChipId(GRegTable.values.dev_mac);
+    rfir::util::Util::GetChipId(GRegTable.values.dev_id, CHIP_ID_PREFIX);
+    rfir::util::Util::GetMacAddress(GRegTable.values.dev_mac);
     strcpy(GRegTable.values.wifi_ssid, WIFI_SSID);
     strcpy(GRegTable.values.wifi_pass, WIFI_PASS);
     strcpy(GRegTable.values.ap_ssid, AP_SSID);
@@ -26,7 +27,9 @@ void service::Config::init(){
 
     GRegTable.tables.add(GRegTable.keys.dev_online, 0);
     GRegTable.tables.add(GRegTable.keys.cfg_version, CFG_VERSION);
-    GRegTable.tables.add(GRegTable.keys.wifi_rssi, WiFi.RSSI());
+    GRegTable.tables.add(GRegTable.keys.wifi_rssi, 0);
+    if (WiFi.isConnected())
+        GRegTable.tables.add(GRegTable.keys.wifi_rssi, WiFi.RSSI());
     GRegTable.tables.add(GRegTable.keys.pin_led, PIN_LED);
     GRegTable.tables.add(GRegTable.keys.pin_button, PIN_BUTTON);
     GRegTable.tables.add(GRegTable.keys.pin_reset, PIN_RESET);
@@ -58,6 +61,12 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.net_report_timeout, NET_REPORT_TIMEOUT);
     GRegTable.tables.add(GRegTable.keys.net_handshake_timeout, NET_HANDSHAKE_TIMEOUT);
 
+    GRegTable.tables.add(GRegTable.keys.dev_address, DEV_ADDRESS);
+
+
+    //Button
+    GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);
+
 };
 
 void service::Config::fixUp(){
@@ -68,6 +77,13 @@ void service::Config::fixUp(){
     strcpy(GRegTable.values.mqtt_pub_topic,"0/0/dev/");
     strcat(GRegTable.values.mqtt_pub_topic, GRegTable.values.dev_id);
     strcat(GRegTable.values.mqtt_pub_topic, "/0/0/0/0");
+
+    char temp[32];
+    rfir::util::Util::GetChipId(temp);
+    strcpy(GRegTable.values.ap_ssid, "ndiot_");
+    strcat(GRegTable.values.ap_ssid, temp);
+
+
 
 };
 
@@ -82,17 +98,51 @@ void service::Config::load() {
 };
 
 void service::Config::save() {
+    std::list<int> ids;
+    ids.push_back(60000);
+    ids.push_back(60001);
+    save(ids);
 
 };   
 
 void service::Config::save(std::list<int> ids) {
     int size = 0;
     if (GRegTable.encode(this->params.buf, size, ids)) {
-        rfir::util::File file(this->params.filename);
-        file.write(this->params.buf, size);
-        this->events.saved.emit(this);
+        GRegTable.decode(this->params.buf, size);
+        // rfir::util::File file(this->params.filename);
+        // file.write(this->params.buf, size);
+        // this->events.saved.emit(this);
     }
 };
 
+void service::Config::resetConfig(bool restart){
+    Serial.println("service::Config::resetConfig");
+    delay(1000);
+    rfir::util::File::remove(this->params.filename);
+    if (restart)
+        rfir::util::Util::Reset();
+};
+
+int service::Config::getSerialBaud(){
+    return GRegTable.tables.get(GRegTable.keys.serial_baud) * 100;
+};
+
+void service::Config::setSerialBaud(int value){
+    GRegTable.tables.add(GRegTable.keys.serial_baud, value / 100);
+};
+
+int service::Config::getSerialConfig(){
+    auto data = GRegTable.tables.get(GRegTable.keys.serial_data);
+    auto stop = GRegTable.tables.get(GRegTable.keys.serial_stop);
+    auto sum = GRegTable.tables.get(GRegTable.keys.serial_sum);
+    GSerialConfigs.setSerialData(data);
+    GSerialConfigs.setSerialStop(stop);
+    GSerialConfigs.setSerialSum(sum);
+
+    return GSerialConfigs.getSerialConfig();
+};
+
+
+
 service::Config GConfig;
-JLed  GJLed = JLed(GRegTable.tables.get(GRegTable.keys.pin_led));
+JLed  GJLed = JLed(PIN_LED);

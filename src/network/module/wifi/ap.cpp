@@ -5,8 +5,7 @@
 #include "rfir/util/event-timer.h"
 #include "rfir/util/serial.h"
 
-void network::module::wifi::AP::start(Params p) {
-    this->params = p;
+void network::module::wifi::AP::start(void*) {
     stop();
     // Config.events.onFixup.add(this,  [this](void*, void*)->void*{
     //     initWifiWatch();
@@ -163,7 +162,7 @@ void network::module::wifi::AP::initSerial(){
     
     serialGroup = new IotWebConfParameterGroup("serial_setting", "串口配置");
     serialParamBand = new IotWebConfNumberParameter("波特率", "serial_band", serialBand, Serial_Band_max_length);    
-    auto Serial_Config_max_count = GSerial_Configs.configs.getSize();
+    auto Serial_Config_max_count = GSerialConfigs.configs.getSize();
     serialConfigs = new char[Serial_Band_max_length * Serial_Config_max_count];
     serialParamConfig = new IotWebConfSelectParameter("数据位", "serial_config", serialConfig, Serial_Band_max_length, (char*)serialConfigs, (char*)serialConfigs, Serial_Config_max_count, Serial_Band_max_length);
     serialParamDebug = new IotWebConfCheckboxParameter("调试模式", "serial_debug", serialDebug, Serial_Band_max_length);
@@ -270,11 +269,11 @@ void network::module::wifi::AP::applyDefault() {
     wifiParamPass->defaultValue = wifiPass;
     wifiParamPass->applyDefaultValue();
 
-    auto map = GSerial_Configs.configs.getMap();
+    auto map = GSerialConfigs.configs.getMap();
     int idx = 0;
     for (auto it = map->begin(); it != map->end(); it++)
     {
-        strcpy(this->serialConfigs + idx * Serial_Band_max_length, it->second.c_str());    
+        strcpy(this->serialConfigs + idx * Serial_Band_max_length, it->second);    
         idx++;
     }
 

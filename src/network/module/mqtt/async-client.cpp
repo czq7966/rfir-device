@@ -4,8 +4,7 @@
 #include "rfir/util/debuger.h"
 #include "../wifi/client.h"
 
-void network::module::mqtt::AClient::init(Params p){
-    this->params = p;
+void network::module::mqtt::AClient::init(){
     
     GWifiClient.events.onWifiConnect.add(this, std::bind(&AClient::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));
     GWifiClient.events.onWifiDisconnect.add(this, std::bind(&AClient::onWifiDisconnect, this, std::placeholders::_1, std::placeholders::_2));
@@ -29,8 +28,8 @@ void network::module::mqtt::AClient::uninit(){
 
 };
 
-void network::module::mqtt::AClient::start(Params p){
-    init(p);
+void network::module::mqtt::AClient::start(){
+    init();
 };
 void network::module::mqtt::AClient::loop(){
 
@@ -64,20 +63,18 @@ void network::module::mqtt::AClient::connectToMqtt() {
 
 void network::module::mqtt::AClient::disconnectToMqtt(bool force) {
     if (mqtt.connected()) {
-        GDebuger.println(F("Disconnecting to MQTT..."));
+        GDebuger.println(F("Disconnecting from MQTT..."));
         mqtt.disconnect(force);
     }
 }
 
 
 void* network::module::mqtt::AClient::onWifiConnect(void* arg, void* p) {
-    GDebuger.println(F("mqtt Connected to Wi-Fi."));
     delayConnectToMqtt();
     return 0;
 }
 
 void* network::module::mqtt::AClient::onWifiDisconnect(void* arg, void* p) {
-    GDebuger.println(F("mqtt Disconnected from Wi-Fi."));
     return 0;
 }
 
@@ -109,8 +106,11 @@ void network::module::mqtt::AClient::onMqttUnsubscribe(uint16_t packetId) {
 
 void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
     if (total > this->params.msgbufsize) {
-        GDebuger.printf("Mqtt message max length %d, min length 1. actual total: %d\r\n", this->params.msgbufsize, total);
-        return ;
+        GDebuger.print(F("Mqtt message max length "));
+        GDebuger.print(this->params.msgbufsize);
+        GDebuger.print(F(" min length 1. actual total: "));
+        GDebuger.println(total);
+        return;
     }
 
     memcpy(this->params.msgbuf + index, payload, len);

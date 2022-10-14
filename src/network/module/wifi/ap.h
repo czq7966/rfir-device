@@ -78,7 +78,7 @@ namespace network {
             
             
             public:
-                void start(Params p);
+                void start(void*);
                 void start();
                 bool started();
                 void stop();

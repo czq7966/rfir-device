@@ -22,6 +22,7 @@
 
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/event-emitter.h"
+#include "rfir/util/button.h"
 
 namespace service {
     class Config {     
@@ -38,7 +39,9 @@ namespace service {
         };      
     public: 
         Events events;
-        Params params;           
+        Params params;       
+        rfir::util::Button::KeyTime keyTimeResetConfig = {pressed: 10000, released: 15000};
+    
     public:
         Config();
         
@@ -47,6 +50,11 @@ namespace service {
         void load();
         void save();
         void save(std::list<int> ids);
+        void resetConfig(bool restart = true);
+    public:
+        int getSerialBaud();
+        void setSerialBaud(int value);
+        int getSerialConfig();
     };
 
 }

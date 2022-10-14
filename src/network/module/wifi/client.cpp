@@ -55,7 +55,10 @@ void  network::module::wifi::Client::connectToWifi(){
     if (m_connect_ssid_index < params.ssid.size()) {
         auto ssid_ssid = this->params.ssid[m_connect_ssid_index];
         auto ssid_pass = this->params.pass[m_connect_ssid_index];
-        GDebuger.printf("Wifi connecting... %s %s \r\n", ssid_ssid, ssid_pass);
+        GDebuger.print(F("Wifi connecting... "));
+        GDebuger.print(ssid_ssid);
+        GDebuger.print(F(" "));
+        GDebuger.println(ssid_pass);
         WiFi.begin(ssid_ssid, ssid_pass);        
     }    
 
@@ -135,7 +138,9 @@ void network::module::wifi::Client::WiFiEvent(WiFiEvent_t event) {
 
 
 void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
-    GDebuger.printf("Wifi connected to : %s \r\n", WiFi.SSID());
+    GDebuger.print(F("Wifi connected to : "));
+    GDebuger.println(WiFi.SSID());
+
     removeConnectTimeoutHandler();
     removeDelayConnectHandler();
 
@@ -144,7 +149,8 @@ void* network::module::wifi::Client::onWifiConnect(void* arg, void* p){
     return 0;
 };
 void* network::module::wifi::Client::onWifiDisconnect(void* arg, void* p) {
-    GDebuger.printf("Wifi disconnect from : %s \r\n", WiFi.SSID());
+    GDebuger.print(F("Wifi disconnect from :"));
+    GDebuger.println(WiFi.SSID());
     if (m_delay_connect_handler == 0) {
         delayConnectToWifi();    
     }

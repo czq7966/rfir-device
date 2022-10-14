@@ -52,6 +52,27 @@ Cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.net_report_timeout, 0);
     this->tables.add(this->keys.net_handshake_timeout, 0);   
 
+    this->tables.add(this->keys.dev_address, 0);       
+
+};
+
+
+void Cmds::cmd::RegTable::dump(){
+    std::list<int> ids;    
+    this->tables.getKeys(ids);
+    auto map = this->tables.getMap();
+    for (auto it = map->begin(); it != map->end(); it++)
+    {
+        auto key = it->first;
+        auto value = it->second;
+        Serial.print(key);
+        Serial.print(":");
+        if (key >= this->charMinNum && key <= this->charMaxNum) {
+            Serial.println((char*)value);
+        } else {
+            Serial.println(value);
+        }        
+    }
 };
 
 Cmds::cmd::RegTable GRegTable;

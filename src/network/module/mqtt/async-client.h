@@ -64,10 +64,10 @@ namespace network {
                 uint32_t        m_check_timeout_handler = 0;
             public:
 
-                void init(Params p);
+                void init();
                 void uninit();
 
-                void start(Params p);
+                void start();
                 void loop();
 
                 void setWill(const char* topic, const char* payload = nullptr, bool retain = true, uint8_t qos = 2, size_t length = 0);

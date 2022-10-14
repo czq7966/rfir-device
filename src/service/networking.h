@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include <jled.h>
+#include "ap.h"
 
 namespace service {
     class Networking {
@@ -24,6 +25,8 @@ namespace service {
     //     int  m_handshake_success_count = 0;
     //     int  m_online_count = 0;
     //     int  m_reboot = 1;
+    public:
+        AP ap;
     public:
         virtual void start();
         virtual void loop();

@@ -29,6 +29,9 @@ void service::Networking::start(){
         return 0;
     });
 
+    //热点逻辑
+    this->ap.start();
+
 };
 
 

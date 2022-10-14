@@ -113,6 +113,9 @@ namespace Cmds {
 
                 const uint16_t net_report_timeout =  61025;
                 const uint16_t net_handshake_timeout=61026;
+
+                const uint16_t dev_address =         61027;
+                
             };            
             struct Values
             {
@@ -138,6 +141,8 @@ namespace Cmds {
             Keys keys;
             Values values;
             RegTable();
+
+            void dump();
 
         };
     }
