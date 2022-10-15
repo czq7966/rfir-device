@@ -35,11 +35,7 @@ void network::module::mqtt::AClient::loop(){
 
 };
 
-void network::module::mqtt::AClient::setWill(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length){
-    // params.willTopic = topic;
-    // params.willPayload = payload;
-    // mqtt.setWill(params.willTopic, qos, retain, params.willPayload);
-};
+
 uint16_t network::module::mqtt::AClient::publish(const char* topic, const char* payload, bool retain, uint8_t qos, size_t length, bool dup, uint16_t message_id){
     return mqtt.publish(topic, qos, retain, payload, length, dup, message_id);
 };

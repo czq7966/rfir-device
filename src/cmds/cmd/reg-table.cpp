@@ -51,8 +51,11 @@ Cmds::cmd::RegTable::RegTable(){
 
     this->tables.add(this->keys.net_report_timeout, 0);
     this->tables.add(this->keys.net_handshake_timeout, 0);   
+    this->tables.add(this->keys.net_handshake_count, 0);  
+    
 
-    this->tables.add(this->keys.dev_address, 0);       
+    this->tables.add(this->keys.dev_address, 0);      
+    this->tables.add(this->keys.dev_offline_count, 0);      
 
 };
 

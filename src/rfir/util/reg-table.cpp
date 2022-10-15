@@ -60,6 +60,8 @@ bool rfir::util::RegTable::decode(const char* buf, int size, std::list<int>& ids
                 if (this->tables.get(key, value)) {
                     memcpy((void*)value, buf, len);
                     Serial.println((char*)value);
+                } else {
+                    this->tables.add(key, (int)buf);
                 }
                 buf = buf + len;
             }

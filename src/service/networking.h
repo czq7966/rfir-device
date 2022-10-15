@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <jled.h>
 #include "ap.h"
+#include "cmds/cmd/cmd.h"
 
 namespace service {
     class Networking {
@@ -26,19 +27,20 @@ namespace service {
     //     int  m_online_count = 0;
     //     int  m_reboot = 1;
     public:
-        AP ap;
+        uint32_t m_handshake_andler = 0;
+        cmds::cmd::Cmd::Head willPayload;
     public:
         virtual void start();
         virtual void loop();
     // public:
-    //     bool handshake();
-    //     void delayHandshake(int delay_ms = 1000);
+        bool handshake();
+        void delayHandshake(int delay_ms = 1000);
     //     void* doHandshake(void* arg, void* p);
         
-    //     bool setWill();
-    //     void setOnline();
+        void setWill();
+        void setOnline();
     //     void setReboot();
-    //     void subscribe();
+        void subscribe();
     //     void unsubscribe();
     //     void reset();
     // public:

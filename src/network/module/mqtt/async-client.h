@@ -70,7 +70,6 @@ namespace network {
                 void start();
                 void loop();
 
-                void setWill(const char* topic, const char* payload = nullptr, bool retain = true, uint8_t qos = 2, size_t length = 0);
                 uint16_t publish(const char* topic, const char* payload = nullptr, bool retain = false, uint8_t qos = 2, size_t length = 0, bool dup = false, uint16_t message_id = 0);
   
             public:            

@@ -2,6 +2,7 @@
 #define CMDS_CMD_CMD_H
 
 #include "rfir/util/event-emitter.h"
+#include "rfir/util/reg-table.h"
 
 namespace cmds {
     namespace cmd {
@@ -20,6 +21,7 @@ namespace cmds {
 
         class Cmd {     
         public:
+            static const uint16_t PRO_LOGO = 0x4E44;
             struct Events {
                 rfir::util::Event recv;
                 rfir::util::Event send;
@@ -32,29 +34,50 @@ namespace cmds {
 
             struct  Head
             {
+                uint16_t    pro_logo = 0;        
                 uint8_t     pro_ver = 0;
                 uint8_t     dev_id = 0;
                 uint8_t     cmd_id = 0;
                 uint8_t     cmd_stp = 0;
-                uint32_t    cmd_sid = 0;
-                uint8_t     err_no = 0;
-                uint8_t     con_sum = 0;
-                uint16_t    con_len = 0;
+                uint16_t    err_no = 0;
+                uint32_t    cmd_sid = 0;                
+                uint16_t    pld_sum = 0;
+                uint16_t    pld_len = 0;
             };
             
         public: 
             Events events;
             Params params;      
-            Head*  head;     
+            Head*  head;   
+            char*  payload;  
+            rfir::util::RegTable regTable;
+
         public:
-            bool send(std::list<int> ids);
-            bool recv(const char* buf, int size);        
-            void reset();  
+            virtual bool send(std::list<int> ids){ return 0;};
+            virtual bool recv(const char* buf, int size) {return 0;};        
+            virtual void reset(){};  
+            virtual bool encode(){return 0;};
+            virtual bool decode(){return 0;};
+        };
+
+        class RecvCmd: public Cmd {
+        public:
+            bool recv(const char* buf, int size) override;  
+            bool decode() override;
+            void reset() override; 
+        };
+
+        class SendCmd: public Cmd {
+         public:
+            bool send(std::list<int> ids) override;   
+            bool send(); 
+            bool encode() override;
+            void reset() override;          
         };
     }
 }
                 
-extern cmds::cmd::Cmd GCmdRecv;
-extern cmds::cmd::Cmd GCmdSend;
+extern cmds::cmd::RecvCmd GRecvCmd;
+extern cmds::cmd::SendCmd GSendCmd;
 
 #endif                

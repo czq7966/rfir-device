@@ -12,6 +12,7 @@ namespace service {
         void uninit();
         void start();
         void stop();
+        void loop();
     public:
         void resetConfig();
         void* onAPConfigSaved(void* arg, void* p);
@@ -20,6 +21,6 @@ namespace service {
 
 }
 
-extern GAP           
+extern service::AP GAP;     
 
 #endif                

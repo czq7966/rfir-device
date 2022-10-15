@@ -6,62 +6,7 @@
 namespace Cmds {
     namespace cmd {
         class RegTable: public rfir::util::RegTable {
-        public:
-        
-            // struct Keys
-            // {
-            //     uint16_t cfg_version = 0;
-            //     uint16_t dev_vender = 0;
-            //     uint16_t dev_model = 0;
-            //     uint16_t dev_id = 0;
-            //     uint16_t dev_mac = 0;
-            //     uint16_t dev_online = 0;
-                
-            //     uint16_t pin_led = 0;
-            //     uint16_t pin_button = 0;
-            //     uint16_t pin_reset = 0;
-                
-            //     uint16_t serial_debug = 0;
-            //     uint16_t serial_baud = 0;
-            //     uint16_t serial_data = 0;
-            //     uint16_t serial_stop = 0;
-            //     uint16_t serial_sum= 0;
-            //     uint16_t serial_stream = 0;
-
-            //     uint16_t ota_disable = 0;
-            //     uint16_t ota_version = 0;
-            //     uint16_t ota_update_url = 0;
-            //     uint16_t ota_update_interval = 0;
-
-            //     uint16_t wifi_disable = 0;
-            //     uint16_t wifi_ssid_dev = 0;
-            //     uint16_t wifi_pass_dev = 0;
-            //     uint16_t wifi_ssid = 0;
-            //     uint16_t wifi_pass = 0;
-            //     uint16_t wifi_reset_timeout = 0;
-            //     uint16_t wifi_rssi = 0;
-
-            //     uint16_t ap_disable = 0;
-            //     uint16_t ap_start_timeout = 0;
-            //     uint16_t ap_ssid = 0;
-            //     uint16_t ap_pass = 0;
-
-            //     uint16_t mqtt_disable = 0;
-            //     uint16_t mqtt_ip = 0;
-            //     uint16_t mqtt_port = 0;
-            //     uint16_t mqtt_user = 0;
-            //     uint16_t mqtt_pass = 0;
-            //     uint16_t mqtt_keepalive = 0;
-            //     uint16_t mqtt_clean_session = 0;
-            //     uint16_t mqtt_reset_timeout = 0;
-            //     uint16_t mqtt_buffer_size = 0;
-            //     uint16_t mqtt_sub_topic = 0;
-            //     uint16_t mqtt_pub_topic = 0;
-
-            //     uint16_t net_report_timout = 0;
-            //     uint16_t net_handshake_timout = 0;
-            // };
-            
+        public:        
             struct Keys {
                 const uint16_t dev_vender =         60000;
                 const uint16_t dev_model =          60001;
@@ -113,9 +58,11 @@ namespace Cmds {
 
                 const uint16_t net_report_timeout =  61025;
                 const uint16_t net_handshake_timeout=61026;
+                const uint16_t net_handshake_count  =61027;
 
-                const uint16_t dev_address =         61027;
-                
+                const uint16_t dev_address =         61028;
+                const uint16_t dev_offline_count =   61029;
+
             };            
             struct Values
             {

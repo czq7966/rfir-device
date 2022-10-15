@@ -13,10 +13,7 @@
     #endif
 #endif
 
-//设备基类配置
-#ifdef DEVICE_BASE
-#include "config/base.h"
-#endif
+#include "device.h"
 
 
 
@@ -43,8 +40,6 @@ namespace service {
         rfir::util::Button::KeyTime keyTimeResetConfig = {pressed: 10000, released: 15000};
     
     public:
-        Config();
-        
         void init();
         void fixUp();
         void load();

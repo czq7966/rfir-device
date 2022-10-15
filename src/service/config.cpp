@@ -3,9 +3,6 @@
 #include "rfir/util/util.h"
 #include "rfir/util/serial.h"
 
-service::Config::Config(){
-    // this->init();
-};
 
 void service::Config::init(){
     strcpy(GRegTable.values.dev_vender, DEV_VENDOR);

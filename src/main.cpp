@@ -8,6 +8,7 @@
 #include "cmds/cmd/cmd.h"
 #include "rfir/util/event-timer.h"
 #include "service/networking.h"
+#include "service/cmds.h"
 
 
 // char* mqtt_recv_buffer = new char[GRegTable.];
@@ -22,13 +23,11 @@ void setup() {
 
     GConfig.init();    
     GConfig.fixUp();
-    // Serial.begin(9600);
-    // Serial.println(GConfig.getSerialBaud());
-    // Serial.println(GConfig.getSerialConfig());
+
     Serial.begin(GConfig.getSerialBaud(), (SerialConfig)GConfig.getSerialConfig());
 
-    // GCmdSend.params.buf = pub_buffer;
-    // GCmdSend.params.bufsize = pub_buffer_size;
+    GSendCmd.params.buf = pub_buffer;
+    GSendCmd.params.bufsize = pub_buffer_size;
     
 
     //WIFI
@@ -93,13 +92,19 @@ void setup() {
     //按钮
     GButton.start(GRegTable.tables.get(GRegTable.keys.pin_button));
 
+    //执点
+    GAP.start();
+
+    //指令
+    GCmds.start();
+
     GRegTable.dump();
 
-    int size = 65535;
-    // uint8_t* psize = (uint8_t*)&size;
-    GRegTable.encode(pub_buffer, size);
-    // GRegTable.decode(pub_buffer, size);
-    GConfig.save();
+    // int size = 65535;
+    // // uint8_t* psize = (uint8_t*)&size;
+    // GRegTable.encode(pub_buffer, size);
+    // // GRegTable.decode(pub_buffer, size);
+    // GConfig.save();
 
     // GRegTable.dump();
     
@@ -126,7 +131,9 @@ void loop() {
     GEventTimer.loop();
 
     //热点
-    GWifiAP.loop();    
+    GAP.loop();    
+
+    GCmds.loop();
 }
 
 

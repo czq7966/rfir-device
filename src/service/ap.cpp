@@ -28,6 +28,10 @@ void service::AP::stop(){
     uninit();
 };
 
+void service::AP::loop() {
+    GWifiAP.loop();
+};
+
 void service::AP::resetConfig(){
     GConfig.resetConfig(true);
 };
@@ -83,3 +87,6 @@ void* service::AP::onAPApplyDefault(void* arg, void* p){
 
     return 0;
 };
+
+
+service::AP GAP;
