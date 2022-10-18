@@ -1,4 +1,5 @@
 #include "reg-table.h"
+#include "rfir/util/debuger.h"
 
 Cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.dev_vender, (int)this->values.dev_vender);
@@ -55,7 +56,11 @@ Cmds::cmd::RegTable::RegTable(){
     
 
     this->tables.add(this->keys.dev_address, 0);      
-    this->tables.add(this->keys.dev_offline_count, 0);      
+    this->tables.add(this->keys.dev_offline_count, 0); 
+
+    this->tables.add(this->keys.net_report_reason, 0);   
+
+    this->tables.add(this->keys.serial_read_timeout, 0);     
 
 };
 
@@ -68,12 +73,12 @@ void Cmds::cmd::RegTable::dump(){
     {
         auto key = it->first;
         auto value = it->second;
-        Serial.print(key);
-        Serial.print(":");
+        GDebuger.print(key);
+        GDebuger.print(":");
         if (key >= this->charMinNum && key <= this->charMaxNum) {
-            Serial.println((char*)value);
+            GDebuger.println((char*)value);
         } else {
-            Serial.println(value);
+            GDebuger.println(value);
         }        
     }
 };

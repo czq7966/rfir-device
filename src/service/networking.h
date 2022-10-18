@@ -33,7 +33,7 @@ namespace service {
         virtual void start();
         virtual void loop();
     // public:
-        bool handshake();
+        bool handshake(cmds::cmd::Cmd* cmd = nullptr);
         void delayHandshake(int delay_ms = 1000);
     //     void* doHandshake(void* arg, void* p);
         

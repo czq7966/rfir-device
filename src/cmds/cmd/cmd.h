@@ -17,6 +17,7 @@ namespace cmds {
             static const uint8_t update = 8;
             static const uint8_t online = 9;
             static const uint8_t offline = 10;
+            static const uint8_t resetconfig = 11;
         };
 
         class Cmd {     
@@ -53,6 +54,7 @@ namespace cmds {
             rfir::util::RegTable regTable;
 
         public:
+            static  void reset(Head* head);  
             virtual bool send(std::list<int> ids){ return 0;};
             virtual bool recv(const char* buf, int size) {return 0;};        
             virtual void reset(){};  
@@ -64,7 +66,6 @@ namespace cmds {
         public:
             bool recv(const char* buf, int size) override;  
             bool decode() override;
-            void reset() override; 
         };
 
         class SendCmd: public Cmd {

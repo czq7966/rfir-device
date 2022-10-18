@@ -1,5 +1,14 @@
 #include "cmd.h"
 #include "cmds/cmd/reg-table.h"
+#include "rfir/util/debuger.h"
+
+
+void cmds::cmd::Cmd::reset(Head* head){
+    if (head) {
+        memset(head, 0, sizeof(Head));    
+        head->pro_logo = PRO_LOGO;
+    }
+};  
 
 bool cmds::cmd::RecvCmd::recv(const char* buf, int size){
     this->params.buf = (char*)buf;
@@ -7,22 +16,27 @@ bool cmds::cmd::RecvCmd::recv(const char* buf, int size){
     if (this->decode()) {
         this->events.recv.emit(this);
         return true;
-    }    
+    }  
     return false;
 };
 
 bool cmds::cmd::RecvCmd::decode(){
     this->head = (Head*)this->params.buf;
-    if (this->head->pld_len + sizeof(Head) == this->params.bufsize){
-        this->payload = (char*)this->head + sizeof(Head);
-        return this->regTable.decode(this->payload, this->head->pld_len);
-    };
+    if (head->pro_logo == PRO_LOGO && this->head->pld_len + sizeof(Head) == this->params.bufsize){
+        if (this->head->pld_len > 0) {
+            this->payload = (char*)this->head + sizeof(Head);
+            if (this->head->cmd_id != cmds::cmd::CmdId::penet)
+                return this->regTable.decode(this->payload, this->head->pld_len, true);
+        }
+        return true;
+    } else {
+        GDebuger.println("cmds::cmd::RecvCmd::decode failed");
+        GDebuger.println(head->pro_logo);
+        GDebuger.println(PRO_LOGO);
+    }
     return false;
 };
 
-void cmds::cmd::RecvCmd::reset(){
-
-};
 
 //SendCmd
 bool cmds::cmd::SendCmd::send(std::list<int> ids){
@@ -53,6 +67,9 @@ bool cmds::cmd::SendCmd::send(){
 
 bool cmds::cmd::SendCmd::encode(){
     int len = 0;
+    if (this->head->cmd_id == cmds::cmd::CmdId::penet)
+        return true;
+        
     if (this->regTable.encode(this->payload, len)) {
         this->head->pld_len = (uint16_t)len;
         return true;
@@ -64,8 +81,7 @@ void cmds::cmd::SendCmd::reset(){
     this->regTable.tables.clear();
     this->head = (Head*)this->params.buf;
     this->payload = (char*)this->head + sizeof(Head);
-    memset(this->head, 0, sizeof(Head));
-    this->head->pro_logo = PRO_LOGO;
+    Cmd::reset(this->head);
 };
 
 cmds::cmd::RecvCmd GRecvCmd;

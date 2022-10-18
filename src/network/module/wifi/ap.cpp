@@ -169,7 +169,7 @@ void network::module::wifi::AP::initSerial(){
 
     serialGroup->addItem(serialParamBand);
     serialGroup->addItem(serialParamConfig);
-    serialGroup->addItem(serialParamDebug);
+    // serialGroup->addItem(serialParamDebug);
     iotWebConf->addParameterGroup(serialGroup);
   
 };

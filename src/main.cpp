@@ -25,6 +25,7 @@ void setup() {
     GConfig.fixUp();
 
     Serial.begin(GConfig.getSerialBaud(), (SerialConfig)GConfig.getSerialConfig());
+    GDebuger.enabled =  GRegTable.tables.get(GRegTable.keys.serial_debug);
 
     GSendCmd.params.buf = pub_buffer;
     GSendCmd.params.bufsize = pub_buffer_size;
@@ -64,19 +65,7 @@ void setup() {
     // GOTAUpdater.params.url = GRegTable.values.ota_update_url;
     // GOTAUpdater.params.version = GRegTable.tables.get(GRegTable.keys.ota_version);
     
-   
-
-    // GMqttClient.events.onMqttMessage.add(0, [](void* arg, void* p) -> void* {
-    //     auto msg = (::network::module::mqtt::AClient::Message*)p;
-    //     if (msg->total < (sizeof(cmds::cmd::Cmd::Head) - sizeof(char*)) )
-    //         return 0;
-
-    //     GCmdRecv.recv(msg->payload, msg->len);
-
-    //     return 0;
-    // });
-
-    
+       
     //WIFI
     GWifiClient.start();
 
@@ -98,30 +87,27 @@ void setup() {
     //指令
     GCmds.start();
 
+    //设备
+    GDevice->start();
+
     GRegTable.dump();
 
-    // int size = 65535;
-    // // uint8_t* psize = (uint8_t*)&size;
-    // GRegTable.encode(pub_buffer, size);
-    // // GRegTable.decode(pub_buffer, size);
-    // GConfig.save();
-
-    // GRegTable.dump();
-    
-    // uint8_t* abc = (uint8_t*)(pub_buffer+1);
-    // *abc = *(psize + 0);
-    // *(abc+1) = *(psize + 1);
-
-
-    Serial.println("Ready");
+    //配置Ready
+    GConfig.events.ready.emit(0);
+    GDebuger.println("Ready");
 
 }
 
 
 
 void loop() {
-    
-    //LED
+    //设备
+    GDevice->loop();
+
+    //指令
+    GCmds.loop();
+
+        //LED
     GLed.loop();
 
     //按钮
@@ -131,9 +117,7 @@ void loop() {
     GEventTimer.loop();
 
     //热点
-    GAP.loop();    
-
-    GCmds.loop();
+    GAP.loop();  
 }
 
 

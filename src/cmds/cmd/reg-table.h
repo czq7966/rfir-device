@@ -62,26 +62,30 @@ namespace Cmds {
 
                 const uint16_t dev_address =         61028;
                 const uint16_t dev_offline_count =   61029;
+                const uint16_t net_report_reason =   61030;
+
+                const uint16_t serial_read_timeout = 61031;
+
 
             };            
             struct Values
             {
-                char dev_vender[32];
-                char dev_model[32];
-                char dev_id[32];
-                char dev_mac[32];
-                char wifi_ssid[64];
-                char wifi_pass[64];
-                char ap_ssid[32];
-                char ap_pass[32];
-                char ota_update_url[160];
-                char mqtt_sub_topic[64];
-                char mqtt_pub_topic[64];
-                char mqtt_ip[64];
-                char mqtt_user[32];
-                char mqtt_pass[32];
-                char wifi_ssid_dev[32];
-                char wifi_pass_dev[32];
+                char dev_vender[33];
+                char dev_model[33];
+                char dev_id[33];
+                char dev_mac[33];
+                char wifi_ssid[65];
+                char wifi_pass[65];
+                char ap_ssid[33];
+                char ap_pass[33];
+                char ota_update_url[161];
+                char mqtt_sub_topic[65];
+                char mqtt_pub_topic[65];
+                char mqtt_ip[65];
+                char mqtt_user[33];
+                char mqtt_pass[33];
+                char wifi_ssid_dev[33];
+                char wifi_pass_dev[33];
             };
             
         public:

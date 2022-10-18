@@ -27,6 +27,7 @@ namespace service {
         struct Events {
             rfir::util::Event loaded;
             rfir::util::Event saved;
+            rfir::util::Event ready;
         };
 
         struct Params {
@@ -37,6 +38,7 @@ namespace service {
     public: 
         Events events;
         Params params;       
+        std::list<int> saved;
         rfir::util::Button::KeyTime keyTimeResetConfig = {pressed: 10000, released: 15000};
     
     public:

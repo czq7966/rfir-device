@@ -4,9 +4,14 @@
 #include "config-device.h"
 #include "device/device.h"
 
-//设备基类配置
+//设备基类
 #ifdef DEVICE_BASE
 #include "config/base.h"
+#endif
+
+//串口透传
+#ifdef DEVICE_COM_PENET
+#include "config/com-penet.h"
 #endif
 
 extern device::Device* GDevice;  

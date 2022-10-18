@@ -15,8 +15,9 @@ namespace rfir {
         public:
             bool encode(char* buf, int& size, std::list<int>& ids);
             bool encode(char* buf, int& size);
-            bool decode(const char* buf, int size, std::list<int>& ids);   
-            bool decode(const char* buf, int size);     
+            bool decode(const char* buf, int size, std::list<int>& ids, bool createKey = false);   
+            bool decode(const char* buf, int size, bool createKey = false);     
+            bool merge(RegTable* regTable, std::list<int>& ids,  bool createKey = false);
         };
     }
 }

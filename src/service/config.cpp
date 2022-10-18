@@ -37,6 +37,7 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.serial_stop, SERIAL_STOP);
     GRegTable.tables.add(GRegTable.keys.serial_sum, SERIAL_SUM);
     GRegTable.tables.add(GRegTable.keys.serial_stream, SERIAL_STREAM);
+    GRegTable.tables.add(GRegTable.keys.serial_read_timeout, SERIAL_READ_TIMEOUT);    
 
     GRegTable.tables.add(GRegTable.keys.ota_disable, OTA_DISABLE);
     GRegTable.tables.add(GRegTable.keys.ota_version, OTA_VERSION);
@@ -80,7 +81,7 @@ void service::Config::fixUp(){
     strcpy(GRegTable.values.ap_ssid, "ndiot_");
     strcat(GRegTable.values.ap_ssid, temp);
 
-
+    this->load();
 
 };
 
@@ -88,33 +89,30 @@ void service::Config::load() {
     rfir::util::File file(this->params.filename);
     auto count = file.read(this->params.buf, this->params.bufsize);
     if (count > 0) {
-        GRegTable.decode(this->params.buf, count);
+        this->saved.clear();
+        GRegTable.decode(this->params.buf, count, this->saved);
         this->events.loaded.emit(this);
     }
-
 };
 
 void service::Config::save() {
-    std::list<int> ids;
-    ids.push_back(60000);
-    ids.push_back(60001);
-    save(ids);
-
+    if (this->saved.size() == 0)
+        this->resetConfig(false);
+    else
+        this->save(this->saved);
 };   
 
 void service::Config::save(std::list<int> ids) {
     int size = 0;
     if (GRegTable.encode(this->params.buf, size, ids)) {
-        GRegTable.decode(this->params.buf, size);
-        // rfir::util::File file(this->params.filename);
-        // file.write(this->params.buf, size);
-        // this->events.saved.emit(this);
+        rfir::util::File file(this->params.filename);
+        file.write(this->params.buf, size);
+        this->events.saved.emit(this);
     }
 };
 
 void service::Config::resetConfig(bool restart){
-    Serial.println("service::Config::resetConfig");
-    delay(1000);
+    GDebuger.println("service::Config::resetConfig");
     rfir::util::File::remove(this->params.filename);
     if (restart)
         rfir::util::Util::Reset();

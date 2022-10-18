@@ -1,7 +1,11 @@
 #ifndef SERVICE_CONFIG_DEVICE_H
 #define SERVICE_CONFIG_DEVICE_H
 
-#define DEVICE_BASE
+//设备基类
+// #define DEVICE_BASE
+
+//串口透传
+#define DEVICE_COM_PENET
 
 // #define DEVICE_FZ_DM4_TEAROOM_AC_GREE
 

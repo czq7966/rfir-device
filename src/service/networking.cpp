@@ -3,12 +3,17 @@
 #include "cmds/cmd/cmd.h"
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/event-timer.h"
+#include "service/config.h"
 
 //事件注册
 void service::Networking::start(){
-    setWill();
+    GConfig.events.ready.add(this,  [this](void* arg, void* p)-> void*{
+        setWill();
+        return 0;
+    });
 
     GMqttClient.events.onMqttConnect.add(this, [this](void* arg, void* p)-> void*{
+        subscribe();
         setOnline();
         handshake();
         return 0;
@@ -19,25 +24,6 @@ void service::Networking::start(){
         GRegTable.tables.add(GRegTable.keys.dev_offline_count, dev_offline_count);
         return 0;
     });
-    GMqttClient.events.onMqttMessage.add(this, [this](void* arg, void* p)-> void*{
-        auto msg = (::network::module::mqtt::AClient::Message*)p;
-        if (msg->total < (sizeof(cmds::cmd::Cmd::Head) - sizeof(char*)) )
-            return 0;
-
-        GRecvCmd.recv(msg->payload, msg->len);
-
-        return 0;
-    });
-
-    GRecvCmd.events.recv.add(this, [this](void* arg, void* p)-> void*{
-        return 0;
-    });
-
-    GSendCmd.events.send.add(this, [this](void* arg, void* p)-> void*{
-
-        return 0;
-    });
-
 };
 
 
@@ -47,6 +33,11 @@ void service::Networking::loop(){
 
 
 void service::Networking::setWill(){
+    GDebuger.println("service::Networking::setWill");
+    GDebuger.println(GRegTable.values.mqtt_pub_topic);
+    GDebuger.println(sizeof(willPayload));
+
+    cmds::cmd::Cmd::reset(&this->willPayload);
     this->willPayload.cmd_id = cmds::cmd::CmdId::offline;
     GMqttClient.mqtt.setWill(GRegTable.values.mqtt_pub_topic, 2, true, (const char*)&willPayload, sizeof(willPayload));
 };
@@ -61,12 +52,15 @@ void service::Networking::setOnline(){
 };
 
 void service::Networking::subscribe(){
-    GMqttClient.mqtt.subscribe(GRegTable.values.mqtt_sub_topic, 2);
+    GDebuger.println("service::Networking::subscribe");
+    GDebuger.println(GRegTable.values.mqtt_sub_topic);
+    GMqttClient.mqtt.subscribe(GRegTable.values.mqtt_sub_topic, 2);    
 };
 
 
-bool service::Networking::handshake(){
+bool service::Networking::handshake(cmds::cmd::Cmd* cmd){
     if (GMqttClient.mqtt.connected()) {
+        GDebuger.println("service::Networking::handshake");
         uint16_t value = GRegTable.tables.get(GRegTable.keys.net_handshake_count);
         value++;
         GRegTable.tables.add(GRegTable.keys.net_handshake_count, value);
@@ -77,6 +71,10 @@ bool service::Networking::handshake(){
 
         GSendCmd.reset();
         GSendCmd.head->cmd_id = cmds::cmd::CmdId::handshake;
+        if (cmd){
+            GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+            GSendCmd.head->cmd_stp = 1;
+        }
         GSendCmd.send();
     }
 

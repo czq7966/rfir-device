@@ -25,6 +25,7 @@
 #define SERIAL_SUM                  0
 #define SERIAL_STOP                 1
 #define SERIAL_STREAM               0
+#define SERIAL_READ_TIMEOUT         0
 
 //OTA
 #define OTA_DISABLE                 false
