@@ -66,6 +66,7 @@ namespace cmds {
         public:
             bool recv(const char* buf, int size) override;  
             bool decode() override;
+            void reset() override;  
         };
 
         class SendCmd: public Cmd {

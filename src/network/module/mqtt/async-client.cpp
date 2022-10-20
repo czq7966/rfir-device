@@ -71,6 +71,7 @@ void* network::module::mqtt::AClient::onWifiConnect(void* arg, void* p) {
 }
 
 void* network::module::mqtt::AClient::onWifiDisconnect(void* arg, void* p) {
+    mqtt.disconnect(true);
     return 0;
 }
 

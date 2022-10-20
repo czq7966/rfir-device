@@ -188,20 +188,21 @@ void network::module::wifi::Client::clearSsids(){
 };
 
 void network::module::wifi::Client::addSsids(const char* ssids, const char* passes){
+    
     int len = strlen(ssids);
     int offset = 0;
     int count = 0;
-    char ssid[32]; ssid[0] = '\0';
+    char ssid[33]; memset(ssid, 0, 33);
     for (size_t i = 0; i < len; i++)
     {
         char c = ssids[i];
         if (c == ',' || c == ' ' || i == len - 1){            
-            ssid[i - offset] = '\0';
-            auto newSsid = new char[32];
+            if (i == len -1) ssid[i - offset] = c; 
+            auto newSsid = new char[33];
             strcpy(newSsid, ssid);
             this->params.ssid.push_back(newSsid);
             count++;
-            ssid[0] = '\0';
+            memset(ssid, 0, 33);
             offset = i + 1;
         }
         else 
@@ -210,16 +211,16 @@ void network::module::wifi::Client::addSsids(const char* ssids, const char* pass
     
     len = strlen(passes);
     offset = 0;
-    char pass[32]; pass[0] = '\0';   
+    char pass[33]; memset(pass, 0, 33); 
     for (size_t i = 0; i < len; i++)
     {
         char c = passes[i];
         if (c == ',' || c == ' ' || i == len - 1){            
-            pass[i - offset] = '\0';
-            auto newPass = new char[32];
+            if (i == len -1) pass[i - offset] = c; 
+            auto newPass = new char[33];
             strcpy(newPass, pass);
             this->params.pass.push_back(newPass);
-            pass[0] = '\0';
+            memset(pass, 0, 33); 
             offset = i + 1;
         }
         else 

@@ -45,3 +45,16 @@ int device::Device::onCmd_reset_config(cmds::cmd::RecvCmd* cmd){
     return 0;
 };
     
+int device::Device::onCmd_device_joined(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    
+int device::Device::onCmd_device_leave(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    
+int device::Device::onCmd_device_interview(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    
+

@@ -22,11 +22,12 @@ namespace network {
                     const char* url;
                     const char* id;
                     unsigned version;
-                    uint32_t interval = 1000 * 60 * 60; //1小时
+                    bool     enabled = true;
+                    uint32_t interval = 60 * 24; //1天
                 };            
             public:
                 Params params;
-                void start(Params p);
+                void start();
                 void loop();
             public:
                 void* onWifiConnect(void* arg, void* p);

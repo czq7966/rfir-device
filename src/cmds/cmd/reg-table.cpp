@@ -1,7 +1,7 @@
 #include "reg-table.h"
 #include "rfir/util/debuger.h"
 
-Cmds::cmd::RegTable::RegTable(){
+cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.dev_vender, (int)this->values.dev_vender);
     this->tables.add(this->keys.dev_model, (int)this->values.dev_model);
     this->tables.add(this->keys.dev_id, (int)this->values.dev_id);
@@ -64,23 +64,4 @@ Cmds::cmd::RegTable::RegTable(){
 
 };
 
-
-void Cmds::cmd::RegTable::dump(){
-    std::list<int> ids;    
-    this->tables.getKeys(ids);
-    auto map = this->tables.getMap();
-    for (auto it = map->begin(); it != map->end(); it++)
-    {
-        auto key = it->first;
-        auto value = it->second;
-        GDebuger.print(key);
-        GDebuger.print(":");
-        if (key >= this->charMinNum && key <= this->charMaxNum) {
-            GDebuger.println((char*)value);
-        } else {
-            GDebuger.println(value);
-        }        
-    }
-};
-
-Cmds::cmd::RegTable GRegTable;
+cmds::cmd::RegTable GRegTable;

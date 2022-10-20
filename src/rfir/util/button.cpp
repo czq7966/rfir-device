@@ -33,7 +33,6 @@ void* rfir::util::Button::onLongReleasedCheck(void* arg, void* p){
     if (arg && p) {        
         auto check = (KeyTime*)arg;
         auto value = (KeyTime*)p;
-        GDebuger.printf("rfir::util::Button::onBetweenReleasedCheck %d > %d \r\n", value->released, check->released);
         if (value->released > check->released ) {
             return (void*)1;
         }
@@ -42,13 +41,10 @@ void* rfir::util::Button::onLongReleasedCheck(void* arg, void* p){
 };
 
 void* rfir::util::Button::onBetweenReleasedCheck(void* arg, void* p){
-    GDebuger.println("rfir::util::Button::onBetweenReleasedCheck");
+    GDebuger.println(F("rfir::util::Button::onBetweenReleasedCheck"));
     if (arg && p) {
         auto check = (KeyTime*)arg;
         auto value = (KeyTime*)p;
-
-        GDebuger.printf("rfir::util::Button::onBetweenReleasedCheck %d > %d, %d < %d  \r\n", value->released, check->released, value->released , check->released);
-
         if (value->released > check->pressed && value->released < check->released) {
             return (void*)1;
         }

@@ -20,15 +20,7 @@ void rfir::util::Debuger::begin(unsigned long baud, uint32_t config){};
     if (this->enabled)
         Serial.begin(baud, config);
 #endif
-// void rfir::util::Debuger::print(const char* bytes){};
-// void rfir::util::Debuger::println(const char* bytes){};
-// void rfir::util::Debuger::println(String bytes){};
-// void rfir::util::Debuger::println(int num){};
-// void rfir::util::Debuger::println(uint16_t num){};
-// void rfir::util::Debuger::println(bool b){};
-// void rfir::util::Debuger::println(size_t b){};
-// void rfir::util::Debuger::printf(const char *format, ...){};
-// void rfir::util::Debuger::flush(void) {};
+
 size_t rfir::util::Debuger::write(uint8_t c){ return 1;}
 size_t rfir::util::Debuger::write(const uint8_t *buffer, size_t size){ return size;}
 int rfir::util::Debuger::read(void) {  return 0; }
@@ -39,29 +31,6 @@ size_t rfir::util::Debuger::readBytes(uint8_t* buffer, size_t size) { return 0;}
 String rfir::util::Debuger::readStringUntil(char c) {return "";}
 
 
-size_t rfir::util::Debuger::printf(const char * format, ...){
-    size_t result = 0;
-    if (this->enabled) {
-        va_list args;
-        va_start(args, format);
-        result = Serial.printf(format, args);
-        va_end(args);
-    }
-
-    return result;
-
-};
-size_t  rfir::util::Debuger::printf_P(PGM_P format, ...) {
-    size_t result = 0;
-    if (this->enabled) {
-        va_list args;
-        va_start(args, format);
-        result = Serial.printf_P(format, args);
-        va_end(args);
-    }
-
-    return result;
-};
 size_t rfir::util::Debuger::print(const __FlashStringHelper * p){
     if (this->enabled) 
         return Serial.print(p);

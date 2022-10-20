@@ -20,6 +20,7 @@
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/event-emitter.h"
 #include "rfir/util/button.h"
+#include "rfir/util/map-factory.h"
 
 namespace service {
     class Config {     
@@ -38,7 +39,7 @@ namespace service {
     public: 
         Events events;
         Params params;       
-        std::list<int> saved;
+        rfir::util::MapFactory<int, int> saved;
         rfir::util::Button::KeyTime keyTimeResetConfig = {pressed: 10000, released: 15000};
     
     public:
@@ -48,6 +49,9 @@ namespace service {
         void save();
         void save(std::list<int> ids);
         void resetConfig(bool restart = true);
+        void existSavedKey(int key);
+        void addSavedKey(int key);
+        void removeSavedKey(int key);
     public:
         int getSerialBaud();
         void setSerialBaud(int value);

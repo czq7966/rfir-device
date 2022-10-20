@@ -101,6 +101,11 @@ namespace rfir {
                 return false;
             }
 
+            bool exist(KeyType key) {
+                auto it = m_map.find(key);
+                return it != m_map.end();
+            }
+
             bool existValue(ValueType value){
                 for (auto it = m_map.begin(); it != m_map.end(); ++it) {
                     if (it->second == value)

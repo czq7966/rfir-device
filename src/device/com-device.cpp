@@ -3,6 +3,8 @@
 
 void device::ComDevice::start(){
     GRegTable.tables.add(GRegTable.keys.serial_read_timeout, 10);
+    this->bufsize = GRegTable.tables.get(GRegTable.keys.serial_read_bufsize);
+    this->buf = new char[this->bufsize];
     this->serial = &Serial;
 };
 
@@ -16,23 +18,24 @@ size_t device::ComDevice::read() {
         auto starttime = millis();
         auto timeout = GRegTable.tables.get(GRegTable.keys.serial_read_timeout);
         auto idx = 0;
-        auto maxSize = GSendCmd.params.bufsize - sizeof(cmds::cmd::Cmd::Head);
+
         while (this->serial->available() || millis() - starttime <= timeout)
         {
             if (this->serial->available()) {
-                GSendCmd.payload[idx++] = (char)this->serial->read();            
+                this->buf[idx++] = (char)this->serial->read();            
                 starttime = millis();
-                if (idx >= maxSize)
+                if (idx >= this->bufsize)
                     break;
             }
         }
+        if (idx > 0) {
+            GSendCmd.regTable.tables.add(GRegTable.keys.penet_data, (int)this->buf);
+            GSendCmd.regTable.sizes.add(GRegTable.keys.penet_data, idx);
 
-        GSendCmd.head->pld_len = idx;
-        GSendCmd.head->cmd_id = cmds::cmd::CmdId::penet;
-        Serial.print("device::ComDevice::read size: ");
-        Serial.println(GSendCmd.head->pld_len);
-        GSendCmd.send();
-        return GSendCmd.head->pld_len;
+            GSendCmd.head->cmd_id = cmds::cmd::CmdId::penet;
+            GSendCmd.send();
+            return idx;
+        }
     }
     return 0;
 };
@@ -72,7 +75,11 @@ int device::ComDevice::onCmd_report(cmds::cmd::RecvCmd* cmd){
 
 int device::ComDevice::onCmd_penet(cmds::cmd::RecvCmd* cmd){
     if (cmd->head->pld_len > 0){
-        return this->write(cmd->payload, cmd->head->pld_len);
+        auto data = cmd->regTable.tables.get(GRegTable.keys.penet_data);
+        auto size = cmd->regTable.sizes.get(GRegTable.keys.penet_data);
+        if (data && size) {
+            return this->write((char*)data, size);
+        }
     }
     return 0;
 };

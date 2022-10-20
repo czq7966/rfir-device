@@ -8,9 +8,8 @@
 #include "rfir/util/util.h"
 
 void service::AP::init(){
-    GWifiAP.stop();
     if (GRegTable.tables.get(GRegTable.keys.ap_disable) == 0) {
-        GWifiAP.stop();
+        GWifiAP.start(0);
 
         GWifiAP.events.configSaved.add(this, [this](void* arg, void* p)->void*{this->onAPConfigSaved(arg, p); return 0;}, this);
         GWifiAP.events.applyDefault.add(this, [this](void* arg, void* p)->void*{this->onAPApplyDefault(arg, p); return 0;}, this);
@@ -38,7 +37,7 @@ void service::AP::resetConfig(){
 
 
 void* service::AP::onAPConfigSaved(void* arg, void* p){
-    GDebuger.printf("GlobalConfig::onAPConfigSaved: %s \n", GWifiAP.wifiSsid);
+    GDebuger.println(F("service::AP::onAPConfigSaved"));
 
     auto ap = &GWifiAP;
 
@@ -58,18 +57,24 @@ void* service::AP::onAPConfigSaved(void* arg, void* p){
         GRegTable.tables.add(GRegTable.keys.serial_sum, GSerialConfigs.getSerialSum());
     }
 
+    GConfig.saved.add(GRegTable.keys.wifi_ssid, 0);
+    GConfig.saved.add(GRegTable.keys.wifi_pass, 0);
+    GConfig.saved.add(GRegTable.keys.serial_debug, 0);
+    GConfig.saved.add(GRegTable.keys.serial_baud, 0);
+    GConfig.saved.add(GRegTable.keys.serial_data, 0);
+    GConfig.saved.add(GRegTable.keys.serial_stop, 0);
+    GConfig.saved.add(GRegTable.keys.serial_sum, 0);
+
     GConfig.save();
 
-    GEventTimer.delay(1000, [this](void*, void*)->void*{
-        rfir::util::Util::Reset();
-        return 0;
-    });    
+    GWifiAP.stop();
+    rfir::util::Util::Reset(1000);
 
     return 0;
 };
 
 void* service::AP::onAPApplyDefault(void* arg, void* p){
-    GDebuger.println(F("GlobalConfig::onAPApplyDefault "));
+    Serial.println(F("GlobalConfig::onAPApplyDefault "));
 
     auto ap = &GWifiAP;
     if (GWifiClient.params.ssid.size() > 0){

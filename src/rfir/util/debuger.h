@@ -18,11 +18,6 @@ namespace rfir {
             void begin(unsigned long baud, uint32_t config);
 #endif
 
-            // void print(const char* bytes);
-            // void println(const char* bytes);
-            // void println(String bytes);
-            // void printf(const char *format, ...);
-            // void flush(void);
             size_t write(uint8_t c) override;;
             size_t write(const uint8_t *buffer, size_t size)override;
             int read(void);
@@ -32,8 +27,6 @@ namespace rfir {
             size_t readBytes(uint8_t* buffer, size_t size);
             String readStringUntil(char c);
 
-            size_t printf(const char * format, ...) __attribute__((format(printf, 2, 3)));;
-            size_t printf_P(PGM_P format, ...) __attribute__((format(printf, 2, 3)));
             size_t print(const __FlashStringHelper *);
             size_t print(const String &);
             size_t print(const char[]);

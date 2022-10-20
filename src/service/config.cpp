@@ -37,7 +37,6 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.serial_stop, SERIAL_STOP);
     GRegTable.tables.add(GRegTable.keys.serial_sum, SERIAL_SUM);
     GRegTable.tables.add(GRegTable.keys.serial_stream, SERIAL_STREAM);
-    GRegTable.tables.add(GRegTable.keys.serial_read_timeout, SERIAL_READ_TIMEOUT);    
 
     GRegTable.tables.add(GRegTable.keys.ota_disable, OTA_DISABLE);
     GRegTable.tables.add(GRegTable.keys.ota_version, OTA_VERSION);
@@ -60,7 +59,12 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.net_handshake_timeout, NET_HANDSHAKE_TIMEOUT);
 
     GRegTable.tables.add(GRegTable.keys.dev_address, DEV_ADDRESS);
+    // GRegTable.tables.add(GRegTable.keys.dev_offline_count, 0);
+    // GRegTable.tables.add(GRegTable.keys.net_report_reason, 0);
 
+
+    GRegTable.tables.add(GRegTable.keys.serial_read_timeout, SERIAL_READ_TIMEOUT);
+    GRegTable.tables.add(GRegTable.keys.serial_read_bufsize, SERIAL_READ_BUFSIZE);
 
     //Button
     GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);
@@ -90,16 +94,19 @@ void service::Config::load() {
     auto count = file.read(this->params.buf, this->params.bufsize);
     if (count > 0) {
         this->saved.clear();
-        GRegTable.decode(this->params.buf, count, this->saved);
-        this->events.loaded.emit(this);
+        GRegTable.load(this->params.buf, count, this->saved);
     }
+    this->events.loaded.emit(this);    
 };
 
 void service::Config::save() {
-    if (this->saved.size() == 0)
+    if (this->saved.getSize() == 0)
         this->resetConfig(false);
-    else
-        this->save(this->saved);
+    else {
+        std::list<int> ids;
+        this->saved.getKeys(ids);
+        this->save(ids);
+    }
 };   
 
 void service::Config::save(std::list<int> ids) {
@@ -115,7 +122,19 @@ void service::Config::resetConfig(bool restart){
     GDebuger.println("service::Config::resetConfig");
     rfir::util::File::remove(this->params.filename);
     if (restart)
-        rfir::util::Util::Reset();
+        rfir::util::Util::Reset(1000);
+};
+
+void service::Config::existSavedKey(int key){
+
+};
+
+void service::Config::addSavedKey(int key){
+
+};
+
+void service::Config::removeSavedKey(int key){
+
 };
 
 int service::Config::getSerialBaud(){

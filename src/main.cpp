@@ -6,6 +6,7 @@
 #include "network/module/wifi/ap.h"
 #include "network/module/ota/updater.h"
 #include "cmds/cmd/cmd.h"
+#include "cmds/cmd/reg-table.h"
 #include "rfir/util/event-timer.h"
 #include "service/networking.h"
 #include "service/cmds.h"
@@ -60,10 +61,12 @@ void setup() {
     GMqttClient.params.user = GRegTable.values.mqtt_user;  
 
 
-    // GOTAUpdater.params.id = GRegTable.values.dev_id;
-    // GOTAUpdater.params.interval = GRegTable.tables.get(GRegTable.keys.ota_update_interval);
-    // GOTAUpdater.params.url = GRegTable.values.ota_update_url;
-    // GOTAUpdater.params.version = GRegTable.tables.get(GRegTable.keys.ota_version);
+    GOTAUpdater.params.id = GRegTable.values.dev_id;
+    GOTAUpdater.params.interval = GRegTable.tables.get(GRegTable.keys.ota_update_interval) * 60 * 1000;
+    GOTAUpdater.params.url = GRegTable.values.ota_update_url;
+    GOTAUpdater.params.version = GRegTable.tables.get(GRegTable.keys.ota_version);
+    GOTAUpdater.params.enabled = !GRegTable.tables.get(GRegTable.keys.ota_disable);
+
     
        
     //WIFI
@@ -90,11 +93,12 @@ void setup() {
     //设备
     GDevice->start();
 
-    GRegTable.dump();
+    //OTA
+    GOTAUpdater.start();
 
     //配置Ready
     GConfig.events.ready.emit(0);
-    GDebuger.println("Ready");
+    GDebuger.println(F("Ready"));
 
 }
 

@@ -33,10 +33,6 @@ void service::Networking::loop(){
 
 
 void service::Networking::setWill(){
-    GDebuger.println("service::Networking::setWill");
-    GDebuger.println(GRegTable.values.mqtt_pub_topic);
-    GDebuger.println(sizeof(willPayload));
-
     cmds::cmd::Cmd::reset(&this->willPayload);
     this->willPayload.cmd_id = cmds::cmd::CmdId::offline;
     GMqttClient.mqtt.setWill(GRegTable.values.mqtt_pub_topic, 2, true, (const char*)&willPayload, sizeof(willPayload));
@@ -47,23 +43,18 @@ void service::Networking::setOnline(){
     ids.push_back(GRegTable.keys.dev_offline_count);
     GSendCmd.reset();
     GSendCmd.head->cmd_id = cmds::cmd::CmdId::online;
-    GSendCmd.send();
+    GSendCmd.send(ids);
 
 };
 
 void service::Networking::subscribe(){
-    GDebuger.println("service::Networking::subscribe");
-    GDebuger.println(GRegTable.values.mqtt_sub_topic);
     GMqttClient.mqtt.subscribe(GRegTable.values.mqtt_sub_topic, 2);    
 };
 
 
 bool service::Networking::handshake(cmds::cmd::Cmd* cmd){
     if (GMqttClient.mqtt.connected()) {
-        GDebuger.println("service::Networking::handshake");
-        uint16_t value = GRegTable.tables.get(GRegTable.keys.net_handshake_count);
-        value++;
-        GRegTable.tables.add(GRegTable.keys.net_handshake_count, value);
+        GDebuger.println(F("service::Networking::handshake"));
 
         std::list<int> ids;
         ids.push_back(GRegTable.keys.net_handshake_count);
@@ -75,7 +66,7 @@ bool service::Networking::handshake(cmds::cmd::Cmd* cmd){
             GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
             GSendCmd.head->cmd_stp = 1;
         }
-        GSendCmd.send();
+        GSendCmd.send(ids);              
     }
 
     delayHandshake(GRegTable.tables.get(GRegTable.keys.net_handshake_timeout) * 1000);

@@ -43,9 +43,9 @@ namespace network {
             protected:
                 void handleRoot();                
             public:
-                DNSServer* dnsServer;
-                WebServer* webServer;
-                IotWebConf* iotWebConf;                
+                DNSServer* dnsServer = 0;
+                WebServer* webServer = 0;
+                IotWebConf* iotWebConf = 0;
 
                 //Wifi
                 static const uint8_t PROGMEM WifiSsid_max_length = 33;
@@ -102,6 +102,7 @@ namespace network {
             public:
                 void connectWifi(const char* ssid, const char* password);
                 bool connectAp(const char* apName, const char* password);
+                void onConfigSaved();
 
             };
         }

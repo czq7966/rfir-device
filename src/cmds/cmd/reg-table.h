@@ -3,11 +3,12 @@
 
 #include "rfir/util/reg-table.h"
 
-namespace Cmds {
+namespace cmds {
     namespace cmd {
         class RegTable: public rfir::util::RegTable {
         public:        
             struct Keys {
+                //字符串
                 const uint16_t dev_vender =         60000;
                 const uint16_t dev_model =          60001;
                 const uint16_t dev_id =             60002;
@@ -25,6 +26,10 @@ namespace Cmds {
                 const uint16_t wifi_ssid_dev =      60014;
                 const uint16_t wifi_pass_dev =      60015;
 
+                //二进制
+                const uint16_t penet_data =         60500;
+
+                //数字
                 const uint16_t dev_online =         61000;
                 const uint16_t cfg_version =        61001;
                 const uint16_t wifi_rssi =          61002;
@@ -65,6 +70,8 @@ namespace Cmds {
                 const uint16_t net_report_reason =   61030;
 
                 const uint16_t serial_read_timeout = 61031;
+                const uint16_t serial_read_bufsize = 61032;
+                
 
 
             };            
@@ -92,13 +99,10 @@ namespace Cmds {
             Keys keys;
             Values values;
             RegTable();
-
-            void dump();
-
         };
     }
 }
                 
-extern Cmds::cmd::RegTable GRegTable;
+extern cmds::cmd::RegTable GRegTable;
 
 #endif                

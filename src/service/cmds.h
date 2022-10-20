@@ -19,6 +19,9 @@ namespace service {
         void onCmd_penet(cmds::cmd::RecvCmd* cmd);
         void onCmd_update(cmds::cmd::RecvCmd* cmd);
         void onCmd_reset_config(cmds::cmd::RecvCmd* cmd);
+        void onCmd_device_joined(cmds::cmd::RecvCmd* cmd);
+        void onCmd_device_leave(cmds::cmd::RecvCmd* cmd);
+        void onCmd_device_interview(cmds::cmd::RecvCmd* cmd);
         
     };
 

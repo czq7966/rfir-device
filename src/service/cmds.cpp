@@ -89,22 +89,26 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
 void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_config(cmd) != -1){
         std::list<int> ids;
-        GRegTable.merge(&cmd->regTable, ids, false);
+        GRegTable.merge(&cmd->regTable, ids);
 
         for (auto it = ids.begin(); it != ids.end(); it++)
         {
-            GConfig.saved.remove(*it);
-            GConfig.saved.push_back(*it);
+            GConfig.saved.add(*it, 0);
         }        
 
         GConfig.save();  
-        rfir::util::Util::Reset();   
     };
 };
 
-void service::Cmds::onCmd_handshake(cmds::cmd::RecvCmd* cmd){
-    if (GDevice->onCmd_handshake(cmd) != -1){
-        GNetworking.handshake(cmd);
+void service::Cmds::onCmd_handshake(cmds::cmd::RecvCmd* cmd){    
+    if (GDevice->onCmd_handshake(cmd) != -1 ){
+        if (cmd->head->cmd_stp == 0)
+            GNetworking.handshake(0);
+        else {
+            uint16_t value = GRegTable.tables.get(GRegTable.keys.net_handshake_count);
+            value++;
+            GRegTable.tables.add(GRegTable.keys.net_handshake_count, value);  
+        }
     };    
 };
 
@@ -146,9 +150,11 @@ void service::Cmds::onCmd_update(cmds::cmd::RecvCmd* cmd){
 };
 
 void service::Cmds::onCmd_reset_config(cmds::cmd::RecvCmd* cmd){
+    cmd->regTable.dump();
     if (GDevice->onCmd_reset_config(cmd) != -1){
-        if (cmd->regTable.tables.getSize() == 0)
+        if (cmd->regTable.tables.getSize() == 0) {
             GConfig.resetConfig(true);
+        }
         else {
             auto map = cmd->regTable.tables.getMap();
             for (auto  it = map->begin(); it != map->end(); it++)
@@ -157,9 +163,27 @@ void service::Cmds::onCmd_reset_config(cmds::cmd::RecvCmd* cmd){
             }
             
             GConfig.save();            
-            rfir::util::Util::Reset();
+            rfir::util::Util::Reset(100);
         }
     };    
+};
+
+void onCmd_device_joined(cmds::cmd::RecvCmd* cmd){
+    if (GDevice->onCmd_device_joined(cmd) != -1){
+
+    };
+};
+
+void onCmd_device_leave(cmds::cmd::RecvCmd* cmd){
+    if (GDevice->onCmd_device_leave(cmd) != -1){
+
+    };
+};
+
+void onCmd_device_interview(cmds::cmd::RecvCmd* cmd){
+    if (GDevice->onCmd_device_interview(cmd) != -1){
+
+    };
 };
 
 service::Cmds GCmds;     

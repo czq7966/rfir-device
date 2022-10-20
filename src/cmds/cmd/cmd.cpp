@@ -21,20 +21,27 @@ bool cmds::cmd::RecvCmd::recv(const char* buf, int size){
 };
 
 bool cmds::cmd::RecvCmd::decode(){
+    this->reset();
     this->head = (Head*)this->params.buf;
     if (head->pro_logo == PRO_LOGO && this->head->pld_len + sizeof(Head) == this->params.bufsize){
         if (this->head->pld_len > 0) {
             this->payload = (char*)this->head + sizeof(Head);
-            if (this->head->cmd_id != cmds::cmd::CmdId::penet)
-                return this->regTable.decode(this->payload, this->head->pld_len, true);
+            return this->regTable.decode(this->payload, this->head->pld_len);
         }
         return true;
     } else {
-        GDebuger.println("cmds::cmd::RecvCmd::decode failed");
-        GDebuger.println(head->pro_logo);
-        GDebuger.println(PRO_LOGO);
+        GDebuger.print(F("cmds::cmd::RecvCmd::decode failed, pro_logo: "));
+        GDebuger.print(head->pro_logo);
+        GDebuger.print(F(" , "));
+        GDebuger.print(PRO_LOGO);
+        GDebuger.println(F(""));
+        
     }
     return false;
+};
+
+void cmds::cmd::RecvCmd::reset(){
+    this->regTable.clear();
 };
 
 
@@ -44,9 +51,12 @@ bool cmds::cmd::SendCmd::send(std::list<int> ids){
     {
         int key = *it;
         int value;
-        if (!this->regTable.tables.get(key)) {
+        if (!this->regTable.tables.exist(key)) {
             if (GRegTable.tables.get(key, value)) {
                 this->regTable.tables.add(key, value);
+                int len = 0;
+                if (GRegTable.sizes.get(key, len))
+                    this->regTable.sizes.add(key, len);
             }
         }
     }    
@@ -67,9 +77,6 @@ bool cmds::cmd::SendCmd::send(){
 
 bool cmds::cmd::SendCmd::encode(){
     int len = 0;
-    if (this->head->cmd_id == cmds::cmd::CmdId::penet)
-        return true;
-        
     if (this->regTable.encode(this->payload, len)) {
         this->head->pld_len = (uint16_t)len;
         return true;
@@ -78,7 +85,7 @@ bool cmds::cmd::SendCmd::encode(){
 };
 
 void cmds::cmd::SendCmd::reset(){
-    this->regTable.tables.clear();
+    this->regTable.clear();
     this->head = (Head*)this->params.buf;
     this->payload = (char*)this->head + sizeof(Head);
     Cmd::reset(this->head);

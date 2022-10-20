@@ -19,6 +19,9 @@ namespace device {
         virtual int onCmd_penet(cmds::cmd::RecvCmd* cmd);
         virtual int onCmd_update(cmds::cmd::RecvCmd* cmd);
         virtual int onCmd_reset_config(cmds::cmd::RecvCmd* cmd);
+        virtual int onCmd_device_joined(cmds::cmd::RecvCmd* cmd);
+        virtual int onCmd_device_leave(cmds::cmd::RecvCmd* cmd);
+        virtual int onCmd_device_interview(cmds::cmd::RecvCmd* cmd);
     };
     
 }

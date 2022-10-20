@@ -4,13 +4,15 @@
 #include "rfir/util/led.h"
 #include "rfir/util/event-timer.h"
 #include "rfir/util/serial.h"
+#include "service/config.h"
 
 void network::module::wifi::AP::start(void*) {
-    stop();
-    // Config.events.onFixup.add(this,  [this](void*, void*)->void*{
-    //     initWifiWatch();
-    //     return 0;
-    // });    
+    initBtnStart(); 
+
+    GConfig.events.ready.add(this,  [this](void*, void*)->void*{
+        initWifiWatch();
+        return 0;
+    });    
     
     GWifiClient.events.softAPModeStationConnected.add(this, [this](void*, void*)->void*{
         if (!WiFi.isConnected()) {
@@ -43,8 +45,11 @@ void network::module::wifi::AP::loop() {
 }
 
 void network::module::wifi::AP::initWifiWatch(){
+    GWifiClient.events.onWifiConnect.remove(this);
+    GWifiClient.events.onWifiDisconnect.remove(this);
     GWifiClient.events.onWifiConnect.add(this, [this](void*, void*)->void*{
         GEventTimer.remove(wifi_timeout_handler);
+        wifi_timeout_handler = 0;
         this->stop();
         return 0;
     });
@@ -60,12 +65,12 @@ void network::module::wifi::AP::initWifiWatch(){
         return 0;
     });
 
-    // if (Config.props.wifi_ssid.size() == 0) {
-    //     GEventTimer.delay(100, [this](void* arg, void* p)->void*{ 
-    //         this->start();
-    //         return 0;
-    //     });
-    // }
+    if (GWifiClient.params.ssid.size() == 0) {
+        GEventTimer.delay(100, [this](void* arg, void* p)->void*{ 
+            this->start();
+            return 0;
+        });
+    }
 };
 
 void network::module::wifi::AP::init(){
@@ -80,13 +85,14 @@ void network::module::wifi::AP::init(){
 };
 
 void network::module::wifi::AP::uninit(){
-    uninitWebConf();  
-    uninitWifi();
-    uninitSerial();
-
-    initBtnStart();    
-
-    GDebuger.println(F("AP Released."));    
+    if (iotWebConf) {
+        uninitWebConf();  
+        uninitWifi();
+        uninitSerial();
+        initBtnStart();    
+        Serial.println(F("AP Released."));    
+        rfir::util::Util::Reset(1000);
+    }
 };
 
 void network::module::wifi::AP::initWebConf(){
@@ -94,12 +100,13 @@ void network::module::wifi::AP::initWebConf(){
     this->webServer = new WebServer(80);
     this->iotWebConf = new IotWebConf(this->params.apSsid, this->dnsServer, this->webServer, this->params.apPass);
 
-    Serial.printf("AP Starting up...%s %s\n:", this->params.apSsid, this->params.apPass);
-    // this->iotWebConf->setStatusPin(this->params.statusPin, this->params.statusPinOnLevel);
-    // this->iotWebConf->setConfigPin(this->params.configPin);
-    // this->iotWebConf->setWifiConnectionHandler(&connectWifi);
+    Serial.print(F("AP Starting up...: "));
+    Serial.print(this->params.apSsid);
+    Serial.print(F(" "));
+    Serial.println(this->params.apPass);
+    
     this->iotWebConf->setApConnectionHandler([this](const char* apName, const char* password)->bool{return this->connectAp(apName, password);});
-    this->iotWebConf->setConfigSavedCallback([this]{this->events.configSaved.emit(this);});
+    this->iotWebConf->setConfigSavedCallback(std::bind(&AP::onConfigSaved, this));
     this->iotWebConf->getApPasswordParameter()->defaultValue = this->params.apPass;
     this->iotWebConf->getApPasswordParameter()->applyDefaultValue();
 
@@ -332,5 +339,11 @@ bool network::module::wifi::AP::connectAp(const char* apName, const char* passwo
     WiFi.mode(WIFI_AP_STA);    
     return WiFi.softAP(this->params.apSsid, this->params.apPass);
 };
+
+void network::module::wifi::AP::onConfigSaved()
+{
+    Serial.println(F("network::module::wifi::AP::onConfigSaved"));
+    this->events.configSaved.emit(this);
+}        
 
 network::module::wifi::AP GWifiAP;

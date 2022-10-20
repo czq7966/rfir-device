@@ -210,18 +210,25 @@ int  rfir::util::Util::StringToBytes(std::string str, uint8_t* bytes) {
   return nbits;
 }
 
-void rfir::util::Util::Reset(){
-  #ifdef RESET_PIN
-    pinMode(RESET_PIN, OUTPUT);
-    digitalWrite(RESET_PIN, 0);
-    delay(200);
-    digitalWrite(RESET_PIN, 1);
-  #endif
-  #ifdef ESP8266                   
-      ESP.reset();
-  #else
-      ESP.restart();
-  #endif  
+void rfir::util::Util::Reset(uint32_t delay_ms){
+  if (delay_ms == 0) {
+    #ifdef RESET_PIN
+      pinMode(RESET_PIN, OUTPUT);
+      digitalWrite(RESET_PIN, 0);
+      delay(200);
+      digitalWrite(RESET_PIN, 1);
+    #endif
+    #ifdef ESP8266                   
+        ESP.reset();
+    #else
+        ESP.restart();
+    #endif  
+  } else {
+    GEventTimer.delay(delay_ms, [](void*, void*)->void*{
+      Reset();
+      return 0;
+    });
+  }
 };
 
 void rfir::util::Util::DelayReset(int timeout_ms) {

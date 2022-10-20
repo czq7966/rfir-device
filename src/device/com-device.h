@@ -1,4 +1,4 @@
-#ifndef DEVICE_COM_EVICE_H
+#ifndef DEVICE_COM_DEVICE_H
 #define DEVICE_COM_DEVICE_H
 
 #include "cmds/cmd/cmd.h"
@@ -8,6 +8,8 @@ namespace device {
     class ComDevice: public Device {
     public:
         HardwareSerial* serial;    
+        char*  buf = 0;
+        size_t bufsize = 1024;
 
     public:
         virtual void start() override;

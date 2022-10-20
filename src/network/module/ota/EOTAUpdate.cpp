@@ -79,7 +79,8 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5)
 
 bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &url, const uint16_t retries)
 {
-    GDebuger.printf("Fetching OTA config from: %s\n", url.c_str());
+    GDebuger.print(F("Fetching OTA config from:"));
+    GDebuger.println(url.c_str());
 
     if (retries == 0)
     {
@@ -117,13 +118,15 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
         }
         // Do not break here
     default:
-        GDebuger.printf("1-[HTTP] [ERROR] [%d] %s\n",httpCode,httpClient.errorToString(httpCode).c_str());
+        GDebuger.print(F("1-[HTTP] [ERROR] "));
+        GDebuger.print(httpCode);
+        GDebuger.println(httpClient.errorToString(httpCode).c_str());
         if (httpCode >= 400) //404 会崩溃
         {
             httpClient.end();
             return false;
         }
-        GDebuger.printf("Response:\n%s\n",httpClient.getString().c_str());
+        // GDebuger.print("Response:\n%s\n",httpClient.getString().c_str());
         httpClient.end();
         return false;
     }
@@ -145,12 +148,18 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
     nSub = strUpdateList.lastIndexOf("\r");
     strUpdateList = strUpdateList.substring(0,nSub);
 
-    GDebuger.printf("binURL=%s\n", binURL.c_str());
-    GDebuger.printf("binMD5=%s\n", binMD5.c_str());
-    GDebuger.printf("newVersionNumber=%d\n",newVersionNumber);
-    GDebuger.printf("newVersionString=%s\n", newVersionString.c_str());
-    GDebuger.printf("nUpdateFlag=%d\n", nUpdateFlag);
-    GDebuger.printf("strUpdateList=%s\n", strUpdateList.c_str());
+    GDebuger.print(F("binURL="));
+    GDebuger.println(binURL.c_str());
+    GDebuger.print(F("binMD5="));
+    GDebuger.println(binMD5.c_str());
+    GDebuger.print(F("newVersionNumber="));
+    GDebuger.println(newVersionNumber);
+    GDebuger.print(F("newVersionString="));
+    GDebuger.println(newVersionString.c_str());
+    GDebuger.print(F("nUpdateFlag="));
+    GDebuger.println(nUpdateFlag);
+    GDebuger.print(F("strUpdateList="));
+    GDebuger.println(strUpdateList.c_str());
 
     httpClient.end();
 
@@ -166,18 +175,20 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
         return false;
     }
 
-    // int nSub = binMD5.lastIndexOf("\r");
-    // GDebuger.printf("nSub=%d\n",nSub);
-    // binMD5 = binMD5.substring(0,nSub);
+
     if (binMD5.length() > 0 && binMD5.length() != 32)
     {
-        GDebuger.printf("The MD5:%s is not 32 characters long. Aborting update! binMD5.length()=%d\n",binMD5.c_str(), binMD5.length());
+        GDebuger.print(F("The MD5:"));
+        GDebuger.print(binMD5.c_str());
+        GDebuger.print(F(" is not 32 characters long. Aborting update! binMD5.length()="));
+        GDebuger.println(binMD5.length());
         return false;
     }
 
     
     bool bIsUpdate =   (newVersionNumber > _currentVersion);
-    GDebuger.printf("Need Update = %d\n", bIsUpdate);
+    GDebuger.print(F("Need Update = "));
+    GDebuger.println(bIsUpdate);
     if (bIsUpdate)
     {
         if (nUpdateFlag == GRAY_UPDATE)
@@ -190,28 +201,33 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
             else
             {
                 bIsUpdate = false;
-            }
-            
-            GDebuger.printf("%s Gray Update: %d\n",m_str8266ChipID.c_str(), bIsUpdate);
+            }            
         }
     }
     
-    GDebuger.println("Fetched update information:");
-    GDebuger.printf("File url:           %s\n",       binURL.c_str());
-    GDebuger.printf("File MD5:           %s\n",       binMD5.c_str());
-    GDebuger.printf("Current version:    %u\n",       _currentVersion);
-    GDebuger.printf("Current ChipID:     %s\n",       m_str8266ChipID.c_str());
-    GDebuger.printf("Published version:  [%u] %s\n",  newVersionNumber, newVersionString.c_str());
-    GDebuger.printf("Update available:   %s\n",       bIsUpdate ? "YES" : "NO");
-    GDebuger.printf("Update Flag:   %d\n",      nUpdateFlag);
-    GDebuger.printf("Update List:   %s\n",      strUpdateList.c_str());
+    GDebuger.println(F("Fetched update information:"));
+    GDebuger.print(F("File url:           "));
+    GDebuger.println(binURL.c_str());
+    GDebuger.print(F("File MD5:           "));
+    GDebuger.println(binMD5.c_str());
+    GDebuger.print(F("Current version:    "));
+    GDebuger.println(_currentVersion);
+    GDebuger.print(F("Current ChipID:     "));
+    GDebuger.println(m_str8266ChipID.c_str());
+    GDebuger.print(F("Update available:   "));
+    GDebuger.println(bIsUpdate ? F("YES") : F("NO"));
+    GDebuger.print(F("Update Flag:   "));
+    GDebuger.println(nUpdateFlag);
+    GDebuger.print(F("Update List:   "));
+    GDebuger.println(strUpdateList.c_str());
 
     return bIsUpdate;
 }
 
 bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
 {   
-    GDebuger.printf("Fetching OTA from: %s\n", binURL.c_str());
+    GDebuger.print(F("Fetching OTA from: "));
+    GDebuger.println(binURL.c_str());
 
     if (binURL.length() == 0)
     {
@@ -241,11 +257,10 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     const auto httpCode = httpClient.GET();
     if (httpCode != HTTP_CODE_OK)
     {
-        GDebuger.printf("2-[HTTP] [ERROR] [%d] %s\n",
-                httpCode,
-                httpClient.errorToString(httpCode).c_str());
-        GDebuger.printf("Response:\n%s\n",
-                httpClient.getString().c_str());
+        GDebuger.print(F("2-[HTTP] [ERROR] "));
+        GDebuger.print(httpCode);
+        GDebuger.println(httpClient.errorToString(httpCode).c_str());
+        // GDebuger.printf("Response:\n%s\n", httpClient.getString().c_str());
         return false;
     }
 
@@ -276,7 +291,10 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     const auto written = Update.writeStream(payloadStream);
     if (written != payloadSize)
     {
-        GDebuger.printf("Error. Written %lu out of %lu\n", written, payloadSize);
+        GDebuger.print(F("Error. Written "));
+        GDebuger.print(written);
+        GDebuger.print(F(" out of "));
+        GDebuger.println(payloadSize);
         return false;
     }
 
@@ -284,7 +302,8 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     {
         StreamString errorMsg;
         Update.printError(errorMsg);
-        GDebuger.printf("Error Occurred: %s\n", errorMsg.c_str());
+        GDebuger.print(F("Error Occurred: "));
+        GDebuger.println(errorMsg.c_str());
         return false;
     }
 
@@ -292,12 +311,13 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     {
         StreamString errorMsg;
         Update.printError(errorMsg);
-        GDebuger.printf("Undefined OTA update error: %s\n", errorMsg.c_str());
+        GDebuger.print(F("Undefined OTA update error: "));
+        GDebuger.println(errorMsg.c_str());
         return false;
     }
 
     GDebuger.println(F("Update completed. Rebooting"));
     rfir::util::Util::Reset();
-    // ESP.restart();
+
     return true;
 }

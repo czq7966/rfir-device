@@ -7,7 +7,7 @@
 
 //Device
 #define DEV_VENDOR                  "ND"
-#define DEV_MODEL                   "RS485PENET"
+#define DEV_MODEL                   "BASE"
 #define DEV_ADDRESS                 0
 
 
@@ -19,38 +19,38 @@
 #define PIN_RESET                   12
 
 //Serial
-#define SERIAL_DEBUG                false
+#define SERIAL_DEBUG                true
 #define SERIAL_BAUD                 96
 #define SERIAL_DATA                 8
 #define SERIAL_SUM                  0
 #define SERIAL_STOP                 1
 #define SERIAL_STREAM               0
 #define SERIAL_READ_TIMEOUT         0
+#define SERIAL_READ_BUFSIZE         1024 * 2
 
 //OTA
 #define OTA_DISABLE                 false
-#define OTA_UPDATE                  true
-#define OTA_VERSION                 10
-#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/rs485-penet/cfg.txt"
-#define OTA_UPDATE_INTERVAL         60 * 3     //3小时检查一次OTA,单位：分钟
+#define OTA_VERSION                 1
+#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/base/cfg.txt"
+#define OTA_UPDATE_INTERVAL         60 * 24     //24小时检查一次OTA,单位：分钟
 
 //WIFI
 #define WIFI_DISABLE                false
-#define WIFI_SSID_DEV               "MERCURY_95E8"
-#define WIFI_PASS_DEV               "12345678"
-#define WIFI_SSID                   "NDSEC ND-MAC"
-#define WIFI_PASS                   "wanglong wanglong"
+#define WIFI_SSID_DEV               ""
+#define WIFI_PASS_DEV               ""
+#define WIFI_SSID                   ""
+#define WIFI_PASS                   ""
 #define WIFI_RESET_TIMEOUT          60 * 10 //多少时间内WIFI未连接，重启，单位秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 
 
 //AP
-#define AP_DISABLE                  true //true时，支持热点配网
+#define AP_DISABLE                  false //true时，支持热点配网
 #define AP_SSID                     ""  //为空时，取ChipID
 #define AP_PASS                     "12345678"
-#define AP_START_TIMEOUT            20 //WIFI断网多少秒，启动热点配网
+#define AP_START_TIMEOUT            60 //WIFI断网多少秒，启动热点配网
 #define AP_CONFIG_VERSION           "1" //该值若有修改，AP配置将被重置
-#define AP_CONFIG_JLED              GJLed.Stop().LowActive().Blink(5000, 500).Forever().Reset()
+#define AP_CONFIG_JLED              GJLed.Stop().LowActive().Blink(10000, 500).Forever().Reset()
 
 //MQTT
 #define MQTT_DISABLE                false

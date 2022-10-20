@@ -2,10 +2,12 @@
 #include "rfir/util/event-timer.h"
 #include "../wifi/client.h"
 
-void network::module::ota::Updater::start(Params p) {
-    params = p;
+void network::module::ota::Updater::start() {
+    if (!this->params.enabled)
+        return;
+
     if (!eOtaUpdater) { 
-        eOtaUpdater = new EOTAUpdate(String(p.url),  String(p.id), p.version);    
+        eOtaUpdater = new EOTAUpdate(String(this->params.url),  String(this->params.id), this->params.version);    
     }
 
     GWifiClient.events.onWifiConnect.add(this, std::bind(&Updater::onWifiConnect, this, std::placeholders::_1, std::placeholders::_2));

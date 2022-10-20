@@ -22,7 +22,7 @@ namespace rfir {
             static int  StringToBytes(const char* data, int nbits, uint8_t* bytes);
             static int  StringToBits(const char* data, int nbits, uint64_t& result);
             static int  StringToBytes(std::string data, uint8_t* bytes);   
-            static void Reset();
+            static void Reset(uint32_t delay_ms = 0);
             static void DelayReset(int timeout_ms);
             static std::string ToLower(const char* data);
             static std::string ToUpper(const char* data);
