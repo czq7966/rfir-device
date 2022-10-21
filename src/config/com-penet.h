@@ -6,6 +6,10 @@
 #undef  DEV_MODEL
 #define DEV_MODEL                   "COM-PENET"
 
+//Serial
+#undef  SERIAL_READ_TIMEOUT
+#define SERIAL_READ_TIMEOUT         10
+
 #undef  OTA_VERSION
 #undef  OTA_UPDATE_URL
 #define OTA_VERSION                 1

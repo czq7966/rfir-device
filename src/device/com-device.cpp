@@ -2,7 +2,6 @@
 #include "cmds/cmd/reg-table.h"
 
 void device::ComDevice::start(){
-    GRegTable.tables.add(GRegTable.keys.serial_read_timeout, 10);
     this->bufsize = GRegTable.tables.get(GRegTable.keys.serial_read_bufsize);
     this->buf = new char[this->bufsize];
     this->serial = &Serial;

@@ -61,6 +61,8 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.net_report_reason, 0);   
 
     this->tables.add(this->keys.serial_read_timeout, 0);     
+    this->tables.add(this->keys.serial_half_rw_pin, 0);
+    this->tables.add(this->keys.serial_half_r_level, 0);
 
 };
 

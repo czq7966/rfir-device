@@ -1,3 +1,4 @@
+#include "service/device.h"
 #include "service/config.h"
 #include <Arduino.h>
 #include "IotWebConf.h"
@@ -27,6 +28,10 @@ void setup() {
 
     Serial.begin(GConfig.getSerialBaud(), (SerialConfig)GConfig.getSerialConfig());
     GDebuger.enabled =  GRegTable.tables.get(GRegTable.keys.serial_debug);
+    GDebuger.print(F("begin chid id: "));
+    GDebuger.print(GRegTable.values.dev_id);
+    GDebuger.print(F(" , mac: "));
+    GDebuger.println(GRegTable.values.dev_mac);
 
     GSendCmd.params.buf = pub_buffer;
     GSendCmd.params.bufsize = pub_buffer_size;

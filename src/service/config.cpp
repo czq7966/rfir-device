@@ -7,7 +7,7 @@
 void service::Config::init(){
     strcpy(GRegTable.values.dev_vender, DEV_VENDOR);
     strcpy(GRegTable.values.dev_model, DEV_MODEL);
-    rfir::util::Util::GetChipId(GRegTable.values.dev_id, CHIP_ID_PREFIX);
+    rfir::util::Util::GetChipId(GRegTable.values.dev_id, CHIP_ID_PREFIX, CHIP_ID_USE_MAC);
     rfir::util::Util::GetMacAddress(GRegTable.values.dev_mac);
     strcpy(GRegTable.values.wifi_ssid, WIFI_SSID);
     strcpy(GRegTable.values.wifi_pass, WIFI_PASS);
@@ -65,6 +65,8 @@ void service::Config::init(){
 
     GRegTable.tables.add(GRegTable.keys.serial_read_timeout, SERIAL_READ_TIMEOUT);
     GRegTable.tables.add(GRegTable.keys.serial_read_bufsize, SERIAL_READ_BUFSIZE);
+    GRegTable.tables.add(GRegTable.keys.serial_half_rw_pin, SERIAL_HALF_RW_PIN);
+    GRegTable.tables.add(GRegTable.keys.serial_half_r_level, SERIAL_HALF_R_LEVEL);
 
     //Button
     GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);
@@ -80,10 +82,7 @@ void service::Config::fixUp(){
     strcat(GRegTable.values.mqtt_pub_topic, GRegTable.values.dev_id);
     strcat(GRegTable.values.mqtt_pub_topic, "/0/0/0/0");
 
-    char temp[32];
-    rfir::util::Util::GetChipId(temp);
-    strcpy(GRegTable.values.ap_ssid, "ndiot_");
-    strcat(GRegTable.values.ap_ssid, temp);
+    strcpy(GRegTable.values.ap_ssid, GRegTable.values.dev_id);
 
     this->load();
 

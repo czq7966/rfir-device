@@ -9,7 +9,7 @@
 //Serial
 #undef  SERIAL_DEBUG
 #undef  SERIAL_BAUD
-#define SERIAL_DEBUG                true
+#define SERIAL_DEBUG                false
 #define SERIAL_BAUD                 1152
 
 

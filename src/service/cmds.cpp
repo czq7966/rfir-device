@@ -97,6 +97,9 @@ void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
         }        
 
         GConfig.save();  
+
+        //
+        GDebuger.enabled =  GRegTable.tables.get(GRegTable.keys.serial_debug);
     };
 };
 

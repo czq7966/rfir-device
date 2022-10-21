@@ -71,8 +71,8 @@ namespace cmds {
 
                 const uint16_t serial_read_timeout = 61031;
                 const uint16_t serial_read_bufsize = 61032;
-                
-
+                const uint16_t serial_half_rw_pin =  61033;
+                const uint16_t serial_half_r_level = 61034;
 
             };            
             struct Values

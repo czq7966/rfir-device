@@ -41,18 +41,12 @@ std::string rfir::util::Util::GetChipId(std::string prefix) {
   
 }
 
-int  rfir::util::Util::GetChipId(char* buf, const char* prefix){
+int  rfir::util::Util::GetChipId(char* buf, const char* prefix, bool useMac){
   uint8_t pre_len = 0;
   if (prefix) {
     strcpy(buf, prefix);
     pre_len = strlen(prefix);    
   }
-  else {
-    #ifdef CHIP_ID_PREFIX
-      strcpy(buf, CHIP_ID_PREFIX);      
-      pre_len = strlen(CHIP_ID_PREFIX);
-    #endif
-  }  
 
   uint32_t chipId = 0;
   #ifdef ESP8266
@@ -60,21 +54,24 @@ int  rfir::util::Util::GetChipId(char* buf, const char* prefix){
   #else		//ESP32
     uint32_t chipId = (uint32_t)ESP.getEfuseMac();
   #endif  
-
-  BytesToHexChar((uint8_t*)(&chipId), sizeof(chipId), buf + pre_len, true, '\0');
+  if (useMac)
+    GetMacAddress(buf + pre_len, '\0');
+  else
+    BytesToHexChar((uint8_t*)(&chipId), sizeof(chipId), buf + pre_len, true, '\0');
+    
   return strlen(buf);
 };
 
-std::string rfir::util::Util::GetMacAddress() {
+std::string rfir::util::Util::GetMacAddress(char separater) {
   uint8_t mac[6] = {};
   WiFi.macAddress(mac);
-  return BytesToHexString(mac, 6, false, '-');
+  return BytesToHexString(mac, 6, false, separater);
 }
 
-int rfir::util::Util::GetMacAddress(char* buf){
+int rfir::util::Util::GetMacAddress(char* buf, char separater){
   uint8_t mac[6] = {};
   WiFi.macAddress(mac);
-  return BytesToHexChar(mac, 6, buf, false, '-');
+  return BytesToHexChar(mac, 6, buf, false, separater);
 };
 
 std::string rfir::util::Util::BitsToString(uint8_t bytes[], uint16_t nbits) {

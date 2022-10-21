@@ -3,6 +3,9 @@
 
 #include "jled.h"
 
+#define CHIP_ID_PREFIX              "ndiot" //设备ID前缀
+#define CHIP_ID_USE_MAC             true //使用MAC地址作为设备ID
+
 #define CFG_VERSION                 1  //配置版本号，与本地配置版本号对比，哪个高用哪个配置；-1：不使用本地配置
 
 //Device
@@ -19,14 +22,16 @@
 #define PIN_RESET                   12
 
 //Serial
-#define SERIAL_DEBUG                true
+#define SERIAL_DEBUG                false
 #define SERIAL_BAUD                 96
 #define SERIAL_DATA                 8
 #define SERIAL_SUM                  0
 #define SERIAL_STOP                 1
 #define SERIAL_STREAM               0
-#define SERIAL_READ_TIMEOUT         0
+#define SERIAL_READ_TIMEOUT         10
 #define SERIAL_READ_BUFSIZE         1024 * 2
+#define SERIAL_HALF_RW_PIN          5
+#define SERIAL_HALF_R_LEVEL         0
 
 //OTA
 #define OTA_DISABLE                 false
@@ -56,7 +61,7 @@
 #define MQTT_DISABLE                false
 #define MQTT_IP                     "push-access.sdp.101.com"
 #define MQTT_PORT                   1780
-#define MQTT_USER                   "south"
+#define MQTT_USER                   "62f36682a30e9400102f4f23"
 #define MQTT_PASS                   ""
 #define MQTT_KEEPALIVE              15  //单位秒
 #define MQTT_CLEAN_SESSION          false

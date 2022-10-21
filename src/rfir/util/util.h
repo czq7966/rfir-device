@@ -12,9 +12,9 @@ namespace rfir {
         public:
             static uint64_t reverseBits(uint64_t input, uint16_t nbits);
             static std::string GetChipId(std::string prefix = "");
-            static int GetChipId(char* buf, const char* prefix = 0);
-            static std::string GetMacAddress();
-            static int GetMacAddress(char* buf);
+            static int GetChipId(char* buf, const char* prefix = 0, bool useMac = true);
+            static std::string GetMacAddress(char separater = '-');
+            static int GetMacAddress(char* buf, char separater = '-');
             static std::string BitsToString(uint8_t bytes[], uint16_t nbits);
             static std::string BytesToString(uint8_t bytes[], uint16_t nbytes);
             static std::string BytesToHexString(uint8_t bytes[], uint16_t nbytes, bool revert = false, char separater = ' ');
