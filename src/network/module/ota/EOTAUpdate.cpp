@@ -119,14 +119,16 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
         // Do not break here
     default:
         GDebuger.print(F("1-[HTTP] [ERROR] "));
-        GDebuger.print(httpCode);
+        GDebuger.println(httpCode);
         GDebuger.println(httpClient.errorToString(httpCode).c_str());
         if (httpCode >= 400) //404 会崩溃
         {
             httpClient.end();
             return false;
         }
-        // GDebuger.print("Response:\n%s\n",httpClient.getString().c_str());
+        GDebuger.println(F("Response:"));
+        GDebuger.println(httpClient.getString().c_str());
+
         httpClient.end();
         return false;
     }
@@ -258,9 +260,10 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     if (httpCode != HTTP_CODE_OK)
     {
         GDebuger.print(F("2-[HTTP] [ERROR] "));
-        GDebuger.print(httpCode);
+        GDebuger.println(httpCode);
         GDebuger.println(httpClient.errorToString(httpCode).c_str());
-        // GDebuger.printf("Response:\n%s\n", httpClient.getString().c_str());
+        GDebuger.println(F("Response:"));
+        GDebuger.println(httpClient.getString().c_str());
         return false;
     }
 

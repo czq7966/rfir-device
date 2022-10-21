@@ -18,3 +18,9 @@ device::Device* GDevice = new device::ComDevice();
 device::Device* GDevice = new device::ComDeviceZ3();
 #endif
 
+
+//串口半双工透传
+#ifdef DEVICE_COM_PENET_HALF
+#include "device/com-device-half.h"
+device::Device* GDevice = new device::ComDeviceHalf();
+#endif

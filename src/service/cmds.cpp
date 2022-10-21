@@ -2,7 +2,9 @@
 #include "cmds/cmd/cmd.h"
 #include "cmds/cmd/reg-table.h"
 #include "network/module/mqtt/async-client.h"
+#include "network/module/ota/updater.h"
 #include "rfir/util/util.h"
+#include "rfir/util/event-timer.h"
 #include "networking.h"
 #include "device.h"
 #include "config.h"
@@ -78,7 +80,15 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
         case cmds::cmd::CmdId::resetconfig :
             this->onCmd_reset_config(cmd);            
             break;
-
+        case cmds::cmd::CmdId::device_joined :
+            this->onCmd_device_joined(cmd);            
+            break;
+        case cmds::cmd::CmdId::device_leave :
+            this->onCmd_device_leave(cmd);            
+            break;
+        case cmds::cmd::CmdId::device_interview :
+            this->onCmd_device_interview(cmd);            
+            break;                        
         default:
             break;
     }
@@ -87,6 +97,7 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
 
 
 void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
+    GSendCmd.reset();
     if (GDevice->onCmd_config(cmd) != -1){
         std::list<int> ids;
         GRegTable.merge(&cmd->regTable, ids);
@@ -98,8 +109,14 @@ void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
 
         GConfig.save();  
 
-        //
+        //Debug
         GDebuger.enabled =  GRegTable.tables.get(GRegTable.keys.serial_debug);
+
+        //Resp
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::config;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        GSendCmd.send(ids);
     };
 };
 
@@ -122,14 +139,31 @@ void service::Cmds::onCmd_reboot(cmds::cmd::RecvCmd* cmd){
 };
 
 void service::Cmds::onCmd_get(cmds::cmd::RecvCmd* cmd){
+    GSendCmd.reset();
     if (GDevice->onCmd_get(cmd) != -1){
-
+        //Resp
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::get;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        std::list<int> ids;
+        cmd->regTable.tables.getKeys(ids);
+        GSendCmd.send(ids);
     };
 };
 
 void service::Cmds::onCmd_set(cmds::cmd::RecvCmd* cmd){
+    GSendCmd.reset();
     if (GDevice->onCmd_set(cmd) != -1){
+        std::list<int> ids;
+        GRegTable.merge(&cmd->regTable, ids);
 
+        //Resp
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::get;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        ids.clear();
+        cmd->regTable.tables.getKeys(ids);
+        GSendCmd.send(ids);
     };
 };
 
@@ -147,7 +181,17 @@ void service::Cmds::onCmd_penet(cmds::cmd::RecvCmd* cmd){
 
 void service::Cmds::onCmd_update(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_update(cmd) != -1){
-        rfir::util::Util::Reset();
+        //Resp
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::update;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        std::list<int> ids;
+        ids.push_back(GRegTable.keys.ota_version);
+        GSendCmd.send(ids);
+        GEventTimer.delay(500, [this](void*, void*)->void*{
+            GOTAUpdater.doCheckAndUpdate(0, 0);
+            return 0;
+        });        
     };
     
 };
@@ -171,19 +215,19 @@ void service::Cmds::onCmd_reset_config(cmds::cmd::RecvCmd* cmd){
     };    
 };
 
-void onCmd_device_joined(cmds::cmd::RecvCmd* cmd){
+void service::Cmds::onCmd_device_joined(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_device_joined(cmd) != -1){
 
     };
 };
 
-void onCmd_device_leave(cmds::cmd::RecvCmd* cmd){
+void service::Cmds::onCmd_device_leave(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_device_leave(cmd) != -1){
 
     };
 };
 
-void onCmd_device_interview(cmds::cmd::RecvCmd* cmd){
+void service::Cmds::onCmd_device_interview(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_device_interview(cmd) != -1){
 
     };

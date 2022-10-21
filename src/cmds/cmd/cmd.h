@@ -18,6 +18,9 @@ namespace cmds {
             static const uint8_t online = 9;
             static const uint8_t offline = 10;
             static const uint8_t resetconfig = 11;
+            static const uint8_t device_joined = 12;
+            static const uint8_t device_leave = 13;
+            static const uint8_t device_interview = 14;
         };
 
         class Cmd {     

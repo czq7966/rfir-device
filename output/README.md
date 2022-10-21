@@ -1,0 +1,1 @@
+certutil -hashfile xxx MD5

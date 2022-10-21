@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/com-penet-half/firmware_v2.bin
+2
+da1ba4621cff7424f075db29f4704e8a
+2.0
+1
+ndiotac0bfbc1cd77,

@@ -20,7 +20,7 @@ void network::module::ota::Updater::loop() {
 
 void* network::module::ota::Updater::onWifiConnect(void* arg, void* p) {
     if (m_update_handler == 0) {
-        m_update_handler = GEventTimer.delay(1000, std::bind(&Updater::doCheckAndUpdate, this, std::placeholders::_1, std::placeholders::_2));
+        m_update_handler = GEventTimer.delay(params.interval, std::bind(&Updater::doCheckAndUpdate, this, std::placeholders::_1, std::placeholders::_2));
     }
     return 0;
 }
