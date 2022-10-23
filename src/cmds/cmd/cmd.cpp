@@ -1,6 +1,7 @@
 #include "cmd.h"
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/debuger.h"
+#include "rfir/util/crc.h"
 
 
 void cmds::cmd::Cmd::reset(Head* head){
@@ -9,6 +10,29 @@ void cmds::cmd::Cmd::reset(Head* head){
         head->pro_logo = PRO_LOGO;
     }
 };  
+
+uint16_t cmds::cmd::Cmd::getsum(){
+    if (this->head)
+        return rfir::util::Crc::Get_CRC16((uint8_t*)this->payload, this->head->pld_len);
+
+    return 0;
+};
+
+bool cmds::cmd::Cmd::setsum(){
+    if (this->head) {
+        this->head->pld_sum = this->getsum();
+        return true;
+    }
+
+    return 0;
+};
+
+bool cmds::cmd::Cmd::checksum(){
+    if (this->head)
+        return this->head->pld_sum == this->getsum();
+
+    return 0;
+};
 
 bool cmds::cmd::RecvCmd::recv(const char* buf, int size){
     this->params.buf = (char*)buf;
@@ -26,9 +50,14 @@ bool cmds::cmd::RecvCmd::decode(){
     if (head->pro_logo == PRO_LOGO && this->head->pld_len + sizeof(Head) == this->params.bufsize){
         if (this->head->pld_len > 0) {
             this->payload = (char*)this->head + sizeof(Head);
-            return this->regTable.decode(this->payload, this->head->pld_len);
-        }
-        return true;
+            if(this->regTable.decode(this->payload, this->head->pld_len)){
+                if (this->checksum())
+                    return true;
+                else 
+                    return true;                
+            };          
+               
+        } else return true;
     } else {
         GDebuger.print(F("cmds::cmd::RecvCmd::decode failed, pro_logo: "));
         GDebuger.print(head->pro_logo);
@@ -79,6 +108,7 @@ bool cmds::cmd::SendCmd::encode(){
     int len = 0;
     if (this->regTable.encode(this->payload, len)) {
         this->head->pld_len = (uint16_t)len;
+        this->head->pld_sum = getsum();
         return true;
     };
     return false;

@@ -52,8 +52,8 @@ namespace cmds {
         public: 
             Events events;
             Params params;      
-            Head*  head;   
-            char*  payload;  
+            Head*  head = 0;   
+            char*  payload = 0;  
             rfir::util::RegTable regTable;
 
         public:
@@ -63,6 +63,9 @@ namespace cmds {
             virtual void reset(){};  
             virtual bool encode(){return 0;};
             virtual bool decode(){return 0;};
+            virtual uint16_t getsum();
+            virtual bool setsum();
+            virtual bool checksum();
         };
 
         class RecvCmd: public Cmd {
