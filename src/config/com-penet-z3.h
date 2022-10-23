@@ -15,7 +15,7 @@
 
 // #undef  OTA_VERSION
 // #undef  OTA_UPDATE_URL
-#define OTA_VERSION                 1
+#define OTA_VERSION                 3
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/com-penet-z3/cfg.txt"
 
 #endif
