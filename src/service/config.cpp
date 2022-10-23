@@ -2,6 +2,7 @@
 #include "rfir/util/file.h"
 #include "rfir/util/util.h"
 #include "rfir/util/serial.h"
+#include "rfir/util/interrupt.h"
 
 
 void service::Config::init(){
@@ -112,7 +113,9 @@ void service::Config::save(std::list<int> ids) {
     int size = 0;
     if (GRegTable.encode(this->params.buf, size, ids)) {
         rfir::util::File file(this->params.filename);
+        GInterrupt.stop();
         file.write(this->params.buf, size);
+        GInterrupt.start();
         this->events.saved.emit(this);
     }
 };
