@@ -88,7 +88,22 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
             break;
         case cmds::cmd::CmdId::device_interview :
             this->onCmd_device_interview(cmd);            
-            break;                        
+            break;  
+        case cmds::cmd::CmdId::get_gpio :
+            this->onCmd_get_gpio(cmd);            
+            break;
+        case cmds::cmd::CmdId::set_gpio :
+            this->onCmd_set_gpio(cmd);            
+            break;
+        case cmds::cmd::CmdId::rfir_send :
+            this->onCmd_rfir_send(cmd);            
+            break;
+        case cmds::cmd::CmdId::rfir_sniff :
+            this->onCmd_rfir_sniff(cmd);            
+            break;   
+        case cmds::cmd::CmdId::intranet :
+            this->onCmd_intranet(cmd);            
+            break;                    
         default:
             break;
     }
@@ -231,6 +246,67 @@ void service::Cmds::onCmd_device_interview(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_device_interview(cmd) != -1){
 
     };
+};
+
+void service::Cmds::onCmd_get_gpio(cmds::cmd::RecvCmd* cmd){
+    GSendCmd.reset();
+    if (GDevice->onCmd_get_gpio(cmd) != -1){
+        uint8_t pin = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_pin);
+        
+        pinMode(pin, INPUT);        
+        int value = digitalRead(pin);   
+
+        //Resp
+        GSendCmd.regTable.tables.add(GRegTable.keys.gpio_rw_pin, pin);
+        GSendCmd.regTable.tables.add(GRegTable.keys.gpio_rw_value, value);
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::get_gpio;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        std::list<int> ids;
+        ids.push_back(GRegTable.keys.gpio_rw_pin);
+        ids.push_back(GRegTable.keys.gpio_rw_value);
+        GSendCmd.send(ids);
+    };
+};
+
+void service::Cmds::onCmd_set_gpio(cmds::cmd::RecvCmd* cmd){
+    GSendCmd.reset();
+    if (GDevice->onCmd_set_gpio(cmd) != -1){
+        uint8_t pin = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_pin);
+        int value = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_value);
+    
+        pinMode(pin, OUTPUT);        
+        digitalWrite(pin, value);        
+
+        //Resp
+        GSendCmd.regTable.tables.add(GRegTable.keys.gpio_rw_pin, pin);
+        GSendCmd.regTable.tables.add(GRegTable.keys.gpio_rw_value, value);
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::set_gpio;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        std::list<int> ids;
+        ids.push_back(GRegTable.keys.gpio_rw_pin);
+        ids.push_back(GRegTable.keys.gpio_rw_value);
+        GSendCmd.send(ids);
+    };
+};
+
+void service::Cmds::onCmd_rfir_sniff(cmds::cmd::RecvCmd* cmd){
+    if (GDevice->onCmd_rfir_sniff(cmd) != -1){
+
+    };
+};
+
+void service::Cmds::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
+    if (GDevice->onCmd_rfir_send(cmd) != -1){
+
+    };
+};
+
+void service::Cmds::onCmd_intranet(cmds::cmd::RecvCmd* cmd){
+    if (GDevice->onCmd_intranet(cmd) != -1){
+
+    };    
 };
 
 service::Cmds GCmds;     

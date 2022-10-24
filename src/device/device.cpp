@@ -57,4 +57,23 @@ int device::Device::onCmd_device_interview(cmds::cmd::RecvCmd* cmd){
     return 0;
 };
     
+int device::Device::onCmd_get_gpio(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    
+int device::Device::onCmd_set_gpio(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    
+int device::Device::onCmd_rfir_sniff(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    
+int device::Device::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
 
+int device::Device::onCmd_intranet(cmds::cmd::RecvCmd* cmd){
+    return 0;
+};
+    

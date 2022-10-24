@@ -22,7 +22,11 @@ namespace service {
         void onCmd_device_joined(cmds::cmd::RecvCmd* cmd);
         void onCmd_device_leave(cmds::cmd::RecvCmd* cmd);
         void onCmd_device_interview(cmds::cmd::RecvCmd* cmd);
-        
+        void onCmd_get_gpio(cmds::cmd::RecvCmd* cmd);
+        void onCmd_set_gpio(cmds::cmd::RecvCmd* cmd);
+        void onCmd_rfir_sniff(cmds::cmd::RecvCmd* cmd);
+        void onCmd_rfir_send(cmds::cmd::RecvCmd* cmd);       
+        void onCmd_intranet(cmds::cmd::RecvCmd* cmd);
     };
 
 }

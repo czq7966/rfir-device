@@ -75,10 +75,39 @@
 #define MQTT_RESP_TIMEOUT           10 //毫秒
 #define MQTT_BUFFER_SIZE            1024 * 3
 
+//内网组网
+#define INTRANET_ENABLE        false
+#define INTRANET_IP                 ""
+#define INTRANET_PORT               0
+#define INTRANET_MQTT_ENABLE        false
+#define INTRANET_MQTT_IP            ""
+#define INTRANET_MQTT_PORT          0
+#define INTRANET_MQTT_USER          ""
+#define INTRANET_MQTT_PASS          ""
+
 //Timer Report 
 #define NET_REPORT_TIMEOUT          60   //1分钟上报一次
 #define NET_HANDSHAKE_TIMEOUT       60 * 5 //5分钟握一次手 
 #define NET_RESET_TIMEOUT           60 * 2 //2分钟组网超时
+
+
+//RFIR SNIFF
+#define RFIR_SNIFF_ENABLE   	    false
+#define RFIR_SNIFF_PIN	            -1
+#define RFIR_SNIFF_INVERTED	        false
+#define RFIR_SNIFF_MINCOUNT	        50
+#define RFIR_SNIFF_MAXCOUNT	        256   
+#define RFIR_SNIFF_MINDELTA	        150
+#define RFIR_SNIFF_MAXDELTA	        UINT16_MAX
+
+//RFIR SEND
+#define RFIR_SEND_ENABLE            false
+#define RFIR_SEND_PIN               -1
+#define RFIR_SEND_INVERTED          false
+#define RFIR_SEND_MODULATION        true
+#define RFIR_SEND_REPEAT            0
+#define RFIR_SEND_FREQUENCY         38
+#define RFIR_SEND_DUTYCYCLE         50
 
 
 #endif //

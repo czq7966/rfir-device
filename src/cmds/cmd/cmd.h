@@ -21,6 +21,11 @@ namespace cmds {
             static const uint8_t device_joined = 12;
             static const uint8_t device_leave = 13;
             static const uint8_t device_interview = 14;
+            static const uint8_t get_gpio = 15;
+            static const uint8_t set_gpio = 16;
+            static const uint8_t rfir_sniff = 17;
+            static const uint8_t rfir_send = 18;
+            static const uint8_t intranet = 19;
         };
 
         class Cmd {     

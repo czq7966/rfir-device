@@ -26,8 +26,16 @@ namespace cmds {
                 const uint16_t wifi_ssid_dev =      60014;
                 const uint16_t wifi_pass_dev =      60015;
 
+                const uint16_t intranet_mqtt_ip =	60040;
+                const uint16_t intranet_user =	60041;
+                const uint16_t intranet_mqtt_pass =	60042;
+                const uint16_t intranet_ip =	    60043;
+
                 //二进制
                 const uint16_t penet_data =         60500;
+                const uint16_t rfir_sniff_data =	60501;
+                const uint16_t rfir_send_data = 	60502;
+
 
                 //数字
                 const uint16_t dev_online =         61000;
@@ -74,6 +82,30 @@ namespace cmds {
                 const uint16_t serial_half_rw_pin =  61033;
                 const uint16_t serial_half_r_level = 61034;
 
+                const uint16_t gpio_rw_pin =         61035;
+                const uint16_t gpio_rw_value =       61036;
+
+                const uint16_t intranet_mqtt_enable =61040;
+                const uint16_t intranet_mqtt_port =	 61041;
+                const uint16_t intranet_enable =     61042;
+                const uint16_t intranet_port =	     61043;
+                    
+                const uint16_t rfir_sniff_enable =	 61050;
+                const uint16_t rfir_sniff_pin =	     61051;
+                const uint16_t rfir_sniff_inverted = 61052;
+                const uint16_t rfir_sniff_minCount = 61053;
+                const uint16_t rfir_sniff_maxCount = 61054;
+                const uint16_t rfir_sniff_minDelta = 61055;
+                const uint16_t rfir_sniff_maxDelta = 61056;
+                    
+                const uint16_t rfir_send_enable =	 61060;
+                const uint16_t rfir_send_pin =	     61061;
+                const uint16_t rfir_send_inverted =	 61062;
+                const uint16_t rfir_send_modulation =61063;
+                const uint16_t rfir_send_repeat =	 61064;
+                const uint16_t rfir_send_frequency = 61065;
+                const uint16_t rfir_send_dutycycle = 61066;                
+
             };            
             struct Values
             {
@@ -93,6 +125,10 @@ namespace cmds {
                 char mqtt_pass[33];
                 char wifi_ssid_dev[33];
                 char wifi_pass_dev[33];
+                char intranet_mqtt_ip[65];
+                char intranet_mqtt_user[33];
+                char intranet_mqtt_pass[33];
+                char intranet_ip[65];
             };
             
         public:

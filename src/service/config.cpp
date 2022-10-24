@@ -22,6 +22,10 @@ void service::Config::init(){
     strcpy(GRegTable.values.mqtt_pass, MQTT_PASS);
     strcpy(GRegTable.values.wifi_ssid_dev, WIFI_SSID_DEV);
     strcpy(GRegTable.values.wifi_pass_dev, WIFI_PASS_DEV);
+    strcpy(GRegTable.values.intranet_mqtt_ip, INTRANET_MQTT_IP);
+    strcpy(GRegTable.values.intranet_mqtt_user, INTRANET_MQTT_USER);
+    strcpy(GRegTable.values.intranet_mqtt_pass, INTRANET_MQTT_PASS);
+    strcpy(GRegTable.values.intranet_ip, INTRANET_IP);
 
     GRegTable.tables.add(GRegTable.keys.dev_online, 0);
     GRegTable.tables.add(GRegTable.keys.cfg_version, CFG_VERSION);
@@ -68,6 +72,31 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.serial_read_bufsize, SERIAL_READ_BUFSIZE);
     GRegTable.tables.add(GRegTable.keys.serial_half_rw_pin, SERIAL_HALF_RW_PIN);
     GRegTable.tables.add(GRegTable.keys.serial_half_r_level, SERIAL_HALF_R_LEVEL);
+
+    // GRegTable.tables.add(GRegTable.keys.gpio_rw_pin, 0);
+    // GRegTable.tables.add(GRegTable.keys.gpio_rw_value, 0);
+
+    GRegTable.tables.add(GRegTable.keys.intranet_mqtt_enable, INTRANET_MQTT_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.intranet_mqtt_port, INTRANET_MQTT_PORT);
+    GRegTable.tables.add(GRegTable.keys.intranet_enable, INTRANET_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.intranet_port, INTRANET_PORT);
+
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_enable, RFIR_SNIFF_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_pin, RFIR_SNIFF_PIN);
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_inverted, RFIR_SNIFF_INVERTED);
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_minCount, RFIR_SNIFF_MINCOUNT);
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_maxCount, RFIR_SNIFF_MAXCOUNT);
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_minDelta, RFIR_SNIFF_MINDELTA);
+    GRegTable.tables.add(GRegTable.keys.rfir_sniff_maxDelta, RFIR_SNIFF_MAXDELTA);
+
+    GRegTable.tables.add(GRegTable.keys.rfir_send_enable, RFIR_SEND_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.rfir_send_pin, RFIR_SEND_PIN);
+    GRegTable.tables.add(GRegTable.keys.rfir_send_inverted, RFIR_SEND_INVERTED);
+    GRegTable.tables.add(GRegTable.keys.rfir_send_modulation, RFIR_SEND_MODULATION);
+    GRegTable.tables.add(GRegTable.keys.rfir_send_repeat, RFIR_SEND_REPEAT);
+    GRegTable.tables.add(GRegTable.keys.rfir_send_frequency, RFIR_SEND_FREQUENCY);
+    GRegTable.tables.add(GRegTable.keys.rfir_send_dutycycle, RFIR_SEND_DUTYCYCLE);
+
 
     //Button
     GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);
