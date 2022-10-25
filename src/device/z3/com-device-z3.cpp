@@ -3,11 +3,7 @@
 
 void device::ComDeviceZ3::start() {
     ComDevice::start();
-    // int pin = 15;
-    // pinMode(pin, OUTPUT);
-    // digitalWrite(pin, 1);
-
-    // pin = 5;
-    // pinMode(pin, OUTPUT);
-    // digitalWrite(pin, 1);    
+    int pin = 5;
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, 1);    
 }
