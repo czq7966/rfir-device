@@ -172,6 +172,10 @@ void service::Cmds::onCmd_set(cmds::cmd::RecvCmd* cmd){
         std::list<int> ids;
         GRegTable.merge(&cmd->regTable, ids);
 
+        //Penet
+        if (cmd->regTable.tables.get(GRegTable.keys.penet_data))
+            this->onCmd_penet(cmd);
+
         //Resp
         GSendCmd.head->cmd_id = cmds::cmd::CmdId::get;
         GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
