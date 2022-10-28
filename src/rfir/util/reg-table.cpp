@@ -155,3 +155,11 @@ void rfir::util::RegTable::dump(){
     }
     GDebuger.println("rfir::util::RegTable::dump end:");
 };
+
+
+int rfir::util::RegTable::get(int key, RegTable* regtable){
+    if (regtable && regtable->tables.exist(key))
+        return regtable->tables.get(key);
+    else   
+        return this->tables.get(key);
+};

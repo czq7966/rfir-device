@@ -25,6 +25,8 @@ namespace rfir {
             bool load(const char* buf, int size, rfir::util::MapFactory<int, int>& ids);
             void clear();
             void dump();
+        public:
+            int get(int key, RegTable* regtable = nullptr);
         };
     }
 }

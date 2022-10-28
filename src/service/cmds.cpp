@@ -296,14 +296,28 @@ void service::Cmds::onCmd_set_gpio(cmds::cmd::RecvCmd* cmd){
 };
 
 void service::Cmds::onCmd_rfir_sniff(cmds::cmd::RecvCmd* cmd){
-    if (GDevice->onCmd_rfir_sniff(cmd) != -1){
-
+    GSendCmd.reset();
+    auto err_no = GDevice->onCmd_rfir_sniff(cmd);
+    if ( err_no != -1){
+        //Resp
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::rfir_sniff;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        GSendCmd.head->err_no = err_no;
+        GSendCmd.send();
     };
 };
 
 void service::Cmds::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
-    if (GDevice->onCmd_rfir_send(cmd) != -1){
-
+    GSendCmd.reset();
+    auto err_no = GDevice->onCmd_rfir_send(cmd);
+    if ( err_no != -1){
+        //Resp
+        GSendCmd.head->cmd_id = cmds::cmd::CmdId::rfir_send;
+        GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+        GSendCmd.head->cmd_stp = 1;
+        GSendCmd.head->err_no = err_no;
+        GSendCmd.send();
     };
 };
 

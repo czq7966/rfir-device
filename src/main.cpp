@@ -9,6 +9,8 @@
 #include "cmds/cmd/cmd.h"
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/ttl/sniffer.h"
+#include "rfir/ttl/sender.h"
 #include "service/networking.h"
 #include "service/cmds.h"
 
@@ -65,14 +67,30 @@ void setup() {
     GMqttClient.params.timeout = GRegTable.tables.get(GRegTable.keys.mqtt_reset_timeout) * 1000;
     GMqttClient.params.user = GRegTable.values.mqtt_user;  
 
-
+    //OTA
     GOTAUpdater.params.id = GRegTable.values.dev_id;
     GOTAUpdater.params.interval = GRegTable.tables.get(GRegTable.keys.ota_update_interval) * 60 * 1000;
     GOTAUpdater.params.url = GRegTable.values.ota_update_url;
     GOTAUpdater.params.version = GRegTable.tables.get(GRegTable.keys.ota_version);
     GOTAUpdater.params.enabled = !GRegTable.tables.get(GRegTable.keys.ota_disable);
 
-    
+    //Sniffer
+    GTTLSniffer.params.enabled = GRegTable.tables.get(GRegTable.keys.rfir_sniff_enable);
+    GTTLSniffer.params.pin = GRegTable.tables.get(GRegTable.keys.rfir_sniff_pin);
+    GTTLSniffer.params.inverted = GRegTable.tables.get(GRegTable.keys.rfir_sniff_inverted);
+    GTTLSniffer.params.minCount = GRegTable.tables.get(GRegTable.keys.rfir_sniff_minCount);
+    GTTLSniffer.params.maxCount = GRegTable.tables.get(GRegTable.keys.rfir_sniff_maxCount);
+    GTTLSniffer.params.minDelta = GRegTable.tables.get(GRegTable.keys.rfir_sniff_minDelta);
+    GTTLSniffer.params.maxDelta = GRegTable.tables.get(GRegTable.keys.rfir_sniff_maxDelta);
+
+    //Sender
+    GTTLSender.params.enabled = GRegTable.get(GRegTable.keys.rfir_send_enable);
+    GTTLSender.params.pin = GRegTable.get(GRegTable.keys.rfir_send_pin);
+    GTTLSender.params.inverted = GRegTable.get(GRegTable.keys.rfir_send_inverted);
+    GTTLSender.params.modulation = GRegTable.get(GRegTable.keys.rfir_send_modulation);
+    GTTLSender.params.repeat = GRegTable.get(GRegTable.keys.rfir_send_repeat);
+    GTTLSender.params.frequency = GRegTable.get(GRegTable.keys.rfir_send_frequency);
+    GTTLSender.params.dutycycle = GRegTable.get(GRegTable.keys.rfir_send_dutycycle);
        
     //WIFI
     GWifiClient.start();
@@ -101,6 +119,9 @@ void setup() {
     //OTA
     GOTAUpdater.start();
 
+    //Sniffer
+    GTTLSniffer.start(true);
+
     //配置Ready
     GConfig.events.ready.emit(0);
     GDebuger.println(F("Ready"));
@@ -127,6 +148,9 @@ void loop() {
 
     //热点
     GAP.loop();  
+
+    //射频采集
+    GTTLSniffer.loop();
 }
 
 

@@ -1,4 +1,7 @@
 #include "device.h"
+#include "rfir/ttl/sender.h"
+#include "rfir/ttl/sniffer.h"
+#include "cmds/cmd/reg-table.h"
 
 void device::Device::start(){
 
@@ -66,10 +69,38 @@ int device::Device::onCmd_set_gpio(cmds::cmd::RecvCmd* cmd){
 };
     
 int device::Device::onCmd_rfir_sniff(cmds::cmd::RecvCmd* cmd){
+    GTTLSniffer.params.enabled = GRegTable.get(GRegTable.keys.rfir_sniff_enable, &cmd->regTable);
+    GTTLSniffer.params.pin = GRegTable.get(GRegTable.keys.rfir_sniff_pin, &cmd->regTable);
+    GTTLSniffer.params.inverted = GRegTable.get(GRegTable.keys.rfir_sniff_inverted, &cmd->regTable);
+    GTTLSniffer.params.minCount = GRegTable.get(GRegTable.keys.rfir_sniff_minCount, &cmd->regTable);
+    GTTLSniffer.params.maxCount = GRegTable.get(GRegTable.keys.rfir_sniff_maxCount, &cmd->regTable);
+    GTTLSniffer.params.minDelta = GRegTable.get(GRegTable.keys.rfir_sniff_minDelta, &cmd->regTable);
+    GTTLSniffer.params.maxDelta = GRegTable.get(GRegTable.keys.rfir_sniff_maxDelta, &cmd->regTable);
+    GTTLSniffer.stop();
+    if (GTTLSniffer.params.enabled) {
+        GTTLSniffer.start();
+        GTTLSniffer.startSniff();
+        return 1;
+    }
+
     return 0;
 };
     
 int device::Device::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
+    GTTLSender.params.enabled = GRegTable.get(GRegTable.keys.rfir_send_enable, &cmd->regTable);
+    GTTLSender.params.pin = GRegTable.get(GRegTable.keys.rfir_send_pin, &cmd->regTable);
+    GTTLSender.params.inverted = GRegTable.get(GRegTable.keys.rfir_send_inverted, &cmd->regTable);
+    GTTLSender.params.modulation = GRegTable.get(GRegTable.keys.rfir_send_modulation, &cmd->regTable);
+    GTTLSender.params.repeat = GRegTable.get(GRegTable.keys.rfir_send_repeat, &cmd->regTable);
+    GTTLSender.params.frequency = GRegTable.get(GRegTable.keys.rfir_send_frequency, &cmd->regTable);
+    GTTLSender.params.dutycycle = GRegTable.get(GRegTable.keys.rfir_send_dutycycle, &cmd->regTable);
+    auto data = cmd->regTable.tables.get(GRegTable.keys.rfir_send_data);
+    auto size = cmd->regTable.sizes.get(GRegTable.keys.rfir_send_data);
+    if (data && size) {
+        GTTLSender.sendRaw((uint16_t*)data, size / 2);
+        return size / 2;
+    }
+
     return 0;
 };
 
