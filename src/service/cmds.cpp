@@ -11,28 +11,13 @@
 
 
 void service::Cmds::start(){
-    GMqttClient.events.onMqttMessage.add(0, [](void* arg, void* p) -> void* {
-        auto msg = (::network::module::mqtt::AClient::Message*)p;
-        if (msg->total < sizeof(cmds::cmd::Cmd::Head) ) {
-            GDebuger.print("GMqttClient.events.onMqttMessage total is low, topic: ");
-            GDebuger.print(msg->topic);
-            GDebuger.print(" total:");
-            GDebuger.print(msg->total);
-            return 0;
-        }
-
-        GRecvCmd.recv(msg->payload, msg->len);
-        return 0;
-    });  
     GRecvCmd.events.recv.add(this, [this](void* arg, void* p)->void*{
         this->onCmd(&GRecvCmd);
         return 0;
     });
     
     GSendCmd.events.send.add(this, [this](void* arg, void* p)->void*{
-        if (GMqttClient.mqtt.connected())
-            GMqttClient.mqtt.publish(GRegTable.values.mqtt_pub_topic, 2, true, (const char*)GSendCmd.head, int(p));            
-        
+        GNetworking.publish(GRegTable.values.mqtt_pub_topic, (const char*)GSendCmd.head, int(p));
         return 0;
     });    
 

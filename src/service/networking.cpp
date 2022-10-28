@@ -7,6 +7,20 @@
 
 //事件注册
 void service::Networking::start(){
+    GMqttClient.events.onMqttMessage.add(this, [](void* arg, void* p) -> void* {
+        auto msg = (::network::module::mqtt::AClient::Message*)p;
+        if (msg->total < sizeof(cmds::cmd::Cmd::Head) ) {
+            GDebuger.print("GMqttClient.events.onMqttMessage total is low, topic: ");
+            GDebuger.print(msg->topic);
+            GDebuger.print(" total:");
+            GDebuger.print(msg->total);
+            return 0;
+        }
+
+        GRecvCmd.recv(msg->payload, msg->len);
+        return 0;
+    }); 
+
     GConfig.events.ready.add(this,  [this](void* arg, void* p)-> void*{
         setWill();
         return 0;
@@ -35,7 +49,7 @@ void service::Networking::loop(){
 void service::Networking::setWill(){
     cmds::cmd::Cmd::reset(&this->willPayload);
     this->willPayload.cmd_id = cmds::cmd::CmdId::offline;
-    GMqttClient.mqtt.setWill(GRegTable.values.mqtt_pub_topic, 2, true, (const char*)&willPayload, sizeof(willPayload));
+    this->setWill(GRegTable.values.mqtt_pub_topic, (const char*)&willPayload, sizeof(willPayload), 2, true);
 };
 
 void service::Networking::setOnline(){
@@ -82,6 +96,18 @@ void service::Networking::delayHandshake(int delay_ms){
         return 0;
     });
 
+};
+
+int service::Networking::publish(const char* topic, const char* payload , size_t length, uint8_t qos , bool retain, bool dup, uint16_t message_id){
+    if (GMqttClient.mqtt.connected())
+        return GMqttClient.mqtt.publish(topic, qos, retain, payload, length, dup, message_id);            
+
+    return 0;
+};
+
+int service::Networking::setWill(const char* topic, const char* payload , size_t length, uint8_t qos , bool retain){
+    GMqttClient.mqtt.setWill(topic, qos, retain, payload, length);
+    return 0;
 };
 
 service::Networking GNetworking;
