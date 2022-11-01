@@ -149,6 +149,7 @@ void*  network::module::mqtt::AClient::doDisconnectToMqtt(void* arg, void* p) {
 
 void* network::module::mqtt::AClient::onConnectToMqttTimeout(void* arg, void* p){
     rfir::util::Util::Reset();
+    this->events.onMqttConnectTimeout.emit(this);
     return 0;
 };
 

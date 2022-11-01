@@ -3,10 +3,17 @@
 #include "cmds/cmd/cmd.h"
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/event-timer.h"
+#include "rfir/util/util.h"
 #include "service/config.h"
 
 //事件注册
 void service::Networking::start(){
+    GConfig.events.ready.add(this,  [this](void* arg, void* p)-> void*{
+        setWill();
+        return 0;
+    });
+
+    //G MQTT
     GMqttClient.events.onMqttMessage.add(this, [](void* arg, void* p) -> void* {
         auto msg = (::network::module::mqtt::AClient::Message*)p;
         if (msg->total < sizeof(cmds::cmd::Cmd::Head) ) {
@@ -21,11 +28,6 @@ void service::Networking::start(){
         return 0;
     }); 
 
-    GConfig.events.ready.add(this,  [this](void* arg, void* p)-> void*{
-        setWill();
-        return 0;
-    });
-
     GMqttClient.events.onMqttConnect.add(this, [this](void* arg, void* p)-> void*{
         subscribe();
         setOnline();
@@ -36,6 +38,11 @@ void service::Networking::start(){
         uint16_t dev_offline_count = GRegTable.tables.get(GRegTable.keys.dev_offline_count);
         dev_offline_count++;
         GRegTable.tables.add(GRegTable.keys.dev_offline_count, dev_offline_count);
+        return 0;
+    });
+
+    GMqttClient.events.onMqttConnectTimeout.add(this,  [this](void* arg, void* p)-> void*{
+        rfir::util::Util::Reset();
         return 0;
     });
 };

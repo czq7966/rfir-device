@@ -53,6 +53,7 @@ namespace network {
                     rfir::util::Event onMqttUnsubscribe;
                     rfir::util::Event onMqttMessage;
                     rfir::util::Event onMqttPublish;
+                    rfir::util::Event onMqttConnectTimeout;
                 };
                 
                 
