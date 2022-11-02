@@ -23,7 +23,7 @@ namespace service {
         void setOnline();
         void subscribe();
     public:
-        int  publish(const char* topic, const char* payload = nullptr, size_t length = 0, uint8_t qos = 2, bool retain = true, bool dup = false, uint16_t message_id = 0);
+        int  publish(const char* topic, const char* payload = nullptr, size_t length = 0, uint8_t qos = 2, bool retain = false, bool dup = false, uint16_t message_id = 0);
         int  setWill(const char* topic, const char* payload = nullptr, size_t length = 0, uint8_t qos = 2, bool retain = true);
 
     };

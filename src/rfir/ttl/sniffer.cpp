@@ -5,8 +5,6 @@
 int rfir::ttl::Sniffer::Data::toBuffer(uint16_t* buffer){
     int count = 0;
     if (deltas.size() > 0) {
-        buffer[count] = first_ttl.ttl;
-        count++;
         for (auto it = deltas.begin(); it != deltas.end(); it++)
         {        
             buffer[count] = *it;

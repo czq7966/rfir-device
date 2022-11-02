@@ -1,7 +1,7 @@
 #include "cmd.h"
 #include "cmds/cmd/reg-table.h"
 #include "rfir/util/debuger.h"
-#include "rfir/util/crc.h"
+#include "rfir/util/sum.h"
 
 
 void cmds::cmd::Cmd::reset(Head* head){
@@ -13,7 +13,7 @@ void cmds::cmd::Cmd::reset(Head* head){
 
 uint16_t cmds::cmd::Cmd::getsum(){
     if (this->head)
-        return rfir::util::Crc::Get_CRC16((uint8_t*)this->payload, this->head->pld_len);
+        return rfir::util::Sum::Xor((uint8_t*)this->payload, this->head->pld_len);
 
     return 0;
 };
