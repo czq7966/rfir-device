@@ -2,8 +2,7 @@
 #include "cmds/cmd/reg-table.h"
 
 void device::ComDevice::start(){
-    this->bufsize = GRegTable.tables.get(GRegTable.keys.serial_read_bufsize);
-    this->buf = new char[this->bufsize];
+    RfirDevice::start();
     this->serial = &Serial;
 };
 
@@ -21,14 +20,14 @@ size_t device::ComDevice::read() {
         while (this->serial->available() || millis() - starttime <= timeout)
         {
             if (this->serial->available()) {
-                this->buf[idx++] = (char)this->serial->read();            
+                this->params.buf[idx++] = (char)this->serial->read();            
                 starttime = millis();
-                if (idx >= this->bufsize)
+                if (idx >= this->params.bufsize)
                     break;
             }
         }
         if (idx > 0) {
-            GSendCmd.regTable.tables.add(GRegTable.keys.penet_data, (int)this->buf);
+            GSendCmd.regTable.tables.add(GRegTable.keys.penet_data, (int)this->params.buf);
             GSendCmd.regTable.sizes.add(GRegTable.keys.penet_data, idx);
 
             GSendCmd.head->cmd_id = cmds::cmd::CmdId::penet;

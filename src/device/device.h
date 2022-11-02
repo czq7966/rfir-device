@@ -5,7 +5,13 @@
 
 namespace device {
     class Device {
+    public:
+        struct Params {
+            char*  buf = 0;
+            size_t bufsize = 1024;
+        };
 
+        Params params;
     public:
         virtual void start();
         virtual void loop();

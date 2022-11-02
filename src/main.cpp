@@ -15,12 +15,10 @@
 #include "service/cmds.h"
 
 
-// char* mqtt_recv_buffer = new char[GRegTable.];
-
 char config_filename[] = "/config.bin";
-char* pub_buffer = (char*)malloc(1024 * 4);
 void setup() {
-    int  pub_buffer_size = MQTT_BUFFER_SIZE;
+    int   pub_buffer_size = MQTT_BUFFER_SIZE;
+    char* pub_buffer = (char*)malloc(pub_buffer_size);
     GConfig.params.buf = (char*)pub_buffer;
     GConfig.params.bufsize = pub_buffer_size;
     GConfig.params.filename = config_filename;
@@ -114,6 +112,8 @@ void setup() {
     GCmds.start();
 
     //设备
+    GDevice->params.bufsize = GRegTable.tables.get(GRegTable.keys.serial_read_bufsize);
+    GDevice->params.buf = (char*)malloc(GDevice->params.bufsize);
     GDevice->start();
 
     //OTA

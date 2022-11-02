@@ -6,6 +6,12 @@
 device::Device* GDevice = new device::Device();
 #endif
 
+//射频透传
+#ifdef DEVICE_RFIR_PENET
+#include "device/rfir-device.h"
+device::Device* GDevice = new device::RfirDevice();
+#endif
+
 //串口透传
 #ifdef DEVICE_COM_PENET
 #include "device/com-device.h"

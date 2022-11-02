@@ -2,15 +2,12 @@
 #define DEVICE_COM_DEVICE_H
 
 #include "cmds/cmd/cmd.h"
-#include "device.h"
+#include "rfir-device.h"
 
 namespace device {
-    class ComDevice: public Device {
+    class ComDevice: public RfirDevice {
     public:
         HardwareSerial* serial;    
-        char*  buf = 0;
-        size_t bufsize = 1024;
-
     public:
         virtual void start() override;
         virtual void loop() override;

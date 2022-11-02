@@ -4,8 +4,11 @@
 //设备基类
 // #define DEVICE_BASE
 
+//射频透传
+#define DEVICE_RFIR_PENET
+
 //串口透传
-#define DEVICE_COM_PENET
+// #define DEVICE_COM_PENET
 
 //Z3串口透传
 // #define DEVICE_COM_PENET_Z3

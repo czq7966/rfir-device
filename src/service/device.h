@@ -9,6 +9,11 @@
 #include "config/base.h"
 #endif
 
+//射频透传
+#ifdef DEVICE_RFIR_PENET
+#include "config/rfir-penet.h"
+#endif
+
 //串口透传
 #ifdef DEVICE_COM_PENET
 #include "config/com-penet.h"
@@ -24,6 +29,9 @@
 #ifdef DEVICE_COM_PENET_HALF
 #include "config/com-penet-half.h"
 #endif
+
+
+DEVICE_RFIR_PENET
 
 extern device::Device* GDevice;  
 
