@@ -29,6 +29,10 @@ void service::Networking::start(){
     }); 
 
     GMqttClient.events.onMqttConnect.add(this, [this](void* arg, void* p)-> void*{
+        //外网接通，内网关闭
+        LMqttClient.params.enable = false;
+        LMqttClient.delayDisconnectToMqtt(100);
+
         subscribe();
         setOnline();
         handshake();
@@ -38,11 +42,55 @@ void service::Networking::start(){
         uint16_t dev_offline_count = GRegTable.tables.get(GRegTable.keys.dev_offline_count);
         dev_offline_count++;
         GRegTable.tables.add(GRegTable.keys.dev_offline_count, dev_offline_count);
+
+        //外网断线，内网激活
+        LMqttClient.params.enable = GRegTable.tables.get(GRegTable.keys.intranet_mqtt_enable);
+        LMqttClient.delayConnectToMqtt();
+
         return 0;
     });
 
     GMqttClient.events.onMqttConnectTimeout.add(this,  [this](void* arg, void* p)-> void*{
-        rfir::util::Util::Reset();
+        //外网超时，内网未连接，重启
+        if(!LMqttClient.mqtt.connected())
+            rfir::util::Util::Reset();
+        return 0;
+    });
+
+
+    //L MQTT
+    LMqttClient.events.onMqttMessage.add(this, [](void* arg, void* p) -> void* {
+        auto msg = (::network::module::mqtt::AClient::Message*)p;
+        if (msg->total < sizeof(cmds::cmd::Cmd::Head) ) {
+            GDebuger.print("LMqttClient.events.onMqttMessage total is low, topic: ");
+            GDebuger.print(msg->topic);
+            GDebuger.print(" total:");
+            GDebuger.print(msg->total);
+            return 0;
+        }
+
+        GRecvCmd.recv(msg->payload, msg->len);
+        return 0;
+    }); 
+
+    LMqttClient.events.onMqttConnect.add(this, [this](void* arg, void* p)-> void*{
+        if (GMqttClient.mqtt.connected()){
+            LMqttClient.delayDisconnectToMqtt(100);
+        } else {
+            subscribe();
+            setOnline();
+            handshake();
+        }
+        return 0;
+    });
+    LMqttClient.events.onMqttDisconnect.add(this, [this](void* arg, void* p)-> void*{
+        return 0;
+    });
+
+    LMqttClient.events.onMqttConnectTimeout.add(this,  [this](void* arg, void* p)-> void*{
+        //内网超时，外网未连接，重启
+        if(!GMqttClient.mqtt.connected())
+            rfir::util::Util::Reset();
         return 0;
     });
 };
@@ -70,12 +118,13 @@ void service::Networking::setOnline(){
 };
 
 void service::Networking::subscribe(){
-    GMqttClient.mqtt.subscribe(GRegTable.values.mqtt_sub_topic, 2);    
+    GMqttClient.mqtt.subscribe(GRegTable.values.mqtt_sub_topic, 2);   
+    LMqttClient.mqtt.subscribe(GRegTable.values.mqtt_sub_topic, 2);  
 };
 
 
 bool service::Networking::handshake(cmds::cmd::Cmd* cmd){
-    if (GMqttClient.mqtt.connected()) {
+    if (GMqttClient.mqtt.connected() || LMqttClient.mqtt.connected()) {
         GDebuger.println(F("service::Networking::handshake"));
 
         std::list<int> ids;
@@ -107,13 +156,16 @@ void service::Networking::delayHandshake(int delay_ms){
 
 int service::Networking::publish(const char* topic, const char* payload , size_t length, uint8_t qos , bool retain, bool dup, uint16_t message_id){
     if (GMqttClient.mqtt.connected())
-        return GMqttClient.mqtt.publish(topic, qos, retain, payload, length, dup, message_id);            
+        return GMqttClient.mqtt.publish(topic, qos, retain, payload, length, dup, message_id);   
+    else if (LMqttClient.mqtt.connected())        
+        return LMqttClient.mqtt.publish(topic, qos, retain, payload, length, dup, message_id);
 
     return 0;
 };
 
 int service::Networking::setWill(const char* topic, const char* payload , size_t length, uint8_t qos , bool retain){
     GMqttClient.mqtt.setWill(topic, qos, retain, payload, length);
+    LMqttClient.mqtt.setWill(topic, qos, retain, payload, length);
     return 0;
 };
 

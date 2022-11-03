@@ -97,7 +97,6 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
 
 
 void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
-    GSendCmd.reset();
     if (GDevice->onCmd_config(cmd) != -1){
         std::list<int> ids;
         GRegTable.merge(&cmd->regTable, ids);
@@ -106,17 +105,20 @@ void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
         {
             GConfig.saved.add(*it, 0);
         }        
-
+        //
         GConfig.save();  
 
         //Debug
         GDebuger.enabled =  GRegTable.tables.get(GRegTable.keys.serial_debug);
 
         //Resp
+        GSendCmd.reset();
         GSendCmd.head->cmd_id = cmds::cmd::CmdId::config;
         GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
         GSendCmd.head->cmd_stp = 1;
         GSendCmd.send(ids);
+
+
     };
 };
 
@@ -306,8 +308,38 @@ void service::Cmds::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
     };
 };
 
-void service::Cmds::onCmd_intranet(cmds::cmd::RecvCmd* cmd){
+void service::Cmds::onCmd_intranet(cmds::cmd::RecvCmd* cmd){    
     if (GDevice->onCmd_intranet(cmd) != -1){
+        if (cmd->regTable.tables.getSize() > 0) {
+            std::list<int> ids;
+            GRegTable.merge(&cmd->regTable, ids);
+            LMqttClient.params.enable = GRegTable.tables.get(GRegTable.keys.intranet_mqtt_enable);
+            LMqttClient.params.ip = GRegTable.values.intranet_mqtt_ip;
+            LMqttClient.params.port = GRegTable.tables.get(GRegTable.keys.intranet_mqtt_port);
+            LMqttClient.params.user = strcmp(GRegTable.values.intranet_mqtt_user, "") == 0 ? GRegTable.values.mqtt_user : GRegTable.values.intranet_mqtt_user; 
+            LMqttClient.params.pass = strcmp(GRegTable.values.intranet_mqtt_user, "") == 0 ? GRegTable.values.mqtt_pass : GRegTable.values.intranet_mqtt_pass; 
+            
+            for (auto it = ids.begin(); it != ids.end(); it++)
+            {
+               GConfig.saved.add(*it, 0);
+            }
+ 
+            //
+            GConfig.save();  
+
+            //Resp
+            if (cmd->head->cmd_stp == 0) {
+                GSendCmd.reset();
+                GSendCmd.head->cmd_id = cmds::cmd::CmdId::intranet;
+                GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
+                GSendCmd.head->cmd_stp = 1;
+                GSendCmd.send();       
+            } 
+
+
+            //启动内网
+            LMqttClient.delayConnectToMqtt();
+        }
 
     };    
 };

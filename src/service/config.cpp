@@ -26,6 +26,8 @@ void service::Config::init(){
     strcpy(GRegTable.values.intranet_mqtt_user, INTRANET_MQTT_USER);
     strcpy(GRegTable.values.intranet_mqtt_pass, INTRANET_MQTT_PASS);
     strcpy(GRegTable.values.intranet_ip, INTRANET_IP);
+    strcpy(GRegTable.values.intranet_from_id, INTRANET_FROM_ID);
+    strcpy(GRegTable.values.intranet_to_id, INTRANET_TO_ID);
 
     GRegTable.tables.add(GRegTable.keys.dev_online, 0);
     GRegTable.tables.add(GRegTable.keys.cfg_version, CFG_VERSION);
@@ -154,18 +156,6 @@ void service::Config::resetConfig(bool restart){
     rfir::util::File::remove(this->params.filename);
     if (restart)
         rfir::util::Util::Reset(1000);
-};
-
-void service::Config::existSavedKey(int key){
-
-};
-
-void service::Config::addSavedKey(int key){
-
-};
-
-void service::Config::removeSavedKey(int key){
-
 };
 
 int service::Config::getSerialBaud(){

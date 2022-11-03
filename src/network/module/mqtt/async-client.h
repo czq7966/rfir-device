@@ -18,6 +18,7 @@ namespace network {
             class AClient {
             public:
                 struct Params {
+                    bool            enable = true;
                     const char*     ip = 0;
                     int             port = 1883;
                     int             keepalive = 15;
@@ -63,6 +64,7 @@ namespace network {
                 Params params;
                 uint32_t        m_connect_timeout_handler = 0;
                 uint32_t        m_check_timeout_handler = 0;
+                uint32_t        m_delay_connect_handler = 0;
             public:
 
                 void init();
@@ -101,5 +103,6 @@ namespace network {
 }
 
 extern network::module::mqtt::AClient GMqttClient;
+extern network::module::mqtt::AClient LMqttClient;
 
 #endif //

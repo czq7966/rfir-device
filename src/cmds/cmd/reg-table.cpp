@@ -18,6 +18,13 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.mqtt_pass, (int)this->values.mqtt_pass);
     this->tables.add(this->keys.wifi_ssid_dev, (int)this->values.wifi_ssid_dev);
     this->tables.add(this->keys.wifi_pass_dev, (int)this->values.wifi_pass_dev);
+    this->tables.add(this->keys.intranet_mqtt_ip, (int)this->values.intranet_mqtt_ip);
+    this->tables.add(this->keys.intranet_mqtt_user, (int)this->values.intranet_mqtt_user);
+    this->tables.add(this->keys.intranet_mqtt_pass, (int)this->values.intranet_mqtt_pass);
+    this->tables.add(this->keys.intranet_ip, (int)this->values.intranet_ip);
+    this->tables.add(this->keys.intranet_from_id, (int)this->values.intranet_from_id);
+    this->tables.add(this->keys.intranet_to_id, (int)this->values.intranet_to_id);
+
 
     this->tables.add(this->keys.dev_online, 0);
     this->tables.add(this->keys.cfg_version, 0);

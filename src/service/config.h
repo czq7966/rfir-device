@@ -49,9 +49,6 @@ namespace service {
         void save();
         void save(std::list<int> ids);
         void resetConfig(bool restart = true);
-        void existSavedKey(int key);
-        void addSavedKey(int key);
-        void removeSavedKey(int key);
     public:
         int getSerialBaud();
         void setSerialBaud(int value);

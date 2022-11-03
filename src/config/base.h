@@ -76,14 +76,16 @@
 #define MQTT_BUFFER_SIZE            1024 * 3
 
 //内网组网
-#define INTRANET_ENABLE        false
-#define INTRANET_IP                 ""
-#define INTRANET_PORT               0
-#define INTRANET_MQTT_ENABLE        false
+#define INTRANET_ENABLE             true
+#define INTRANET_IP                 "239.1.2.3"
+#define INTRANET_PORT               23912
+#define INTRANET_MQTT_ENABLE        true
 #define INTRANET_MQTT_IP            ""
-#define INTRANET_MQTT_PORT          0
+#define INTRANET_MQTT_PORT          1780
 #define INTRANET_MQTT_USER          ""
 #define INTRANET_MQTT_PASS          ""
+#define INTRANET_FROM_ID            ""
+#define INTRANET_TO_ID              ""
 
 //Timer Report 
 #define NET_REPORT_TIMEOUT          60   //1分钟上报一次

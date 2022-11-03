@@ -34,6 +34,10 @@ bool cmds::cmd::Cmd::checksum(){
     return 0;
 };
 
+ size_t cmds::cmd::Cmd::length(){
+    return sizeof(Head) + this->head->pld_len;
+ };
+
 bool cmds::cmd::RecvCmd::recv(const char* buf, int size){
     this->params.buf = (char*)buf;
     this->params.bufsize = size;
@@ -95,7 +99,7 @@ bool cmds::cmd::SendCmd::send(std::list<int> ids){
 
 bool cmds::cmd::SendCmd::send(){
     if (this->encode()) {
-        int len = sizeof(Head) + this->head->pld_len;
+        int len = this->length(); 
         this->events.send.emit((void*)len);
         return true;
     }

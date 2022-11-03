@@ -71,6 +71,7 @@ namespace cmds {
             virtual uint16_t getsum();
             virtual bool setsum();
             virtual bool checksum();
+            virtual size_t length();
         };
 
         class RecvCmd: public Cmd {

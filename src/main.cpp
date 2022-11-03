@@ -13,6 +13,7 @@
 #include "rfir/ttl/sender.h"
 #include "service/networking.h"
 #include "service/cmds.h"
+#include "service/intranet.h"
 
 
 char config_filename[] = "/config.bin";
@@ -50,9 +51,10 @@ void setup() {
     GWifiAP.params.start_wifi_timeout = GRegTable.tables.get(GRegTable.keys.ap_start_timeout) * 1000;
 
 
-    //MQTT
+    //G MQTT
     int mqtt_msg_buffer_size = pub_buffer_size;
     char*  mqtt_msg_buffer = new char[mqtt_msg_buffer_size];
+    GMqttClient.params.enable = !GRegTable.tables.get(GRegTable.keys.mqtt_disable);
     GMqttClient.params.msgbuf = mqtt_msg_buffer;
     GMqttClient.params.msgbufsize = mqtt_msg_buffer_size;
     GMqttClient.params.clean_session = GRegTable.tables.get(GRegTable.keys.mqtt_clean_session);
@@ -64,6 +66,20 @@ void setup() {
     GMqttClient.params.port = GRegTable.tables.get(GRegTable.keys.mqtt_port);
     GMqttClient.params.timeout = GRegTable.tables.get(GRegTable.keys.mqtt_reset_timeout) * 1000;
     GMqttClient.params.user = GRegTable.values.mqtt_user;  
+
+    //L MQTT    
+    LMqttClient.params.msgbuf = mqtt_msg_buffer;
+    LMqttClient.params.msgbufsize = mqtt_msg_buffer_size;
+    LMqttClient.params.clean_session = GRegTable.tables.get(GRegTable.keys.mqtt_clean_session);
+    LMqttClient.params.id = GRegTable.values.dev_id;    
+    LMqttClient.params.keepalive = GRegTable.tables.get(GRegTable.keys.mqtt_keepalive) * 1000;    
+    LMqttClient.params.timeout = GRegTable.tables.get(GRegTable.keys.mqtt_reset_timeout) * 1000;
+    LMqttClient.params.enable = GRegTable.tables.get(GRegTable.keys.intranet_mqtt_enable);
+    LMqttClient.params.ip = GRegTable.values.intranet_mqtt_ip;
+    LMqttClient.params.port = GRegTable.tables.get(GRegTable.keys.intranet_mqtt_port);
+    LMqttClient.params.user = strcmp(GRegTable.values.intranet_mqtt_user, "") == 0 ? GRegTable.values.mqtt_user : GRegTable.values.intranet_mqtt_user; 
+    LMqttClient.params.pass = strcmp(GRegTable.values.intranet_mqtt_user, "") == 0 ? GRegTable.values.mqtt_pass : GRegTable.values.intranet_mqtt_pass; 
+
 
     //OTA
     GOTAUpdater.params.id = GRegTable.values.dev_id;
@@ -89,12 +105,20 @@ void setup() {
     GTTLSender.params.repeat = GRegTable.get(GRegTable.keys.rfir_send_repeat);
     GTTLSender.params.frequency = GRegTable.get(GRegTable.keys.rfir_send_frequency);
     GTTLSender.params.dutycycle = GRegTable.get(GRegTable.keys.rfir_send_dutycycle);
+
+    //GIntranet
+    GIntranet.params.buf = mqtt_msg_buffer;
+    GIntranet.params.bufsize = mqtt_msg_buffer_size;
        
     //WIFI
     GWifiClient.start();
 
-    //MQTT
+    //G MQTT
     GMqttClient.start();
+
+    //L MQTT
+    LMqttClient.start();
+
 
     //启动组网组件
     GNetworking.start();    
@@ -121,6 +145,9 @@ void setup() {
 
     //Sniffer
     GTTLSniffer.start(true);
+
+    //内网组网
+    GIntranet.start(true);
 
     //配置Ready
     GConfig.events.ready.emit(0);
@@ -151,6 +178,9 @@ void loop() {
 
     //射频采集
     GTTLSniffer.loop();
+
+    //内网组网
+    GIntranet.loop();
 }
 
 

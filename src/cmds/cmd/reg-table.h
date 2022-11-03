@@ -27,7 +27,7 @@ namespace cmds {
                 const uint16_t wifi_pass_dev =      60015;
 
                 const uint16_t intranet_mqtt_ip =	60040;
-                const uint16_t intranet_user =	60041;
+                const uint16_t intranet_mqtt_user =	60041;
                 const uint16_t intranet_mqtt_pass =	60042;
                 const uint16_t intranet_ip =	    60043;
 
@@ -89,6 +89,8 @@ namespace cmds {
                 const uint16_t intranet_mqtt_port =	 61041;
                 const uint16_t intranet_enable =     61042;
                 const uint16_t intranet_port =	     61043;
+                const uint16_t intranet_from_id =	 61044;
+                const uint16_t intranet_to_id =	     61045;
                     
                 const uint16_t rfir_sniff_enable =	 61050;
                 const uint16_t rfir_sniff_pin =	     61051;
@@ -128,7 +130,9 @@ namespace cmds {
                 char intranet_mqtt_ip[65];
                 char intranet_mqtt_user[33];
                 char intranet_mqtt_pass[33];
-                char intranet_ip[65];
+                char intranet_ip[33];
+                char intranet_from_id[33];
+                char intranet_to_id[33];
             };
             
         public:
