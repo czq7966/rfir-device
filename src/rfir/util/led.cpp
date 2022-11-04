@@ -7,7 +7,8 @@ void rfir::util::Led::start(JLed* pled){
 
 void rfir::util::Led::start(JLed* pled, void* owner){
     stop();    
-    this->led = pled;    
+    JLed* nled = (JLed*)this->events.onStart.emit(owner);
+    this->led = pled ? pled : nled;    
     this->owner = owner;
     if (this->led)
         this->led->Reset();

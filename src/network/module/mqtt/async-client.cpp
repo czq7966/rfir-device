@@ -50,8 +50,7 @@ void network::module::mqtt::AClient::connectToMqtt() {
             if (m_connect_timeout_handler == 0) {        
                 m_connect_timeout_handler = GEventTimer.delay(params.timeout, std::bind(&AClient::onConnectToMqttTimeout, this, std::placeholders::_1, std::placeholders::_2));
             }
-            if (GLed.idle() && this->params.jled)
-                GLed.start(this->params.jled, this);
+            if (GLed.idle()) GLed.start(this->params.jled, this);
 
             mqtt.connect();
         }

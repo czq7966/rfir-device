@@ -15,11 +15,34 @@
 #include "service/cmds.h"
 #include "service/intranet.h"
 
+//LED 获取闪灯
+void* onGLedStart(void* arg , void* p) {
+    
+    //GWifiClient
+    if (p == &GWifiClient) {
+        return &WIFI_CONNECT_JLED;
+    }
+
+    //GAP
+    if (p == &GWifiAP) {
+        return &(AP_CONFIG_JLED);
+    }
+    
+    //GMqttClient
+    if (p == &GMqttClient) {
+        return &MQTT_CONNECT_JLED;
+    }
+
+    return 0;
+}
+
 
 char config_filename[] = "/config.bin";
 void setup() {
     int   pub_buffer_size = MQTT_BUFFER_SIZE;
     char* pub_buffer = (char*)malloc(pub_buffer_size);
+
+    //GConfig
     GConfig.params.buf = (char*)pub_buffer;
     GConfig.params.bufsize = pub_buffer_size;
     GConfig.params.filename = config_filename;
@@ -27,6 +50,10 @@ void setup() {
     GConfig.init();    
     GConfig.fixUp();
 
+    //GLed
+    GLed.events.onStart.add(0, onGLedStart);
+
+    //Serial
     Serial.begin(GConfig.getSerialBaud(), (SerialConfig)GConfig.getSerialConfig());
     GDebuger.enabled =  GRegTable.tables.get(GRegTable.keys.serial_debug);
     GDebuger.print(F("begin chid id: "));
@@ -34,6 +61,7 @@ void setup() {
     GDebuger.print(F(" , mac: "));
     GDebuger.println(GRegTable.values.dev_mac);
 
+    //GSendCmd
     GSendCmd.params.buf = pub_buffer;
     GSendCmd.params.bufsize = pub_buffer_size;
     
@@ -42,12 +70,10 @@ void setup() {
     GWifiClient.addSsids(GRegTable.values.wifi_ssid, GRegTable.values.wifi_pass);
     GWifiClient.addSsids(GRegTable.values.wifi_ssid_dev, GRegTable.values.wifi_pass_dev);
     GWifiClient.params.timeout = GRegTable.tables.get(GRegTable.keys.wifi_reset_timeout) * 1000;
-    GWifiClient.params.jled = &WIFI_CONNECT_JLED;
 
     //AP
     GWifiAP.params.apSsid = GRegTable.values.ap_ssid;
     GWifiAP.params.apPass = GRegTable.values.ap_pass;
-    GWifiAP.params.jled = &AP_CONFIG_JLED;
     GWifiAP.params.start_wifi_timeout = GRegTable.tables.get(GRegTable.keys.ap_start_timeout) * 1000;
 
 
@@ -60,7 +86,6 @@ void setup() {
     GMqttClient.params.clean_session = GRegTable.tables.get(GRegTable.keys.mqtt_clean_session);
     GMqttClient.params.id = GRegTable.values.dev_id;
     GMqttClient.params.ip = GRegTable.values.mqtt_ip;
-    GMqttClient.params.jled = &MQTT_CONNECT_JLED;
     GMqttClient.params.keepalive = GRegTable.tables.get(GRegTable.keys.mqtt_keepalive) * 1000;
     GMqttClient.params.pass = GRegTable.values.mqtt_pass;
     GMqttClient.params.port = GRegTable.tables.get(GRegTable.keys.mqtt_port);

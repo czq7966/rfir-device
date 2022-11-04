@@ -2,7 +2,6 @@
 #define SERVICE_DEVICE_H
 
 #include "config-device.h"
-#include "device/device.h"
 
 //设备基类
 #ifdef DEVICE_BASE
@@ -30,9 +29,7 @@
 #include "config/com-penet-half.h"
 #endif
 
-
-DEVICE_RFIR_PENET
-
+#include "device/device.h"
 extern device::Device* GDevice;  
 
 #endif                
