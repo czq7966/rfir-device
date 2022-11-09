@@ -98,7 +98,7 @@
 #define RFIR_SNIFF_PIN	            -1
 #define RFIR_SNIFF_INVERTED	        false
 #define RFIR_SNIFF_MINCOUNT	        50
-#define RFIR_SNIFF_MAXCOUNT	        256   
+#define RFIR_SNIFF_MAXCOUNT	        256 * 2 
 #define RFIR_SNIFF_MINDELTA	        150
 #define RFIR_SNIFF_MAXDELTA	        UINT16_MAX
 

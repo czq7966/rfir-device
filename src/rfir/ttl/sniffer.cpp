@@ -15,6 +15,17 @@ int rfir::ttl::Sniffer::Data::toBuffer(uint16_t* buffer){
     return count;
 };
 
+void rfir::ttl::Sniffer::Data::dump(){
+    GDebuger.println("");
+    GDebuger.print("[");
+    for (auto it = deltas.begin(); it != deltas.end(); it++)
+    {        
+        GDebuger.print(*it);
+        GDebuger.print(",");
+    }   
+    GDebuger.println("]");
+};
+
 
 void rfir::ttl::Sniffer::start(bool sniff){
     if (this->params.pin >= 0) {

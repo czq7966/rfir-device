@@ -18,6 +18,7 @@ namespace rfir {
                 std::list<TimeTTL>      ttls;
                 std::list<uint16_t>     deltas;
                 int toBuffer(uint16_t* buffer);
+                void                    dump();
             };
 
             struct Params {

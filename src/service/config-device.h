@@ -5,7 +5,10 @@
 // #define DEVICE_BASE
 
 //射频透传
-#define DEVICE_RFIR_PENET
+// #define DEVICE_RFIR_PENET
+
+//射频透传8285
+#define DEVICE_RFIR_PENET_8285
 
 //串口透传
 // #define DEVICE_COM_PENET

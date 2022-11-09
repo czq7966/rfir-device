@@ -1,6 +1,7 @@
 #include "device.h"
 #include "rfir/ttl/sender.h"
 #include "rfir/ttl/sniffer.h"
+#include "rfir/util/debuger.h"
 #include "cmds/cmd/reg-table.h"
 
 void device::Device::start(){
@@ -87,6 +88,8 @@ int device::Device::onCmd_rfir_sniff(cmds::cmd::RecvCmd* cmd){
 };
     
 int device::Device::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
+    GDebuger.print("device::Device::onCmd_rfir_send: ");
+    GDebuger.println(cmd->head->cmd_id);
     GTTLSender.params.enabled = GRegTable.get(GRegTable.keys.rfir_send_enable, &cmd->regTable);
     GTTLSender.params.pin = GRegTable.get(GRegTable.keys.rfir_send_pin, &cmd->regTable);
     GTTLSender.params.inverted = GRegTable.get(GRegTable.keys.rfir_send_inverted, &cmd->regTable);
