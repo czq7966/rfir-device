@@ -69,7 +69,7 @@ void service::Networking::start(){
             return 0;
         }
 
-        GRecvCmd.recv(msg->payload, msg->len);
+        GRecvCmd.recv(msg->payload, msg->total);
         return 0;
     }); 
 

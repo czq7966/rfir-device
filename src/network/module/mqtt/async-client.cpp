@@ -120,7 +120,7 @@ void network::module::mqtt::AClient::onMqttMessage(char* topic, char* payload, A
         msg.topic = topic;
         msg.payload = this->params.msgbuf;
         msg.props = &properties;
-        msg.len = len;
+        msg.len = index + len;
         msg.index = index;
         msg.total = total;
         events.onMqttMessage.emit((void*)&msg);

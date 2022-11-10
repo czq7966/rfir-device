@@ -65,9 +65,13 @@ bool cmds::cmd::RecvCmd::decode(){
     } else {
         GDebuger.print(F("cmds::cmd::RecvCmd::decode failed, pro_logo: "));
         GDebuger.print(head->pro_logo);
-        GDebuger.print(F(" , "));
+        GDebuger.print(F(" : "));
         GDebuger.print(PRO_LOGO);
-        GDebuger.println(F(""));
+        GDebuger.print(F(" , length:  "));
+        GDebuger.print(this->head->pld_len + sizeof(Head));
+        GDebuger.print(F(" : "));
+        GDebuger.print(this->params.bufsize);
+        GDebuger.println(F(" "));
         
     }
     return false;
