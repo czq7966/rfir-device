@@ -1,19 +1,13 @@
 #include "device.h"
 
-//8285红外接收发射透传
+//设备基类
 #ifdef DEVICE_BASE
 #include "device/device.h"
 device::Device* GDevice = new device::Device();
 #endif
 
-//射频透传
-#ifdef DEVICE_RFIR_PENET
-#include "device/rfir-device.h"
-device::Device* GDevice = new device::RfirDevice();
-#endif
-
-//射频透传8285
-#ifdef DEVICE_RFIR_PENET_8285
+//射频透传: 8285,ND定制空调
+#if defined(DEVICE_RFIR_PENET) || defined(DEVICE_RFIR_PENET_8285) || defined(DEVICE_RFIR_PENET_ND_AC)
 #include "device/rfir-device.h"
 device::Device* GDevice = new device::RfirDevice();
 #endif

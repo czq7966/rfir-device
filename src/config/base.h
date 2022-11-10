@@ -43,8 +43,8 @@
 #define WIFI_DISABLE                false
 #define WIFI_SSID_DEV               ""
 #define WIFI_PASS_DEV               ""
-#define WIFI_SSID                   ""
-#define WIFI_PASS                   ""
+#define WIFI_SSID                   ""      //多个WIFI，以空格或逗号隔开
+#define WIFI_PASS                   ""      
 #define WIFI_RESET_TIMEOUT          60 * 10 //多少时间内WIFI未连接，重启，单位秒
 #define WIFI_CONNECT_JLED           GJLed.Stop().LowActive().Blink(500, 500).Forever().Reset()
 

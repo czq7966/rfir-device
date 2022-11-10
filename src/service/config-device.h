@@ -8,7 +8,10 @@
 // #define DEVICE_RFIR_PENET
 
 //射频透传8285
-#define DEVICE_RFIR_PENET_8285
+// #define DEVICE_RFIR_PENET_8285
+
+//射频透传ND定制空调
+#define DEVICE_RFIR_PENET_ND_AC
 
 //串口透传
 // #define DEVICE_COM_PENET

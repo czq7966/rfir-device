@@ -18,6 +18,11 @@
 #include "config/rfir-penet-8285.h"
 #endif
 
+//射频透传
+#ifdef DEVICE_RFIR_PENET_ND_AC
+#include "config/rfir-penet-nd-ac.h"
+#endif
+
 //串口透传
 #ifdef DEVICE_COM_PENET
 #include "config/com-penet.h"
