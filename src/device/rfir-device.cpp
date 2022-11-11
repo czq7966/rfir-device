@@ -16,8 +16,6 @@ int device::RfirDevice::on_rfir_sniffed(rfir::ttl::Sniffer::Data* data){
     GDebuger.print(data->deltas.size());
     GDebuger.println(F(" "));
 
-    data->dump();    
-
     int count = data->toBuffer((uint16_t*)this->params.buf);
     if (count > 0) {
         GSendCmd.reset();

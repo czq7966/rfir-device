@@ -2,6 +2,7 @@
 #include "rfir/ttl/sender.h"
 #include "rfir/ttl/sniffer.h"
 #include "rfir/util/debuger.h"
+#include "rfir/util/interrupt.h"
 #include "cmds/cmd/reg-table.h"
 
 void device::Device::start(){
@@ -100,7 +101,9 @@ int device::Device::onCmd_rfir_send(cmds::cmd::RecvCmd* cmd){
     auto data = cmd->regTable.tables.get(GRegTable.keys.rfir_send_data);
     auto size = cmd->regTable.sizes.get(GRegTable.keys.rfir_send_data);
     if (data && size) {
+        GInterrupt.stop();
         GTTLSender.sendRaw((uint16_t*)data, size / 2);
+        GInterrupt.start();
         return size / 2;
     }
 

@@ -24,7 +24,7 @@
 //OTA
 #undef  OTA_VERSION
 #undef  OTA_UPDATE_URL
-#define OTA_VERSION                 20
+#define OTA_VERSION                 21
 #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/rfir-penet-nd-ac/cfg.txt"
 
 //RFIR SNIFF
