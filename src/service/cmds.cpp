@@ -143,6 +143,16 @@ void service::Cmds::onCmd_reboot(cmds::cmd::RecvCmd* cmd){
 void service::Cmds::onCmd_get(cmds::cmd::RecvCmd* cmd){
     GSendCmd.reset();
     if (GDevice->onCmd_get(cmd) != -1){
+
+        //get_gpio
+        if (cmd->regTable.tables.exist(GRegTable.keys.gpio_rw_pin)) {
+            int pin = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_pin);
+            int value = rfir::util::Util::GetGpio(pin);
+            GRegTable.tables.add(GRegTable.keys.gpio_rw_pin, pin);
+            GRegTable.tables.add(GRegTable.keys.gpio_rw_value, value);
+            cmd->regTable.tables.add(GRegTable.keys.gpio_rw_value, value);
+        }
+
         //Resp
         GSendCmd.head->cmd_id = cmds::cmd::CmdId::get;
         GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
@@ -166,6 +176,15 @@ void service::Cmds::onCmd_set(cmds::cmd::RecvCmd* cmd){
         //rfir_send
         if (cmd->regTable.tables.get(GRegTable.keys.rfir_send_data))
             GDevice->onCmd_rfir_send(cmd);
+
+        //set_gpio
+        if (cmd->regTable.tables.exist(GRegTable.keys.gpio_rw_pin) &&
+            cmd->regTable.tables.exist(GRegTable.keys.gpio_rw_value)) {
+            int pin = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_pin);
+            int value = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_value);
+            rfir::util::Util::SetGpio(pin, value);
+        }
+
 
         //Resp
         GSendCmd.head->cmd_id = cmds::cmd::CmdId::set;
@@ -247,9 +266,7 @@ void service::Cmds::onCmd_get_gpio(cmds::cmd::RecvCmd* cmd){
     GSendCmd.reset();
     if (GDevice->onCmd_get_gpio(cmd) != -1){
         uint8_t pin = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_pin);
-        
-        pinMode(pin, INPUT);        
-        int value = digitalRead(pin);   
+        int value = rfir::util::Util::GetGpio(pin);   
 
         //Resp
         GSendCmd.regTable.tables.add(GRegTable.keys.gpio_rw_pin, pin);
@@ -269,9 +286,7 @@ void service::Cmds::onCmd_set_gpio(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_set_gpio(cmd) != -1){
         uint8_t pin = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_pin);
         int value = cmd->regTable.tables.get(GRegTable.keys.gpio_rw_value);
-    
-        pinMode(pin, OUTPUT);        
-        digitalWrite(pin, value);        
+        rfir::util::Util::SetGpio(pin, value);
 
         //Resp
         GSendCmd.regTable.tables.add(GRegTable.keys.gpio_rw_pin, pin);

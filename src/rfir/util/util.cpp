@@ -254,3 +254,14 @@ std::string rfir::util::Util::ToUpper(const char* data){
   }
   return s;
 };
+
+int  rfir::util::Util::GetGpio(int pin){
+  pinMode(pin, INPUT);        
+  return digitalRead(pin);
+};
+
+bool rfir::util::Util::SetGpio(int pin, int value){
+  pinMode(pin, OUTPUT);        
+  digitalWrite(pin, value);      
+  return true;
+};

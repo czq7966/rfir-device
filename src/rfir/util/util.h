@@ -26,6 +26,8 @@ namespace rfir {
             static void DelayReset(int timeout_ms);
             static std::string ToLower(const char* data);
             static std::string ToUpper(const char* data);
+            static int  GetGpio(int pin);
+            static bool SetGpio(int pin, int value);
         };
     }
 }
