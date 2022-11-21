@@ -15,19 +15,30 @@ bool rfir::util::RegTable::encode(char* buf, int& size, std::list<int>& ids){
             if (key >= this->strMinNum && key <= this->strMaxNum ||
                 key >= this->bytesMinNum && key <= this->bytesMaxNum
             ) {
-                int len = 0;
-                if (key >= this->strMinNum && key <= this->strMaxNum)
-                    len = strlen((const char*) value);
-                else this->sizes.get(key, len);
+                if (value >= 0) {   //Buffer内存
+                    int len = 0;
+                    if (key >= this->strMinNum && key <= this->strMaxNum)
+                        len = strlen((const char*) value);
+                    else this->sizes.get(key, len);
 
-                memcpy(buf, &len, step);
-                if (len > 0) {
                     memcpy(buf, &len, step);
                     buf = buf + step;
-                    memcpy(buf, (void*)value, len);
-                    buf = buf + len ;                
-                } else {
+                    if (len > 0) {
+                        memcpy(buf, (void*)value, len);
+                        buf = buf + len ;                
+                    } 
+                } else {    //vector<uint8_t> 对象
+                    auto data = this->decodeVectorAddress(value);
+                    int len = data->size();
+                    memcpy(buf, &len, step);
                     buf = buf + step;
+                    if (len > 0) {
+                        for (size_t i = 0; i < len; i++)
+                        {
+                            buf[i] = (char)((*data)[i]);
+                        }
+                        buf = buf + len ; 
+                    } 
                 }
             } else {
                 memcpy(buf, &value, step);
@@ -85,22 +96,26 @@ bool rfir::util::RegTable::merge(RegTable* regtable, std::list<int>& ids){
     auto map = regtable->tables.getMap();
     for (auto  it = map->begin(); it != map->end(); it++)
     {
-        int key = it->first;            
+        int key = it->first;                    
         if (key >= this->strMinNum && key <= this->strMaxNum ||
             key >= this->bytesMinNum && key <= this->bytesMaxNum        
         ) {
-            if (key >= this->strMinNum && key <= this->strMaxNum ) {
-                int value = 0;
-                if (this->tables.get(key, value) && value) {
-                    int len = 0;
-                    if (regtable->sizes.get(key, len)) {
-                        auto buf = (const char*)it->second;
-                        if (buf) memcpy((void*)value, buf , len);
+            int value = 0;
+            int len = 0;
+            if (this->tables.get(key, value) && regtable->sizes.get(key, len) && value) {                
+                auto buf = (const char*)it->second;
+                if (value > 0) {    //Buffer
+                    if (buf) memcpy((void*)value, buf , len);
+                    if (key >= this->strMinNum && key <= this->strMaxNum )
                         ((char*)value)[len] = '\0';
-                        ids.push_back(key);
-                    }                    
+                } else {    //Vector<uint8_t>                    
+                    auto data = this->decodeVectorAddress(value);
+                    data->clear();
+                    if (buf) data->insert(data->end(), buf, buf + len);
                 }
             }
+            this->sizes.add(key, len);
+            ids.push_back(key);    
         } else {
             this->tables.add(key, it->second);
             ids.push_back(key);
@@ -162,4 +177,14 @@ int rfir::util::RegTable::get(int key, RegTable* regtable){
         return regtable->tables.get(key);
     else   
         return this->tables.get(key);
+};
+
+
+int rfir::util::RegTable::encodeVectorAddress(std::vector<uint8_t>* value){
+    return (int)value | 0x80000000;
+};
+
+
+std::vector<uint8_t>* rfir::util::RegTable::decodeVectorAddress(int value){
+    return (std::vector<uint8_t>*)(value & 0x7FFFFFFF);
 };

@@ -27,6 +27,8 @@ namespace rfir {
             void dump();
         public:
             int get(int key, RegTable* regtable = nullptr);
+            int encodeVectorAddress(std::vector<uint8_t>*);
+            std::vector<uint8_t>* decodeVectorAddress(int value);
         };
     }
 }
