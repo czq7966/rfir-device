@@ -6,6 +6,7 @@
 
 
 void service::Config::init(){
+    //字符串
     strcpy(GRegTable.values.dev_vender, DEV_VENDOR);
     strcpy(GRegTable.values.dev_model, DEV_MODEL);
     rfir::util::Util::GetChipId(GRegTable.values.dev_id, CHIP_ID_PREFIX, CHIP_ID_USE_MAC);
@@ -28,6 +29,10 @@ void service::Config::init(){
     strcpy(GRegTable.values.intranet_ip, INTRANET_IP);
     strcpy(GRegTable.values.intranet_from_id, INTRANET_FROM_ID);
     strcpy(GRegTable.values.intranet_to_id, INTRANET_TO_ID);
+
+    //二进制
+    GRegTable.values.report_penet_data = REPORT_PENET_DATA;
+    GRegTable.values.report_reg_list = REPORT_REG_LIST;
 
     GRegTable.tables.add(GRegTable.keys.dev_online, 0);
     GRegTable.tables.add(GRegTable.keys.cfg_version, CFG_VERSION);
@@ -99,6 +104,13 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.rfir_send_frequency, RFIR_SEND_FREQUENCY);
     GRegTable.tables.add(GRegTable.keys.rfir_send_dutycycle, RFIR_SEND_DUTYCYCLE);
 
+    //Report penet
+    GRegTable.tables.add(GRegTable.keys.report_penet_enable, REPORT_PENET_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.report_penet_timeout, REPORT_PENET_TIMEOUT);
+
+    //Report reg
+    GRegTable.tables.add(GRegTable.keys.report_reg_enable, REPORT_REG_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.report_reg_timeout, REPORT_REG_TIMEOUT);
 
     //Button
     GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);

@@ -163,6 +163,24 @@ void rfir::util::RegTable::dump(){
         GDebuger.print(":");
         if (key >= this->strMinNum && key <= this->strMaxNum) {
             GDebuger.println((char*)value);
+        } else if (key >= this->bytesMinNum && key <= this->bytesMaxNum) {
+            auto len = this->sizes.get(key);
+            if (value > 0) {               
+                GDebuger.print(F(" Buffer: "));
+                GDebuger.print(value);
+            } else if (value < 0) {
+                auto vec = this->decodeVectorAddress(value);
+                len = vec->size();
+                GDebuger.print(F(" Vector: "));
+                GDebuger.print(value);
+            } else {
+               GDebuger.print(F(" Null: "));
+               GDebuger.print(value);
+            }
+
+            GDebuger.print(F(", len: "));
+            GDebuger.print(len);
+            GDebuger.println(F(" "));            
         } else {
             GDebuger.print(value);
             GDebuger.println("");

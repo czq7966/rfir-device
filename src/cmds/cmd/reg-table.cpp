@@ -2,6 +2,7 @@
 #include "rfir/util/debuger.h"
 
 cmds::cmd::RegTable::RegTable(){
+    //字符串
     this->tables.add(this->keys.dev_vender, (int)this->values.dev_vender);
     this->tables.add(this->keys.dev_model, (int)this->values.dev_model);
     this->tables.add(this->keys.dev_id, (int)this->values.dev_id);
@@ -25,7 +26,11 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.intranet_from_id, (int)this->values.intranet_from_id);
     this->tables.add(this->keys.intranet_to_id, (int)this->values.intranet_to_id);
 
+    //二进制
+    this->tables.add(this->keys.report_penet_data, this->encodeVectorAddress(&this->values.report_penet_data));
+    this->tables.add(this->keys.report_reg_list, this->encodeVectorAddress(&this->values.report_reg_list));
 
+    //数字
     this->tables.add(this->keys.dev_online, 0);
     this->tables.add(this->keys.cfg_version, 0);
     this->tables.add(this->keys.wifi_rssi, 0);
@@ -70,6 +75,14 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.serial_read_timeout, 0);     
     this->tables.add(this->keys.serial_half_rw_pin, 0);
     this->tables.add(this->keys.serial_half_r_level, 0);
+
+    //Report penet
+    this->tables.add(this->keys.report_penet_enable, 0);
+    this->tables.add(this->keys.report_penet_timeout, 0);
+
+    //Report reg
+    this->tables.add(this->keys.report_reg_enable, 0);
+    this->tables.add(this->keys.report_reg_timeout, 0);
 
 };
 

@@ -178,6 +178,8 @@ void setup() {
     GConfig.events.ready.emit(0);
     GDebuger.println(F("Ready"));
 
+    GRegTable.dump();
+
 }
 
 

@@ -35,6 +35,8 @@ namespace cmds {
                 const uint16_t penet_data =         60500;
                 const uint16_t rfir_sniff_data =	60501;
                 const uint16_t rfir_send_data = 	60502;
+                const uint16_t report_penet_data = 	60503;
+                const uint16_t report_reg_list = 	60504;
 
 
                 //数字
@@ -108,9 +110,18 @@ namespace cmds {
                 const uint16_t rfir_send_frequency = 61065;
                 const uint16_t rfir_send_dutycycle = 61066;                
 
+                //Report penet
+                const uint16_t report_penet_enable = 61070; 
+                const uint16_t report_penet_timeout= 61071; 
+                
+                //Report reg
+                const uint16_t report_reg_enable   = 61080; 
+                const uint16_t report_reg_timeout  = 61081; 
+
             };            
             struct Values
             {
+                //字符串
                 char dev_vender[33];
                 char dev_model[33];
                 char dev_id[33];
@@ -133,6 +144,10 @@ namespace cmds {
                 char intranet_ip[33];
                 char intranet_from_id[33];
                 char intranet_to_id[33];
+
+                //二进制
+                std::vector<uint8_t> report_penet_data;
+                std::vector<uint8_t> report_reg_list;
             };
             
         public:
