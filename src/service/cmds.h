@@ -9,6 +9,14 @@ namespace service {
         void start();
         void loop();
     public:
+        int  delay_report_reg_handler = 0;
+        int  delay_report_penet_handler = 0;
+        void delay_report_reg(int timeout_ms);
+        void delay_report_penet(int timeout_ms);
+        void do_report_reg();
+        void do_report_penet();
+        void do_report_penet_offset(int offset);
+    public:
         void onCmd(cmds::cmd::RecvCmd* cmd);
         void onCmd_config(cmds::cmd::RecvCmd* cmd);
         void onCmd_handshake(cmds::cmd::RecvCmd* cmd);

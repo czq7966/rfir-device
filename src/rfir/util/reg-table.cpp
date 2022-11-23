@@ -180,7 +180,7 @@ void rfir::util::RegTable::dump(){
 
             GDebuger.print(F(", len: "));
             GDebuger.print(len);
-            GDebuger.println(F(" "));            
+            GDebuger.println("");            
         } else {
             GDebuger.print(value);
             GDebuger.println("");

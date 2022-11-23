@@ -28,3 +28,12 @@ size_t device::ComDeviceHalf::write(const char* buf, const size_t size) {
     readMode();      
     return len;
 };
+
+size_t device::ComDeviceHalf::write(std::vector<uint8_t>* buf, const size_t size, const size_t offset) {
+    this->serial->flush();
+    writeMode();
+    size_t len = ComDevice::write(buf, size, offset);
+    this->serial->flush();
+    readMode();      
+    return len;
+};

@@ -47,6 +47,21 @@ size_t device::ComDevice::write(const char* buf, const size_t size) {
     return len;
 };
 
+size_t device::ComDevice::write(std::vector<uint8_t>* buf, const size_t size, const size_t offset){
+    size_t count = 0;
+    while (count < size )
+    {
+        int idx = count + offset;
+        if (idx < buf->size()) {
+            this->serial->write((*buf)[idx]);
+            count++;
+        } else {
+            break;
+        }
+    }
+    return count;   
+};
+
 int device::ComDevice::onCmd_config(cmds::cmd::RecvCmd* cmd){
     return 0;
 };
@@ -71,12 +86,15 @@ int device::ComDevice::onCmd_report(cmds::cmd::RecvCmd* cmd){
     return 0;
 };
 
-int device::ComDevice::onCmd_penet(cmds::cmd::RecvCmd* cmd){
-    if (cmd->head->pld_len > 0){
-        auto data = cmd->regTable.tables.get(GRegTable.keys.penet_data);
-        auto size = cmd->regTable.sizes.get(GRegTable.keys.penet_data);
-        if (data && size) {
-            return this->write((char*)data, size);
+int device::ComDevice::onCmd_penet(cmds::cmd::RecvCmd* cmd, int offset){
+    auto data = cmd->regTable.tables.get(GRegTable.keys.penet_data);
+    auto size = cmd->regTable.sizes.get(GRegTable.keys.penet_data);
+    if (data && size) {
+        if (data > 0)
+            return this->write((char*)data + offset, size);
+        else {
+            auto vecData = cmd->regTable.decodeVectorAddress(data);
+            return this->write(vecData, size, offset);
         }
     }
     return 0;
