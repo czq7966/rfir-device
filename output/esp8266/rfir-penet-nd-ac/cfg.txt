@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp8266/rfir-penet-nd-ac/firmware_v24.bin
+24
+c678948098a85c8da43f6802eb3beacf
+24.0
+1
+ESP8266x00c66764,ESP8266x009773c4,ESP8266x00c1a22a,ESP8266x00c5f9c5,

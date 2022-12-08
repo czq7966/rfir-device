@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp8266/com-penet/firmware_v2.bin
+2
+c67b3788dad94a26d19cc339480dc572
+2.0
+0
+ndiot485519614d25,

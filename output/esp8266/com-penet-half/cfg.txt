@@ -1,0 +1,6 @@
+http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp8266/com-penet-half/firmware_v5.bin
+5
+3057db71b01ddf74436360dc595870e0
+5.0
+0
+ndiotac0bfbc1cd77,
