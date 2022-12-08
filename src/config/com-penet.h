@@ -13,6 +13,11 @@
 #undef  OTA_VERSION
 #undef  OTA_UPDATE_URL
 #define OTA_VERSION                 2
-#define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/com-penet/cfg.txt"
+#ifdef ESP8266
+    #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp8266/com-penet/cfg.txt"
+#endif
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+    #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp32c3/com-penet/cfg.txt"
+#endif
 
 #endif
