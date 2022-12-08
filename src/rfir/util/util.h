@@ -2,7 +2,7 @@
 #define __RFIR_UTIL_UTIL_H__
 
 #include "platform.h"
-#include "config.h"
+// #include "config.h"
 
 namespace rfir {
     namespace util {

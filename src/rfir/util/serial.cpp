@@ -24,7 +24,7 @@ int rfir::util::SerialConfigs::getSerialConfig(){
     int nstop = this->stop == 0 ? UART_NB_STOP_BIT_0 :  this->stop == 2 ? UART_NB_STOP_BIT_2 : UART_NB_STOP_BIT_1;
     int nsum = this->sum == 1 ? UART_PARITY_ODD :  this->sum == 2 ? UART_PARITY_EVEN : UART_PARITY_NONE;
 
-    return ndata | nstop | nsum;    
+    return ndata | nstop | nsum | UART_CONFIG_MASK;    
 };
 
 int rfir::util::SerialConfigs::getSerialData(){

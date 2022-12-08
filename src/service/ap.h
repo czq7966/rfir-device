@@ -6,7 +6,10 @@
 namespace service {
     class AP {     
     public:
-        rfir::util::Button::KeyTime keyTimeResetConfig = {pressed: 10000, released: 15000};
+        rfir::util::Button::KeyTime keyTimeResetConfig;
+    public:
+        AP();
+        ~AP();
     public:
         void init();
         void uninit();

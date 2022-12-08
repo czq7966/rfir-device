@@ -51,7 +51,7 @@ void setup() {
     GConfig.fixUp();
 
     //GLed
-    GLed.events.onStart.add(0, onGLedStart);
+    GLed.events.onStart.add((int32_t)0, onGLedStart);
 
     //Serial
     Serial.begin(GConfig.getSerialBaud(), (SerialConfig)GConfig.getSerialConfig());

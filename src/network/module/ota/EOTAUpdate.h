@@ -2,7 +2,6 @@
 #define UPDATE_CHECKER
 
 #include <Arduino.h>
-#include "config.h"
 
 /**
  * @brief Utility class to automatically fetch and install firmware updates on ESP32

@@ -4,6 +4,14 @@
 #include "rfir/util/serial.h"
 #include "rfir/util/interrupt.h"
 
+service::Config::Config(){
+    this->keyTimeResetConfig.pressed = 10000;
+    this->keyTimeResetConfig.released = 15000;
+};
+
+service::Config::~Config(){
+
+};
 
 void service::Config::init(){
     //字符串

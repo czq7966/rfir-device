@@ -52,7 +52,7 @@ int  rfir::util::Util::GetChipId(char* buf, const char* prefix, bool useMac){
   #ifdef ESP8266
     chipId = ESP.getChipId();    
   #else		//ESP32
-    uint32_t chipId = (uint32_t)ESP.getEfuseMac();
+    chipId = (uint32_t)ESP.getEfuseMac();
   #endif  
   if (useMac)
     GetMacAddress(buf + pre_len, '\0');

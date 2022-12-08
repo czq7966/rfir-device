@@ -6,6 +6,17 @@
 #include "rfir/util/serial.h"
 #include "service/config.h"
 
+network::module::wifi::AP::AP(){
+    this->keyTimeBtnStart.pressed = 3000;
+    this->keyTimeBtnStart.released = 5000;
+
+    this->keyTimeBtnStop.pressed = 200;
+    this->keyTimeBtnStop.released = 1000;
+};
+network::module::wifi::AP::~AP(){
+
+};
+
 void network::module::wifi::AP::start(void*) {
     initBtnStart(); 
 

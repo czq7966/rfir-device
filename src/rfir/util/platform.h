@@ -16,6 +16,7 @@
 #include <memory>
 #include <map>
 #include <list>
+#include <vector>
 #include <mutex>
 #include <sys/time.h>
 
@@ -23,10 +24,31 @@
 #include <LITTLEFS.h>
 #include <WiFi.h>
 
-#define FileFS LITTLEFS
+#define FileFS LittleFS 
 #define u8 uint8_t
 #define u16 uint16_t
 #define u32 uint32_t
+#define SerialConfig uint32_t
+
+// Options for `config` argument of uart_init
+#define UART_CONFIG_MASK      0B10000000
+
+#define UART_NB_BIT_MASK      0B00001100
+#define UART_NB_BIT_5         0B00000000
+#define UART_NB_BIT_6         0B00000100
+#define UART_NB_BIT_7         0B00001000
+#define UART_NB_BIT_8         0B00001100
+
+#define UART_PARITY_MASK      0B00000011
+#define UART_PARITY_NONE      0B00000000
+#define UART_PARITY_EVEN      0B00000010
+#define UART_PARITY_ODD       0B00000011
+
+#define UART_NB_STOP_BIT_MASK 0B00110000
+#define UART_NB_STOP_BIT_0    0B00000000
+#define UART_NB_STOP_BIT_1    0B00010000
+#define UART_NB_STOP_BIT_15   0B00100000
+#define UART_NB_STOP_BIT_2    0B00110000
 
 
 #endif //ESP32
@@ -50,6 +72,9 @@
 #include <ESP8266WiFi.h>
 
 #define FileFS LittleFS
+
+// Options for `config` argument of uart_init
+#define UART_CONFIG_MASK      0B00000000
 
 #define	timerisset(tvp)		((tvp)->tv_sec || (tvp)->tv_usec)
 #define	timerclear(tvp)		((tvp)->tv_sec = (tvp)->tv_usec = 0)

@@ -16,9 +16,10 @@ void rfir::util::Debuger::begin(unsigned long baud, SerialConfig config){
         Serial.begin(baud, config);    
 };
 #else
-void rfir::util::Debuger::begin(unsigned long baud, uint32_t config){};
+void rfir::util::Debuger::begin(unsigned long baud, uint32_t config){
     if (this->enabled)
         Serial.begin(baud, config);
+};        
 #endif
 
 size_t rfir::util::Debuger::write(uint8_t c){ return 1;}

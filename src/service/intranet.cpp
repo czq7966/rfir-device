@@ -40,7 +40,11 @@ void service::Intranet::start(){
         IPAddress multicast;
         multicast.fromString(GRegTable.values.intranet_ip);
         uint16_t port = GRegTable.tables.get(GRegTable.keys.intranet_port);
-        udp->beginMulticast(WiFi.localIP(), multicast, port);
+        #ifdef ESP8266
+            udp->beginMulticast(WiFi.localIP(), multicast, port);
+        #else
+            udp->beginMulticast(multicast, port);
+        #endif
         
         GEventTimer.delay(100, [this](void* arg, void* p)->void*{
             this->req_intranet();      
@@ -81,8 +85,14 @@ int service::Intranet::write(char* buf, size_t size) {
         IPAddress multicast;
         multicast.fromString(GRegTable.values.intranet_ip);
         uint16_t port = GRegTable.tables.get(GRegTable.keys.intranet_port);
-        udp->beginPacketMulticast(multicast, port, WiFi.localIP());
-        udp->write(buf, size);
+        #ifdef ESP8266
+            udp->beginPacketMulticast(multicast, port, WiFi.localIP());
+            udp->write(buf, size);
+        #else
+            udp->beginMulticastPacket();
+            udp->write((uint8_t*)buf, size);        
+            
+        #endif
         return udp->endPacket();
     } 
     

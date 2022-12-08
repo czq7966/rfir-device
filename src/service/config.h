@@ -40,7 +40,10 @@ namespace service {
         Events events;
         Params params;       
         rfir::util::MapFactory<int, int> saved;
-        rfir::util::Button::KeyTime keyTimeResetConfig = {pressed: 10000, released: 15000};
+        rfir::util::Button::KeyTime keyTimeResetConfig;
+    public:
+        Config();
+        ~Config();
     
     public:
         void init();

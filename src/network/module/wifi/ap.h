@@ -72,9 +72,11 @@ namespace network {
             public:
                 Params params;
                 Events events;
-                rfir::util::Button::KeyTime keyTimeBtnStart = {pressed: 3000, released: 5000};
-                rfir::util::Button::KeyTime keyTimeBtnStop = {pressed: 200, released: 1000};
+                rfir::util::Button::KeyTime keyTimeBtnStart;
+                rfir::util::Button::KeyTime keyTimeBtnStop;
                 uint32_t wifi_timeout_handler = 0;
+                AP();
+                ~AP();
             
             
             public:

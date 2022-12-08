@@ -7,6 +7,15 @@
 #include "rfir/util/event-timer.h"
 #include "rfir/util/util.h"
 
+service::AP::AP(){
+    this->keyTimeResetConfig.pressed = 10000;
+    this->keyTimeResetConfig.released = 15000;    
+};
+
+service::AP::~AP(){
+
+};
+
 void service::AP::init(){
     if (GRegTable.tables.get(GRegTable.keys.ap_disable) == 0) {
         GWifiAP.start(0);
