@@ -40,7 +40,7 @@ void service::Config::init(){
 
     //二进制
     GRegTable.values.report_penet_data = REPORT_PENET_DATA;
-    GRegTable.values.report_reg_list = REPORT_REG_LIST;
+    GRegTable.values.report_reg_data = REPORT_REG_DATA;
 
     GRegTable.tables.add(GRegTable.keys.dev_online, 0);
     GRegTable.tables.add(GRegTable.keys.cfg_version, CFG_VERSION);

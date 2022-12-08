@@ -119,12 +119,12 @@
 //Report Reg
 #define REPORT_REG_ENABLE           false
 #define REPORT_REG_TIMEOUT          60 * 1  //1分钟
-#define REPORT_REG_LIST             {}       //vector 地址列表(2字节=1Key) 
+#define REPORT_REG_DATA             {}      //vector key+value 
 
 //Report penet
 #define REPORT_PENET_ENABLE         false
 #define REPORT_PENET_TIMEOUT        60 * 1  //1分钟
-#define REPORT_PENET_DATA           {}       //vector 长度+内容
+#define REPORT_PENET_DATA           {}      //vector 长度+内容...
 
 
 #endif //

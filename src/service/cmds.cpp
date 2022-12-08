@@ -21,10 +21,109 @@ void service::Cmds::start(){
         return 0;
     });    
 
+    //Report 
+    GMqttClient.events.onMqttConnect.add(this, [this](void* arg, void* p)-> void*{
+        delay_report_reg(1000);
+        delay_report_penet(1000);
+        return 0;
+    });
+
+    //Report 
+    LMqttClient.events.onMqttConnect.add(this, [this](void* arg, void* p)-> void*{
+        delay_report_reg(1000);
+        delay_report_penet(1000);
+        return 0;
+    });
+
 };
 
 void service::Cmds::loop(){
 
+};
+
+void service::Cmds::delay_report_reg(int timeout_ms){
+    GEventTimer.remove(this->delay_report_reg_handler);
+    this->delay_report_reg_handler = GEventTimer.delay(timeout_ms, [this](void* arg, void* p)-> void*{
+        do_report_reg();
+        delay_report_reg(GRegTable.tables.get(GRegTable.keys.report_reg_timeout) * 1000);
+        return 0;
+    });    
+};
+
+void service::Cmds::delay_report_penet(int timeout_ms){
+    GEventTimer.remove(this->delay_report_penet_handler);
+    this->delay_report_penet_handler = GEventTimer.delay(timeout_ms, [this](void* arg, void* p)-> void*{
+        do_report_penet();
+        delay_report_penet(GRegTable.tables.get(GRegTable.keys.report_penet_timeout) * 1000);
+        return 0;
+    });   
+};
+
+void service::Cmds::do_report_reg(){
+    if (GRegTable.get(GRegTable.keys.report_reg_enable)) {
+        GDebuger.println(F("service::Cmds::do_report_reg "));
+
+        auto data = GRegTable.decodeVectorAddress(GRegTable.get(GRegTable.keys.report_reg_data));
+        if (data && data->size() > 0 &&  (data->size() % 4 == 0)) { //Key+Value列表
+            cmds::cmd::RecvCmd* cmd = &GRecvCmd;
+            cmds::cmd::Cmd::Head hd;
+            cmd->head = &hd;
+            cmds::cmd::Cmd::reset(cmd->head);
+
+            int i = 0;
+            while (i < data->size())
+            {
+                int key = (*data)[i++] + ( (*data)[i++] << 8 );
+                int value = (*data)[i++] + ( (*data)[i++] << 8 );
+                cmd->regTable.tables.add(key, value);
+            }
+                   
+            cmd->head->cmd_id = cmds::cmd::CmdId::report;
+            onCmd_get(cmd);  
+        }
+    }
+
+};
+
+void service::Cmds::do_report_penet(){
+    if (GRegTable.get(GRegTable.keys.report_penet_enable)) {
+        GDebuger.println(F("service::Cmds::do_report_penet "));
+
+        auto data = GRegTable.decodeVectorAddress(GRegTable.get(GRegTable.keys.report_penet_data));
+        if (data ) { //长度+内容  .....
+            int offset = 0;
+            int idx = 0;
+
+            while(offset + 2 < data->size()){
+                int size = (*data)[offset] + ((*data)[offset + 1] << 8);
+                GEventTimer.delay(200 * idx, [this](void* arg, void* p)-> void*{
+                    do_report_penet_offset((int)arg);
+                    return 0;
+                }, (void*)offset);   
+                offset = offset + 2 + size;
+                idx++;
+            }
+        }
+    }
+};
+
+void service::Cmds::do_report_penet_offset(int offset) {
+    auto data = GRegTable.decodeVectorAddress(GRegTable.get(GRegTable.keys.report_penet_data));
+    if (data && data->size() > offset + 2 ) { //长度+内容  .....
+        int idx = offset;
+        int size = (*data)[idx++] + ((*data)[idx++] << 8);
+
+        if (size + idx <= data->size() ) {
+            cmds::cmd::RecvCmd* cmd = &GRecvCmd;
+            cmds::cmd::Cmd::Head hd;
+            cmd->head = &hd;
+            cmds::cmd::Cmd::reset(cmd->head);
+            cmd->head->cmd_id = cmds::cmd::CmdId::penet;
+            cmd->regTable.tables.add(GRegTable.keys.penet_data, GRegTable.encodeVectorAddress(data));
+            cmd->regTable.sizes.add(GRegTable.keys.penet_data, size);
+            GDevice->onCmd_penet(cmd, idx);
+        }
+    }
 };
 
 void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
@@ -154,7 +253,7 @@ void service::Cmds::onCmd_get(cmds::cmd::RecvCmd* cmd){
         }
 
         //Resp
-        GSendCmd.head->cmd_id = cmds::cmd::CmdId::get;
+        GSendCmd.head->cmd_id = cmd->head->cmd_id;
         GSendCmd.head->cmd_sid = cmd->head->cmd_sid;
         GSendCmd.head->cmd_stp = 1;
         std::list<int> ids;

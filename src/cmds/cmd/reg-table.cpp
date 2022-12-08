@@ -28,7 +28,7 @@ cmds::cmd::RegTable::RegTable(){
 
     //二进制
     this->tables.add(this->keys.report_penet_data, this->encodeVectorAddress(&this->values.report_penet_data));
-    this->tables.add(this->keys.report_reg_list, this->encodeVectorAddress(&this->values.report_reg_list));
+    this->tables.add(this->keys.report_reg_data, this->encodeVectorAddress(&this->values.report_reg_data));
 
     //数字
     this->tables.add(this->keys.dev_online, 0);

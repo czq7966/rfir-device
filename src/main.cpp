@@ -61,11 +61,6 @@ void setup() {
     GDebuger.print(F(" , mac: "));
     GDebuger.println(GRegTable.values.dev_mac);
 
-    //GSendCmd
-    GSendCmd.params.buf = pub_buffer;
-    GSendCmd.params.bufsize = pub_buffer_size;
-    
-
     //WIFI
     GWifiClient.addSsids(GRegTable.values.wifi_ssid, GRegTable.values.wifi_pass);
     GWifiClient.addSsids(GRegTable.values.wifi_ssid_dev, GRegTable.values.wifi_pass_dev);
@@ -105,6 +100,13 @@ void setup() {
     LMqttClient.params.user = strcmp(GRegTable.values.intranet_mqtt_user, "") == 0 ? GRegTable.values.mqtt_user : GRegTable.values.intranet_mqtt_user; 
     LMqttClient.params.pass = strcmp(GRegTable.values.intranet_mqtt_user, "") == 0 ? GRegTable.values.mqtt_pass : GRegTable.values.intranet_mqtt_pass; 
 
+    //GSendCmd
+    GSendCmd.params.buf = pub_buffer;
+    GSendCmd.params.bufsize = pub_buffer_size;
+
+    //GRecvCmd
+    GRecvCmd.params.buf = mqtt_msg_buffer;
+    GRecvCmd.params.bufsize = mqtt_msg_buffer_size;
 
     //OTA
     GOTAUpdater.params.id = GRegTable.values.dev_id;
@@ -177,8 +179,6 @@ void setup() {
     //配置Ready
     GConfig.events.ready.emit(0);
     GDebuger.println(F("Ready"));
-
-    GRegTable.dump();
 
 }
 

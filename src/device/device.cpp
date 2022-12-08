@@ -38,7 +38,7 @@ int device::Device::onCmd_report(cmds::cmd::RecvCmd* cmd){
     return 0;
 };
 
-int device::Device::onCmd_penet(cmds::cmd::RecvCmd* cmd){
+int device::Device::onCmd_penet(cmds::cmd::RecvCmd* cmd, int offset){
     return 0;
 };
 

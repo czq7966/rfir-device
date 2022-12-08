@@ -36,7 +36,7 @@ namespace cmds {
                 const uint16_t rfir_sniff_data =	60501;
                 const uint16_t rfir_send_data = 	60502;
                 const uint16_t report_penet_data = 	60503;
-                const uint16_t report_reg_list = 	60504;
+                const uint16_t report_reg_data = 	60504;
 
 
                 //数字
@@ -147,7 +147,7 @@ namespace cmds {
 
                 //二进制
                 std::vector<uint8_t> report_penet_data;
-                std::vector<uint8_t> report_reg_list;
+                std::vector<uint8_t> report_reg_data;
             };
             
         public:
