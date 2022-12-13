@@ -130,6 +130,9 @@ bool service::Networking::handshake(cmds::cmd::Cmd* cmd){
         std::list<int> ids;
         ids.push_back(GRegTable.keys.net_handshake_count);
         ids.push_back(GRegTable.keys.dev_offline_count);
+        ids.push_back(GRegTable.keys.wifi_rssi);
+
+        GRegTable.tables.add(GRegTable.keys.wifi_rssi, WiFi.RSSI());
 
         GSendCmd.reset();
         GSendCmd.head->cmd_id = cmds::cmd::CmdId::handshake;
