@@ -114,6 +114,7 @@ void setup() {
     GOTAUpdater.params.url = GRegTable.values.ota_update_url;
     GOTAUpdater.params.version = GRegTable.tables.get(GRegTable.keys.ota_version);
     GOTAUpdater.params.enabled = !GRegTable.tables.get(GRegTable.keys.ota_disable);
+    GOTAUpdater.params.reboot = GRegTable.tables.get(GRegTable.keys.ota_reboot_after_check);
 
     //Sniffer
     GTTLSniffer.params.enabled = GRegTable.tables.get(GRegTable.keys.rfir_sniff_enable);

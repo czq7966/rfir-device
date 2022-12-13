@@ -23,6 +23,7 @@ namespace network {
                     const char* id;
                     unsigned version;
                     bool     enabled = true;
+                    bool     reboot = false;
                     uint32_t interval = 60 * 24; //1天
                 };            
             public:

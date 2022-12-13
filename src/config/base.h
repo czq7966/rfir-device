@@ -43,6 +43,7 @@
     #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp32c3/base/cfg.txt"
 #endif
 #define OTA_UPDATE_INTERVAL         60 * 24     //24小时检查一次OTA,单位：分钟
+#define OTA_REBOOT_AFTER_CHECK      false
 
 //WIFI
 #define WIFI_DISABLE                false

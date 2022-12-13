@@ -61,6 +61,7 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.ota_disable, OTA_DISABLE);
     GRegTable.tables.add(GRegTable.keys.ota_version, OTA_VERSION);
     GRegTable.tables.add(GRegTable.keys.ota_update_interval, OTA_UPDATE_INTERVAL);
+    GRegTable.tables.add(GRegTable.keys.ota_reboot_after_check, OTA_REBOOT_AFTER_CHECK);
 
     GRegTable.tables.add(GRegTable.keys.wifi_disable, WIFI_DISABLE);
     GRegTable.tables.add(GRegTable.keys.wifi_reset_timeout, WIFI_RESET_TIMEOUT);

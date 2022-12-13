@@ -48,6 +48,7 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.ota_disable, 0);
     this->tables.add(this->keys.ota_version, 0);
     this->tables.add(this->keys.ota_update_interval, 0);
+    this->tables.add(this->keys.ota_reboot_after_check, 0);
 
     this->tables.add(this->keys.wifi_disable, 0);
     this->tables.add(this->keys.wifi_reset_timeout, 0);

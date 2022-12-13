@@ -118,6 +118,9 @@ namespace cmds {
                 const uint16_t report_reg_enable   = 61080; 
                 const uint16_t report_reg_timeout  = 61081; 
 
+                //Reboot
+                const uint16_t ota_reboot_after_check  = 61090;                 
+
             };            
             struct Values
             {
