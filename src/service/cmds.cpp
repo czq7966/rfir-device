@@ -69,6 +69,7 @@ void service::Cmds::do_report_reg(){
             cmds::cmd::Cmd::Head hd;
             cmd->head = &hd;
             cmds::cmd::Cmd::reset(cmd->head);
+            cmd->regTable.tables.clear();
 
             int i = 0;
             while (i < data->size())
