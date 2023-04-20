@@ -35,6 +35,9 @@ void service::Cmds::start(){
         return 0;
     });
 
+    //定时重启检查
+    delay_reboot_interval(1000 * 60);
+
 };
 
 void service::Cmds::loop(){
@@ -57,6 +60,15 @@ void service::Cmds::delay_report_penet(int timeout_ms){
         delay_report_penet(GRegTable.tables.get(GRegTable.keys.report_penet_timeout) * 1000);
         return 0;
     });   
+};
+
+void service::Cmds::delay_reboot_interval(int timeout_ms){
+    GEventTimer.remove(this->delay_reboot_interval_handler);
+    this->delay_reboot_interval_handler = GEventTimer.delay(timeout_ms, [this](void* arg, void* p)-> void*{
+        do_reboot_interval();
+        delay_reboot_interval(60 * 1000);
+        return 0;
+    });    
 };
 
 void service::Cmds::do_report_reg(){
@@ -195,6 +207,21 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
 
 };
 
+void service::Cmds::do_reboot_interval(){
+    if (GRegTable.get(GRegTable.keys.reboot_interval_enable)) {
+        GDebuger.println(F("service::Cmds::do_reboot_interval "));
+        int timeoutMin = GRegTable.tables.get(GRegTable.keys.report_reg_timeout);
+        if (timeoutMin < 30){
+            timeoutMin = 30;
+        }
+
+        if (millis() > timeoutMin * 60 * 1000) {
+            rfir::util::Util::Reset();
+        }
+
+    }
+
+};
 
 void service::Cmds::onCmd_config(cmds::cmd::RecvCmd* cmd){
     if (GDevice->onCmd_config(cmd) != -1){

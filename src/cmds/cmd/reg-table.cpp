@@ -85,6 +85,9 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.report_reg_enable, 0);
     this->tables.add(this->keys.report_reg_timeout, 0);
 
+    //Reboot interval
+    this->tables.add(this->keys.reboot_interval_enable, 0);
+    this->tables.add(this->keys.reboot_interval_timeout, 30);
 };
 
 cmds::cmd::RegTable GRegTable;

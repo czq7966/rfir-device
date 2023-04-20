@@ -118,6 +118,10 @@ namespace cmds {
                 const uint16_t report_reg_enable   = 61080; 
                 const uint16_t report_reg_timeout  = 61081; 
 
+                //Reboot interval
+                const uint16_t reboot_interval_enable   = 61085; 
+                const uint16_t reboot_interval_timeout  = 61086; 
+
                 //Reboot
                 const uint16_t ota_reboot_after_check  = 61090;                 
 
