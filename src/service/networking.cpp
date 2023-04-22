@@ -111,6 +111,7 @@ void service::Networking::setOnline(){
     std::list<int> ids;
     ids.push_back(GRegTable.keys.dev_offline_count);
     ids.push_back(GRegTable.keys.ota_version);
+    ids.push_back(GRegTable.keys.dev_mac);
     GSendCmd.reset();
     GSendCmd.head->cmd_id = cmds::cmd::CmdId::online;
     GSendCmd.send(ids);
