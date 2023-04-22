@@ -210,7 +210,7 @@ void service::Cmds::onCmd(cmds::cmd::RecvCmd* cmd){
 void service::Cmds::do_reboot_interval(){
     if (GRegTable.get(GRegTable.keys.reboot_interval_enable)) {
         GDebuger.println(F("service::Cmds::do_reboot_interval "));
-        int timeoutMin = GRegTable.tables.get(GRegTable.keys.report_reg_timeout);
+        int timeoutMin = GRegTable.tables.get(GRegTable.keys.reboot_interval_timeout);
         if (timeoutMin < 30){
             timeoutMin = 30;
         }

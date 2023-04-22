@@ -25,7 +25,7 @@
 #undef  OTA_VERSION
 #undef  OTA_UPDATE_URL
 #undef  OTA_REBOOT_AFTER_CHECK
-#define OTA_VERSION                 28
+#define OTA_VERSION                 29
 #ifdef ESP8266
     #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp8266/rfir-penet-nd-ac/cfg.txt"
 #endif
