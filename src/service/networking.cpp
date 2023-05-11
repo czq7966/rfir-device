@@ -5,11 +5,19 @@
 #include "rfir/util/event-timer.h"
 #include "rfir/util/util.h"
 #include "service/config.h"
+#include "../network/module/wifi/client.h"
 
 //事件注册
 void service::Networking::start(){
     GConfig.events.ready.add(this,  [this](void* arg, void* p)-> void*{
         setWill();
+        return 0;
+    });
+
+    GWifiClient.events.onWifiConnect.add(this, [this](void*, void*)->void*{
+        //WIFI连线统计+1
+        GRegTable.tables.add(GRegTable.keys.wifi_connect_count, GRegTable.tables.get(GRegTable.keys.wifi_connect_count) + 1);
+
         return 0;
     });
 
@@ -32,6 +40,9 @@ void service::Networking::start(){
         //外网接通，内网关闭
         LMqttClient.params.enable = false;
         LMqttClient.delayDisconnectToMqtt(100);
+
+        //MQTT上线统计+1
+        GRegTable.tables.add(GRegTable.keys.mqtt_connect_count, GRegTable.tables.get(GRegTable.keys.mqtt_connect_count) + 1);
 
         subscribe();
         setOnline();
@@ -112,10 +123,17 @@ void service::Networking::setOnline(){
     ids.push_back(GRegTable.keys.dev_offline_count);
     ids.push_back(GRegTable.keys.ota_version);
     ids.push_back(GRegTable.keys.dev_mac);
+    ids.push_back(GRegTable.keys.reboot_type);
+    ids.push_back(GRegTable.keys.reboot_hard_count);
+    ids.push_back(GRegTable.keys.reboot_soft_count);
+    ids.push_back(GRegTable.keys.reboot_gpio_count);
+    ids.push_back(GRegTable.keys.wifi_connect_count);
+    ids.push_back(GRegTable.keys.mqtt_connect_count);
     GSendCmd.reset();
     GSendCmd.head->cmd_id = cmds::cmd::CmdId::online;
     GSendCmd.send(ids);
-
+    //上线上报后清除统计Log
+    GConfig.clearLog();
 };
 
 void service::Networking::subscribe(){

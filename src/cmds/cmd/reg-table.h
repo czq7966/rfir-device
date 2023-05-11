@@ -25,6 +25,7 @@ namespace cmds {
                 const uint16_t mqtt_pass =          60013;
                 const uint16_t wifi_ssid_dev =      60014;
                 const uint16_t wifi_pass_dev =      60015;
+                const uint16_t wifi_ip =            60016;
 
                 const uint16_t intranet_mqtt_ip =	60040;
                 const uint16_t intranet_mqtt_user =	60041;
@@ -123,7 +124,17 @@ namespace cmds {
                 const uint16_t reboot_interval_timeout  = 61086; 
 
                 //Reboot
-                const uint16_t ota_reboot_after_check  = 61090;                 
+                const uint16_t ota_reboot_after_check  = 61090;      
+
+                //重启统计
+                const uint16_t reboot_start_type        = 61098;
+                const uint16_t reboot_type              = 61099;
+                const uint16_t reboot_hard_count        = 61100; 
+                const uint16_t reboot_soft_count        = 61101; 
+                const uint16_t reboot_gpio_count         = 61102; 
+                //上线统计
+                const uint16_t wifi_connect_count    = 61105; 
+                const uint16_t mqtt_connect_count    = 61106;            
 
             };            
             struct Values
@@ -145,6 +156,7 @@ namespace cmds {
                 char mqtt_pass[33];
                 char wifi_ssid_dev[33];
                 char wifi_pass_dev[33];
+                char wifi_ip[33];
                 char intranet_mqtt_ip[65];
                 char intranet_mqtt_user[33];
                 char intranet_mqtt_pass[33];

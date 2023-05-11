@@ -2,11 +2,23 @@
 #define __RFIR_UTIL_UTIL_H__
 
 #include "platform.h"
-// #include "config.h"
+#include "event-emitter.h"
 
 namespace rfir {
     namespace util {
         class Util {
+        public:
+            struct Events {
+                ::rfir::util::Event onRebootGpio;
+                ::rfir::util::Event onRebootSoft;
+            };
+
+            struct Params {
+                int resetPin = -1;
+            };
+
+            static Events events;
+            static Params params;
         protected:
             static void* on_delay_reset(void* arg, void* p);
         public:

@@ -1,6 +1,9 @@
 #include "util.h"
 #include "event-timer.h"
 
+rfir::util::Util::Events rfir::util::Util::events = rfir::util::Util::Events();
+rfir::util::Util::Params rfir::util::Util::params = rfir::util::Util::Params();
+
 uint64_t  rfir::util::Util::reverseBits(uint64_t input, uint16_t nbits) {
   if (nbits <= 1) return input;  // Reversing <= 1 bits makes no change at all.
   // Cap the nr. of bits to rotate to the max nr. of bits in the input.
@@ -208,13 +211,16 @@ int  rfir::util::Util::StringToBytes(std::string str, uint8_t* bytes) {
 }
 
 void rfir::util::Util::Reset(uint32_t delay_ms){
-  if (delay_ms == 0) {
-    #ifdef RESET_PIN
-      pinMode(RESET_PIN, OUTPUT);
-      digitalWrite(RESET_PIN, 0);
+  if (delay_ms == 0) {    
+    if (params.resetPin >=0 ){
+      events.onRebootGpio.emit(0);
+      pinMode(params.resetPin, OUTPUT);
+      digitalWrite(params.resetPin, 0);
       delay(200);
-      digitalWrite(RESET_PIN, 1);
-    #endif
+      digitalWrite(params.resetPin, 1);
+      delay(200);
+    }
+    events.onRebootSoft.emit(0);
     #ifdef ESP8266                   
         ESP.reset();
     #else

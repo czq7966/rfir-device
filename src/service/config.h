@@ -53,6 +53,12 @@ namespace service {
         void save(std::list<int> ids);
         void resetConfig(bool restart = true);
     public:
+        void clearLog();
+        void saveLog();
+        void syncRebootCount();
+        void setRebootType(int value);
+        void setRebootStartType(int value, bool save);
+    public:
         int getSerialBaud();
         void setSerialBaud(int value);
         int getSerialConfig();

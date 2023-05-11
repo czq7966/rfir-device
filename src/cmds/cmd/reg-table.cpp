@@ -19,6 +19,7 @@ cmds::cmd::RegTable::RegTable(){
     this->tables.add(this->keys.mqtt_pass, (int)this->values.mqtt_pass);
     this->tables.add(this->keys.wifi_ssid_dev, (int)this->values.wifi_ssid_dev);
     this->tables.add(this->keys.wifi_pass_dev, (int)this->values.wifi_pass_dev);
+    this->tables.add(this->keys.wifi_ip, (int)this->values.wifi_ip);
     this->tables.add(this->keys.intranet_mqtt_ip, (int)this->values.intranet_mqtt_ip);
     this->tables.add(this->keys.intranet_mqtt_user, (int)this->values.intranet_mqtt_user);
     this->tables.add(this->keys.intranet_mqtt_pass, (int)this->values.intranet_mqtt_pass);
@@ -88,6 +89,17 @@ cmds::cmd::RegTable::RegTable(){
     //Reboot interval
     this->tables.add(this->keys.reboot_interval_enable, 0);
     this->tables.add(this->keys.reboot_interval_timeout, 30);
+
+    //重启统计
+    this->tables.add(this->keys.reboot_start_type, 0);
+    this->tables.add(this->keys.reboot_type, 0);
+    this->tables.add(this->keys.reboot_hard_count, 0);
+    this->tables.add(this->keys.reboot_soft_count, 0);
+    this->tables.add(this->keys.reboot_gpio_count, 0);
+
+    //掉线统计
+    this->tables.add(this->keys.wifi_connect_count, 0);
+    this->tables.add(this->keys.mqtt_connect_count, 0);
 };
 
 cmds::cmd::RegTable GRegTable;

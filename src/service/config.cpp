@@ -31,6 +31,7 @@ void service::Config::init(){
     strcpy(GRegTable.values.mqtt_pass, MQTT_PASS);
     strcpy(GRegTable.values.wifi_ssid_dev, WIFI_SSID_DEV);
     strcpy(GRegTable.values.wifi_pass_dev, WIFI_PASS_DEV);
+    strcpy(GRegTable.values.wifi_ip, "");
     strcpy(GRegTable.values.intranet_mqtt_ip, INTRANET_MQTT_IP);
     strcpy(GRegTable.values.intranet_mqtt_user, INTRANET_MQTT_USER);
     strcpy(GRegTable.values.intranet_mqtt_pass, INTRANET_MQTT_PASS);
@@ -124,6 +125,21 @@ void service::Config::init(){
     //Button
     GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);
 
+    //GPIO重启
+    rfir::util::Util::events.onRebootGpio.add(this, [this](void* arg, void* p)-> void*{
+        setRebootType(2);
+        saveLog();
+        delay(200);
+        return 0;
+    });
+
+    //软重启
+    rfir::util::Util::events.onRebootSoft.add(this, [this](void* arg, void* p)-> void*{
+        setRebootType(1);
+        saveLog();
+        delay(200);
+        return 0;
+    });
 };
 
 void service::Config::fixUp(){
@@ -139,6 +155,7 @@ void service::Config::fixUp(){
 
     this->load();
 
+    rfir::util::Util::params.resetPin = GRegTable.tables.get(GRegTable.keys.pin_reset);
 };
 
 void service::Config::load() {
@@ -198,7 +215,72 @@ int service::Config::getSerialConfig(){
     return GSerialConfigs.getSerialConfig();
 };
 
+void service::Config::clearLog(){
+    GRegTable.tables.add(GRegTable.keys.reboot_start_type, 0);
+    GRegTable.tables.add(GRegTable.keys.reboot_type, 0);
+    GRegTable.tables.add(GRegTable.keys.reboot_hard_count, 0);
+    GRegTable.tables.add(GRegTable.keys.reboot_soft_count, 0);
+    GRegTable.tables.add(GRegTable.keys.reboot_gpio_count, 0);
+    GRegTable.tables.add(GRegTable.keys.wifi_connect_count, 0);
+    GRegTable.tables.add(GRegTable.keys.mqtt_connect_count, 0);
+    saveLog();
+};
 
+void service::Config::saveLog(){
+    saved.add(GRegTable.keys.reboot_start_type, 0);
+    saved.add(GRegTable.keys.reboot_type, 0);
+    saved.add(GRegTable.keys.reboot_hard_count, 0);
+    saved.add(GRegTable.keys.reboot_soft_count, 0);
+    saved.add(GRegTable.keys.reboot_gpio_count, 0);
+    saved.add(GRegTable.keys.wifi_connect_count, 0);
+    saved.add(GRegTable.keys.mqtt_connect_count, 0);
+    save();
+};
+
+
+void service::Config::syncRebootCount(){    
+    int reboot_start_type = GRegTable.tables.get(GRegTable.keys.reboot_start_type);
+    int reboot_type = GRegTable.tables.get(GRegTable.keys.reboot_type);
+    reboot_type = reboot_type & 0b11111111;
+
+    //硬重启+1
+    if(reboot_start_type == 0 || reboot_type == 0){
+        GRegTable.tables.add(GRegTable.keys.reboot_hard_count, GRegTable.tables.get(GRegTable.keys.reboot_hard_count) + 1);
+    }
+
+    //软重启
+    if(reboot_start_type != 0 && reboot_type == 1){
+        GRegTable.tables.add(GRegTable.keys.reboot_soft_count, GRegTable.tables.get(GRegTable.keys.reboot_soft_count) + 1);
+    }
+
+    //GPIO重启
+    if(reboot_start_type != 0 && reboot_type == 2){
+        GRegTable.tables.add(GRegTable.keys.reboot_gpio_count, GRegTable.tables.get(GRegTable.keys.reboot_gpio_count) + 1);
+    }
+
+
+
+    //同步重启类型
+    reboot_type = reboot_type + (reboot_start_type << 8);
+    GRegTable.tables.add(GRegTable.keys.reboot_type, reboot_type);
+
+
+};
+
+void service::Config::setRebootType(int value){
+    GRegTable.tables.add(GRegTable.keys.reboot_type, value);
+    if (value == 0)
+        setRebootStartType(0, false);
+    else 
+        setRebootStartType(1, false);
+};
+
+void service::Config::setRebootStartType(int value, bool save ){
+    GRegTable.tables.add(GRegTable.keys.reboot_start_type, value);
+    if (save) {
+        saveLog();
+    }
+};
 
 service::Config GConfig;
 JLed  GJLed = JLed(PIN_LED);

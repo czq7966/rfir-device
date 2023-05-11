@@ -49,6 +49,8 @@ void setup() {
 
     GConfig.init();    
     GConfig.fixUp();
+    GConfig.syncRebootCount();
+    GConfig.setRebootStartType(0, true);
 
     //GLed
     GLed.events.onStart.add((int32_t)0, onGLedStart);

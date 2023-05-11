@@ -19,7 +19,7 @@
 //BUTTON
 #define PIN_BUTTON                     0
 //RESET
-#define PIN_RESET                   12
+#define PIN_RESET                   -1
 
 //Serial
 #define SERIAL_DEBUG                false

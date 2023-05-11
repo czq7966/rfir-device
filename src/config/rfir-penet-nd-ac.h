@@ -9,6 +9,9 @@
 #undef  DEV_MODEL
 #define DEV_MODEL                   "RFIR-PENET-ND-AC"
 
+//Reset
+#undef  PIN_RESET
+#define PIN_RESET                   12
 
 //WIFI
 #undef  WIFI_SSID_DEV
