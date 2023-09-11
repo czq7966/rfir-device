@@ -15,12 +15,18 @@
 
 #undef  OTA_VERSION
 #undef  OTA_UPDATE_URL
-#define OTA_VERSION                 6
+#define OTA_VERSION                 7
 #ifdef ESP8266
     #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp8266/com-penet-half/cfg.txt"
 #endif
 #ifdef CONFIG_IDF_TARGET_ESP32C3
     #define OTA_UPDATE_URL              "http://betacs.101.com/v0.1/static/preproduction_content_ndcast_ota/ota/v3/esp32c3/com-penet-half/cfg.txt"
 #endif
+
+// Timer Reboot 定时重启
+#undef  REBOOT_INTERVAL_ENABLE
+#undef  REBOOT_INTERVAL_TIMEOUT
+#define REBOOT_INTERVAL_ENABLE      true   //是否定时重启
+#define REBOOT_INTERVAL_TIMEOUT     600     //600分钟重启一次
 
 #endif

@@ -127,5 +127,8 @@
 #define REPORT_PENET_TIMEOUT        60 * 1  //1分钟
 #define REPORT_PENET_DATA           {}      //vector 长度+内容...
 
+// Timer Reboot 定时重启
+#define REBOOT_INTERVAL_ENABLE      false   //是否定时重启
+#define REBOOT_INTERVAL_TIMEOUT     600     //600分钟重启一次
 
 #endif //

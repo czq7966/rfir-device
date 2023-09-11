@@ -88,7 +88,7 @@ cmds::cmd::RegTable::RegTable(){
 
     //Reboot interval
     this->tables.add(this->keys.reboot_interval_enable, 0);
-    this->tables.add(this->keys.reboot_interval_timeout, 30);
+    this->tables.add(this->keys.reboot_interval_timeout, 600);
 
     //重启统计
     this->tables.add(this->keys.reboot_start_type, 0);

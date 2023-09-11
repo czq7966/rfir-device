@@ -122,6 +122,10 @@ void service::Config::init(){
     GRegTable.tables.add(GRegTable.keys.report_reg_enable, REPORT_REG_ENABLE);
     GRegTable.tables.add(GRegTable.keys.report_reg_timeout, REPORT_REG_TIMEOUT);
 
+    // 定时重启
+    GRegTable.tables.add(GRegTable.keys.reboot_interval_enable, REBOOT_INTERVAL_ENABLE);
+    GRegTable.tables.add(GRegTable.keys.reboot_interval_timeout, REBOOT_INTERVAL_TIMEOUT);
+
     //Button
     GButton.events.onLongPressed.once(this, [this](void*, void*)->void*{ this->resetConfig(); return 0;}, this, &this->keyTimeResetConfig);
 
