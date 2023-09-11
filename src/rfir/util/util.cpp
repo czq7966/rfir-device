@@ -216,9 +216,10 @@ void rfir::util::Util::Reset(uint32_t delay_ms){
       events.onRebootGpio.emit(0);
       pinMode(params.resetPin, OUTPUT);
       digitalWrite(params.resetPin, 0);
-      delay(200);
+      delay(500);
       digitalWrite(params.resetPin, 1);
-      delay(200);
+      delay(500);
+      delay(500);
     }
     events.onRebootSoft.emit(0);
     #ifdef ESP8266                   

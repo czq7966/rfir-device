@@ -268,11 +268,13 @@ void service::Config::syncRebootCount(){
 };
 
 void service::Config::setRebootType(int value){
-    GRegTable.tables.add(GRegTable.keys.reboot_type, value);
-    if (value == 0)
+    if (value == 0) {
+        GRegTable.tables.add(GRegTable.keys.reboot_type, value);
         setRebootStartType(0, false);
-    else 
+    } else {
+        GRegTable.tables.add(GRegTable.keys.reboot_type, value + 0b100000000);
         setRebootStartType(1, false);
+    }
 };
 
 void service::Config::setRebootStartType(int value, bool save ){
